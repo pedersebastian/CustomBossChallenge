@@ -5,6 +5,7 @@ using Il2CppAssets.Scripts.Models.Profile;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity.Player;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace CustomBossChallenge.Patches;
 
@@ -36,6 +37,8 @@ internal static class InGameData_SetupBossChallenge
         if (__instance.bossData != null)
         {
             __instance.bossData.bossRankedMode = false;
+            __instance.bossData.spawnRounds =
+                new Il2CppStructArray<int>(CustomBossState.ActiveOptions.EffectiveSpawnRounds);
         }
     }
 }
@@ -54,4 +57,23 @@ internal static class Btd6Player_SetBossChallengeRecord
         ModHelper.Msg<CustomBossChallenge>($"Not saving a {bossType} record for a custom boss challenge");
         return false;
     }
+}
+
+/// <summary>
+/// Custom games must not award boss tier progress, badges or event completion either
+/// </summary>
+[HarmonyPatch]
+internal static class Btd6Player_BossProgress
+{
+    [HarmonyTargetMethods]
+    internal static System.Collections.Generic.IEnumerable<System.Reflection.MethodBase> TargetMethods() => new[]
+    {
+        AccessTools.Method(typeof(Btd6Player), nameof(Btd6Player.DefeatedBossTier)),
+        AccessTools.Method(typeof(Btd6Player), nameof(Btd6Player.CompleteBossEvent)),
+        AccessTools.Method(typeof(Btd6Player), nameof(Btd6Player.AddBossBadges)),
+        AccessTools.Method(typeof(Btd6Player), nameof(Btd6Player.BossEventBestRound))
+    };
+
+    [HarmonyPrefix]
+    internal static bool Prefix() => !CustomBossState.IsActive;
 }

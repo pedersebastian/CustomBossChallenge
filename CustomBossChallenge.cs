@@ -4,6 +4,7 @@ using BTD_Mod_Helper;
 using CustomBossChallenge;
 using CustomBossChallenge.Config;
 using Il2CppAssets.Scripts.Models;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 [assembly: MelonInfo(typeof(CustomBossChallenge.CustomBossChallenge), ModHelperData.Name, ModHelperData.Version, ModHelperData.RepoOwner)]
 [assembly: MelonGame("Ninja Kiwi", "BloonsTD6")]
@@ -22,10 +23,13 @@ public class CustomBossChallenge : BloonsTD6Mod
     {
         if (!CustomBossState.IsActive) return;
 
-        var changed = SkullModifier.Apply(result, CustomBossState.ActiveOptions!.SkullPercents);
-        if (changed > 0)
-        {
-            ModHelper.Msg<CustomBossChallenge>($"Applied custom skulls to {changed} boss models");
-        }
+        var options = CustomBossState.ActiveOptions!;
+        var tiers = ExtraTiers.Add(result, options);
+        var skulls = SkullModifier.Apply(result, options.SkullPercents);
+        result.bossSpawnRounds = new Il2CppStructArray<int>(options.EffectiveSpawnRounds);
+
+        ModHelper.Msg<CustomBossChallenge>(
+            $"Custom {options.BossId(options.Tiers)}: added {tiers} extra tiers, changed skulls of {skulls} boss models, " +
+            $"spawn rounds {TierMath.FormatRounds(options.EffectiveSpawnRounds)}");
     }
 }
