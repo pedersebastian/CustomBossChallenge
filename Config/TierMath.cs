@@ -26,6 +26,16 @@ public static class TierMath
     public static string BossId(BossType boss, bool elite, int tier) => $"{boss}{(elite ? "Elite" : "")}{tier}";
 
     /// <summary>
+    /// The tier in a boss bloon id like "VortexElite7", or 0 if it has none
+    /// </summary>
+    public static int TierOf(string? bossId)
+    {
+        if (string.IsNullOrEmpty(bossId)) return 0;
+        var digits = new string(bossId.Reverse().TakeWhile(char.IsDigit).Reverse().ToArray());
+        return int.TryParse(digits, out var tier) ? tier : 0;
+    }
+
+    /// <summary>
     /// The vanilla spawn rounds 40, 60, 80, 100, 120, continued every 20 rounds
     /// </summary>
     public static int[] DefaultSpawnRounds(int tiers) =>
@@ -62,6 +72,11 @@ public static class TierMath
                 .Select(s => int.TryParse(s.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var r) ? r : 0)
                 .Where(r => r > 0)
                 .ToList();
+
+    /// <summary>
+    /// Converts rounds as the player sees them (starting at 1) into the game's internal rounds (starting at 0)
+    /// </summary>
+    public static int[] ToGameRounds(IEnumerable<int> rounds) => rounds.Select(r => Math.Max(r - 1, 0)).ToArray();
 
     public static string FormatRounds(IEnumerable<int> rounds) => string.Join(", ", rounds);
 

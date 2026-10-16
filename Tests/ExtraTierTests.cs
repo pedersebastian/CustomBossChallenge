@@ -60,13 +60,15 @@ public class ExtraTierGameTest : CustomBossTest
     {
         yield return PlayToVictory(new BossOptions {Tiers = 6, ExtraTierHealth = 200, SpawnRounds = "40,41,42,43,44,45"});
         yield return ToMainMenu();
-        yield return PlayToVictory(new BossOptions {Tiers = 2, SpawnRounds = "40,41"});
+        // On easy a normal game ends at round 40, which used to end boss games after the first tier
+        yield return PlayToVictory(new BossOptions {Tiers = 2, SpawnRounds = "40,45"}, "Easy");
         yield return ToMainMenu();
     }
 
-    private IEnumerator PlayToVictory(BossOptions options)
+    private IEnumerator PlayToVictory(BossOptions options, string difficulty = "Medium")
     {
         var dcm = BaseDcm();
+        dcm.difficulty = difficulty;
         dcm.startRules.round = 39;
         dcm.startRules.lives = dcm.startRules.maxLives = 5000;
         dcm.bloonModifiers.healthMultipliers.boss = 0.1f;
@@ -83,7 +85,7 @@ public class ExtraTierGameTest : CustomBossTest
         }
 
         var bossManager = InGame.instance.bridge.Simulation.map.spawner.bossBloonManager;
-        AssertEquals(TierMath.FormatRounds(bossManager.spawnRounds), TierMath.FormatRounds(options.EffectiveSpawnRounds),
+        AssertEquals(TierMath.FormatRounds(bossManager.spawnRounds), TierMath.FormatRounds(options.GameSpawnRounds),
             "Spawn rounds in the match");
 
         PlaceStrongTower(gameModel.GetTowerFromId("DartMonkey"));
@@ -93,7 +95,7 @@ public class ExtraTierGameTest : CustomBossTest
         var start = Time.realtimeSinceStartup;
         while (!InGame.instance.bridge.Simulation.gameWon)
         {
-            if (InGame.instance.bridge.Simulation.GameOver) Fail("The game was lost");
+            if (InGame.instance.bridge.Simulation.GameOver) Fail($"The game was lost on round {InGame.instance.bridge.GetCurrentRound() + 1}");
             if (Time.realtimeSinceStartup - start > TimeoutSeconds)
             {
                 Fail($"No victory after {TimeoutSeconds}s; highest tier {highestTier}, " +
@@ -106,6 +108,8 @@ public class ExtraTierGameTest : CustomBossTest
                 highestTier = bossManager.CurrentBossTier;
                 AssertEquals(bossManager.CurrentBoss.bloonModel.id, options.BossId(highestTier), "Spawned boss");
                 Log($"tier {highestTier} spawned on round {InGame.instance.bridge.GetCurrentRound() + 1}");
+                AssertEquals(InGame.instance.bridge.GetCurrentRound() + 1, options.EffectiveSpawnRounds[highestTier - 1],
+                    $"Round tier {highestTier} spawned on");
             }
 
             if (!InGame.instance.bridge.AreRoundsActive()) InGame.instance.bridge.StartRound();

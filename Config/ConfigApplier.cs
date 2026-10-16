@@ -34,6 +34,13 @@ public static class ConfigApplier
 
         dcm.chalType = ChallengeType.BossChallenge;
 
+        // Tiers spawning on or after the end round never count: with the default end round (60 on medium) only the
+        // first tier would be played. Like the weekly events, leave room to beat the last tier.
+        var rules = dcm.startRules ??= new StartRules();
+        var lastSpawn = options.EffectiveSpawnRounds[^1];
+        if (rules.endRound <= lastSpawn) rules.endRound = lastSpawn + TierMath.RoundsBetweenTiers;
+        if (rules.round >= lastSpawn) rules.round = -1;
+
         // Custom games never overwrite the player's Boss Challenge save and are never treated as a custom map
         dcm.disableSaves = true;
         dcm.customMapModel = null;

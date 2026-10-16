@@ -34,6 +34,17 @@ public class ConfigApplierTest : CustomBossTest
         var twice = ConfigApplier.Prepare(dcm, CustomOptions);
         AssertEquals(twice.name, dcm.name, "Marking twice must not add the marker twice");
 
+        AssertEquals(dcm.startRules.endRound, 140, "The default end round must leave room for the last tier");
+        var late = BaseDcm();
+        late.startRules.endRound = 50;
+        late.startRules.round = 130;
+        var lateDcm = ConfigApplier.Prepare(late, new BossOptions {Tiers = 3});
+        AssertEquals(lateDcm.startRules.endRound, 100, "An end round before the last tier is moved after it");
+        AssertEquals(lateDcm.startRules.round, -1, "A start round after the last tier is reset");
+        var kept = BaseDcm();
+        kept.startRules.endRound = 150;
+        AssertEquals(ConfigApplier.Prepare(kept, CustomOptions).startRules.endRound, 150, "A later end round is kept");
+
         var unnamed = BaseDcm();
         unnamed.name = "";
         AssertEquals(ConfigApplier.Prepare(unnamed, new BossOptions {Boss = BossType.Vortex}).name,
@@ -70,6 +81,10 @@ public class TierMathTest : CustomBossTest
         AssertEquals(TierMath.ScaleHealth(int.MaxValue, 1000), TierMath.MaxModelHealth, "Health must not overflow");
 
         AssertEquals(TierMath.BossId(BossType.Vortex, true, 7), "VortexElite7", "Elite boss id");
+        AssertEquals(TierMath.TierOf("VortexElite7"), 7, "Tier of an elite boss id");
+        AssertEquals(TierMath.TierOf("Bloonarius10"), 10, "Tier of a two digit tier");
+        AssertEquals(TierMath.TierOf("Moab"), 0, "Tier of a bloon without one");
+        AssertEquals(Show(TierMath.ToGameRounds(new[] {1, 40, 60})), "0, 39, 59", "The game counts rounds from 0");
         AssertEquals(new BossOptions {Boss = BossType.Lych}.BossId(2), "Lych2", "Boss id");
         AssertEquals(Show(new BossOptions {Tiers = 6, SpawnRounds = "45"}.EffectiveSpawnRounds),
             "45, 65, 85, 105, 125, 145", "Effective spawn rounds");

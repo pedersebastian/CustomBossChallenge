@@ -58,6 +58,12 @@ public sealed record BossOptions
     public int[] EffectiveSpawnRounds => TierMath.SpawnRounds(Tiers, SpawnRounds);
 
     /// <summary>
+    /// The spawn rounds the way the game counts them: rounds start at 0 there, so round 40 is 39
+    /// </summary>
+    [JsonIgnore]
+    public int[] GameSpawnRounds => TierMath.ToGameRounds(EffectiveSpawnRounds);
+
+    /// <summary>
     /// The bloon id of this boss at the given tier, e.g. "VortexElite3"
     /// </summary>
     public string BossId(int tier) => TierMath.BossId(Boss, Elite, tier);

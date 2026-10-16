@@ -38,7 +38,7 @@ internal static class InGameData_SetupBossChallenge
         {
             __instance.bossData.bossRankedMode = false;
             __instance.bossData.spawnRounds =
-                new Il2CppStructArray<int>(CustomBossState.ActiveOptions.EffectiveSpawnRounds);
+                new Il2CppStructArray<int>(CustomBossState.ActiveOptions.GameSpawnRounds);
         }
     }
 }

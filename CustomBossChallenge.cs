@@ -28,10 +28,11 @@ public class CustomBossChallenge : BloonsTD6Mod
     {
         if (!CustomBossState.IsActive) return;
 
+        CustomBossState.OnMatchStart();
         var options = CustomBossState.ActiveOptions!;
         var tiers = ExtraTiers.Add(result, options);
         var skulls = SkullModifier.Apply(result, options.SkullPercents);
-        result.bossSpawnRounds = new Il2CppStructArray<int>(options.EffectiveSpawnRounds);
+        result.bossSpawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
 
         ModHelper.Msg<CustomBossChallenge>(
             $"Custom {options.BossId(options.Tiers)}: added {tiers} extra tiers, changed skulls of {skulls} boss models, " +

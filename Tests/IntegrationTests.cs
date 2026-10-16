@@ -95,7 +95,11 @@ public class BossGameLauncherTest : CustomBossTest
         Assert(CustomBossState.IsActive, "Custom state is not active in game");
 
         var bossManager = InGame.instance.bridge.Simulation.map.spawner.bossBloonManager;
-        AssertEquals(TierMath.FormatRounds(bossManager.spawnRounds), "40, 60, 80, 100, 120, 140", "Spawn rounds");
+        AssertEquals(TierMath.FormatRounds(bossManager.spawnRounds), "39, 59, 79, 99, 119, 139",
+            "Spawn rounds (the game counts rounds from 0)");
+        AssertEquals(TierMath.FormatRounds(new BossOptions().GameSpawnRounds),
+            TierMath.FormatRounds(BossGameData.DefaultSpawnRounds), "The default spawn rounds must match the vanilla ones");
+        AssertEquals(InGameData.CurrentGame.dcModel.startRules.endRound, 160, "End round after the last tier");
 
         bossManager.SpawnBoss(6, false);
         yield return null;

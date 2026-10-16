@@ -57,12 +57,32 @@ public static class CustomBossState
         }
 
         ActiveOptions = PendingOptions ?? new BossOptions();
+        HighestDefeatedTier = 0;
         return true;
     }
+
+    /// <summary>
+    /// The highest boss tier defeated in the current custom game
+    /// </summary>
+    public static int HighestDefeatedTier { get; private set; }
+
+    public static bool AllTiersDefeated =>
+        ActiveOptions != null && HighestDefeatedTier >= TierMath.ClampTiers(ActiveOptions.Tiers);
+
+    public static void OnBossDefeated(int tier)
+    {
+        if (tier > HighestDefeatedTier) HighestDefeatedTier = tier;
+    }
+
+    /// <summary>
+    /// Called when a (custom) match starts or restarts
+    /// </summary>
+    public static void OnMatchStart() => HighestDefeatedTier = 0;
 
     public static void Clear()
     {
         PendingOptions = null;
         ActiveOptions = null;
+        HighestDefeatedTier = 0;
     }
 }
