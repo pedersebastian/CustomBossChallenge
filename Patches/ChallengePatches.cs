@@ -4,26 +4,9 @@ using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Models.Profile;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity.Player;
-using Il2CppAssets.Scripts.Unity.UI_New.DailyChallenge;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 
 namespace CustomBossChallenge.Patches;
-
-/// <summary>
-/// Applies the custom rules to the challenge model that the Boss Challenge screen generates.
-/// The weekly Boss Event and co-op lobbies use other code paths and are never touched.
-/// </summary>
-[HarmonyPatch(typeof(BossEventScreen), nameof(BossEventScreen.GenerateChallengeDCM))]
-internal static class BossEventScreen_GenerateChallengeDCM
-{
-    [HarmonyPostfix]
-    internal static void Postfix(ref DailyChallengeModel __result)
-    {
-        if (!Settings.Enabled || __result == null) return;
-
-        __result = CustomBossState.Prepare(__result, Settings.ToConfig());
-    }
-}
 
 /// <summary>
 /// Backstop for every Boss Challenge setup: custom games are forced unranked and never saved

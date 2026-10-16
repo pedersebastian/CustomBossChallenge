@@ -56,7 +56,7 @@ public static class CustomBossState
             return false;
         }
 
-        ActiveConfig = PendingConfig ?? Settings.ToConfig();
+        ActiveConfig = PendingConfig ?? new BossChallengeConfig();
         return true;
     }
 
