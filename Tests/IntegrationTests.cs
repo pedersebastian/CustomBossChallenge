@@ -75,3 +75,36 @@ public class BossChallengeGameTest : CustomBossTest
         boss = AssertNotNull(bossManager.CurrentBoss, "Boss did not spawn");
     }
 }
+
+/// <summary>
+/// The Boss Creator's launcher sets up an unranked elite game with extra tiers that spawn with the right health
+/// </summary>
+public class BossGameLauncherTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        var options = new BossOptions {Boss = BossType.Vortex, Elite = true, Tiers = 6, ExtraTierHealth = 200};
+        var editorDcm = CustomEditorDcm();
+        var data = Creator.BossGameLauncher.BuildInGameData(editorDcm, options);
+        AssertEquals(data.bossData.bossBloon, BossType.Vortex, "Boss");
+        Assert(data.bossData.bossEliteMode, "Elite mode");
+        Assert(!data.bossData.bossRankedMode, "Ranked mode");
+        Assert(!ConfigApplier.IsMarked(editorDcm), "The editor's model must stay unmarked");
+
+        yield return LoadIntoGame(data);
+        Assert(CustomBossState.IsActive, "Custom state is not active in game");
+
+        var bossManager = InGame.instance.bridge.Simulation.map.spawner.bossBloonManager;
+        AssertEquals(TierMath.FormatRounds(bossManager.spawnRounds), "40, 60, 80, 100, 120, 140", "Spawn rounds");
+
+        bossManager.SpawnBoss(6, false);
+        yield return null;
+        var boss = AssertNotNull(bossManager.CurrentBoss, "Tier 6 did not spawn");
+        AssertEquals(boss.bloonModel.id, "VortexElite6", "Tier 6 boss");
+
+        var expected = Game.instance.model.GetBloon("VortexElite5").maxHealth * 2 * 0.5f;
+        Assert(System.Math.Abs(boss.health - expected) / expected < 0.01f, $"Tier 6 health {boss.health}, expected {expected}");
+
+        yield return ToMainMenu();
+    }
+}
