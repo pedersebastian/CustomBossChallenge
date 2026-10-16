@@ -19,6 +19,11 @@ public class CustomBossChallenge : BloonsTD6Mod
         ModHelper.Msg<CustomBossChallenge>("CustomBossChallenge loaded!");
     }
 
+    public override void OnUpdate()
+    {
+        Menus.MainMenuButton.UpdatePosition();
+    }
+
     public override void OnNewGameModel(GameModel result)
     {
         if (!CustomBossState.IsActive) return;

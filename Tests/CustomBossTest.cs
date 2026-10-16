@@ -89,6 +89,15 @@ public abstract class CustomBossTest : ModTest
         yield return new WaitForSecondsRealtime(1);
         if (OnMainMenu) yield break;
 
+        // Outside of a game, backing out of menus is more reliable than Mod Helper's helper
+        for (var i = 0; i < 5 && InGame.instance == null && MenuManager.instance != null &&
+                        MenuManager.instance.GetCurrentMenu() != null && !OnMainMenu; i++)
+        {
+            MenuManager.instance.Back();
+            yield return new WaitForSecondsRealtime(1.5f);
+        }
+        if (OnMainMenu) yield break;
+
         yield return Timeout(EnsureOnMainMenuWithNoPopUps(), MenuTimeout);
         Log("on main menu");
     }
