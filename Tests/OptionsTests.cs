@@ -1,0 +1,109 @@
+using System.Collections;
+using System.Linq;
+using CustomBossChallenge.Config;
+using Il2CppAssets.Scripts.Data.Boss;
+using Il2CppAssets.Scripts.Models.ServerEvents;
+using static CustomBossChallenge.Tests.TestUtils;
+
+namespace CustomBossChallenge.Tests;
+
+/// <summary>
+/// Preparing the editor's model for a custom game
+/// </summary>
+public class ConfigApplierTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        var source = CustomEditorDcm();
+        source.bloonModifiers.healthMultipliers.boss = 0;
+        var originalName = source.name;
+
+        var dcm = ConfigApplier.Prepare(source, CustomOptions);
+        Assert(ConfigApplier.IsMarked(dcm), $"Challenge was not marked as custom: '{dcm.name}'");
+        Assert(dcm.disableSaves, "Saves must be disabled for custom challenges");
+        AssertEquals(dcm.chalType, ChallengeType.BossChallenge, "Challenge type");
+        Assert(Approximately(dcm.bloonModifiers.bossSpeedMultiplier, 2), "Boss speed must come from the editor");
+        Assert(Approximately(dcm.bloonModifiers.healthMultipliers.boss, ConfigApplier.MinMultiplier),
+            $"Boss health must be floored, was {dcm.bloonModifiers.healthMultipliers.boss}");
+        AssertEquals(dcm.startRules.cash, 5000, "Start cash must come from the editor");
+
+        AssertEquals(source.name, originalName, "Editor model name changed");
+        Assert(!source.disableSaves, "Editor model saves were disabled");
+        Assert(Approximately(source.bloonModifiers.healthMultipliers.boss, 0), "Editor model health was changed");
+
+        var twice = ConfigApplier.Prepare(dcm, CustomOptions);
+        AssertEquals(twice.name, dcm.name, "Marking twice must not add the marker twice");
+
+        var unnamed = BaseDcm();
+        unnamed.name = "";
+        AssertEquals(ConfigApplier.Prepare(unnamed, new BossOptions {Boss = BossType.Vortex}).name,
+            "Custom Vortex" + ConfigApplier.Marker, "Name of an unnamed challenge");
+        yield break;
+    }
+}
+
+/// <summary>
+/// Tier and spawn round calculations
+/// </summary>
+public class TierMathTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        AssertEquals(Show(TierMath.DefaultSpawnRounds(5)), "40, 60, 80, 100, 120", "Vanilla spawn rounds");
+        AssertEquals(Show(TierMath.DefaultSpawnRounds(7)), "40, 60, 80, 100, 120, 140, 160", "Extra tier rounds");
+        AssertEquals(Show(TierMath.DefaultSpawnRounds(1)), "40", "One tier");
+        AssertEquals(TierMath.DefaultSpawnRounds(99).Length, TierMath.MaxTiers, "Tiers must be capped");
+        AssertEquals(TierMath.DefaultSpawnRounds(0).Length, TierMath.MinTiers, "At least one tier");
+
+        AssertEquals(Show(TierMath.SpawnRounds(5, null)), "40, 60, 80, 100, 120", "No custom rounds");
+        AssertEquals(Show(TierMath.SpawnRounds(3, "30, 50,70")), "30, 50, 70", "Custom rounds");
+        AssertEquals(Show(TierMath.SpawnRounds(4, "30;45")), "30, 45, 65, 85", "Too few rounds are continued");
+        AssertEquals(Show(TierMath.SpawnRounds(2, "30, 50, 70")), "30, 50", "Too many rounds are cut");
+        AssertEquals(Show(TierMath.SpawnRounds(3, "50, 50, 20")), "50, 51, 52", "Rounds must ascend");
+        AssertEquals(Show(TierMath.SpawnRounds(2, "x, -5, 0, 60")), "60, 80", "Junk is ignored");
+        AssertEquals(Show(TierMath.SpawnRounds(1, "5000")), $"{TierMath.MaxRound}", "Rounds are capped");
+
+        Assert(TierMath.HealthFactor(5, 150) == 1, "Tier 5 keeps its health");
+        Assert(TierMath.HealthFactor(3, 150) == 1, "Lower tiers keep their health");
+        Assert(System.Math.Abs(TierMath.HealthFactor(7, 150) - 2.25) < 1e-9, "Tier 7 at 150% per tier");
+        AssertEquals(TierMath.ScaleHealth(3000000, 2.25), 6750000, "Scaled health");
+        AssertEquals(TierMath.ScaleHealth(int.MaxValue, 1000), TierMath.MaxModelHealth, "Health must not overflow");
+
+        AssertEquals(TierMath.BossId(BossType.Vortex, true, 7), "VortexElite7", "Elite boss id");
+        AssertEquals(new BossOptions {Boss = BossType.Lych}.BossId(2), "Lych2", "Boss id");
+        AssertEquals(Show(new BossOptions {Tiers = 6, SpawnRounds = "45"}.EffectiveSpawnRounds),
+            "45, 65, 85, 105, 125, 145", "Effective spawn rounds");
+        yield break;
+    }
+
+    private static string Show(int[] rounds) => TierMath.FormatRounds(rounds);
+}
+
+/// <summary>
+/// Skull threshold calculations
+/// </summary>
+public class SkullMathTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        Assert(SameValues(SkullMath.EvenlySpaced(3), new[] {0.75f, 0.5f, 0.25f}),
+            $"EvenlySpaced(3) = {Show(SkullMath.EvenlySpaced(3))}");
+        Assert(SameValues(SkullMath.EvenlySpaced(4), new[] {0.8f, 0.6f, 0.4f, 0.2f}),
+            $"EvenlySpaced(4) = {Show(SkullMath.EvenlySpaced(4))}");
+        AssertEquals(SkullMath.EvenlySpaced(0).Length, 0, "EvenlySpaced(0) must be empty");
+        AssertEquals(SkullMath.EvenlySpaced(99).Length, SkullMath.MaxSkulls, "EvenlySpaced must be capped");
+
+        Assert(SameValues(SkullMath.ParseCustom("75,50,25"), new[] {0.75f, 0.5f, 0.25f}), "Simple list");
+        Assert(SameValues(SkullMath.ParseCustom(" 25 ; 90%, 50, 50 "), new[] {0.9f, 0.5f, 0.25f}),
+            $"Messy list = {Show(SkullMath.ParseCustom(" 25 ; 90%, 50, 50 "))}");
+        Assert(SameValues(SkullMath.ParseCustom("abc, 0, 100, 150, 33.5"), new[] {0.335f}),
+            $"Invalid values must be ignored = {Show(SkullMath.ParseCustom("abc, 0, 100, 150, 33.5"))}");
+        AssertEquals(SkullMath.ParseCustom("nothing valid"), null, "Junk must give null");
+        AssertEquals(SkullMath.ParseCustom(""), null, "Empty must give null");
+
+        AssertEquals(new BossOptions().SkullPercents, null, "Vanilla skull mode must keep the skulls");
+        Assert(SameValues(new BossOptions {SkullMode = SkullMode.Custom, CustomSkulls = "60, 30"}.SkullPercents,
+            new[] {0.6f, 0.3f}), "Custom skull mode");
+        yield break;
+    }
+}

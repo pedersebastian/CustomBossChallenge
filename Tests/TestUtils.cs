@@ -46,20 +46,22 @@ internal static class TestUtils
 
     public static string Show(float[]? values) => values == null ? "null" : $"[{string.Join(", ", values)}]";
 
-    public static BossChallengeConfig CustomConfig => new()
+    public static BossOptions CustomOptions => new()
     {
-        BossSpeed = 200,
-        BossHealth = 50,
-        BloonSpeed = 150,
-        MoabSpeed = 125,
-        CeramicHealth = 300,
-        MoabHealth = 250,
-        RegrowRate = 75,
+        Boss = BossType.Bloonarius,
         SkullMode = SkullMode.EvenlySpaced,
-        SkullCount = 4,
-        StartCash = 5000,
-        StartLives = 50,
-        NoSelling = true,
-        AllCamo = true
+        SkullCount = 4
     };
+
+    /// <summary>
+    /// An editor model with custom boss and start rules, like one made in the Boss Creator
+    /// </summary>
+    public static DailyChallengeModel CustomEditorDcm()
+    {
+        var dcm = BaseDcm();
+        dcm.bloonModifiers.bossSpeedMultiplier = 2;
+        dcm.bloonModifiers.healthMultipliers.boss = 0.5f;
+        dcm.startRules.cash = 5000;
+        return dcm;
+    }
 }

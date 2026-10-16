@@ -22,7 +22,7 @@ public class CustomBossChallenge : BloonsTD6Mod
     {
         if (!CustomBossState.IsActive) return;
 
-        var changed = SkullModifier.Apply(result, CustomBossState.ActiveConfig!.SkullPercents);
+        var changed = SkullModifier.Apply(result, CustomBossState.ActiveOptions!.SkullPercents);
         if (changed > 0)
         {
             ModHelper.Msg<CustomBossChallenge>($"Applied custom skulls to {changed} boss models");

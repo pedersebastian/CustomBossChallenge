@@ -31,7 +31,7 @@ internal static class InGameData_SetupBossChallenge
     internal static void Postfix(InGameData __instance)
     {
         // Saves are already disabled through dcm.disableSaves, which InGameData.disableSaves reads from
-        if (CustomBossState.ActiveConfig == null) return;
+        if (CustomBossState.ActiveOptions == null) return;
 
         if (__instance.bossData != null)
         {

@@ -15,18 +15,18 @@ public class RankedGuardTest : CustomBossTest
     {
         try
         {
-            var custom = CustomBossState.Prepare(BaseDcm(), CustomConfig);
+            var custom = CustomBossState.Prepare(BaseDcm(), CustomOptions);
             var data = SetupBossChallenge(custom, BossType.Vortex, ranked: true);
             Assert(!data.bossData.bossRankedMode, "Custom challenge was set up as ranked");
-            AssertEquals(CustomBossState.ActiveConfig, CustomConfig, "Custom challenge did not become active");
+            AssertEquals(CustomBossState.ActiveOptions, CustomOptions, "Custom challenge did not become active");
 
             data = SetupBossChallenge(BaseDcm(), BossType.Vortex, ranked: true);
             Assert(data.bossData.bossRankedMode, "Vanilla ranked challenge must stay ranked");
-            AssertEquals(CustomBossState.ActiveConfig, null, "Vanilla challenge became custom");
+            AssertEquals(CustomBossState.ActiveOptions, null, "Vanilla challenge became custom");
 
-            var coop = CustomBossState.Prepare(BaseDcm(), CustomConfig);
+            var coop = CustomBossState.Prepare(BaseDcm(), CustomOptions);
             Assert(!CustomBossState.OnSetupBossChallenge(coop, coop: true), "Co-op challenge became custom");
-            AssertEquals(CustomBossState.ActiveConfig, null, "Co-op challenge has an active config");
+            AssertEquals(CustomBossState.ActiveOptions, null, "Co-op challenge has an active config");
         }
         finally
         {

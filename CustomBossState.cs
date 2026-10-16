@@ -11,37 +11,37 @@ namespace CustomBossChallenge;
 public static class CustomBossState
 {
     /// <summary>
-    /// The config that was last applied to a challenge model, waiting for that challenge to be set up
+    /// The options of the challenge model that was last prepared, waiting for that challenge to be set up
     /// </summary>
-    public static BossChallengeConfig? PendingConfig { get; private set; }
+    public static BossOptions? PendingOptions { get; private set; }
 
     /// <summary>
-    /// Snapshot of the config the current custom game was started with, or null if it isn't a custom game
+    /// The options the current custom game was started with, or null if it isn't a custom game
     /// </summary>
-    public static BossChallengeConfig? ActiveConfig { get; private set; }
+    public static BossOptions? ActiveOptions { get; private set; }
 
     /// <summary>
-    /// Whether a custom boss challenge is being played right now. The snapshot is deliberately kept after leaving
-    /// the game (so restarts keep their rules); the marker check on the current game keeps it from leaking into
+    /// Whether a custom boss challenge is being played right now. The options are deliberately kept after leaving
+    /// the game (so restarts keep their rules); the marker check on the current game keeps them from leaking into
     /// any other game.
     /// </summary>
     public static bool IsActive
     {
         get
         {
-            if (ActiveConfig == null) return false;
+            if (ActiveOptions == null) return false;
             var game = InGameData.CurrentGame;
             return game != null && game.gameType == GameType.BossChallenge && ConfigApplier.IsMarked(game.dcModel);
         }
     }
 
     /// <summary>
-    /// Applies <paramref name="config"/> to a clone of <paramref name="dcm"/> and remembers it for the game setup
+    /// Prepares a clone of the editor's model for a custom game and remembers the options for the game setup
     /// </summary>
-    public static DailyChallengeModel Prepare(DailyChallengeModel dcm, BossChallengeConfig config)
+    public static DailyChallengeModel Prepare(DailyChallengeModel editorDcm, BossOptions options)
     {
-        PendingConfig = config;
-        return ConfigApplier.ApplyToClone(dcm, config);
+        PendingOptions = options;
+        return ConfigApplier.Prepare(editorDcm, options);
     }
 
     /// <summary>
@@ -56,13 +56,13 @@ public static class CustomBossState
             return false;
         }
 
-        ActiveConfig = PendingConfig ?? new BossChallengeConfig();
+        ActiveOptions = PendingOptions ?? new BossOptions();
         return true;
     }
 
     public static void Clear()
     {
-        PendingConfig = null;
-        ActiveConfig = null;
+        PendingOptions = null;
+        ActiveOptions = null;
     }
 }
