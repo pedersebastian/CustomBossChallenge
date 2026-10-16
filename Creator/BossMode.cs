@@ -98,10 +98,12 @@ public static class BossMode
         userDraft = null;
     }
 
+    public static string DefaultName(Il2CppAssets.Scripts.Data.Boss.BossType boss) => $"Custom {boss}";
+
     public static DailyChallengeModel DefaultDcm(BossOptions options)
     {
         var dcm = DailyChallengeModel.CreateDefaultEditorModel();
-        dcm.name = $"Custom {options.Boss}";
+        dcm.name = DefaultName(options.Boss);
         return dcm;
     }
 }

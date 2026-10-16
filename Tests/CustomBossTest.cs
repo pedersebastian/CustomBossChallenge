@@ -84,6 +84,20 @@ public abstract class CustomBossTest : ModTest
     /// </summary>
     protected IEnumerator ToMainMenu()
     {
+        yield return GetToMainMenu();
+
+        // Menus ignore requests to open while another menu is still opening or closing
+        var start = Time.realtimeSinceStartup;
+        while (MenuManager.instance != null &&
+               (MenuManager.instance.IsClosingOrOpeningMenu || MenuManager.instance.IsTransitioning) &&
+               Time.realtimeSinceStartup - start < 10)
+        {
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+    }
+
+    private IEnumerator GetToMainMenu()
+    {
         if (OnMainMenu) yield break;
 
         yield return new WaitForSecondsRealtime(1);
