@@ -38,7 +38,8 @@ Event and your Boss Challenge records and saves are never affected.
 1. Click **Boss Creator** on the main menu (below the event buttons on the right).
 2. Choose a boss, Elite or not, and set the boss options in the **Boss** section.
 3. Set the map, difficulty, rules, towers and sliders like in any custom challenge.
-4. Press **Play**. Pressing back saves the setup and returns to the main menu.
+4. Press **Play**. Pressing back saves the setup and returns to the main menu. After a game you return to the
+   Boss Creator with the same setup. **Reset** also resets the boss options (except the chosen boss).
 
 ![Main menu](docs/main-menu.jpg)
 
@@ -56,6 +57,10 @@ Event and your Boss Challenge records and saves are never affected.
 | Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
 | Skull Health % | comma separated % | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. |
+
+The game's end round is moved to 20 rounds after the last tier (round 140 for the default 5 tiers, like the weekly
+events) unless you set a later one yourself, and a starting round after the last tier is reset. Otherwise the
+difficulty's normal last round (e.g. 60 on medium) would end the game before the later tiers arrive.
 
 Game modes without boss support (Deflation and Apopalypse) can't be played as a boss game.
 

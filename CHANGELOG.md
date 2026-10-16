@@ -25,6 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bloon sliders and starting rules now come from the Challenge Editor instead of the mod's own settings.
 - Game modes without boss support (Deflation, Apopalypse) can't be played as a boss game.
 
+### Fixed
+
+- Bosses spawned one round late (on round 41 instead of 40): the game counts rounds from 0 internally.
+- Games ended after the first boss tier: the difficulty's normal last round (60 on medium) ended the game before later tiers. The end round now leaves room for the last tier, and custom games are only won once the last chosen tier is defeated.
+- The editor's reset button didn't reset the boss options.
+- Returning from a game opened the plain Challenge Editor without the boss options instead of the Boss Creator.
+
 ### Removed
 
 - **Breaking:** the Mod Helper Mod Settings and the "Customize" button on the Boss Challenge screen. Normal Boss Challenges are no longer changed at all. Old settings are not carried over; `Btd6ModHelper/Mod Settings/CustomBossChallenge.json` can be deleted.

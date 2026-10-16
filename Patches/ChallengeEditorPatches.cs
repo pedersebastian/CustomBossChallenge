@@ -16,7 +16,13 @@ namespace CustomBossChallenge.Patches;
 internal static class ChallengeEditor_Open
 {
     [HarmonyPostfix]
-    internal static void Postfix(ChallengeEditor __instance) => BossEditorSection.Show(__instance, BossMode.Active);
+    internal static void Postfix(ChallengeEditor __instance)
+    {
+        // After a custom game the game returns to the editor it was started from: carry on in the Boss Creator
+        if (!BossMode.Active && BossEditorSection.IsBossEditor(__instance)) BossMode.Resume();
+
+        BossEditorSection.Show(__instance, BossMode.Active);
+    }
 }
 
 [HarmonyPatch(typeof(ChallengeEditor), nameof(ChallengeEditor.ApplyDcmSettingsToUI))]
@@ -51,6 +57,12 @@ internal static class ChallengeEditor_Clear
     internal static void Postfix(ChallengeEditor __instance)
     {
         if (!BossMode.Active) return;
+
+        // The vanilla reset doesn't know about the boss values in the model
+        var modifiers = __instance.dcm.bloonModifiers;
+        modifiers.bossSpeedMultiplier = 1;
+        modifiers.healthMultipliers.boss = 1;
+        modifiers.allFortified = false;
         BossMode.Options = new BossOptions {Boss = BossMode.Options.Boss};
         BossEditorSection.Current?.Load(__instance.dcm, BossMode.Options);
     }

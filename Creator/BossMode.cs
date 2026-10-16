@@ -57,6 +57,17 @@ public static class BossMode
     }
 
     /// <summary>
+    /// Picks the session back up when the game returns to the Boss Creator editor after a custom game
+    /// </summary>
+    public static void Resume()
+    {
+        if (Active || Dcm == null) return;
+
+        userDraft = Game.Player?.Data?.challengeEditorModel;
+        Active = true;
+    }
+
+    /// <summary>
     /// Saves the setup and stops treating the Challenge Editor as the Boss Creator
     /// </summary>
     public static void Exit()

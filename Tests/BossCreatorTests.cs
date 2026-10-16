@@ -147,10 +147,44 @@ public class BossCreatorTest : CustomBossTest
         Assert(data.bossData.bossEliteMode, "Elite");
         Assert(!data.bossData.bossRankedMode, "Ranked");
         AssertEquals(TierMath.FormatRounds(InGame.instance.bridge.Simulation.map.spawner.bossBloonManager.spawnRounds),
-            "30, 50, 70, 90, 110, 130, 150", "Spawn rounds");
+            "29, 49, 69, 89, 109, 129, 149", "Spawn rounds (the game counts rounds from 0)");
         Assert(InGame.instance.GetGameModel().DoesBloonExist("VortexElite7"), "Tier 7 model");
 
+        // Leaving the game returns to the editor it was started from, which must still be the Boss Creator
+        InGame.instance.QuitToMainMenu();
+        yield return WaitForEditor(_ => { });
+        Assert(BossMode.Active, "Returning from the game must continue the Boss Creator");
+        var editor = Object.FindObjectOfType<ChallengeEditor>();
+        Assert(BossEditorSection.IsShowing(editor), "The boss section is missing after the game");
+        AssertEquals(BossMode.Options.Boss, BossType.Vortex, "Boss after the game");
+        AssertEquals(BossEditorSection.Current!.Tiers.Value, 7f, "Tiers shown after the game");
+
+        yield return ResetClearsBossOptions(editor);
+
+        Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
         yield return ToMainMenu();
+    }
+
+    /// <summary>
+    /// The editor's reset button also resets the boss options, except for the chosen boss
+    /// </summary>
+    private IEnumerator ResetClearsBossOptions(ChallengeEditor editor)
+    {
+        var section = BossEditorSection.Current!;
+        section.AllFortified.SetChecked(true, true);
+        section.SkullMode.Dropdown.value = (int) SkullMode.Custom;
+
+        editor.clearBtn.onClick.Invoke();
+        yield return new WaitForSecondsRealtime(1);
+
+        AssertEquals(BossMode.Options, new BossOptions {Boss = BossType.Vortex}, "Options after reset");
+        AssertEquals(section.BossSpeed.Value, 100f, "Boss speed shown after reset");
+        AssertEquals(section.BossHealth.Value, 100f, "Boss health shown after reset");
+        AssertEquals(section.Tiers.Value, 5f, "Tiers shown after reset");
+        Assert(!section.AllFortified.CurrentValue, "All fortified shown after reset");
+        Assert(Approximately(editor.dcm.bloonModifiers.bossSpeedMultiplier, 1), "Boss speed in the model after reset");
+        Assert(Approximately(editor.dcm.bloonModifiers.healthMultipliers.boss, 1), "Boss health in the model after reset");
+        Assert(!editor.dcm.bloonModifiers.allFortified, "All fortified in the model after reset");
     }
 
     private IEnumerator WaitForEditor(Action<ChallengeEditor> found)
