@@ -6,69 +6,77 @@
 Custom Boss Challenge
 </h1>
 
-A Bloons TD 6 mod that lets you build your own Boss Challenge: make the boss faster or tankier, change bloon stats,
-move or remove skulls, and set your own starting rules. Ranked play, the weekly Boss Event and your Boss Challenge
-records are never affected.
+A Bloons TD 6 mod that adds a **Boss Creator** to the main menu: the game's own Challenge Editor, extended with
+boss options. Make the boss faster or tankier, move or remove its skulls, play anywhere from 1 to 10 boss tiers on the
+rounds you choose, and combine it with every rule the Challenge Editor already has. Ranked play, the weekly Boss
+Event and your Boss Challenge records and saves are never affected.
+
+![Boss Creator](docs/boss-creator.jpg)
 
 ## Features
 
-- **Customize button** on the Boss Challenge screen (Boss Events menu -> Boss Challenge) that opens the mod's
-  settings. It turns green and reads "Custom Rules: ON" while custom rules are enabled. The same settings are also
-  available from the Mod Helper **Mod Settings** menu.
-- **Boss modifiers** – boss speed and boss health, using the game's own challenge modifiers
-  (`bossSpeedMultiplier` / boss health multiplier – the same ones Ninja Kiwi uses for weekly events such as
-  "Vortex at 150% speed").
-- **Bloon modifiers** – bloon speed, MOAB speed, ceramic health, MOAB health and regrow rate.
-- **Skulls** – keep the vanilla skulls, space any number of skulls evenly across the health bar, or place them at
-  exact health percentages. Works for every boss and every Elite tier: Bloonarius, Lych (uses its ethereal
-  thresholds), Vortex, Dreadbloon, Phayze, Blastapopoulos and Diamondback.
-- **Start rules** – starting cash, lives, max lives, starting/ending round, plus No Monkey Knowledge, No Selling,
-  No Powers, No Continues, All Camo, All Regrow and All Fortified.
+- **Boss Creator button** on the main menu, just below the event buttons on the right.
+- **The real Challenge Editor** with everything it normally has: map, difficulty, game mode, starting cash, lives
+  and rounds, special conditions, tower restrictions, bloon sliders and modifiers.
+- **Boss section** at the top of the editor:
+  - Pick any boss (Bloonarius, Lych, Vortex, Dreadbloon, Phayze, Blastapopoulos, Diamondback) and toggle **Elite**.
+  - **Boss Speed** and **Boss Health** sliders, using the game's own boss multipliers (the same ones Ninja Kiwi uses
+    for weekly events such as "Vortex at 150% speed").
+  - **All Fortified**, which the vanilla editor doesn't offer.
+  - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with **Extra Tier Health** (e.g. +50% per tier).
+    With fewer than 5 tiers, beating the last one wins the game.
+  - **Spawn Rounds** for every tier (default 40, 60, 80, 100, 120, then every 20 rounds).
+  - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health
+    percentages. Works for every boss and Elite tier (Lych uses its ethereal thresholds).
+- **Play** starts the custom boss game straight from the editor.
+- Your **last setup is remembered** between sessions.
+
+![Boss options](docs/boss-options.jpg)
 
 ## Usage
 
-1. Open **Boss Events** from the main menu and go to **Boss Challenge**.
-2. Click the **Customize** button.
-3. Turn on **Enable Custom Boss Challenge** (it is off by default).
-4. Adjust the boss, bloon, skull and start rule settings you want.
-5. Pick a boss, tier and difficulty and start the game as usual. The settings apply to the next Boss Challenge you
-   start.
-6. To play normal Boss Challenges again, turn **Enable Custom Boss Challenge** off.
+1. Click **Boss Creator** on the main menu (below the event buttons on the right).
+2. Choose a boss, Elite or not, and set the boss options in the **Boss** section.
+3. Set the map, difficulty, rules, towers and sliders like in any custom challenge.
+4. Press **Play**. Pressing back saves the setup and returns to the main menu.
 
-## Modifiers
+![Main menu](docs/main-menu.jpg)
 
-| Category | Setting | Range | Default | Notes |
-|---|---|---|---|---|
-| General | Enable Custom Boss Challenge | on / off | off | Master toggle; nothing changes while off. |
-| Boss | Boss Speed | 10–1000 % | 100 % | Speed of the boss bloon. |
-| Boss | Boss Health | 10–2000 % | 100 % | Health of the boss bloon. |
-| Bloons | Bloon Speed | 25–400 % | 100 % | Regular bloons. |
-| Bloons | MOAB Speed | 25–400 % | 100 % | MOAB-class bloons. |
-| Bloons | Ceramic Health | 25–1000 % | 100 % | |
-| Bloons | MOAB Health | 25–1000 % | 100 % | MOAB-class bloons. |
-| Bloons | Regrow Rate | 25–400 % | 100 % | How fast regrow bloons regrow. |
-| Skulls | Skull Mode | Vanilla / Evenly Spaced / Custom | Vanilla | |
-| Skulls | Skull Count | 0–10 | 3 | Used by Evenly Spaced; 0 removes all skulls. |
-| Skulls | Custom Skulls | comma separated % | `75,50,25` | Used by Custom, e.g. `80,60,40,20` (health percentages). |
-| Start Rules | Starting Cash | 0–100000 | 0 | 0 keeps the normal value. |
-| Start Rules | Starting Lives | 0–10000 | 0 | 0 keeps the normal value. |
-| Start Rules | Max Lives | 0–10000 | 0 | 0 keeps the normal value. |
-| Start Rules | Starting Round | 0–140 | 0 | 0 keeps the normal value. |
-| Start Rules | Ending Round | 0–200 | 0 | 0 keeps the normal value. |
-| Start Rules | No Monkey Knowledge, No Selling, No Powers, No Continues, All Camo, All Regrow, All Fortified | on / off | off | |
+## Boss options
+
+| Option | Range | Default | Notes |
+|---|---|---|---|
+| Boss Type | 7 bosses | Bloonarius | Elite toggle next to it. |
+| Boss Speed | 10–1000 % | 100 % | |
+| Boss Health | 10–2000 % | 100 % | |
+| All Fortified | on / off | off | |
+| Boss Tiers | 1–10 | 5 | The game is won when the last tier is defeated. |
+| Extra Tier Health | 100–500 % | 150 % | Health of each tier above 5 relative to the tier before it. |
+| Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
+| Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | |
+| Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
+| Skull Health % | comma separated % | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. |
+
+Game modes without boss support (Deflation and Apopalypse) can't be played as a boss game.
 
 ## Safety guarantees
 
-- Only **Boss Challenges** are changed. The weekly **Boss Event**, co-op Boss Challenges and every other game mode
-  are left untouched.
-- Custom games are **always unranked**.
-- Custom games are **never saved**, so they will not overwrite your existing Boss Challenge save.
-- Custom games **never update your Boss Challenge records**.
+- Only games started from the Boss Creator are changed. Normal Boss Challenges, the weekly **Boss Event**, co-op and
+  every other mode are left untouched.
+- Custom games are **always unranked**, are **never saved** (your Boss Challenge save is never overwritten) and never
+  update Boss Challenge records, boss tier progress or badges.
+- Your own Challenge Editor draft is never replaced by the boss setup.
+
+## Upgrading from 1.x
+
+Version 2 replaces the Mod Settings and the "Customize" button on the Boss Challenge screen with the Boss Creator.
+Old settings are not carried over, and `BloonsTD6/Btd6ModHelper/Mod Settings/CustomBossChallenge.json` can be deleted.
+The Boss Creator setup is stored in `BloonsTD6/UserData/CustomBossChallenge/LastSetup.json`.
 
 ## Known limitations
 
-- Co-op is not supported; co-op Boss Challenges always play with vanilla rules.
-- Settings apply to the **next** Boss Challenge you start. Loading an existing save keeps that save's rules.
+- Co-op is not supported.
+- Tiers above 5 reuse the tier 5 look and abilities; the in-game tier display shows them like tier 5.
 
 ## Installation
 
@@ -88,19 +96,25 @@ records are never affected.
 
 ## Running the tests
 
-The mod ships with in-game automated tests built on Mod Helper's `ModTest`. They cover config application, skull
-math, the skulls of every boss and Elite tier, the ranked and co-op guards, the Customize button, and a game test
-that plays a vanilla and a custom Bloonarius challenge and compares the spawned bosses (speed, health, skulls,
-starting cash and unranked mode).
+The mod ships with in-game automated tests built on Mod Helper's `ModTest`. They cover:
 
-- From Visual Studio / Rider: run the **BloonsTD6 (Tests)** launch profile.
-- From the command line, in the game folder:
+- tier, spawn round and skull math, and preparing the editor's challenge for a boss game
+- extra tier models for every boss and Elite tier, and real games played to victory with 6 and with 2 tiers
+- a vanilla and a custom Bloonarius game compared side by side (speed, health, skulls, cash, unranked)
+- the ranked and co-op guards, and saving and loading the last setup
+- the main menu button, and the whole Boss Creator flow in the real Challenge Editor, from editing the boss options
+  to pressing Play, including that the normal Challenge Editor and your own draft stay untouched
 
-  ```
-  BloonsTD6.exe moddingDev -batchmode --modhelper.offline --modhelper.only='CustomBossChallenge;' --modhelper.noaudio --modhelper.run -q test mod CustomBossChallenge
-  ```
+Run them from Visual Studio / Rider with the **BloonsTD6 (Tests)** launch profile, or from the game folder:
 
-The result is written to `MelonLoader/Latest.log`, e.g. `Ran N test(s), N succeeded, 0 failed`.
+```
+BloonsTD6.exe moddingDev -batchmode --modhelper.offline --modhelper.only='CustomBossChallenge;' --modhelper.noaudio --modhelper.run -q test mod CustomBossChallenge
+```
+
+The result is written to `MelonLoader/Latest.log`, e.g. `Ran 13 test(s), 13 succeeded, 0 failed`.
+
+The screenshots above come from the `ScreenshotTour` test. It only runs in a windowed game started with
+`--cbc.screenshots=<folder>` (and without `-batchmode`).
 
 ## Building from source
 

@@ -14,4 +14,9 @@
     </ItemGroup>
 
     <Import Project="..\btd6.targets" />
+
+    <!-- README screenshots are not mod resources -->
+    <ItemGroup>
+        <EmbeddedResource Remove="docs\**" />
+    </ItemGroup>
 </Project>

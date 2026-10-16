@@ -11,6 +11,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Boss Creator** button on the main menu, just below the event buttons on the right.
+- The Boss Creator opens the game's own Challenge Editor with a new **Boss** section: boss and Elite picker, Boss Speed, Boss Health, All Fortified, Boss Tiers, Extra Tier Health, Spawn Rounds and Skulls. All of the editor's own options (map, difficulty, mode, rules, towers, sliders, modifiers) work as usual.
+- **Boss tiers 1-10.** Tiers above 5 are copies of tier 5 with more health per tier; the game is won when the last chosen tier is defeated.
+- **Custom spawn rounds** for every tier.
+- **Play** button in the Boss Creator that starts the custom boss game directly.
+- The last Boss Creator setup is remembered in `UserData/CustomBossChallenge/LastSetup.json`.
+- Custom games also skip boss tier progress and badges.
+- New in-game tests for the Boss Creator flow, the main menu button, extra tiers played to victory, tier math and saving the setup, plus a windowed screenshot tour.
+
+### Changed
+
+- Bloon sliders and starting rules now come from the Challenge Editor instead of the mod's own settings.
+- Game modes without boss support (Deflation, Apopalypse) can't be played as a boss game.
+
+### Removed
+
+- **Breaking:** the Mod Helper Mod Settings and the "Customize" button on the Boss Challenge screen. Normal Boss Challenges are no longer changed at all. Old settings are not carried over; `Btd6ModHelper/Mod Settings/CustomBossChallenge.json` can be deleted.
+
+## [1.0.0]
+
+### Added
+
 - "Customize" button on the Boss Challenge screen that opens the mod's settings and turns green while custom rules are enabled (the same settings are also available in the Mod Helper Mod Settings menu).
 - Master toggle "Enable Custom Boss Challenge" (off by default).
 - Boss modifiers: Boss Speed % (10-1000) and Boss Health % (10-2000), using the game's own challenge multipliers.

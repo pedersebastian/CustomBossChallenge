@@ -1,7 +1,7 @@
 [package]
 name = "CustomBossChallenge" # The Thunderstore package name. This should usually match your mod name (no spaces).
 namespace = "pedersebastian" # The Thunderstore team that owns the package. Create this team on Thunderstore first.
-description = "Customize Boss Challenges: boss speed and health, bloon stats, skull count or custom skull thresholds, and starting cash/lives/rounds. Custom games are always unranked and never touch the weekly Boss Event, co-op or your records." # Short description shown on Thunderstore package listings. Max 256 characters
+description = "Boss Creator: the Challenge Editor with boss options. Any boss or Elite, boss speed, health and skulls, 1-10 tiers on custom rounds, plus every editor rule. Always unranked; records and saves are untouched." # Short description shown on Thunderstore package listings. Max 256 characters
 websiteUrl = "https://github.com/pedersebastian/CustomBossChallenge" # Optional project URL shown on Thunderstore. Your GitHub repository is a good default.
 
 # Thunderstore package dependencies use the format Namespace-PackageName = "version".
