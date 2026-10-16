@@ -1,4 +1,5 @@
 using Il2CppAssets.Scripts.Data.Boss;
+using Newtonsoft.Json;
 
 namespace CustomBossChallenge.Config;
 
@@ -42,6 +43,7 @@ public sealed record BossOptions
     /// <summary>
     /// The skull thresholds (0-1, descending) these options ask for, or null to keep the vanilla skulls
     /// </summary>
+    [JsonIgnore]
     public float[]? SkullPercents => SkullMode switch
     {
         SkullMode.EvenlySpaced => SkullMath.EvenlySpaced(SkullCount),
@@ -52,6 +54,7 @@ public sealed record BossOptions
     /// <summary>
     /// The round each tier spawns on, always exactly <see cref="Tiers"/> ascending rounds
     /// </summary>
+    [JsonIgnore]
     public int[] EffectiveSpawnRounds => TierMath.SpawnRounds(Tiers, SpawnRounds);
 
     /// <summary>
