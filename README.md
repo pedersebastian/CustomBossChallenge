@@ -15,7 +15,7 @@ Event and your Boss Challenge records and saves are never affected.
 
 ## Features
 
-- **Boss Creator button** on the main menu, just below the event buttons on the right.
+- **Boss Creator button** with the mod's logo on the main menu, just below the event buttons on the right.
 - **The real Challenge Editor** with everything it normally has: map, difficulty, game mode, starting cash, lives
   and rounds, special conditions, tower restrictions, bloon sliders and modifiers.
 - **Boss section** at the top of the editor:

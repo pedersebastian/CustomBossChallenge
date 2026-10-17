@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The Boss Creator button on the main menu always shows the mod's logo.
 - Bloon sliders and starting rules now come from the Challenge Editor instead of the mod's own settings.
 - Game modes without boss support (Deflation, Apopalypse) can't be played as a boss game.
 

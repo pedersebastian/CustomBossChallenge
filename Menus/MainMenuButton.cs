@@ -1,6 +1,5 @@
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
-using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
 using HarmonyLib;
 using Il2CppAssets.Scripts.Unity.Menu;
@@ -44,7 +43,7 @@ public static class MainMenuButton
         current.sizeDelta = new Vector2(Size, Size);
         UpdatePosition();
 
-        button.GetComponentInChildren<Button>(true).image.SetSprite(Icon(BossMode.Options));
+        button.GetComponentInChildren<Button>(true).image.SetSprite(Logo);
         return button;
     }
 
@@ -78,17 +77,13 @@ public static class MainMenuButton
         current.position = new Vector3(centerX, lowest - gap, current.position.z);
     }
 
-    public static string Icon(BossOptions options) => options.Boss switch
-    {
-        Il2CppAssets.Scripts.Data.Boss.BossType.Bloonarius => VanillaSprites.BloonariusEventIcon,
-        Il2CppAssets.Scripts.Data.Boss.BossType.Lych => VanillaSprites.LychEventIcon,
-        Il2CppAssets.Scripts.Data.Boss.BossType.Vortex => VanillaSprites.VortexEventIcon,
-        Il2CppAssets.Scripts.Data.Boss.BossType.Dreadbloon => VanillaSprites.DreadbloonEventIcon,
-        Il2CppAssets.Scripts.Data.Boss.BossType.Phayze => VanillaSprites.PhayzeEventIcon,
-        Il2CppAssets.Scripts.Data.Boss.BossType.Blastapopoulos => VanillaSprites.BlastapopoulosEventIcon,
-        Il2CppAssets.Scripts.Data.Boss.BossType.Diamondback => VanillaSprites.DiamondbackEventIcon,
-        _ => VanillaSprites.BossChallenge
-    };
+    /// <summary>
+    /// The mod's own logo (Icon.png), so the button always looks the same whatever boss was chosen last
+    /// </summary>
+    public const string LogoName = "Icon";
+
+    public static Il2CppNinjaKiwi.Common.ResourceUtils.SpriteReference Logo =>
+        BTD_Mod_Helper.Api.ModContent.GetSpriteReference<CustomBossChallenge>(LogoName);
 
     private static GameObject? Build(MainMenu mainMenu)
     {

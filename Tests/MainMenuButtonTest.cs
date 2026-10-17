@@ -37,6 +37,15 @@ public class MainMenuButtonTest : CustomBossTest
         var unityButton = AssertNotNull(button.GetComponentInChildren<Button>(true), "No Unity button");
         AssertEquals(unityButton.onClick.GetPersistentEventCount(), 0, "Copied listeners must be gone");
 
+        // The button always shows the mod's logo, whichever boss was chosen last
+        var options = Creator.BossMode.Options;
+        Creator.BossMode.Options = options with {Boss = Il2CppAssets.Scripts.Data.Boss.BossType.Vortex};
+        MainMenuButton.Create(mainMenu);
+        Creator.BossMode.Options = options;
+        yield return new WaitForSecondsRealtime(1);
+        var sprite = AssertNotNull(unityButton.image.sprite, "The button has no icon");
+        AssertEquals(sprite!.name, "CustomBossChallenge-" + MainMenuButton.LogoName, "Button icon");
+
         var label = AssertNotNull(button.GetComponentInChildren<ModHelperText>(true), "No label");
         AssertEquals(label.Text.text, MainMenuButton.Label, "Label");
 
