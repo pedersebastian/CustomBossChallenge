@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "ボスが持つ等間隔のドクロの数。0にするとすべてのドクロがなくなります。",
   "CustomBossChallenge-SkullHealth": "ドクロの体力 %",
   "CustomBossChallenge-SkullHealthInfo": "ドクロを配置する体力の割合をカンマ区切りで指定します（例：80, 60, 40, 20）。",
-  "CustomBossChallenge-UnsupportedMode": "{0}ゲームモードはボスゲームでは使用できません。"
+  "CustomBossChallenge-UnsupportedMode": "{0}ゲームモードはボスゲームでは使用できません。",
+  "CustomBossChallenge-BossUnavailable": "このボスはプレイできません：ゲームに{0}のブルーンがありません。ゲームのアップデートで変更された可能性があります。"
 }

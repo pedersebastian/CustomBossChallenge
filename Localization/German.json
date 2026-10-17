@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Wie viele gleichmäßig verteilte Totenköpfe der Boss hat. 0 entfernt alle Totenköpfe.",
   "CustomBossChallenge-SkullHealth": "Totenkopf-Gesundheit %",
   "CustomBossChallenge-SkullHealthInfo": "Die Gesundheitsprozente, bei denen die Totenköpfe sitzen, durch Kommas getrennt, z. B. 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "Der Spielmodus {0} kann nicht für Boss-Spiele verwendet werden."
+  "CustomBossChallenge-UnsupportedMode": "Der Spielmodus {0} kann nicht für Boss-Spiele verwendet werden.",
+  "CustomBossChallenge-BossUnavailable": "Dieser Boss kann nicht gespielt werden: Das Spiel hat keinen {0}-Bloon. Ein Spielupdate hat ihn möglicherweise geändert."
 }

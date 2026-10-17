@@ -162,6 +162,7 @@ public class BossCreatorTest : CustomBossTest
         Assert(BossMode.Options.Boss == BossType.Vortex, "The last setup was not loaded");
 
         var play = AssertNotNull(BossEditorSection.Current, "No boss section")!.Play.GetComponentInChildren<Button>();
+        yield return PlayIsBlocked(play);
         play.onClick.Invoke();
         yield return WaitFor(() => InGame.instance != null && InGame.instance.bridge != null, "Loading the game", 60);
         yield return new WaitForSecondsRealtime(1);
@@ -189,6 +190,53 @@ public class BossCreatorTest : CustomBossTest
 
         Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
         yield return ToMainMenu();
+    }
+
+    /// <summary>
+    /// Play explains instead of starting a game when the mode can't be used or the boss doesn't exist
+    /// </summary>
+    private IEnumerator PlayIsBlocked(Button play)
+    {
+        var editor = Object.FindObjectOfType<ChallengeEditor>();
+        var mode = editor.dcm.mode;
+        foreach (var unsupported in BossEditorSection.UnsupportedModes)
+        {
+            editor.dcm.mode = unsupported;
+            AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), Texts.UnsupportedMode.T(unsupported),
+                $"Playing {unsupported}");
+        }
+        editor.dcm.mode = mode;
+        AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "Playing the setup");
+
+        // The unsupported modes the editor offers for this difficulty, through the real mode dropdown
+        var original = editor.gameModeDropdown.value;
+        foreach (var unsupported in BossEditorSection.UnsupportedModes)
+        {
+            var index = editor.gameModes.IndexOf(unsupported);
+            if (index < 0) continue;
+
+            editor.gameModeDropdown.value = index;
+            yield return PlayShowsPopup(play, Texts.UnsupportedMode.T(unsupported));
+        }
+        editor.gameModeDropdown.value = original;
+        editor.ApplyUiSettingsToDCM();
+
+        var options = BossMode.Options;
+        BossMode.Options = options with {Boss = (BossType) 99};
+        yield return PlayShowsPopup(play, Texts.BossUnavailable.T(BossMode.Options.BossId(1)));
+        BossMode.Options = options;
+    }
+
+    private IEnumerator PlayShowsPopup(Button play, string text)
+    {
+        play.onClick.Invoke();
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
+        yield return WaitFor(() => (popup = Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()) != null,
+            $"Showing \"{text}\"");
+        Assert(popup!.body.text.Contains(text), $"Popup text: {popup.body.text}");
+        popup.TryHidePop();
+        yield return new WaitForSecondsRealtime(1);
+        Assert(InGame.instance == null && BossMode.Active, "Play must not start a game it can't play");
     }
 
     /// <summary>

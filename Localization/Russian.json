@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Сколько равномерно расставленных черепов у босса. 0 убирает все черепа.",
   "CustomBossChallenge-SkullHealth": "Здоровье черепов %",
   "CustomBossChallenge-SkullHealthInfo": "Проценты здоровья, на которых находятся черепа, через запятую, например 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "Игровой режим {0} нельзя использовать в играх с боссом."
+  "CustomBossChallenge-UnsupportedMode": "Игровой режим {0} нельзя использовать в играх с боссом.",
+  "CustomBossChallenge-BossUnavailable": "С этим боссом нельзя сыграть: в игре нет шара {0}. Возможно, его изменило обновление игры."
 }

@@ -1,0 +1,83 @@
+using System.Collections;
+using CustomBossChallenge.Config;
+using Il2CppAssets.Scripts.Unity.UI_New.InGame;
+using UnityEngine;
+using static CustomBossChallenge.Tests.TestUtils;
+
+namespace CustomBossChallenge.Tests;
+
+/// <summary>
+/// Restarting a custom game keeps it custom, with all its tiers, and starts the tier count over
+/// </summary>
+public class RestartTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        var options = new BossOptions {Tiers = 7, SpawnRounds = "45"};
+        yield return LoadIntoGame(SetupBossChallenge(CustomBossState.Prepare(BaseDcm(), options), options.Boss));
+        Assert(CustomBossState.IsActive, "Custom state is not active in game");
+
+        // Like restarting from the victory screen: every tier was defeated in the last attempt
+        CustomBossState.OnBossDefeated(options.Tiers);
+        Assert(CustomBossState.AllTiersDefeated, "All tiers defeated before the restart");
+        var simulation = InGame.instance.bridge.Simulation.Pointer;
+        InGame.instance.RunRestart();
+
+        var start = Time.realtimeSinceStartup;
+        while (InGame.instance == null || InGame.instance.bridge?.Simulation == null ||
+               InGame.instance.bridge.Simulation.Pointer == simulation)
+        {
+            if (Time.realtimeSinceStartup - start > 30) Fail("The game did not restart");
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+        yield return new WaitForSecondsRealtime(1);
+
+        Assert(CustomBossState.IsActive, "A restarted custom game must stay custom");
+        AssertEquals(CustomBossState.HighestDefeatedTier, 0, "Defeated tiers after a restart");
+        Assert(ExtraTiers.HasAllTiers(InGame.instance.GetGameModel(), options), "Tier models after a restart");
+        AssertEquals(TierMath.FormatRounds(InGame.instance.bridge.Simulation.map.spawner.bossBloonManager.spawnRounds),
+            TierMath.FormatRounds(options.GameSpawnRounds), "Spawn rounds after a restart");
+        Assert(InGameData.CurrentGame.disableSaves, "A restarted custom game can be saved");
+
+        yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// A boss that isn't defeated in time loses the game, and a custom game never turns that into a win
+/// </summary>
+public class BossNotDefeatedTest : CustomBossTest
+{
+    public const float TimeoutSeconds = 240;
+
+    protected override IEnumerator Run()
+    {
+        var options = new BossOptions {Tiers = 2, SpawnRounds = "40, 41"};
+        var dcm = BaseDcm();
+        dcm.startRules.round = 39;
+        dcm.startRules.lives = dcm.startRules.maxLives = 5000;
+        yield return LoadIntoGame(SetupBossChallenge(CustomBossState.Prepare(dcm, options), options.Boss));
+        Assert(CustomBossState.IsActive, "Custom state is not active in game");
+
+        // No towers: neither tier can be defeated
+        var bridge = InGame.instance.bridge;
+        bridge.SetFastForward(true);
+        var start = Time.realtimeSinceStartup;
+        while (!bridge.Simulation.GameOver)
+        {
+            Assert(!bridge.Simulation.gameWon, $"Won on round {bridge.GetCurrentRound() + 1} without defeating a boss");
+            if (Time.realtimeSinceStartup - start > TimeoutSeconds)
+            {
+                Fail($"The game didn't end after {TimeoutSeconds}s, round {bridge.GetCurrentRound() + 1}");
+            }
+
+            if (!bridge.AreRoundsActive()) bridge.StartRound();
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+
+        Assert(!bridge.Simulation.gameWon, "A lost game must not be won");
+        AssertEquals(CustomBossState.HighestDefeatedTier, 0, "Defeated tiers");
+        Log($"lost on round {bridge.GetCurrentRound() + 1}");
+        yield return ToMainMenu();
+    }
+}

@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "عدد الجماجم متساوية التباعد لدى الزعيم. 0 يزيل كل الجماجم.",
   "CustomBossChallenge-SkullHealth": "صحة الجماجم %",
   "CustomBossChallenge-SkullHealthInfo": "نسب الصحة التي توجد عندها الجماجم، مفصولة بفواصل، مثل 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "لا يمكن استخدام وضع اللعبة {0} في ألعاب الزعيم."
+  "CustomBossChallenge-UnsupportedMode": "لا يمكن استخدام وضع اللعبة {0} في ألعاب الزعيم.",
+  "CustomBossChallenge-BossUnavailable": "لا يمكن لعب هذا الزعيم: لا تحتوي اللعبة على بالون {0}. ربما غيّره تحديث للعبة."
 }

@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Kuinka monta tasavälein sijoitettua kalloa pomolla on. 0 poistaa kaikki kallot.",
   "CustomBossChallenge-SkullHealth": "Kallon terveys %",
   "CustomBossChallenge-SkullHealthInfo": "Terveysprosentit, joissa kallot ovat, pilkuilla erotettuina, esim. 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "Pelitilaa {0} ei voi käyttää pomopeleihin."
+  "CustomBossChallenge-UnsupportedMode": "Pelitilaa {0} ei voi käyttää pomopeleihin.",
+  "CustomBossChallenge-BossUnavailable": "Tätä pomoa ei voi pelata: pelissä ei ole {0}-bloonia. Pelipäivitys on ehkä muuttanut sen."
 }

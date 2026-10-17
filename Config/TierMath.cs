@@ -17,6 +17,8 @@ public static class TierMath
     public const int FirstSpawnRound = 40;
     public const int RoundsBetweenTiers = 20;
     public const int MaxRound = 1000;
+    public const int MinExtraTierHealth = 100;
+    public const int MaxExtraTierHealth = 500;
 
     /// <summary>
     /// Boss models store health as an int, and boss health multipliers are applied on top of it
@@ -56,7 +58,9 @@ public static class TierMath
         {
             var previous = i == 0 ? 0 : result[i - 1];
             var value = i < given.Count ? given[i] : i == 0 ? FirstSpawnRound : previous + RoundsBetweenTiers;
-            result[i] = Math.Min(Math.Max(value, previous + 1), MaxRound);
+            // Leave a round for every later tier below the cap, so no two tiers share a round
+            var latest = MaxRound - (tiers - 1 - i);
+            result[i] = Math.Min(Math.Max(value, previous + 1), latest);
         }
 
         return result;

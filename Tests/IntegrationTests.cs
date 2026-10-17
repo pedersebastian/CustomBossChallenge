@@ -1,5 +1,6 @@
 using System.Collections;
 using CustomBossChallenge.Config;
+using CustomBossChallenge.Patches;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Simulation.Bloons;
@@ -28,6 +29,8 @@ public class BossChallengeGameTest : CustomBossTest
         var vanillaSpeed = boss.bloonModel.speed;
         var vanillaHealth = boss.health;
         Log($"vanilla boss speed {vanillaSpeed}, health {vanillaHealth}");
+        Assert(Btd6Player_SetBossChallengeRecord.Prefix(BossType.Bloonarius, null!), "A vanilla record must be saved");
+        Assert(Btd6Player_BossProgress.Prefix(), "Vanilla boss progress must count");
 
         yield return ToMainMenu();
 
@@ -40,6 +43,8 @@ public class BossChallengeGameTest : CustomBossTest
         var game = AssertNotNull(InGameData.CurrentGame, "No current game");
         Assert(!game.bossData.bossRankedMode, "Custom game is ranked");
         Assert(game.disableSaves, "Custom game can be saved");
+        Assert(!Btd6Player_SetBossChallengeRecord.Prefix(BossType.Bloonarius, null!), "A custom record was saved");
+        Assert(!Btd6Player_BossProgress.Prefix(), "Custom boss progress counted");
 
         Assert(System.Math.Abs(startCash - editorDcm.startRules.cash) < 1, $"Starting cash was {startCash}");
 

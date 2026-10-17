@@ -73,6 +73,11 @@ public class TierMathTest : CustomBossTest
         AssertEquals(Show(TierMath.SpawnRounds(3, "50, 50, 20")), "50, 51, 52", "Rounds must ascend");
         AssertEquals(Show(TierMath.SpawnRounds(2, "x, -5, 0, 60")), "60, 80", "Junk is ignored");
         AssertEquals(Show(TierMath.SpawnRounds(1, "5000")), $"{TierMath.MaxRound}", "Rounds are capped");
+        AssertEquals(Show(TierMath.SpawnRounds(2, "1000")), "999, 1000", "Capped tiers must not share a round");
+        AssertEquals(Show(TierMath.SpawnRounds(3, "995, 2000")), "995, 999, 1000", "Capped later tiers");
+        var capped = TierMath.SpawnRounds(TierMath.MaxTiers, "990");
+        Assert(capped.Zip(capped.Skip(1)).All(pair => pair.First < pair.Second) && capped[^1] == TierMath.MaxRound,
+            $"Ten capped tiers must ascend: {Show(capped)}");
 
         Assert(TierMath.HealthFactor(5, 150) == 1, "Tier 5 keeps its health");
         Assert(TierMath.HealthFactor(3, 150) == 1, "Lower tiers keep their health");

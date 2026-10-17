@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Quanti teschi equidistanti ha il boss. 0 rimuove tutti i teschi.",
   "CustomBossChallenge-SkullHealth": "Salute teschi %",
   "CustomBossChallenge-SkullHealthInfo": "Le percentuali di salute in cui si trovano i teschi, separate da virgole, ad es. 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "La modalità di gioco {0} non può essere usata per le partite con boss."
+  "CustomBossChallenge-UnsupportedMode": "La modalità di gioco {0} non può essere usata per le partite con boss.",
+  "CustomBossChallenge-BossUnavailable": "Questo boss non può essere giocato: il gioco non ha il bloon {0}. Un aggiornamento del gioco potrebbe averlo modificato."
 }

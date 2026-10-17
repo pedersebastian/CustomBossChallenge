@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Ile równomiernie rozmieszczonych czaszek ma boss. 0 usuwa wszystkie czaszki.",
   "CustomBossChallenge-SkullHealth": "Zdrowie Czaszek %",
   "CustomBossChallenge-SkullHealthInfo": "Procenty zdrowia, w których znajdują się czaszki, oddzielone przecinkami, np. 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "Tryb gry {0} nie może być używany w grach z bossem."
+  "CustomBossChallenge-UnsupportedMode": "Tryb gry {0} nie może być używany w grach z bossem.",
+  "CustomBossChallenge-BossUnavailable": "Nie można zagrać z tym bossem: gra nie ma balonu {0}. Mogła go zmienić aktualizacja gry."
 }

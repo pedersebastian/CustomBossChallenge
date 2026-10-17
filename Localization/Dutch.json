@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Hoeveel gelijkmatig verdeelde schedels de boss heeft. 0 verwijdert alle schedels.",
   "CustomBossChallenge-SkullHealth": "Schedelgezondheid %",
   "CustomBossChallenge-SkullHealthInfo": "De gezondheidspercentages waar de schedels zitten, gescheiden door komma's, bijv. 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "De spelmodus {0} kan niet worden gebruikt voor bossspellen."
+  "CustomBossChallenge-UnsupportedMode": "De spelmodus {0} kan niet worden gebruikt voor bossspellen.",
+  "CustomBossChallenge-BossUnavailable": "Deze boss kan niet worden gespeeld: het spel heeft geen {0}-bloon. Een game-update heeft deze mogelijk veranderd."
 }

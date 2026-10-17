@@ -75,7 +75,19 @@ public static class CustomBossState
     }
 
     /// <summary>
-    /// Called when a (custom) match starts or restarts
+    /// Plays fewer tiers than chosen, for when the game has no model for the later ones
+    /// </summary>
+    /// <returns>The options the game is now played with</returns>
+    public static BossOptions LimitTiers(int tiers)
+    {
+        var options = ActiveOptions ?? new BossOptions();
+        ActiveOptions = options with {Tiers = TierMath.ClampTiers(System.Math.Min(tiers, options.Tiers))};
+        return ActiveOptions;
+    }
+
+    /// <summary>
+    /// Called when a (custom) match starts or restarts. Restarts reuse the game model, so this is also called from
+    /// the boss manager's Init.
     /// </summary>
     public static void OnMatchStart() => HighestDefeatedTier = 0;
 

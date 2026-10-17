@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Bossun kaç eşit aralıklı kafatasına sahip olduğu. 0 tüm kafataslarını kaldırır.",
   "CustomBossChallenge-SkullHealth": "Kafatası Canı %",
   "CustomBossChallenge-SkullHealthInfo": "Kafataslarının bulunduğu can yüzdeleri, virgülle ayrılmış, örn. 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "{0} oyun modu boss oyunlarında kullanılamaz."
+  "CustomBossChallenge-UnsupportedMode": "{0} oyun modu boss oyunlarında kullanılamaz.",
+  "CustomBossChallenge-BossUnavailable": "Bu boss oynanamaz: oyunda {0} balonu yok. Bir oyun güncellemesi onu değiştirmiş olabilir."
 }

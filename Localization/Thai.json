@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "จำนวนหัวกะโหลกที่เว้นระยะเท่ากันของบอส 0 คือลบหัวกะโหลกทั้งหมด",
   "CustomBossChallenge-SkullHealth": "พลังชีวิตกะโหลก %",
   "CustomBossChallenge-SkullHealthInfo": "เปอร์เซ็นต์พลังชีวิตที่วางหัวกะโหลก คั่นด้วยเครื่องหมายจุลภาค เช่น 80, 60, 40, 20",
-  "CustomBossChallenge-UnsupportedMode": "โหมดเกม {0} ไม่สามารถใช้กับเกมบอสได้"
+  "CustomBossChallenge-UnsupportedMode": "โหมดเกม {0} ไม่สามารถใช้กับเกมบอสได้",
+  "CustomBossChallenge-BossUnavailable": "ไม่สามารถเล่นบอสนี้ได้: เกมไม่มีบลูน {0} การอัปเดตเกมอาจเปลี่ยนแปลงไปแล้ว"
 }

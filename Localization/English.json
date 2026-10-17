@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "How many evenly spaced skulls the boss has. 0 removes all skulls.",
   "CustomBossChallenge-SkullHealth": "Skull Health %",
   "CustomBossChallenge-SkullHealthInfo": "The health percentages where the skulls are, separated by commas, e.g. 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "The {0} game mode can't be used for boss games."
+  "CustomBossChallenge-UnsupportedMode": "The {0} game mode can't be used for boss games.",
+  "CustomBossChallenge-BossUnavailable": "This boss can't be played: the game has no {0} bloon. A game update may have changed it."
 }

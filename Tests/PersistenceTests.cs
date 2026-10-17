@@ -51,6 +51,23 @@ public class PersistenceTest : CustomBossTest
             Assert(loaded.bloonModifiers.allFortified, "All fortified");
             Assert(loaded.disableSelling, "No selling");
 
+            // A hand edited or future file: values out of range are brought back into range, unknown fields ignored
+            var challenge = Newtonsoft.Json.JsonConvert.SerializeObject(DcmJson.Serialize(dcm));
+            File.WriteAllText(store.FilePath,
+                $"{{\"Version\": 99, \"Future\": true, \"Challenge\": {challenge}, \"Options\": {{\"Boss\": 99, " +
+                "\"SkullMode\": 42, \"SkullCount\": 500, \"CustomSkulls\": null, \"Tiers\": 50, \"ExtraTierHealth\": -3}}");
+            Assert(store.TryLoad(out var odd, out var oddDcm), "A file with odd values must still load");
+            AssertNotNull(oddDcm, "Challenge of a file with odd values");
+            AssertEquals(odd, new BossOptions
+            {
+                SkullCount = SkullMath.MaxSkulls, Tiers = TierMath.MaxTiers, ExtraTierHealth = TierMath.MinExtraTierHealth
+            }, "Odd values brought into range");
+
+            File.WriteAllText(store.FilePath, "{\"Version\": 2, \"Options\": {\"Boss\": \"Lych\"}}");
+            Assert(!store.TryLoad(out var incomplete, out var incompleteDcm), "A file without a challenge must not load");
+            AssertEquals(incomplete, new BossOptions(), "Defaults for an incomplete file");
+            AssertEquals(incompleteDcm, null, "No challenge for an incomplete file");
+
             File.WriteAllText(store.FilePath, "{ this is not json");
             Assert(!store.TryLoad(out var broken, out var brokenDcm), "A broken file must not load");
             AssertEquals(broken, new BossOptions(), "Defaults for a broken file");

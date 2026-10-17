@@ -62,7 +62,7 @@ public sealed class LastSetupStore
             var file = JsonConvert.DeserializeObject<SetupFile>(File.ReadAllText(FilePath), JsonSettings);
             if (file?.Options == null || string.IsNullOrEmpty(file.Challenge)) throw new InvalidDataException("Incomplete setup");
 
-            options = file.Options with {Tiers = TierMath.ClampTiers(file.Options.Tiers)};
+            options = file.Options.Sanitized();
             dcm = DcmJson.Deserialize(file.Challenge);
             return dcm != null;
         }

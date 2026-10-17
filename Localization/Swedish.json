@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Hur många jämnt fördelade dödskallar bossen har. 0 tar bort alla dödskallar.",
   "CustomBossChallenge-SkullHealth": "Dödskallehälsa %",
   "CustomBossChallenge-SkullHealthInfo": "De hälsoprocent där dödskallarna sitter, separerade med kommatecken, t.ex. 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "Spelläget {0} kan inte användas för bossspel."
+  "CustomBossChallenge-UnsupportedMode": "Spelläget {0} kan inte användas för bossspel.",
+  "CustomBossChallenge-BossUnavailable": "Den här bossen kan inte spelas: spelet har ingen {0}-bloon. En speluppdatering kan ha ändrat den."
 }

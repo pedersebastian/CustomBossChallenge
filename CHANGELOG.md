@@ -9,9 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Restarting a custom game after winning it ended the next attempt as soon as the first boss was defeated.
+- Spawn rounds near round 1000 could put two tiers on the same round.
+- The challenge name now also follows the boss when a setup is loaded, not only when a boss is clicked.
+- Play now explains in a popup why a boss can't be played, instead of doing nothing.
+
 ### Changed
 
 - New English screenshots in the README, including the info popup.
+- Sturdier against game updates: a missing boss model plays the tiers that exist instead of failing, a renamed
+  progress method no longer stops the other guards, and a hand edited `LastSetup.json` is brought back into range.
+- More tests: progress guards, restarting, losing, Play refusing a setup and broken setup files.
 
 ## [2.0.0] - 2026-10-17
 

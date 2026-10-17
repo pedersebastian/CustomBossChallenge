@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "보스가 가진 균등 배치 해골의 수. 0이면 모든 해골이 사라집니다.",
   "CustomBossChallenge-SkullHealth": "해골 체력 %",
   "CustomBossChallenge-SkullHealthInfo": "해골이 위치할 체력 퍼센트를 쉼표로 구분해 입력합니다(예: 80, 60, 40, 20).",
-  "CustomBossChallenge-UnsupportedMode": "{0} 게임 모드는 보스 게임에 사용할 수 없습니다."
+  "CustomBossChallenge-UnsupportedMode": "{0} 게임 모드는 보스 게임에 사용할 수 없습니다.",
+  "CustomBossChallenge-BossUnavailable": "이 보스는 플레이할 수 없습니다: 게임에 {0} 블룬이 없습니다. 게임 업데이트로 변경되었을 수 있습니다."
 }

@@ -1,9 +1,11 @@
 global using BTD_Mod_Helper.Extensions;
+using System;
 using MelonLoader;
 using BTD_Mod_Helper;
 using CustomBossChallenge;
 using CustomBossChallenge.Config;
 using Il2CppAssets.Scripts.Models;
+using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 [assembly: MelonInfo(typeof(CustomBossChallenge.CustomBossChallenge), ModHelperData.Name, ModHelperData.Version, ModHelperData.RepoOwner)]
@@ -31,8 +33,20 @@ public class CustomBossChallenge : BloonsTD6Mod
         CustomBossState.OnMatchStart();
         var options = CustomBossState.ActiveOptions!;
         var tiers = ExtraTiers.Add(result, options);
+
+        // If a game update removed boss models, play the tiers that exist instead of failing when one is missing
+        var available = ExtraTiers.AvailableTiers(result, options);
+        if (available < TierMath.ClampTiers(options.Tiers))
+        {
+            ModHelper.Warning<CustomBossChallenge>(
+                $"No model for {options.BossId(available + 1)}, playing {Math.Max(available, 1)} tiers instead of {options.Tiers}");
+            options = CustomBossState.LimitTiers(available);
+        }
+
         var skulls = SkullModifier.Apply(result, options.SkullPercents);
         result.bossSpawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
+        var bossData = InGameData.CurrentGame?.bossData;
+        if (bossData != null) bossData.spawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
 
         ModHelper.Msg<CustomBossChallenge>(
             $"Custom {options.BossId(options.Tiers)}: added {tiers} extra tiers, changed skulls of {skulls} boss models, " +

@@ -64,6 +64,23 @@ public sealed record BossOptions
     public int[] GameSpawnRounds => TierMath.ToGameRounds(EffectiveSpawnRounds);
 
     /// <summary>
+    /// A copy with every value in the range the Boss Creator allows, for options read from a file
+    /// </summary>
+    public BossOptions Sanitized()
+    {
+        var defaults = new BossOptions();
+        return this with
+        {
+            Boss = System.Enum.IsDefined(Boss) ? Boss : defaults.Boss,
+            SkullMode = System.Enum.IsDefined(SkullMode) ? SkullMode : defaults.SkullMode,
+            SkullCount = System.Math.Clamp(SkullCount, 0, SkullMath.MaxSkulls),
+            CustomSkulls = CustomSkulls ?? defaults.CustomSkulls,
+            Tiers = TierMath.ClampTiers(Tiers),
+            ExtraTierHealth = System.Math.Clamp(ExtraTierHealth, TierMath.MinExtraTierHealth, TierMath.MaxExtraTierHealth)
+        };
+    }
+
+    /// <summary>
     /// The bloon id of this boss at the given tier, e.g. "VortexElite3"
     /// </summary>
     public string BossId(int tier) => TierMath.BossId(Boss, Elite, tier);

@@ -3,7 +3,9 @@ using System.Collections;
 using BTD_Mod_Helper.Api.Testing;
 using CustomBossChallenge.Config;
 using Il2CppAssets.Scripts.Data.Boss;
+using System.Linq;
 using Il2CppAssets.Scripts.Models.Bloons;
+using Il2CppAssets.Scripts.Models.Bloons.Behaviors;
 using Il2CppAssets.Scripts.Unity;
 using static CustomBossChallenge.Tests.TestUtils;
 
@@ -26,6 +28,13 @@ public class SkullModifierTest : CustomBossTest
                 var original = AssertNotNull(Game.instance.model.GetBloon(id), $"No bloon model {id}");
                 var vanillaSkulls = SkullModifier.GetSkulls(original);
                 Assert(vanillaSkulls is {Length: > 0}, $"{id} has no skulls to modify");
+
+                // The mod changes the only non-repeating health trigger; a second one would make that a guess
+                if (original.GetBehavior<LychBossSuperScriptModel>() == null)
+                {
+                    AssertEquals(original.GetBehaviors<HealthPercentTriggerModel>().Count(t => !t.repeatFirst), 1,
+                        $"Skull triggers of {id}");
+                }
 
                 var clone = original.Clone().Cast<BloonModel>();
                 Assert(SkullModifier.Apply(clone, custom), $"Skulls of {id} were not changed");

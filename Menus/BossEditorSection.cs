@@ -183,7 +183,7 @@ public sealed class BossEditorSection
             TierMath.MinTiers, TierMath.MaxTiers, 1, TierMath.VanillaTiers, value => $"{value:0}",
             value => UpdateOptions(o => o with {Tiers = (int) value}));
         ExtraTierHealth = SliderRow.Clone(template, rows, "ExtraTierHealthRow", Texts.ExtraTierHealth.T(),
-            VanillaSprites.BossT5Icon, 100, 500, 10, 150, value => Texts.PerTier.T((int) (value - 100)),
+            VanillaSprites.BossT5Icon, TierMath.MinExtraTierHealth, TierMath.MaxExtraTierHealth, 10, 150, value => Texts.PerTier.T((int) (value - 100)),
             value => UpdateOptions(o => o with {ExtraTierHealth = (int) value}));
 
         var roundsRow = EditorRows.LabelRow(template, rows, "SpawnRoundsRow", Texts.SpawnRounds.T(), VanillaSprites.BossT1Icon);
@@ -501,24 +501,29 @@ public sealed class BossEditorSection
         Editor.ApplyUiSettingsToDCM();
 
         var dcm = Editor.dcm;
-        if (UnsupportedModes.Contains(dcm.mode))
+        var problem = PlayProblem(dcm, BossMode.Options);
+        if (problem != null)
         {
-            PopupScreen.instance.SafelyQueue(screen =>
-                screen.ShowOkPopup(Texts.UnsupportedMode.T(dcm.mode), null));
-            return;
-        }
-
-        if (!ExtraTiersAvailable(BossMode.Options))
-        {
-            ModHelper.Warning<CustomBossChallenge>($"No tier 5 model for {BossMode.Options.BossId(5)}");
+            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(problem, null));
             return;
         }
 
         BossGameLauncher.Launch(dcm, BossMode.Options);
     }
 
-    private static bool ExtraTiersAvailable(BossOptions options) =>
-        Il2CppAssets.Scripts.Unity.Game.instance.model.DoesBloonExist(options.BossId(TierMath.VanillaTiers));
+    /// <summary>
+    /// Why the setup can't be played, or null if it can
+    /// </summary>
+    public static string? PlayProblem(DailyChallengeModel dcm, BossOptions options)
+    {
+        if (UnsupportedModes.Contains(dcm.mode)) return Texts.UnsupportedMode.T(dcm.mode);
+
+        var missing = ExtraTiers.MissingVanillaTier(Il2CppAssets.Scripts.Unity.Game.instance.model, options);
+        if (missing == null) return null;
+
+        ModHelper.Warning<CustomBossChallenge>($"No bloon model {missing}");
+        return Texts.BossUnavailable.T(missing);
+    }
 
     private static string Percent(float value) => $"{value:0} %";
 

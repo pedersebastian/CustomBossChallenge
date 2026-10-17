@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Le nombre de crânes répartis uniformément que possède le boss. 0 supprime tous les crânes.",
   "CustomBossChallenge-SkullHealth": "Santé des crânes %",
   "CustomBossChallenge-SkullHealthInfo": "Les pourcentages de santé où se trouvent les crânes, séparés par des virgules, p. ex. 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "Le mode de jeu {0} ne peut pas être utilisé pour les parties de boss."
+  "CustomBossChallenge-UnsupportedMode": "Le mode de jeu {0} ne peut pas être utilisé pour les parties de boss.",
+  "CustomBossChallenge-BossUnavailable": "Ce boss ne peut pas être joué : le jeu n'a pas de bloon {0}. Une mise à jour du jeu l'a peut-être modifié."
 }

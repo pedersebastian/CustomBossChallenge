@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Quantas caveiras igualmente espaçadas o chefe tem. 0 remove todas as caveiras.",
   "CustomBossChallenge-SkullHealth": "Vida das Caveiras %",
   "CustomBossChallenge-SkullHealthInfo": "As porcentagens de vida em que ficam as caveiras, separadas por vírgulas, ex.: 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "O modo de jogo {0} não pode ser usado em jogos de chefe."
+  "CustomBossChallenge-UnsupportedMode": "O modo de jogo {0} não pode ser usado em jogos de chefe.",
+  "CustomBossChallenge-BossUnavailable": "Este chefe não pode ser jogado: o jogo não tem o bloon {0}. Uma atualização do jogo pode tê-lo alterado."
 }

@@ -44,6 +44,21 @@ public class ExtraTierModelTest : CustomBossTest
         }
 
         Assert(!Game.instance.model.DoesBloonExist("Bloonarius6"), "Extra tiers must not leak into the base game model");
+
+        // Every boss the mod offers must be playable, and a boss without models (like after a game update renamed
+        // them) is handled without errors
+        foreach (var boss in Enum.GetValues<BossType>())
+        {
+            AssertEquals(ExtraTiers.MissingVanillaTier(Game.instance.model, new BossOptions {Boss = boss, Tiers = 10}),
+                null, $"{boss} is missing a tier");
+        }
+
+        var gone = new BossOptions {Boss = (BossType) 99, Tiers = 7};
+        AssertEquals(ExtraTiers.MissingVanillaTier(Game.instance.model, gone), gone.BossId(1), "Missing boss");
+        AssertEquals(ExtraTiers.AvailableTiers(Game.instance.model, gone), 0, "Tiers of a missing boss");
+        AssertEquals(ExtraTiers.Add(Game.instance.model, gone), 0, "Extra tiers of a missing boss");
+        AssertEquals(ExtraTiers.AvailableTiers(Game.instance.model, new BossOptions {Tiers = 7}), 5,
+            "Only the vanilla tiers exist outside a match");
         yield break;
     }
 }

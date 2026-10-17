@@ -112,9 +112,13 @@ The mod ships with in-game automated tests built on Mod Helper's `ModTest`. They
 - tier, spawn round and skull math, and preparing the editor's challenge for a boss game
 - extra tier models for every boss and Elite tier, and real games played to victory with 6 and with 2 tiers
 - a vanilla and a custom Bloonarius game compared side by side (speed, health, skulls, cash, unranked)
-- the ranked and co-op guards, and saving and loading the last setup
+- the ranked and co-op guards, and that every record, boss progress and badge method is still guarded after a
+  game update
+- restarting a custom game, and losing one to a boss that isn't defeated
+- saving and loading the last setup, including broken files and values out of range
 - the main menu button, and the whole Boss Creator flow in the real Challenge Editor, from editing the boss options
-  to pressing Play, including that the normal Challenge Editor and your own draft stay untouched
+  to pressing Play, including that the normal Challenge Editor and your own draft stay untouched and that Play
+  refuses unsupported modes and missing bosses
 
 Run them from Visual Studio / Rider with the **BloonsTD6 (Tests)** launch profile, or from the game folder:
 
@@ -122,7 +126,7 @@ Run them from Visual Studio / Rider with the **BloonsTD6 (Tests)** launch profil
 BloonsTD6.exe moddingDev -batchmode --modhelper.offline --modhelper.only='CustomBossChallenge;' --modhelper.noaudio --modhelper.run -q test mod CustomBossChallenge
 ```
 
-The result is written to `MelonLoader/Latest.log`, e.g. `Ran 13 test(s), 13 succeeded, 0 failed`.
+The result is written to `MelonLoader/Latest.log`, e.g. `Ran 17 test(s), 17 succeeded, 0 failed`.
 
 The screenshots above come from the `ScreenshotTour` test. It only runs in a windowed game started with
 `--cbc.screenshots=<folder>` (and without `-batchmode`).

@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Hvor mange jevnt fordelte hodeskaller bossen har. 0 fjerner alle hodeskaller.",
   "CustomBossChallenge-SkullHealth": "Hodeskallehelse %",
   "CustomBossChallenge-SkullHealthInfo": "Helseprosentene der hodeskallene sitter, skilt med komma, f.eks. 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "Spillmodusen {0} kan ikke brukes til boss-spill."
+  "CustomBossChallenge-UnsupportedMode": "Spillmodusen {0} kan ikke brukes til boss-spill.",
+  "CustomBossChallenge-BossUnavailable": "Denne bossen kan ikke spilles: spillet har ingen {0}-bloon. En spilloppdatering kan ha endret den."
 }

@@ -29,5 +29,6 @@
   "CustomBossChallenge-SkullCountInfo": "Cuántas calaveras equidistantes tiene el jefe. 0 elimina todas las calaveras.",
   "CustomBossChallenge-SkullHealth": "Salud calaveras %",
   "CustomBossChallenge-SkullHealthInfo": "Los porcentajes de salud donde están las calaveras, separados por comas, p. ej. 80, 60, 40, 20.",
-  "CustomBossChallenge-UnsupportedMode": "El modo de juego {0} no se puede usar en partidas de jefe."
+  "CustomBossChallenge-UnsupportedMode": "El modo de juego {0} no se puede usar en partidas de jefe.",
+  "CustomBossChallenge-BossUnavailable": "No se puede jugar contra este jefe: el juego no tiene el globo {0}. Puede que una actualización del juego lo haya cambiado."
 }

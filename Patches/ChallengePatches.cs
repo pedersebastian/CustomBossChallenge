@@ -65,14 +65,32 @@ internal static class Btd6Player_SetBossChallengeRecord
 [HarmonyPatch]
 internal static class Btd6Player_BossProgress
 {
-    [HarmonyTargetMethods]
-    internal static System.Collections.Generic.IEnumerable<System.Reflection.MethodBase> TargetMethods() => new[]
+    internal static readonly string[] MethodNames =
     {
-        AccessTools.Method(typeof(Btd6Player), nameof(Btd6Player.DefeatedBossTier)),
-        AccessTools.Method(typeof(Btd6Player), nameof(Btd6Player.CompleteBossEvent)),
-        AccessTools.Method(typeof(Btd6Player), nameof(Btd6Player.AddBossBadges)),
-        AccessTools.Method(typeof(Btd6Player), nameof(Btd6Player.BossEventBestRound))
+        nameof(Btd6Player.DefeatedBossTier),
+        nameof(Btd6Player.CompleteBossEvent),
+        nameof(Btd6Player.AddBossBadges),
+        nameof(Btd6Player.BossEventBestRound)
     };
+
+    /// <summary>
+    /// A method a game update renamed or removed is skipped with a warning, so the others are still guarded
+    /// </summary>
+    [HarmonyTargetMethods]
+    internal static System.Collections.Generic.IEnumerable<System.Reflection.MethodBase> TargetMethods()
+    {
+        foreach (var name in MethodNames)
+        {
+            var method = AccessTools.Method(typeof(Btd6Player), name);
+            if (method == null)
+            {
+                ModHelper.Warning<CustomBossChallenge>($"Btd6Player.{name} not found, custom games can't guard it");
+                continue;
+            }
+
+            yield return method;
+        }
+    }
 
     [HarmonyPrefix]
     internal static bool Prefix() => !CustomBossState.IsActive;

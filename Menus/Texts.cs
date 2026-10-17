@@ -66,6 +66,9 @@ public static class Texts
     public static readonly string UnsupportedMode = Key(nameof(UnsupportedMode),
         "The {0} game mode can't be used for boss games.");
 
+    public static readonly string BossUnavailable = Key(nameof(BossUnavailable),
+        "This boss can't be played: the game has no {0} bloon. A game update may have changed it.");
+
     /// <summary>
     /// The text for a key in the player's language
     /// </summary>

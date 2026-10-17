@@ -34,7 +34,13 @@ internal static class BossTierPatches
 internal static class BossBloonManager_Init
 {
     [HarmonyPostfix]
-    internal static void Postfix(BossBloonManager __instance) => BossTierPatches.EnsureBossTimes(__instance);
+    internal static void Postfix(BossBloonManager __instance)
+    {
+        BossTierPatches.EnsureBossTimes(__instance);
+
+        // A restart makes a new simulation but reuses the game model, so this is where every match starts
+        if (CustomBossState.IsActive) CustomBossState.OnMatchStart();
+    }
 }
 
 [HarmonyPatch(typeof(BossBloonManager), nameof(BossBloonManager.MatchReady))]
