@@ -138,12 +138,6 @@ public sealed class BossEditorSection
 
     private void BuildRows(ChallengeEditorSliderPanel template)
     {
-        // Sharing the setup as a text code
-        var shareRow = EditorRows.LabelRow(template, rows, "ShareCodeRow", Texts.ShareCode.T(), VanillaSprites.CopyClipboardBtn);
-        var shareX = EditorRows.ControlX - EditorRows.ControlWidth / 2 + 300;
-        CopyCode = ShareButton(shareRow, "CopyCode", shareX, Texts.CopyCode.T(), OnCopyCode);
-        PasteCode = ShareButton(shareRow, "PasteCode", shareX + 640, Texts.PasteCode.T(), OnPasteCode);
-
         // Boss picker and elite toggle
         var bossRow = EditorRows.LabelRow(template, rows, "BossRow", Texts.BossType.T(), VanillaSprites.BossChallenge);
         var x = EditorRows.ControlX - EditorRows.ControlWidth / 2 + 100;
@@ -252,7 +246,12 @@ public sealed class BossEditorSection
             CustomSkulls.SetText(skulls, false);
         }));
 
-        EditorRows.AddInfo(shareRow, Texts.ShareCode, Texts.ShareCodeInfo);
+        // Sharing the setup as a text code, after all the boss options
+        var shareRow = EditorRows.LabelRow(template, rows, "ShareCodeRow", Texts.ShareCode.T(), VanillaSprites.CopyClipboardBtn);
+        var shareX = EditorRows.ControlX - EditorRows.ControlWidth / 2 + 300;
+        CopyCode = ShareButton(shareRow, "CopyCode", shareX, Texts.CopyCode.T(), OnCopyCode);
+        PasteCode = ShareButton(shareRow, "PasteCode", shareX + 640, Texts.PasteCode.T(), OnPasteCode);
+
         EditorRows.AddInfo(bossRow, Texts.BossType, Texts.BossTypeInfo);
         EditorRows.AddInfo(BossSpeed.Row, Texts.BossSpeed, Texts.BossSpeedInfo);
         EditorRows.AddInfo(BossHealth.Row, Texts.BossHealth, Texts.BossHealthInfo);
@@ -264,6 +263,7 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(skullModeRow, Texts.Skulls, Texts.SkullsInfo);
         EditorRows.AddInfo(SkullCount.Row, Texts.SkullCount, Texts.SkullCountInfo);
         EditorRows.AddInfo(customSkullsRow, Texts.SkullHealth, Texts.SkullHealthInfo);
+        EditorRows.AddInfo(shareRow, Texts.ShareCode, Texts.ShareCodeInfo);
     }
 
     private static ModHelperButton ShareButton(GameObject row, string name, float x, string label, Action action)

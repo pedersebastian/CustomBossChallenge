@@ -53,7 +53,7 @@ Event and your Boss Challenge records and saves are never affected.
 
 ## Sharing setups
 
-The **Share Code** row at the top of the Boss section turns the whole setup, boss options and every Challenge Editor
+The **Share Code** row at the bottom of the Boss section turns the whole setup, boss options and every Challenge Editor
 rule, into a short text code:
 
 - **Copy** puts the code on the clipboard. Paste it into Discord, Reddit or a message.
@@ -66,6 +66,8 @@ characters. A new, unchanged setup gives a code like this one:
 ```
 CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA
 ```
+
+![Share Code](docs/share-code.jpg)
 
 ## Boss options
 
