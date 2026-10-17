@@ -37,6 +37,8 @@ Event and your Boss Challenge records and saves are never affected.
 
 ![Boss options](docs/boss-options.jpg)
 
+![Info popup](docs/info-popup.jpg)
+
 ## Usage
 
 1. Click **Boss Creator** on the main menu (below the event buttons on the right).

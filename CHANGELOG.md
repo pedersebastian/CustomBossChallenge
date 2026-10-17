@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- New English screenshots in the README, including the info popup.
+
 ## [2.0.0] - 2026-10-17
 
 ### Added

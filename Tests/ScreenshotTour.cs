@@ -60,7 +60,8 @@ public class ScreenshotTour : CustomBossTest
                 Boss = BossType.Vortex, Elite = true, Tiers = 7, ExtraTierHealth = 175,
                 SkullMode = SkullMode.Custom, CustomSkulls = "80, 60, 40, 20"
             };
-            editor!.dcm.bloonModifiers.bossSpeedMultiplier = 1.5f;
+            editor!.chalName.text = editor.dcm.name = BossMode.DefaultName(BossType.Vortex);
+            editor.dcm.bloonModifiers.bossSpeedMultiplier = 1.5f;
             editor.dcm.bloonModifiers.healthMultipliers.boss = 3;
             BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
             yield return new WaitForSecondsRealtime(1);
