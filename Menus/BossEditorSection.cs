@@ -6,6 +6,7 @@ using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
+using CustomBossChallenge.Persistence;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
@@ -60,6 +61,8 @@ public sealed class BossEditorSection
     public ModHelperDropdown SkullMode { get; private set; } = null!;
     public ModHelperInputField CustomSkulls { get; private set; } = null!;
     public ModHelperInputField SpawnRounds { get; private set; } = null!;
+    public ModHelperButton CopyCode { get; private set; } = null!;
+    public ModHelperButton PasteCode { get; private set; } = null!;
     public Dictionary<BossType, ModHelperButton> BossButtons { get; } = new();
 
     private readonly Transform rows;
@@ -135,6 +138,12 @@ public sealed class BossEditorSection
 
     private void BuildRows(ChallengeEditorSliderPanel template)
     {
+        // Sharing the setup as a text code
+        var shareRow = EditorRows.LabelRow(template, rows, "ShareCodeRow", Texts.ShareCode.T(), VanillaSprites.CopyClipboardBtn);
+        var shareX = EditorRows.ControlX - EditorRows.ControlWidth / 2 + 300;
+        CopyCode = ShareButton(shareRow, "CopyCode", shareX, Texts.CopyCode.T(), OnCopyCode);
+        PasteCode = ShareButton(shareRow, "PasteCode", shareX + 640, Texts.PasteCode.T(), OnPasteCode);
+
         // Boss picker and elite toggle
         var bossRow = EditorRows.LabelRow(template, rows, "BossRow", Texts.BossType.T(), VanillaSprites.BossChallenge);
         var x = EditorRows.ControlX - EditorRows.ControlWidth / 2 + 100;
@@ -243,6 +252,7 @@ public sealed class BossEditorSection
             CustomSkulls.SetText(skulls, false);
         }));
 
+        EditorRows.AddInfo(shareRow, Texts.ShareCode, Texts.ShareCodeInfo);
         EditorRows.AddInfo(bossRow, Texts.BossType, Texts.BossTypeInfo);
         EditorRows.AddInfo(BossSpeed.Row, Texts.BossSpeed, Texts.BossSpeedInfo);
         EditorRows.AddInfo(BossHealth.Row, Texts.BossHealth, Texts.BossHealthInfo);
@@ -254,6 +264,49 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(skullModeRow, Texts.Skulls, Texts.SkullsInfo);
         EditorRows.AddInfo(SkullCount.Row, Texts.SkullCount, Texts.SkullCountInfo);
         EditorRows.AddInfo(customSkullsRow, Texts.SkullHealth, Texts.SkullHealthInfo);
+    }
+
+    private static ModHelperButton ShareButton(GameObject row, string name, float x, string label, Action action)
+    {
+        var button = ModHelperButton.Create(new Info(name, x, 0, 560, 170)
+        {
+            Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
+        }, VanillaSprites.BlueBtnLong, action);
+        button.transform.SetParent(row.transform, false);
+        button.AddText(new Info("Label", InfoPreset.FillParent), label, 70);
+        return button;
+    }
+
+    private void OnCopyCode()
+    {
+        Editor.ApplyUiSettingsToDCM();
+        var code = SetupCode.Encode(BossMode.Options, Editor.dcm);
+        Clipboard.Write(code);
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.CodeCopied.T(code.Length), null));
+    }
+
+    private void OnPasteCode()
+    {
+        if (!SetupCode.TryDecode(Clipboard.Read(), out var options, out var dcm, out var problem) || dcm == null)
+        {
+            var text = problem == CodeProblem.TooNew ? Texts.CodeTooNew : Texts.CodeInvalid;
+            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(text.T(), null));
+            return;
+        }
+
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.ShareCode.T(),
+            $"{Texts.LoadCodeQuestion.T()}\n\n{Summary(options, dcm)}",
+            new Action(() => BossMode.Replace(Editor, options, dcm)), Texts.Load.T(),
+            null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
+    }
+
+    /// <summary>
+    /// What a shared setup is, in a few words
+    /// </summary>
+    public static string Summary(BossOptions options, DailyChallengeModel dcm)
+    {
+        var boss = options.Elite ? $"{options.Boss} {Texts.Elite.T()}" : options.Boss.ToString();
+        return $"<b>{dcm.name}</b>\n{boss}, {Texts.TierCount.T(options.Tiers)}\n{dcm.map.T()}, {dcm.difficulty.T()}";
     }
 
     private GameObject BuildPlayButton()

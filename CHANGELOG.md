@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Share Code**: Copy puts the whole Boss Creator setup (boss options and Challenge Editor rules) on the
+  clipboard as a short text code (`CBC1:...`), and Paste loads a code someone shared after showing what it contains
+  and asking before the current setup is replaced. Codes only store what differs from a new setup, so they fit in
+  a chat message.
+
 ## [2.1.0] - 2026-10-17
 
 ### Added

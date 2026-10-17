@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "Bossun kaç eşit aralıklı kafatasına sahip olduğu. 0 tüm kafataslarını kaldırır.",
   "CustomBossChallenge-SkullHealth": "Kafatası Canı %",
   "CustomBossChallenge-SkullHealthInfo": "Kafataslarının bulunduğu can yüzdeleri, virgülle ayrılmış, örn. 80, 60, 40, 20.",
+  "CustomBossChallenge-ShareCode": "Paylaşım Kodu",
+  "CustomBossChallenge-ShareCodeInfo": "Kopyala, bu kurulumun tamamını, boss seçeneklerini ve Challenge Editor kurallarını, Discord'a, Reddit'e veya bir mesaja yapıştırabileceğin bir kod olarak panoya koyar. Yapıştır, birinin seninle paylaştığı bir kodu yükler.",
+  "CustomBossChallenge-CopyCode": "Kopyala",
+  "CustomBossChallenge-PasteCode": "Yapıştır",
+  "CustomBossChallenge-CodeCopied": "Kod panoya kopyalandı ({0} karakter). Bu boss'u paylaşmak için istediğin yere yapıştır.",
+  "CustomBossChallenge-LoadCodeQuestion": "Bu kurulum yüklensin mi? Mevcut kurulumun değiştirilecek.",
+  "CustomBossChallenge-CodeInvalid": "Panoda bir Boss Creator kodu yok. CBC1: ile başlayan kodun tamamını kopyala.",
+  "CustomBossChallenge-CodeTooNew": "Bu kod, Custom Boss Challenge'ın daha yeni bir sürümünden geliyor. Yüklemek için modu güncelle.",
+  "CustomBossChallenge-Load": "Yükle",
+  "CustomBossChallenge-Cancel": "İptal",
+  "CustomBossChallenge-TierCount": "{0} kademe",
   "CustomBossChallenge-UnsupportedMode": "{0} oyun modu boss oyunlarında kullanılamaz.",
   "CustomBossChallenge-BossUnavailable": "Bu boss oynanamaz: oyunda {0} balonu yok. Bir oyun güncellemesi onu değiştirmiş olabilir."
 }

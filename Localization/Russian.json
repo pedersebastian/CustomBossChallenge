@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "Сколько равномерно расставленных черепов у босса. 0 убирает все черепа.",
   "CustomBossChallenge-SkullHealth": "Здоровье черепов %",
   "CustomBossChallenge-SkullHealthInfo": "Проценты здоровья, на которых находятся черепа, через запятую, например 80, 60, 40, 20.",
+  "CustomBossChallenge-ShareCode": "Код для обмена",
+  "CustomBossChallenge-ShareCodeInfo": "«Копировать» помещает всю эту настройку, параметры босса и правила редактора испытаний, в буфер обмена в виде кода, который можно вставить в Discord, Reddit или сообщение. «Вставить» загружает код, которым с вами поделились.",
+  "CustomBossChallenge-CopyCode": "Копировать",
+  "CustomBossChallenge-PasteCode": "Вставить",
+  "CustomBossChallenge-CodeCopied": "Код скопирован в буфер обмена ({0} символов). Вставьте его куда угодно, чтобы поделиться этим боссом.",
+  "CustomBossChallenge-LoadCodeQuestion": "Загрузить эту настройку? Текущая настройка будет заменена.",
+  "CustomBossChallenge-CodeInvalid": "В буфере обмена нет кода Boss Creator. Скопируйте код целиком, начиная с CBC1:",
+  "CustomBossChallenge-CodeTooNew": "Этот код создан в более новой версии Custom Boss Challenge. Обновите мод, чтобы загрузить его.",
+  "CustomBossChallenge-Load": "Загрузить",
+  "CustomBossChallenge-Cancel": "Отмена",
+  "CustomBossChallenge-TierCount": "Уровней: {0}",
   "CustomBossChallenge-UnsupportedMode": "Игровой режим {0} нельзя использовать в играх с боссом.",
   "CustomBossChallenge-BossUnavailable": "С этим боссом нельзя сыграть: в игре нет шара {0}. Возможно, его изменило обновление игры."
 }

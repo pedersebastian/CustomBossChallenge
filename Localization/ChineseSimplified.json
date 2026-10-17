@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "Boss拥有多少个均匀分布的骷髅。0表示移除所有骷髅。",
   "CustomBossChallenge-SkullHealth": "骷髅生命值 %",
   "CustomBossChallenge-SkullHealthInfo": "骷髅所在的生命值百分比，用逗号分隔，例如 80, 60, 40, 20。",
+  "CustomBossChallenge-ShareCode": "分享代码",
+  "CustomBossChallenge-ShareCodeInfo": "复制会把整个配置（首领选项和挑战编辑器规则）作为代码放入剪贴板，你可以把它粘贴到 Discord、Reddit 或消息中。粘贴会加载别人分享给你的代码。",
+  "CustomBossChallenge-CopyCode": "复制",
+  "CustomBossChallenge-PasteCode": "粘贴",
+  "CustomBossChallenge-CodeCopied": "代码已复制到剪贴板（{0} 个字符）。粘贴到任何地方即可分享这个首领。",
+  "CustomBossChallenge-LoadCodeQuestion": "加载此配置？你当前的配置将被替换。",
+  "CustomBossChallenge-CodeInvalid": "剪贴板中没有 Boss Creator 代码。请复制以 CBC1: 开头的完整代码。",
+  "CustomBossChallenge-CodeTooNew": "此代码来自更新版本的 Custom Boss Challenge。请更新模组后再加载。",
+  "CustomBossChallenge-Load": "加载",
+  "CustomBossChallenge-Cancel": "取消",
+  "CustomBossChallenge-TierCount": "{0} 个阶段",
   "CustomBossChallenge-UnsupportedMode": "{0}游戏模式不能用于Boss游戏。",
   "CustomBossChallenge-BossUnavailable": "无法挑战此Boss：游戏中没有{0}气球。可能是游戏更新更改了它。"
 }

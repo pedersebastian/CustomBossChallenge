@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "Cuántas calaveras equidistantes tiene el jefe. 0 elimina todas las calaveras.",
   "CustomBossChallenge-SkullHealth": "Salud calaveras %",
   "CustomBossChallenge-SkullHealthInfo": "Los porcentajes de salud donde están las calaveras, separados por comas, p. ej. 80, 60, 40, 20.",
+  "CustomBossChallenge-ShareCode": "Código para compartir",
+  "CustomBossChallenge-ShareCodeInfo": "Copiar pone toda esta configuración, opciones del jefe y reglas del editor de desafíos, en el portapapeles como un código que puedes pegar en Discord, Reddit o en un mensaje. Pegar carga un código que alguien ha compartido contigo.",
+  "CustomBossChallenge-CopyCode": "Copiar",
+  "CustomBossChallenge-PasteCode": "Pegar",
+  "CustomBossChallenge-CodeCopied": "Código copiado al portapapeles ({0} caracteres). Pégalo donde quieras para compartir este jefe.",
+  "CustomBossChallenge-LoadCodeQuestion": "¿Cargar esta configuración? Tu configuración actual será reemplazada.",
+  "CustomBossChallenge-CodeInvalid": "El portapapeles no contiene un código de Boss Creator. Copia el código completo, empezando por CBC1:",
+  "CustomBossChallenge-CodeTooNew": "Este código es de una versión más nueva de Custom Boss Challenge. Actualiza el mod para cargarlo.",
+  "CustomBossChallenge-Load": "Cargar",
+  "CustomBossChallenge-Cancel": "Cancelar",
+  "CustomBossChallenge-TierCount": "{0} niveles",
   "CustomBossChallenge-UnsupportedMode": "El modo de juego {0} no se puede usar en partidas de jefe.",
   "CustomBossChallenge-BossUnavailable": "No se puede jugar contra este jefe: el juego no tiene el globo {0}. Puede que una actualización del juego lo haya cambiado."
 }

@@ -5,6 +5,7 @@ using Il2CppAssets.Scripts;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity;
 using Il2CppAssets.Scripts.Unity.Menu;
+using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
 
 namespace CustomBossChallenge.Creator;
 
@@ -77,6 +78,21 @@ public static class BossMode
         Save();
         RestoreUserDraft();
         Active = false;
+    }
+
+    /// <summary>
+    /// Replaces the setup being edited, e.g. with one from a shared code. The editor gets the new model too, since the
+    /// Boss Creator's editor is recognised by its model.
+    /// </summary>
+    public static void Replace(ChallengeEditor editor, BossOptions options, DailyChallengeModel dcm)
+    {
+        if (!Active) return;
+
+        Options = options;
+        Dcm = dcm;
+        editor.dcm = dcm;
+        editor.ApplyDcmSettingsToUI();
+        Save();
     }
 
     public static void Save()

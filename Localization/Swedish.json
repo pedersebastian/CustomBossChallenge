@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "Hur många jämnt fördelade dödskallar bossen har. 0 tar bort alla dödskallar.",
   "CustomBossChallenge-SkullHealth": "Dödskallehälsa %",
   "CustomBossChallenge-SkullHealthInfo": "De hälsoprocent där dödskallarna sitter, separerade med kommatecken, t.ex. 80, 60, 40, 20.",
+  "CustomBossChallenge-ShareCode": "Delningskod",
+  "CustomBossChallenge-ShareCodeInfo": "Kopiera lägger hela den här uppsättningen, bossinställningar och Challenge Editor-regler, i urklipp som en kod du kan klistra in på Discord, Reddit eller i ett meddelande. Klistra in läser in en kod som någon har delat med dig.",
+  "CustomBossChallenge-CopyCode": "Kopiera",
+  "CustomBossChallenge-PasteCode": "Klistra in",
+  "CustomBossChallenge-CodeCopied": "Koden har kopierats till urklipp ({0} tecken). Klistra in den var som helst för att dela den här bossen.",
+  "CustomBossChallenge-LoadCodeQuestion": "Läsa in den här uppsättningen? Din nuvarande uppsättning ersätts.",
+  "CustomBossChallenge-CodeInvalid": "Urklipp innehåller ingen Boss Creator-kod. Kopiera hela koden, som börjar med CBC1:",
+  "CustomBossChallenge-CodeTooNew": "Den här koden kommer från en nyare version av Custom Boss Challenge. Uppdatera modden för att läsa in den.",
+  "CustomBossChallenge-Load": "Läs in",
+  "CustomBossChallenge-Cancel": "Avbryt",
+  "CustomBossChallenge-TierCount": "{0} nivåer",
   "CustomBossChallenge-UnsupportedMode": "Spelläget {0} kan inte användas för bossspel.",
   "CustomBossChallenge-BossUnavailable": "Den här bossen kan inte spelas: spelet har ingen {0}-bloon. En speluppdatering kan ha ändrat den."
 }

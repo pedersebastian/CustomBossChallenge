@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "How many evenly spaced skulls the boss has. 0 removes all skulls.",
   "CustomBossChallenge-SkullHealth": "Skull Health %",
   "CustomBossChallenge-SkullHealthInfo": "The health percentages where the skulls are, separated by commas, e.g. 80, 60, 40, 20.",
+  "CustomBossChallenge-ShareCode": "Share Code",
+  "CustomBossChallenge-ShareCodeInfo": "Copy puts this whole setup, boss options and Challenge Editor rules, on the clipboard as a code you can paste into Discord, Reddit or a message. Paste loads a code someone shared with you.",
+  "CustomBossChallenge-CopyCode": "Copy",
+  "CustomBossChallenge-PasteCode": "Paste",
+  "CustomBossChallenge-CodeCopied": "Code copied to the clipboard ({0} characters). Paste it anywhere to share this boss.",
+  "CustomBossChallenge-LoadCodeQuestion": "Load this setup? Your current setup will be replaced.",
+  "CustomBossChallenge-CodeInvalid": "The clipboard doesn't contain a Boss Creator code. Copy the whole code, starting with CBC1:",
+  "CustomBossChallenge-CodeTooNew": "This code comes from a newer version of Custom Boss Challenge. Update the mod to load it.",
+  "CustomBossChallenge-Load": "Load",
+  "CustomBossChallenge-Cancel": "Cancel",
+  "CustomBossChallenge-TierCount": "{0} tiers",
   "CustomBossChallenge-UnsupportedMode": "The {0} game mode can't be used for boss games.",
   "CustomBossChallenge-BossUnavailable": "This boss can't be played: the game has no {0} bloon. A game update may have changed it."
 }

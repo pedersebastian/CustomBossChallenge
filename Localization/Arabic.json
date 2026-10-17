@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "عدد الجماجم متساوية التباعد لدى الزعيم. 0 يزيل كل الجماجم.",
   "CustomBossChallenge-SkullHealth": "صحة الجماجم %",
   "CustomBossChallenge-SkullHealthInfo": "نسب الصحة التي توجد عندها الجماجم، مفصولة بفواصل، مثل 80, 60, 40, 20.",
+  "CustomBossChallenge-ShareCode": "رمز المشاركة",
+  "CustomBossChallenge-ShareCodeInfo": "يضع النسخ هذا الإعداد بالكامل، أي خيارات الزعيم وقواعد محرر التحديات، في الحافظة كرمز يمكنك لصقه في Discord أو Reddit أو في رسالة. ويحمّل اللصق رمزًا شاركه معك شخص آخر.",
+  "CustomBossChallenge-CopyCode": "نسخ",
+  "CustomBossChallenge-PasteCode": "لصق",
+  "CustomBossChallenge-CodeCopied": "تم نسخ الرمز إلى الحافظة ({0} حرفًا). الصقه في أي مكان لمشاركة هذا الزعيم.",
+  "CustomBossChallenge-LoadCodeQuestion": "هل تريد تحميل هذا الإعداد؟ سيتم استبدال إعدادك الحالي.",
+  "CustomBossChallenge-CodeInvalid": "لا تحتوي الحافظة على رمز Boss Creator. انسخ الرمز كاملًا بدءًا من CBC1:",
+  "CustomBossChallenge-CodeTooNew": "هذا الرمز من إصدار أحدث من Custom Boss Challenge. حدّث التعديل لتحميله.",
+  "CustomBossChallenge-Load": "تحميل",
+  "CustomBossChallenge-Cancel": "إلغاء",
+  "CustomBossChallenge-TierCount": "{0} مستويات",
   "CustomBossChallenge-UnsupportedMode": "لا يمكن استخدام وضع اللعبة {0} في ألعاب الزعيم.",
   "CustomBossChallenge-BossUnavailable": "لا يمكن لعب هذا الزعيم: لا تحتوي اللعبة على بالون {0}. ربما غيّره تحديث للعبة."
 }

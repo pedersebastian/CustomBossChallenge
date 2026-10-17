@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "Quanti teschi equidistanti ha il boss. 0 rimuove tutti i teschi.",
   "CustomBossChallenge-SkullHealth": "Salute teschi %",
   "CustomBossChallenge-SkullHealthInfo": "Le percentuali di salute in cui si trovano i teschi, separate da virgole, ad es. 80, 60, 40, 20.",
+  "CustomBossChallenge-ShareCode": "Codice di condivisione",
+  "CustomBossChallenge-ShareCodeInfo": "Copia mette l'intera configurazione, opzioni del boss e regole dell'editor delle sfide, negli appunti come codice da incollare su Discord, Reddit o in un messaggio. Incolla carica un codice che qualcuno ha condiviso con te.",
+  "CustomBossChallenge-CopyCode": "Copia",
+  "CustomBossChallenge-PasteCode": "Incolla",
+  "CustomBossChallenge-CodeCopied": "Codice copiato negli appunti ({0} caratteri). Incollalo ovunque per condividere questo boss.",
+  "CustomBossChallenge-LoadCodeQuestion": "Caricare questa configurazione? La configurazione attuale verrà sostituita.",
+  "CustomBossChallenge-CodeInvalid": "Gli appunti non contengono un codice di Boss Creator. Copia l'intero codice, che inizia con CBC1:",
+  "CustomBossChallenge-CodeTooNew": "Questo codice proviene da una versione più recente di Custom Boss Challenge. Aggiorna la mod per caricarlo.",
+  "CustomBossChallenge-Load": "Carica",
+  "CustomBossChallenge-Cancel": "Annulla",
+  "CustomBossChallenge-TierCount": "{0} livelli",
   "CustomBossChallenge-UnsupportedMode": "La modalità di gioco {0} non può essere usata per le partite con boss.",
   "CustomBossChallenge-BossUnavailable": "Questo boss non può essere giocato: il gioco non ha il bloon {0}. Un aggiornamento del gioco potrebbe averlo modificato."
 }

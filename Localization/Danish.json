@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "Hvor mange jævnt fordelte kranier bossen har. 0 fjerner alle kranier.",
   "CustomBossChallenge-SkullHealth": "Kranie-helbred %",
   "CustomBossChallenge-SkullHealthInfo": "De helbredsprocenter, hvor kranierne sidder, adskilt af kommaer, f.eks. 80, 60, 40, 20.",
+  "CustomBossChallenge-ShareCode": "Delingskode",
+  "CustomBossChallenge-ShareCodeInfo": "Kopiér lægger hele denne opsætning, bossindstillinger og Challenge Editor-regler, i udklipsholderen som en kode, du kan indsætte på Discord, Reddit eller i en besked. Indsæt indlæser en kode, som nogen har delt med dig.",
+  "CustomBossChallenge-CopyCode": "Kopiér",
+  "CustomBossChallenge-PasteCode": "Indsæt",
+  "CustomBossChallenge-CodeCopied": "Koden er kopieret til udklipsholderen ({0} tegn). Indsæt den hvor som helst for at dele denne boss.",
+  "CustomBossChallenge-LoadCodeQuestion": "Indlæs denne opsætning? Din nuværende opsætning bliver erstattet.",
+  "CustomBossChallenge-CodeInvalid": "Udklipsholderen indeholder ikke en Boss Creator-kode. Kopiér hele koden, der starter med CBC1:",
+  "CustomBossChallenge-CodeTooNew": "Denne kode kommer fra en nyere version af Custom Boss Challenge. Opdater modden for at indlæse den.",
+  "CustomBossChallenge-Load": "Indlæs",
+  "CustomBossChallenge-Cancel": "Annuller",
+  "CustomBossChallenge-TierCount": "{0} niveauer",
   "CustomBossChallenge-UnsupportedMode": "Spiltilstanden {0} kan ikke bruges til bossspil.",
   "CustomBossChallenge-BossUnavailable": "Denne boss kan ikke spilles: spillet har ingen {0}-bloon. En spilopdatering kan have ændret den."
 }

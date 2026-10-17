@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "Hvor mange jevnt fordelte hodeskaller bossen har. 0 fjerner alle hodeskaller.",
   "CustomBossChallenge-SkullHealth": "Hodeskallehelse %",
   "CustomBossChallenge-SkullHealthInfo": "Helseprosentene der hodeskallene sitter, skilt med komma, f.eks. 80, 60, 40, 20.",
+  "CustomBossChallenge-ShareCode": "Delingskode",
+  "CustomBossChallenge-ShareCodeInfo": "Kopier legger hele dette oppsettet, boss-valg og Challenge Editor-regler, i utklippstavlen som en kode du kan lime inn på Discord, Reddit eller i en melding. Lim inn laster en kode noen har delt med deg.",
+  "CustomBossChallenge-CopyCode": "Kopier",
+  "CustomBossChallenge-PasteCode": "Lim inn",
+  "CustomBossChallenge-CodeCopied": "Koden er kopiert til utklippstavlen ({0} tegn). Lim den inn hvor som helst for å dele denne bossen.",
+  "CustomBossChallenge-LoadCodeQuestion": "Laste inn dette oppsettet? Det nåværende oppsettet ditt blir erstattet.",
+  "CustomBossChallenge-CodeInvalid": "Utklippstavlen inneholder ikke en Boss Creator-kode. Kopier hele koden, som starter med CBC1:",
+  "CustomBossChallenge-CodeTooNew": "Denne koden er fra en nyere versjon av Custom Boss Challenge. Oppdater moden for å laste den inn.",
+  "CustomBossChallenge-Load": "Last inn",
+  "CustomBossChallenge-Cancel": "Avbryt",
+  "CustomBossChallenge-TierCount": "{0} nivåer",
   "CustomBossChallenge-UnsupportedMode": "Spillmodusen {0} kan ikke brukes til boss-spill.",
   "CustomBossChallenge-BossUnavailable": "Denne bossen kan ikke spilles: spillet har ingen {0}-bloon. En spilloppdatering kan ha endret den."
 }

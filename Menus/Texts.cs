@@ -69,6 +69,24 @@ public static class Texts
     public static readonly string SkullHealthInfo = Key(nameof(SkullHealthInfo),
         "The health percentages where the skulls are, separated by commas, e.g. 80, 60, 40, 20.");
 
+    public static readonly string ShareCode = Key(nameof(ShareCode), "Share Code");
+    public static readonly string ShareCodeInfo = Key(nameof(ShareCodeInfo),
+        "Copy puts this whole setup, boss options and Challenge Editor rules, on the clipboard as a code you can " +
+        "paste into Discord, Reddit or a message. Paste loads a code someone shared with you.");
+    public static readonly string CopyCode = Key(nameof(CopyCode), "Copy");
+    public static readonly string PasteCode = Key(nameof(PasteCode), "Paste");
+    public static readonly string CodeCopied = Key(nameof(CodeCopied),
+        "Code copied to the clipboard ({0} characters). Paste it anywhere to share this boss.");
+    public static readonly string LoadCodeQuestion = Key(nameof(LoadCodeQuestion),
+        "Load this setup? Your current setup will be replaced.");
+    public static readonly string CodeInvalid = Key(nameof(CodeInvalid),
+        "The clipboard doesn't contain a Boss Creator code. Copy the whole code, starting with CBC1:");
+    public static readonly string CodeTooNew = Key(nameof(CodeTooNew),
+        "This code comes from a newer version of Custom Boss Challenge. Update the mod to load it.");
+    public static readonly string Load = Key(nameof(Load), "Load");
+    public static readonly string Cancel = Key(nameof(Cancel), "Cancel");
+    public static readonly string TierCount = Key(nameof(TierCount), "{0} tiers");
+
     public static readonly string UnsupportedMode = Key(nameof(UnsupportedMode),
         "The {0} game mode can't be used for boss games.");
 

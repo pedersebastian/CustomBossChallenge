@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "Hoeveel gelijkmatig verdeelde schedels de boss heeft. 0 verwijdert alle schedels.",
   "CustomBossChallenge-SkullHealth": "Schedelgezondheid %",
   "CustomBossChallenge-SkullHealthInfo": "De gezondheidspercentages waar de schedels zitten, gescheiden door komma's, bijv. 80, 60, 40, 20.",
+  "CustomBossChallenge-ShareCode": "Deelcode",
+  "CustomBossChallenge-ShareCodeInfo": "Kopiëren zet deze hele opzet, bossopties en Challenge Editor-regels, op het klembord als een code die je in Discord, Reddit of een bericht kunt plakken. Plakken laadt een code die iemand met je heeft gedeeld.",
+  "CustomBossChallenge-CopyCode": "Kopiëren",
+  "CustomBossChallenge-PasteCode": "Plakken",
+  "CustomBossChallenge-CodeCopied": "Code gekopieerd naar het klembord ({0} tekens). Plak hem ergens om deze boss te delen.",
+  "CustomBossChallenge-LoadCodeQuestion": "Deze opzet laden? Je huidige opzet wordt vervangen.",
+  "CustomBossChallenge-CodeInvalid": "Het klembord bevat geen Boss Creator-code. Kopieer de hele code, beginnend met CBC1:",
+  "CustomBossChallenge-CodeTooNew": "Deze code komt uit een nieuwere versie van Custom Boss Challenge. Werk de mod bij om hem te laden.",
+  "CustomBossChallenge-Load": "Laden",
+  "CustomBossChallenge-Cancel": "Annuleren",
+  "CustomBossChallenge-TierCount": "{0} niveaus",
   "CustomBossChallenge-UnsupportedMode": "De spelmodus {0} kan niet worden gebruikt voor bossspellen.",
   "CustomBossChallenge-BossUnavailable": "Deze boss kan niet worden gespeeld: het spel heeft geen {0}-bloon. Een game-update heeft deze mogelijk veranderd."
 }

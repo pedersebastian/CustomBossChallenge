@@ -32,6 +32,17 @@
   "CustomBossChallenge-SkullCountInfo": "Le nombre de crânes répartis uniformément que possède le boss. 0 supprime tous les crânes.",
   "CustomBossChallenge-SkullHealth": "Santé des crânes %",
   "CustomBossChallenge-SkullHealthInfo": "Les pourcentages de santé où se trouvent les crânes, séparés par des virgules, p. ex. 80, 60, 40, 20.",
+  "CustomBossChallenge-ShareCode": "Code de partage",
+  "CustomBossChallenge-ShareCodeInfo": "Copier place toute cette configuration, options du boss et règles de l'éditeur de défis, dans le presse-papiers sous forme de code à coller sur Discord, Reddit ou dans un message. Coller charge un code que quelqu'un vous a partagé.",
+  "CustomBossChallenge-CopyCode": "Copier",
+  "CustomBossChallenge-PasteCode": "Coller",
+  "CustomBossChallenge-CodeCopied": "Code copié dans le presse-papiers ({0} caractères). Collez-le n'importe où pour partager ce boss.",
+  "CustomBossChallenge-LoadCodeQuestion": "Charger cette configuration ? Votre configuration actuelle sera remplacée.",
+  "CustomBossChallenge-CodeInvalid": "Le presse-papiers ne contient pas de code Boss Creator. Copiez le code en entier, en commençant par CBC1:",
+  "CustomBossChallenge-CodeTooNew": "Ce code provient d'une version plus récente de Custom Boss Challenge. Mettez le mod à jour pour le charger.",
+  "CustomBossChallenge-Load": "Charger",
+  "CustomBossChallenge-Cancel": "Annuler",
+  "CustomBossChallenge-TierCount": "{0} niveaux",
   "CustomBossChallenge-UnsupportedMode": "Le mode de jeu {0} ne peut pas être utilisé pour les parties de boss.",
   "CustomBossChallenge-BossUnavailable": "Ce boss ne peut pas être joué : le jeu n'a pas de bloon {0}. Une mise à jour du jeu l'a peut-être modifié."
 }

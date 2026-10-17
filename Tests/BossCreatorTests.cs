@@ -36,12 +36,14 @@ public class BossCreatorTest : CustomBossTest
         try
         {
             yield return EditSetup();
+            yield return ShareCodes();
             yield return NormalEditorHasNoBossSection();
             yield return PlayLaunchesTheGame();
         }
         finally
         {
             BossMode.Store = store;
+            Menus.Clipboard.Reset();
             if (Directory.Exists(folder)) Directory.Delete(folder, true);
         }
     }
@@ -67,7 +69,7 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 11, "Info buttons in the boss section");
+        AssertEquals(infoButtons, 12, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
@@ -140,6 +142,101 @@ public class BossCreatorTest : CustomBossTest
         Assert(Approximately(savedDcm!.bloonModifiers.bossSpeedMultiplier, 1.5f), "Saved boss speed");
         AssertEquals(savedDcm.maxParagons, 1, "Saved max paragons");
         yield return ToMainMenu();
+    }
+
+    /// <summary>
+    /// Copy puts the setup on the clipboard, and Paste loads a shared setup after asking, or explains what is wrong
+    /// </summary>
+    private IEnumerator ShareCodes()
+    {
+        var clipboard = "";
+        Clipboard.Read = () => clipboard;
+        Clipboard.Write = text => clipboard = text;
+
+        BossMode.Enter();
+        ChallengeEditor? editor = null;
+        yield return WaitForEditor(e => editor = e);
+        var section = BossEditorSection.Current!;
+        var mine = BossMode.Options;
+
+        section.CopyCode.Button.onClick.Invoke();
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup popup = null!;
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains(clipboard.Length.ToString()), $"Copied popup: {popup.body.text}");
+        yield return ClosePopup(popup, true);
+        var myCode = clipboard;
+        Assert(SetupCode.TryDecode(myCode, out var copied, out var copiedDcm, out _), $"Copied code: {myCode}");
+        AssertEquals(copied, mine, "Copied options");
+        AssertEquals(copiedDcm!.maxParagons, 1, "Copied max paragons");
+
+        // A setup from someone else
+        var theirs = new BossOptions {Boss = BossType.Lych, Tiers = 3};
+        var theirDcm = Il2CppAssets.Scripts.Models.ServerEvents.DailyChallengeModel.CreateDefaultEditorModel();
+        theirDcm.name = "Shared Lych";
+        theirDcm.map = "Logs";
+        theirDcm.bloonModifiers.bossSpeedMultiplier = 2.5f;
+        clipboard = SetupCode.Encode(theirs, theirDcm);
+
+        // Cancel keeps the current setup
+        section.PasteCode.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains("Shared Lych"), $"Paste popup: {popup.body.text}");
+        yield return ClosePopup(popup, false);
+        AssertEquals(BossMode.Options, mine, "Cancel must keep the options");
+        AssertEquals(editor!.dcm.name, BossMode.DefaultName(BossType.Vortex), "Cancel must keep the challenge");
+
+        // Load replaces it, in the section, the editor and the saved setup
+        section.PasteCode.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        yield return ClosePopup(popup, true);
+        AssertEquals(BossMode.Options, theirs, "Loaded options");
+        Assert(BossMode.Dcm != null && editor.dcm.Pointer == BossMode.Dcm.Pointer, "The editor must edit the loaded setup");
+        AssertEquals(editor.dcm.name, "Shared Lych", "Loaded challenge name");
+        AssertEquals(editor.dcm.map, "Logs", "Loaded map");
+        AssertEquals(section.BossSpeed.Value, 250f, "Loaded boss speed shown");
+        AssertEquals(section.Tiers.Value, 3f, "Loaded tiers shown");
+        AssertEquals(section.MaxParagons.Value, section.MaxParagons.Slider.maxValue, "Loaded max paragons shown");
+        Assert(BossMode.Store.TryLoad(out var saved, out _) && saved == theirs, "The loaded setup was not saved");
+
+        // A broken code and one from a newer version explain themselves
+        clipboard = "not a code";
+        section.PasteCode.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains(Texts.CodeInvalid.T()), $"Invalid code popup: {popup.body.text}");
+        yield return ClosePopup(popup, true);
+        clipboard = "CBC7:abc";
+        section.PasteCode.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains(Texts.CodeTooNew.T()), $"Newer code popup: {popup.body.text}");
+        yield return ClosePopup(popup, true);
+        AssertEquals(BossMode.Options, theirs, "A bad code must not change the setup");
+
+        // Back to the setup from before, for the rest of the test
+        clipboard = myCode;
+        section.PasteCode.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        yield return ClosePopup(popup, true);
+        AssertEquals(BossMode.Options, mine, "Options pasted back");
+        AssertEquals(editor.dcm.maxParagons, 1, "Max paragons pasted back");
+
+        Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
+        yield return WaitFor(() => !BossMode.Active, "Leaving the Boss Creator");
+        yield return ToMainMenu();
+    }
+
+    private IEnumerator WaitForPopup(Action<Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup> found)
+    {
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
+        yield return WaitFor(() => (popup = Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()) != null,
+            "Showing a popup");
+        found(popup!);
+    }
+
+    private static IEnumerator ClosePopup(Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup popup, bool ok)
+    {
+        if (ok) popup.OKClicked();
+        else popup.CancelClicked();
+        yield return new WaitForSecondsRealtime(1);
     }
 
     private IEnumerator NormalEditorHasNoBossSection()

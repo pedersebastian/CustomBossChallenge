@@ -34,6 +34,7 @@ Event and your Boss Challenge records and saves are never affected.
   Spanish, Latin American Spanish, Swedish, Thai and Turkish), following the game's language setting.
 - Every boss option has an **info button** (the "i" on its icon) that explains what it does.
 - **Play** starts the custom boss game straight from the editor.
+- **Share Code**: copy a whole setup as a short text code and paste codes others share.
 - Your **last setup is remembered** between sessions.
 
 ![Boss options](docs/boss-options.jpg)
@@ -49,6 +50,22 @@ Event and your Boss Challenge records and saves are never affected.
    Boss Creator with the same setup. **Reset** also resets the boss options (except the chosen boss).
 
 ![Main menu](docs/main-menu.jpg)
+
+## Sharing setups
+
+The **Share Code** row at the top of the Boss section turns the whole setup, boss options and every Challenge Editor
+rule, into a short text code:
+
+- **Copy** puts the code on the clipboard. Paste it into Discord, Reddit or a message.
+- **Paste** reads a code from the clipboard, shows the challenge name, boss, tiers, map and difficulty, and asks
+  before it replaces your current setup.
+
+Codes start with `CBC1:` and only contain what differs from a new setup, so they are usually a few hundred
+characters. A new, unchanged setup gives a code like this one:
+
+```
+CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA
+```
 
 ## Boss options
 
