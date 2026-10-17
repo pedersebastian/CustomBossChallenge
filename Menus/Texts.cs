@@ -1,0 +1,75 @@
+using BTD_Mod_Helper.Api;
+
+namespace CustomBossChallenge.Menus;
+
+/// <summary>
+/// Every text the mod shows, registered as Mod Helper localization keys. Use <see cref="T"/> to get the text in the
+/// player's language; translations live in Localization/[Language].json.
+/// </summary>
+public static class Texts
+{
+    private static string Key(string name, string english) => ModContent.Localize<CustomBossChallenge>(name, english);
+
+    public static readonly string BossCreator = Key(nameof(BossCreator), "Boss Creator");
+    public static readonly string Boss = Key(nameof(Boss), "Boss");
+    public static readonly string Play = Key(nameof(Play), "Play");
+    public static readonly string Elite = Key(nameof(Elite), "Elite");
+
+    public static readonly string BossType = Key(nameof(BossType), "Boss Type");
+    public static readonly string BossTypeInfo = Key(nameof(BossTypeInfo),
+        "Choose which boss to fight. Tick Elite to fight the much stronger Elite version of the boss.");
+
+    public static readonly string BossSpeed = Key(nameof(BossSpeed), "Boss Speed");
+    public static readonly string BossSpeedInfo = Key(nameof(BossSpeedInfo),
+        "How fast the boss moves, in percent of its normal speed. 100 % is the normal speed.");
+
+    public static readonly string BossHealth = Key(nameof(BossHealth), "Boss Health");
+    public static readonly string BossHealthInfo = Key(nameof(BossHealthInfo),
+        "How much health the boss has, in percent of its normal health. Applies to every tier.");
+
+    public static readonly string AllFortified = Key(nameof(AllFortified), "All Fortified");
+    public static readonly string AllFortifiedInfo = Key(nameof(AllFortifiedInfo),
+        "Makes every bloon that can be fortified fortified, so leads, ceramics and MOAB-class bloons are much tougher.");
+
+    public static readonly string BossTiers = Key(nameof(BossTiers), "Boss Tiers");
+    public static readonly string BossTiersInfo = Key(nameof(BossTiersInfo),
+        "How many tiers of the boss you have to defeat, from 1 to 10. Each tier is stronger than the one before. " +
+        "You win when the last tier is defeated. Tiers above 5 are copies of tier 5 with more health.");
+
+    public static readonly string ExtraTierHealth = Key(nameof(ExtraTierHealth), "Extra Tier Health");
+    public static readonly string ExtraTierHealthInfo = Key(nameof(ExtraTierHealthInfo),
+        "Only for tiers above 5: how much more health each of those tiers has than the tier before it.");
+    public static readonly string PerTier = Key(nameof(PerTier), "+{0} % / tier");
+
+    public static readonly string SpawnRounds = Key(nameof(SpawnRounds), "Spawn Rounds");
+    public static readonly string SpawnRoundsInfo = Key(nameof(SpawnRoundsInfo),
+        "The round each tier arrives on, separated by commas, e.g. 40, 60, 80. Missing rounds continue every 20 " +
+        "rounds. The game's last round is moved to after the last tier so every tier can be played.");
+
+    public static readonly string Skulls = Key(nameof(Skulls), "Skulls");
+    public static readonly string SkullsInfo = Key(nameof(SkullsInfo),
+        "Skulls are points on the boss's health bar where it uses its special ability. Vanilla keeps the normal " +
+        "skulls, Evenly Spaced spreads a number of skulls over the health bar and Custom % puts them at the health " +
+        "percentages you choose.");
+    public static readonly string SkullsVanilla = Key(nameof(SkullsVanilla), "Vanilla");
+    public static readonly string SkullsEvenlySpaced = Key(nameof(SkullsEvenlySpaced), "Evenly Spaced");
+    public static readonly string SkullsCustom = Key(nameof(SkullsCustom), "Custom %");
+
+    public static readonly string SkullCount = Key(nameof(SkullCount), "Skull Count");
+    public static readonly string SkullCountInfo = Key(nameof(SkullCountInfo),
+        "How many evenly spaced skulls the boss has. 0 removes all skulls.");
+
+    public static readonly string SkullHealth = Key(nameof(SkullHealth), "Skull Health %");
+    public static readonly string SkullHealthInfo = Key(nameof(SkullHealthInfo),
+        "The health percentages where the skulls are, separated by commas, e.g. 80, 60, 40, 20.");
+
+    public static readonly string UnsupportedMode = Key(nameof(UnsupportedMode),
+        "The {0} game mode can't be used for boss games.");
+
+    /// <summary>
+    /// The text for a key in the player's language
+    /// </summary>
+    public static string T(this string key) => BTD_Mod_Helper.Extensions.StringExt.Localize(key);
+
+    public static string T(this string key, object arg) => string.Format(key.T(), arg);
+}

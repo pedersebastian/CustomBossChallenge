@@ -25,7 +25,7 @@ public sealed class BossEditorSection
 {
     public const string SectionName = "CustomBossSection";
     public const string PlayName = "CustomBossPlay";
-    public const string Title = "Boss Creator";
+    public static string Title => Texts.BossCreator.T();
     private const string SelectedMarker = "Selected";
 
     /// <summary>Game modes a boss game doesn't support</summary>
@@ -104,7 +104,7 @@ public sealed class BossEditorSection
             var headingRect = heading.GetComponent<RectTransform>();
             headingRect.anchorMin = headingRect.anchorMax = new Vector2(0.5f, 1);
             headingRect.anchoredPosition = new Vector2(titleTemplate.GetComponent<RectTransform>().anchoredPosition.x, -36.5f);
-            EditorRows.SetText(heading.GetComponent<TMP_Text>(), "Boss");
+            EditorRows.SetText(heading.GetComponent<TMP_Text>(), Texts.Boss.T());
         }
 
         var rowsObject = new GameObject("Rows", Il2CppInterop.Runtime.Il2CppType.Of<RectTransform>());
@@ -135,7 +135,7 @@ public sealed class BossEditorSection
     private void BuildRows(ChallengeEditorSliderPanel template)
     {
         // Boss picker and elite toggle
-        var bossRow = EditorRows.LabelRow(template, rows, "BossRow", "Boss Type", VanillaSprites.BossChallenge);
+        var bossRow = EditorRows.LabelRow(template, rows, "BossRow", Texts.BossType.T(), VanillaSprites.BossChallenge);
         var x = EditorRows.ControlX - EditorRows.ControlWidth / 2 + 100;
         foreach (var boss in Enum.GetValues<BossType>())
         {
@@ -165,28 +165,28 @@ public sealed class BossEditorSection
         var eliteLabel = ModHelperText.Create(new Info("EliteLabel", x + 230, 0, 260, 150)
         {
             Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
-        }, "Elite", 80, TextAlignmentOptions.Left);
+        }, Texts.Elite.T(), 80, TextAlignmentOptions.Left);
         eliteLabel.transform.SetParent(bossRow.transform, false);
 
-        BossSpeed = SliderRow.Clone(template, rows, "BossSpeedRow", "Boss Speed", VanillaSprites.FasterBossIcon,
+        BossSpeed = SliderRow.Clone(template, rows, "BossSpeedRow", Texts.BossSpeed.T(), VanillaSprites.FasterBossIcon,
             10, 1000, 10, 100, Percent, value => UpdateDcm(dcm => dcm.bloonModifiers.bossSpeedMultiplier = value / 100f));
-        BossHealth = SliderRow.Clone(template, rows, "BossHealthRow", "Boss Health", VanillaSprites.BossBoostIcon,
+        BossHealth = SliderRow.Clone(template, rows, "BossHealthRow", Texts.BossHealth.T(), VanillaSprites.BossBoostIcon,
             10, 2000, 10, 100, Percent, value => UpdateDcm(dcm => dcm.bloonModifiers.healthMultipliers.boss = value / 100f));
 
-        var fortifiedRow = EditorRows.LabelRow(template, rows, "FortifiedRow", "All Fortified", VanillaSprites.FortifiedBloonsIcon);
+        var fortifiedRow = EditorRows.LabelRow(template, rows, "FortifiedRow", Texts.AllFortified.T(), VanillaSprites.FortifiedBloonsIcon);
         AllFortified = ModHelperCheckbox.Create(EditorRows.ControlInfo("AllFortified", 150, 150),
             false, VanillaSprites.BlueInsertPanelRound,
             new Action<bool>(value => UpdateDcm(dcm => dcm.bloonModifiers.allFortified = value)), VanillaSprites.TickGreenIcon, 20);
         AllFortified.transform.SetParent(fortifiedRow.transform, false);
 
-        Tiers = SliderRow.Clone(template, rows, "TiersRow", "Boss Tiers", VanillaSprites.BossTiersIconSmall,
+        Tiers = SliderRow.Clone(template, rows, "TiersRow", Texts.BossTiers.T(), VanillaSprites.BossTiersIconSmall,
             TierMath.MinTiers, TierMath.MaxTiers, 1, TierMath.VanillaTiers, value => $"{value:0}",
             value => UpdateOptions(o => o with {Tiers = (int) value}));
-        ExtraTierHealth = SliderRow.Clone(template, rows, "ExtraTierHealthRow", "Extra Tier Health",
-            VanillaSprites.BossT5Icon, 100, 500, 10, 150, value => $"+{value - 100:0} % / tier",
+        ExtraTierHealth = SliderRow.Clone(template, rows, "ExtraTierHealthRow", Texts.ExtraTierHealth.T(),
+            VanillaSprites.BossT5Icon, 100, 500, 10, 150, value => Texts.PerTier.T((int) (value - 100)),
             value => UpdateOptions(o => o with {ExtraTierHealth = (int) value}));
 
-        var roundsRow = EditorRows.LabelRow(template, rows, "SpawnRoundsRow", "Spawn Rounds", VanillaSprites.BossT1Icon);
+        var roundsRow = EditorRows.LabelRow(template, rows, "SpawnRoundsRow", Texts.SpawnRounds.T(), VanillaSprites.BossT1Icon);
         SpawnRounds = ModHelperInputField.Create(EditorRows.ControlInfo("SpawnRounds", 1700, 150),
             TierMath.FormatRounds(TierMath.DefaultSpawnRounds(TierMath.VanillaTiers)), VanillaSprites.BlueInsertPanelRound,
             null, 70, TMP_InputField.CharacterValidation.None, TextAlignmentOptions.Center, "40, 60, 80, ...", 10);
@@ -207,11 +207,11 @@ public sealed class BossEditorSection
             }));
         resetRounds.transform.SetParent(roundsRow.transform, false);
 
-        var skullModeRow = EditorRows.LabelRow(template, rows, "SkullModeRow", "Skulls", VanillaSprites.CrossboneSkull);
+        var skullModeRow = EditorRows.LabelRow(template, rows, "SkullModeRow", Texts.Skulls.T(), VanillaSprites.CrossboneSkull);
         var modes = new Il2CppSystem.Collections.Generic.List<string>();
-        modes.Add("Vanilla");
-        modes.Add("Evenly Spaced");
-        modes.Add("Custom %");
+        modes.Add(Texts.SkullsVanilla.T());
+        modes.Add(Texts.SkullsEvenlySpaced.T());
+        modes.Add(Texts.SkullsCustom.T());
         SkullMode = ModHelperDropdown.Create(EditorRows.ControlInfo("SkullMode", 900, 150),
             modes, 500, new Action<int>(index =>
             {
@@ -220,15 +220,26 @@ public sealed class BossEditorSection
             }), VanillaSprites.BlueInsertPanelRound, 70);
         SkullMode.transform.SetParent(skullModeRow.transform, false);
 
-        SkullCount = SliderRow.Clone(template, rows, "SkullCountRow", "Skull Count", VanillaSprites.CrossboneSkull,
+        SkullCount = SliderRow.Clone(template, rows, "SkullCountRow", Texts.SkullCount.T(), VanillaSprites.CrossboneSkull,
             0, SkullMath.MaxSkulls, 1, 3, value => $"{value:0}", value => UpdateOptions(o => o with {SkullCount = (int) value}));
 
-        customSkullsRow = EditorRows.LabelRow(template, rows, "CustomSkullsRow", "Skull Health %", VanillaSprites.CrossboneSkull);
+        customSkullsRow = EditorRows.LabelRow(template, rows, "CustomSkullsRow", Texts.SkullHealth.T(), VanillaSprites.CrossboneSkull);
         CustomSkulls = ModHelperInputField.Create(EditorRows.ControlInfo("CustomSkulls", 1700, 150), "75, 50, 25",
             VanillaSprites.BlueInsertPanelRound, null, 70, TMP_InputField.CharacterValidation.None,
             TextAlignmentOptions.Center, "75, 50, 25", 10);
         CustomSkulls.transform.SetParent(customSkullsRow.transform, false);
         CustomSkulls.InputField.onEndEdit.AddListener(new Action<string>(text => UpdateOptions(o => o with {CustomSkulls = text})));
+
+        EditorRows.AddInfo(bossRow, Texts.BossType, Texts.BossTypeInfo);
+        EditorRows.AddInfo(BossSpeed.Row, Texts.BossSpeed, Texts.BossSpeedInfo);
+        EditorRows.AddInfo(BossHealth.Row, Texts.BossHealth, Texts.BossHealthInfo);
+        EditorRows.AddInfo(fortifiedRow, Texts.AllFortified, Texts.AllFortifiedInfo);
+        EditorRows.AddInfo(Tiers.Row, Texts.BossTiers, Texts.BossTiersInfo);
+        EditorRows.AddInfo(ExtraTierHealth.Row, Texts.ExtraTierHealth, Texts.ExtraTierHealthInfo);
+        EditorRows.AddInfo(roundsRow, Texts.SpawnRounds, Texts.SpawnRoundsInfo);
+        EditorRows.AddInfo(skullModeRow, Texts.Skulls, Texts.SkullsInfo);
+        EditorRows.AddInfo(SkullCount.Row, Texts.SkullCount, Texts.SkullCountInfo);
+        EditorRows.AddInfo(customSkullsRow, Texts.SkullHealth, Texts.SkullHealthInfo);
     }
 
     private GameObject BuildPlayButton()
@@ -241,7 +252,7 @@ public sealed class BossEditorSection
             var button = play.GetComponentInChildren<Button>(true);
             button.onClick = new Button.ButtonClickedEvent();
             button.onClick.AddListener(new Action(OnPlay));
-            EditorRows.SetText(play.GetComponentInChildren<TMP_Text>(true), "Play");
+            EditorRows.SetText(play.GetComponentInChildren<TMP_Text>(true), Texts.Play.T());
         }
         else
         {
@@ -250,7 +261,7 @@ public sealed class BossEditorSection
                 Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
             }, VanillaSprites.GreenBtnLong, new Action(OnPlay));
             button.transform.SetParent(Editor.transform, false);
-            button.AddText(new Info("Label", InfoPreset.FillParent), "Play", 90);
+            button.AddText(new Info("Label", InfoPreset.FillParent), Texts.Play.T(), 90);
             play = button.gameObject;
         }
 
@@ -489,7 +500,7 @@ public sealed class BossEditorSection
         if (UnsupportedModes.Contains(dcm.mode))
         {
             PopupScreen.instance.SafelyQueue(screen =>
-                screen.ShowOkPopup($"The {dcm.mode} game mode can't be used for boss games.", null));
+                screen.ShowOkPopup(Texts.UnsupportedMode.T(dcm.mode), null));
             return;
         }
 

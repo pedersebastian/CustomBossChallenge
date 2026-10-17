@@ -1,5 +1,7 @@
 using System;
 using BTD_Mod_Helper.Api.Components;
+using BTD_Mod_Helper.Api.Enums;
+using Il2CppAssets.Scripts.Unity.UI_New.Popups;
 using Il2Cpp;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
 using Il2CppTMPro;
@@ -159,6 +161,38 @@ public static class EditorRows
 
         text.text = value;
     }
+
+    /// <summary>
+    /// Adds a small info button on the row's icon that explains the option in a popup. Clicking the icon works too.
+    /// </summary>
+    public static ModHelperButton AddInfo(GameObject row, string titleKey, string textKey)
+    {
+        var action = new Action(() => ShowInfo(titleKey, textKey));
+        var icon = row.transform.Find("Image");
+        var button = ModHelperButton.Create(new Info(InfoName, 0, 0, 100, 100)
+        {
+            Anchor = new Vector2(0, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
+        }, VanillaSprites.InfoBtn2, action);
+        button.transform.SetParent(icon != null ? icon : row.transform, false);
+        if (icon != null)
+        {
+            // Top right corner of the icon
+            var rect = button.RectTransform;
+            rect.anchorMin = rect.anchorMax = new Vector2(1, 1);
+            rect.anchoredPosition = new Vector2(-15, -15);
+            var iconButton = icon.gameObject.GetComponent<Button>() ?? icon.gameObject.AddComponent<Button>();
+            iconButton.onClick = new Button.ButtonClickedEvent();
+            iconButton.onClick.AddListener(action);
+        }
+
+        return button;
+    }
+
+    public const string InfoName = "Info";
+
+    public static void ShowInfo(string titleKey, string textKey) =>
+        PopupScreen.instance.SafelyQueue(screen =>
+            screen.ShowOkPopup($"<b>{titleKey.T()}</b>\n\n{textKey.T()}", null));
 
     /// <summary>
     /// Info for a control placed where a row's slider would be

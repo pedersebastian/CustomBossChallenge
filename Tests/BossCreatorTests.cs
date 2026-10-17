@@ -61,6 +61,22 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(section.BossButtons.Count, Enum.GetValues<BossType>().Length, "Boss buttons");
         AssertEquals(editor!.chalName.text, BossMode.DefaultName(BossType.Bloonarius), "Default challenge name");
 
+        // Every boss option explains itself through an info button
+        var infoButtons = 0;
+        foreach (var info in section.Section.GetComponentsInChildren<Button>(true))
+        {
+            if (info.name == EditorRows.InfoName) infoButtons++;
+        }
+        AssertEquals(infoButtons, 10, "Info buttons in the boss section");
+
+        section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
+        yield return WaitFor(() => (popup = Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()) != null,
+            "Opening the info popup");
+        Assert(popup!.body.text.Contains(Texts.BossTiersInfo.T()), $"Info popup text: {popup.body.text}");
+        popup.TryHidePop();
+        yield return new WaitForSecondsRealtime(1);
+
         section.BossButtons[BossType.Vortex].Button.onClick.Invoke();
         section.Elite.SetChecked(true, true);
         section.BossSpeed.Slider.value = 150;

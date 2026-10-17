@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom games also skip boss tier progress and badges.
 - New in-game tests for the Boss Creator flow, the main menu button, extra tiers played to victory, tier math and saving the setup, plus a windowed screenshot tour.
 
+- Info buttons on every boss option that explain what the option does.
+
 ### Changed
 
 - Bloon sliders and starting rules now come from the Challenge Editor instead of the mod's own settings.

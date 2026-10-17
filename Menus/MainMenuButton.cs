@@ -19,7 +19,7 @@ namespace CustomBossChallenge.Menus;
 public static class MainMenuButton
 {
     public const string Name = "CustomBossCreatorButton";
-    public const string Label = "Boss Creator";
+    public static string Label => Texts.BossCreator.T();
     public const float Size = 300;
 
     /// <summary>

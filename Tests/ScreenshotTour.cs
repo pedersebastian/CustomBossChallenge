@@ -66,6 +66,12 @@ public class ScreenshotTour : CustomBossTest
             yield return new WaitForSecondsRealtime(1);
             yield return Capture(folder, "editor-top");
 
+            EditorRows.ShowInfo(Texts.BossTiers, Texts.BossTiersInfo);
+            yield return new WaitForSecondsRealtime(1.5f);
+            yield return Capture(folder, "info-popup");
+            Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()?.TryHidePop();
+            yield return new WaitForSecondsRealtime(1);
+
             var scroll = editor.GetComponentInChildren<ScrollRect>();
             foreach (var position in new[] {0.75f, 0.5f, 0f})
             {
