@@ -248,6 +248,16 @@ public class BossCreatorTest : CustomBossTest
         section.AllFortified.SetChecked(true, true);
         section.SkullMode.Dropdown.value = (int) SkullMode.Custom;
 
+        // The skull field shows what it understood, and a list without valid values keeps the previous skulls
+        section.CustomSkulls.InputField.text = "25,25,50";
+        section.CustomSkulls.InputField.onEndEdit.Invoke("25,25,50");
+        AssertEquals(section.CustomSkulls.InputField.text, "50, 25", "Skulls shown after editing");
+        AssertEquals(BossMode.Options.CustomSkulls, "50, 25", "Skulls in the setup");
+        section.CustomSkulls.InputField.text = "junk";
+        section.CustomSkulls.InputField.onEndEdit.Invoke("junk");
+        AssertEquals(section.CustomSkulls.InputField.text, "50, 25", "Skulls shown after invalid input");
+        AssertEquals(BossMode.Options.CustomSkulls, "50, 25", "Skulls in the setup after invalid input");
+
         editor.clearBtn.onClick.Invoke();
         yield return new WaitForSecondsRealtime(1);
 
@@ -255,6 +265,7 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(section.BossSpeed.Value, 100f, "Boss speed shown after reset");
         AssertEquals(section.BossHealth.Value, 100f, "Boss health shown after reset");
         AssertEquals(section.Tiers.Value, 5f, "Tiers shown after reset");
+        AssertEquals(section.CustomSkulls.InputField.text, new BossOptions().CustomSkulls, "Skulls shown after reset");
         Assert(!section.AllFortified.CurrentValue, "All fortified shown after reset");
         Assert(Approximately(editor.dcm.bloonModifiers.bossSpeedMultiplier, 1), "Boss speed in the model after reset");
         Assert(Approximately(editor.dcm.bloonModifiers.healthMultipliers.boss, 1), "Boss health in the model after reset");

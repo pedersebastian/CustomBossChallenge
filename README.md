@@ -62,7 +62,7 @@ Event and your Boss Challenge records and saves are never affected.
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
 | Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
-| Skull Health % | comma separated % | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. |
+| Skull Health % | comma separated % (1–99) | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. Use a point for decimals (`33.5`). The field shows the list as it is used: sorted, duplicates merged, invalid values dropped. |
 
 The game's end round is moved to 20 rounds after the last tier (round 140 for the default 5 tiers, like the weekly
 events) unless you set a later one yourself, and a starting round after the last tier is reset. Otherwise the

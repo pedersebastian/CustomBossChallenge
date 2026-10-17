@@ -25,7 +25,7 @@ public class PersistenceTest : CustomBossTest
 
             var options = new BossOptions
             {
-                Boss = BossType.Diamondback, Elite = true, SkullMode = SkullMode.Custom, CustomSkulls = "90,10",
+                Boss = BossType.Diamondback, Elite = true, SkullMode = SkullMode.Custom, CustomSkulls = "90, 10",
                 Tiers = 7, ExtraTierHealth = 175, SpawnRounds = "30, 50, 70"
             };
             var dcm = CustomEditorDcm();

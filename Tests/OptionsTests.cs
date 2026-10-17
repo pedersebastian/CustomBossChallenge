@@ -121,6 +121,13 @@ public class SkullMathTest : CustomBossTest
         AssertEquals(SkullMath.ParseCustom("nothing valid"), null, "Junk must give null");
         AssertEquals(SkullMath.ParseCustom(""), null, "Empty must give null");
 
+        AssertEquals(SkullMath.NormalizeCustom("25,25,50", "x"), "50, 25", "Duplicates are shown merged");
+        AssertEquals(SkullMath.NormalizeCustom(" 33.5% ; 90 abc", "x"), "90, 33.5", "Decimals and junk");
+        AssertEquals(SkullMath.NormalizeCustom("33,5", "x"), "33, 5", "A decimal comma separates two skulls");
+        AssertEquals(SkullMath.NormalizeCustom("junk, 0, 100", "75, 50, 25"), "75, 50, 25", "Nothing valid keeps the fallback");
+        AssertEquals(SkullMath.NormalizeCustom(new BossOptions().CustomSkulls, "x"), new BossOptions().CustomSkulls,
+            "The default skulls are already normalized");
+
         AssertEquals(new BossOptions().SkullPercents, null, "Vanilla skull mode must keep the skulls");
         Assert(SameValues(new BossOptions {SkullMode = SkullMode.Custom, CustomSkulls = "60, 30"}.SkullPercents,
             new[] {0.6f, 0.3f}), "Custom skull mode");

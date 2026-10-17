@@ -29,7 +29,7 @@ public sealed record BossOptions
 
     public SkullMode SkullMode { get; init; } = SkullMode.Vanilla;
     public int SkullCount { get; init; } = 3;
-    public string CustomSkulls { get; init; } = "75,50,25";
+    public string CustomSkulls { get; init; } = "75, 50, 25";
 
     /// <summary>Number of boss tiers, 1-10. Tiers above 5 are stronger copies of tier 5.</summary>
     public int Tiers { get; init; } = TierMath.VanillaTiers;
@@ -74,7 +74,7 @@ public sealed record BossOptions
             Boss = System.Enum.IsDefined(Boss) ? Boss : defaults.Boss,
             SkullMode = System.Enum.IsDefined(SkullMode) ? SkullMode : defaults.SkullMode,
             SkullCount = System.Math.Clamp(SkullCount, 0, SkullMath.MaxSkulls),
-            CustomSkulls = CustomSkulls ?? defaults.CustomSkulls,
+            CustomSkulls = SkullMath.NormalizeCustom(CustomSkulls, defaults.CustomSkulls),
             Tiers = TierMath.ClampTiers(Tiers),
             ExtraTierHealth = System.Math.Clamp(ExtraTierHealth, TierMath.MinExtraTierHealth, TierMath.MaxExtraTierHealth)
         };

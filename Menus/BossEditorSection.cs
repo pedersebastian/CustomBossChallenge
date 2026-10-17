@@ -228,7 +228,13 @@ public sealed class BossEditorSection
             VanillaSprites.BlueInsertPanelRound, null, 70, TMP_InputField.CharacterValidation.None,
             TextAlignmentOptions.Center, "75, 50, 25", 10);
         CustomSkulls.transform.SetParent(customSkullsRow.transform, false);
-        CustomSkulls.InputField.onEndEdit.AddListener(new Action<string>(text => UpdateOptions(o => o with {CustomSkulls = text})));
+        CustomSkulls.InputField.onEndEdit.AddListener(new Action<string>(text =>
+        {
+            // Show what was understood; a list without any valid percentage keeps the previous skulls
+            var skulls = SkullMath.NormalizeCustom(text, ShownSkulls(BossMode.Options));
+            UpdateOptions(o => o with {CustomSkulls = skulls});
+            CustomSkulls.SetText(skulls, false);
+        }));
 
         EditorRows.AddInfo(bossRow, Texts.BossType, Texts.BossTypeInfo);
         EditorRows.AddInfo(BossSpeed.Row, Texts.BossSpeed, Texts.BossSpeedInfo);
@@ -367,7 +373,7 @@ public sealed class BossEditorSection
             ExtraTierHealth.Show(options.ExtraTierHealth);
             SkullMode.Dropdown.SetValueWithoutNotify((int) options.SkullMode);
             SkullCount.Show(options.SkullCount);
-            CustomSkulls.SetText(options.CustomSkulls, false);
+            CustomSkulls.SetText(ShownSkulls(options), false);
             ShowSpawnRounds();
             FollowBossName(options.Boss);
             ShowBoss();
@@ -442,6 +448,9 @@ public sealed class BossEditorSection
             button.transform.Find(SelectedMarker)?.gameObject.SetActive(selected);
         }
     }
+
+    private static string ShownSkulls(BossOptions options) =>
+        SkullMath.NormalizeCustom(options.CustomSkulls, new BossOptions().CustomSkulls);
 
     private void ShowSpawnRounds() =>
         SpawnRounds.SetText(TierMath.FormatRounds(BossMode.Options.EffectiveSpawnRounds), false);

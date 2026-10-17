@@ -43,4 +43,17 @@ public static class SkullMath
 
         return values.Length == 0 ? null : values;
     }
+
+    /// <summary>
+    /// Thresholds as the player writes them, e.g. [0.5, 0.335] -> "50, 33.5"
+    /// </summary>
+    public static string FormatCustom(float[] thresholds) =>
+        string.Join(", ", thresholds.Select(f => Math.Round(f * 100.0, 2).ToString("0.##", CultureInfo.InvariantCulture)));
+
+    /// <summary>
+    /// The list as it is understood, e.g. "25,25,50" -> "50, 25", so the player sees duplicates and junk dropped.
+    /// A list without a single valid value gives <paramref name="fallback"/> instead.
+    /// </summary>
+    public static string NormalizeCustom(string? text, string fallback) =>
+        ParseCustom(text) is { } values ? FormatCustom(values) : fallback;
 }

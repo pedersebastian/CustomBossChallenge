@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Spawn rounds near round 1000 could put two tiers on the same round.
 - The challenge name now also follows the boss when a setup is loaded, not only when a boss is clicked.
 - Play now explains in a popup why a boss can't be played, instead of doing nothing.
+- The Skull Health % field now shows the skulls as they are used (sorted, duplicates merged, invalid values
+  dropped), and a list without any valid value keeps the previous skulls instead of silently using the vanilla ones.
 
 ### Changed
 
