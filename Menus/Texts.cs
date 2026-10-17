@@ -31,6 +31,12 @@ public static class Texts
     public static readonly string AllFortifiedInfo = Key(nameof(AllFortifiedInfo),
         "Makes every bloon that can be fortified fortified, so leads, ceramics and MOAB-class bloons are much tougher.");
 
+    public static readonly string MaxParagons = Key(nameof(MaxParagons), "Max Paragons");
+    public static readonly string MaxParagonsInfo = Key(nameof(MaxParagonsInfo),
+        "How many paragons you can have at the same time. 0 means no paragons. Drag the slider all the way to the " +
+        "right for no limit.");
+    public static readonly string Unlimited = Key(nameof(Unlimited), "Unlimited");
+
     public static readonly string BossTiers = Key(nameof(BossTiers), "Boss Tiers");
     public static readonly string BossTiersInfo = Key(nameof(BossTiersInfo),
         "How many tiers of the boss you have to defeat, from 1 to 10. Each tier is stronger than the one before. " +

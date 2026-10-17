@@ -67,7 +67,7 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 10, "Info buttons in the boss section");
+        AssertEquals(infoButtons, 11, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
@@ -77,11 +77,15 @@ public class BossCreatorTest : CustomBossTest
         popup.TryHidePop();
         yield return new WaitForSecondsRealtime(1);
 
+        AssertEquals(section.MaxParagons.Value, section.MaxParagons.Slider.maxValue, "Max paragons must default to unlimited");
+        AssertEquals(editor.dcm.maxParagons, ParagonMath.NoLimit, "No paragon limit in a new setup");
+
         section.BossButtons[BossType.Vortex].Button.onClick.Invoke();
         section.Elite.SetChecked(true, true);
         section.BossSpeed.Slider.value = 150;
         section.BossHealth.Slider.value = 300;
         section.AllFortified.SetChecked(true, true);
+        section.MaxParagons.Slider.value = 1;
         section.Tiers.Slider.value = 7;
         section.ExtraTierHealth.Slider.value = 200;
         section.SkullMode.Dropdown.value = (int) SkullMode.EvenlySpaced;
@@ -107,6 +111,7 @@ public class BossCreatorTest : CustomBossTest
         Assert(Approximately(dcm.bloonModifiers.bossSpeedMultiplier, 1.5f), "Boss speed in the editor's model");
         Assert(Approximately(dcm.bloonModifiers.healthMultipliers.boss, 3), "Boss health in the editor's model");
         Assert(dcm.bloonModifiers.allFortified, "All fortified in the editor's model");
+        AssertEquals(dcm.maxParagons, 1, "Max paragons in the editor's model");
 
         section.BossSpeed.Show(100);
         editor.ApplyDcmSettingsToUI();
@@ -133,6 +138,7 @@ public class BossCreatorTest : CustomBossTest
         Assert(BossMode.Store.TryLoad(out var saved, out var savedDcm), "The setup was not saved");
         AssertEquals(saved, expected, "Saved options");
         Assert(Approximately(savedDcm!.bloonModifiers.bossSpeedMultiplier, 1.5f), "Saved boss speed");
+        AssertEquals(savedDcm.maxParagons, 1, "Saved max paragons");
         yield return ToMainMenu();
     }
 
@@ -173,6 +179,7 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(data.bossData.bossBloon, BossType.Vortex, "Boss");
         Assert(data.bossData.bossEliteMode, "Elite");
         Assert(!data.bossData.bossRankedMode, "Ranked");
+        AssertEquals(data.dcModel.maxParagons, 1, "Max paragons in the game");
         AssertEquals(TierMath.FormatRounds(InGame.instance.bridge.Simulation.map.spawner.bossBloonManager.spawnRounds),
             "29, 49, 69, 89, 109, 129, 149", "Spawn rounds (the game counts rounds from 0)");
         Assert(InGame.instance.GetGameModel().DoesBloonExist("VortexElite7"), "Tier 7 model");
@@ -246,6 +253,7 @@ public class BossCreatorTest : CustomBossTest
     {
         var section = BossEditorSection.Current!;
         section.AllFortified.SetChecked(true, true);
+        section.MaxParagons.Slider.value = 2;
         section.SkullMode.Dropdown.value = (int) SkullMode.Custom;
 
         // The skull field shows what it understood, and a list without valid values keeps the previous skulls
@@ -270,6 +278,8 @@ public class BossCreatorTest : CustomBossTest
         Assert(Approximately(editor.dcm.bloonModifiers.bossSpeedMultiplier, 1), "Boss speed in the model after reset");
         Assert(Approximately(editor.dcm.bloonModifiers.healthMultipliers.boss, 1), "Boss health in the model after reset");
         Assert(!editor.dcm.bloonModifiers.allFortified, "All fortified in the model after reset");
+        AssertEquals(section.MaxParagons.Value, section.MaxParagons.Slider.maxValue, "Max paragons shown after reset");
+        AssertEquals(editor.dcm.maxParagons, ParagonMath.NoLimit, "Max paragons in the model after reset");
     }
 
     private IEnumerator WaitForEditor(Action<ChallengeEditor> found)

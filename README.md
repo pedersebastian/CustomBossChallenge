@@ -23,6 +23,7 @@ Event and your Boss Challenge records and saves are never affected.
   - **Boss Speed** and **Boss Health** sliders, using the game's own boss multipliers (the same ones Ninja Kiwi uses
     for weekly events such as "Vortex at 150% speed").
   - **All Fortified**, which the vanilla editor doesn't offer.
+  - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
   - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with **Extra Tier Health** (e.g. +50% per tier).
     With fewer than 5 tiers, beating the last one wins the game.
   - **Spawn Rounds** for every tier (default 40, 60, 80, 100, 120, then every 20 rounds).
@@ -57,6 +58,7 @@ Event and your Boss Challenge records and saves are never affected.
 | Boss Speed | 10–1000 % | 100 % | |
 | Boss Health | 10–2000 % | 100 % | |
 | All Fortified | on / off | off | |
+| Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
 | Boss Tiers | 1–10 | 5 | The game is won when the last tier is defeated. |
 | Extra Tier Health | 100–500 % | 150 % | Health of each tier above 5 relative to the tier before it. |
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |

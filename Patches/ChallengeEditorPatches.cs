@@ -63,6 +63,7 @@ internal static class ChallengeEditor_Clear
         modifiers.bossSpeedMultiplier = 1;
         modifiers.healthMultipliers.boss = 1;
         modifiers.allFortified = false;
+        __instance.dcm.maxParagons = ParagonMath.NoLimit;
         BossMode.Options = new BossOptions {Boss = BossMode.Options.Boss};
         BossEditorSection.Current?.Load(__instance.dcm, BossMode.Options);
     }

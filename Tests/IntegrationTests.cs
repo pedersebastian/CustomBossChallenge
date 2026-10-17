@@ -1,11 +1,15 @@
 using System.Collections;
+using System.Linq;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Patches;
+using Il2CppAssets.Scripts.Unity.Bridge;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Simulation.Bloons;
 using Il2CppAssets.Scripts.Unity;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
+using Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu;
+using UnityEngine;
 using static CustomBossChallenge.Tests.TestUtils;
 
 namespace CustomBossChallenge.Tests;
@@ -115,5 +119,39 @@ public class BossGameLauncherTest : CustomBossTest
         Assert(System.Math.Abs(boss.health - expected) / expected < 0.01f, $"Tier 6 health {boss.health}, expected {expected}");
 
         yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// The game itself enforces the Boss Creator's Max Paragons in a custom game
+/// </summary>
+public class ParagonLimitGameTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        TowerToSimulation? paragon = null;
+        yield return PlaceParagon(1, t => paragon = t);
+        Assert(TowerSelectionMenuUtils.HasReachedParagonLimit(paragon!), "A limit of 1 must be reached by one paragon");
+        yield return ToMainMenu();
+
+        yield return PlaceParagon(ParagonMath.NoLimit, t => paragon = t);
+        Assert(!TowerSelectionMenuUtils.HasReachedParagonLimit(paragon!), "Without a limit one paragon must not reach it");
+        yield return ToMainMenu();
+    }
+
+    private IEnumerator PlaceParagon(int maxParagons, System.Action<TowerToSimulation> placed)
+    {
+        var dcm = BaseDcm();
+        dcm.maxParagons = maxParagons;
+        yield return LoadIntoGame(SetupBossChallenge(CustomBossState.Prepare(dcm, new BossOptions()), BossType.Bloonarius));
+        Assert(CustomBossState.IsActive, "Custom state is not active in game");
+        AssertEquals(TowerSelectionMenuUtils.MaxParagons, maxParagons, "The game's paragon limit");
+
+        var model = Game.instance.model.towers.First(t => t.isParagon && t.baseId == "DartMonkey");
+        var tower = CreateTowerAt(InGame.instance.bridge, new Vector2(-40, 0), model);
+        yield return new WaitForSecondsRealtime(0.5f);
+        AssertNotNull(tower, "The paragon was not placed");
+        Assert(tower.Def.isParagon, $"Placed {tower.Def.name} instead of a paragon");
+        placed(tower);
     }
 }

@@ -134,3 +134,29 @@ public class SkullMathTest : CustomBossTest
         yield break;
     }
 }
+
+/// <summary>
+/// The Max Paragons slider: its last position means no limit
+/// </summary>
+public class ParagonMathTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        AssertEquals(DailyChallengeModel.CreateDefaultEditorModel().maxParagons, ParagonMath.NoLimit,
+            "The game's own default must be no limit");
+        Assert(ParagonMath.Available >= 14, $"Paragons in the game: {ParagonMath.Available}");
+
+        AssertEquals(ParagonMath.ToSlider(ParagonMath.NoLimit, 14), 14, "No limit is the last position");
+        AssertEquals(ParagonMath.ToSlider(0, 14), 0, "No paragons");
+        AssertEquals(ParagonMath.ToSlider(3, 14), 3, "A limit");
+        AssertEquals(ParagonMath.ToSlider(14, 14), 14, "A limit of every paragon is no limit");
+        AssertEquals(ParagonMath.ToSlider(500, 14), 14, "A limit above every paragon is no limit");
+        AssertEquals(ParagonMath.ToSlider(-7, 14), 14, "Negative values are no limit");
+
+        AssertEquals(ParagonMath.FromSlider(14, 14), ParagonMath.NoLimit, "The last position is no limit");
+        AssertEquals(ParagonMath.FromSlider(0, 14), 0, "No paragons");
+        AssertEquals(ParagonMath.FromSlider(13, 14), 13, "The highest limit");
+        AssertEquals(ParagonMath.FromSlider(-1, 14), 0, "Below the slider");
+        yield break;
+    }
+}

@@ -34,6 +34,7 @@ public class PersistenceTest : CustomBossTest
             dcm.difficulty = "Hard";
             dcm.bloonModifiers.allFortified = true;
             dcm.disableSelling = true;
+            dcm.maxParagons = 2;
             store.Save(options, dcm);
             Assert(File.Exists(store.FilePath), "The setup file was not written");
             Assert(!File.Exists(store.FilePath + ".tmp"), "The temporary file was left behind");
@@ -50,6 +51,13 @@ public class PersistenceTest : CustomBossTest
             Assert(Approximately(loaded.bloonModifiers.healthMultipliers.boss, 0.5f), "Boss health");
             Assert(loaded.bloonModifiers.allFortified, "All fortified");
             Assert(loaded.disableSelling, "No selling");
+            AssertEquals(loaded.maxParagons, 2, "Max paragons");
+
+            // Setups saved before Max Paragons existed have no limit
+            var oldChallenge = System.Text.RegularExpressions.Regex.Replace(DcmJson.Serialize(dcm), "\"maxParagons\":-?[0-9]+,?", "");
+            Assert(!oldChallenge.Contains("maxParagons"), "The old challenge still has max paragons");
+            AssertEquals(AssertNotNull(DcmJson.Deserialize(oldChallenge), "Old challenge")!.maxParagons, ParagonMath.NoLimit,
+                "Max paragons of an old setup");
 
             // A hand edited or future file: values out of range are brought back into range, unknown fields ignored
             var challenge = Newtonsoft.Json.JsonConvert.SerializeObject(DcmJson.Serialize(dcm));

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Max Paragons** slider in the Boss section: limit how many paragons can be placed, from 0 (no paragons) up to
+  one less than the number of paragons in the game. All the way to the right is Unlimited, the default. Uses the
+  game's own paragon limit, the same one events use.
+
 ## [2.0.2] - 2026-10-17
 
 ### Fixed

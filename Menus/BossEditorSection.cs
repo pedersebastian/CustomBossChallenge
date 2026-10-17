@@ -54,6 +54,7 @@ public sealed class BossEditorSection
     public SliderRow Tiers { get; private set; } = null!;
     public SliderRow ExtraTierHealth { get; private set; } = null!;
     public SliderRow SkullCount { get; private set; } = null!;
+    public SliderRow MaxParagons { get; private set; } = null!;
     public ModHelperCheckbox Elite { get; private set; } = null!;
     public ModHelperCheckbox AllFortified { get; private set; } = null!;
     public ModHelperDropdown SkullMode { get; private set; } = null!;
@@ -179,6 +180,12 @@ public sealed class BossEditorSection
             new Action<bool>(value => UpdateDcm(dcm => dcm.bloonModifiers.allFortified = value)), VanillaSprites.TickGreenIcon, 20);
         AllFortified.transform.SetParent(fortifiedRow.transform, false);
 
+        // The last position means no limit
+        var paragons = ParagonMath.Available;
+        MaxParagons = SliderRow.Clone(template, rows, "MaxParagonsRow", Texts.MaxParagons.T(), VanillaSprites.ParagonLimitIcon,
+            0, paragons, 1, paragons, value => value >= paragons ? Texts.Unlimited.T() : $"{value:0}",
+            value => UpdateDcm(dcm => dcm.maxParagons = ParagonMath.FromSlider((int) value, paragons)));
+
         Tiers = SliderRow.Clone(template, rows, "TiersRow", Texts.BossTiers.T(), VanillaSprites.BossTiersIconSmall,
             TierMath.MinTiers, TierMath.MaxTiers, 1, TierMath.VanillaTiers, value => $"{value:0}",
             value => UpdateOptions(o => o with {Tiers = (int) value}));
@@ -240,6 +247,7 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(BossSpeed.Row, Texts.BossSpeed, Texts.BossSpeedInfo);
         EditorRows.AddInfo(BossHealth.Row, Texts.BossHealth, Texts.BossHealthInfo);
         EditorRows.AddInfo(fortifiedRow, Texts.AllFortified, Texts.AllFortifiedInfo);
+        EditorRows.AddInfo(MaxParagons.Row, Texts.MaxParagons, Texts.MaxParagonsInfo);
         EditorRows.AddInfo(Tiers.Row, Texts.BossTiers, Texts.BossTiersInfo);
         EditorRows.AddInfo(ExtraTierHealth.Row, Texts.ExtraTierHealth, Texts.ExtraTierHealthInfo);
         EditorRows.AddInfo(roundsRow, Texts.SpawnRounds, Texts.SpawnRoundsInfo);
@@ -366,6 +374,7 @@ public sealed class BossEditorSection
                 BossSpeed.Show(Mathf.Round(dcm.bloonModifiers.bossSpeedMultiplier * 100));
                 BossHealth.Show(Mathf.Round(dcm.bloonModifiers.healthMultipliers.boss * 100));
                 AllFortified.SetChecked(dcm.bloonModifiers.allFortified, false);
+                MaxParagons.Show(ParagonMath.ToSlider(dcm.maxParagons, (int) MaxParagons.Slider.maxValue));
             }
 
             Elite.SetChecked(options.Elite, false);
@@ -396,6 +405,7 @@ public sealed class BossEditorSection
         dcm.bloonModifiers.bossSpeedMultiplier = BossSpeed.Value / 100f;
         dcm.bloonModifiers.healthMultipliers.boss = BossHealth.Value / 100f;
         dcm.bloonModifiers.allFortified = AllFortified.CurrentValue;
+        dcm.maxParagons = ParagonMath.FromSlider((int) MaxParagons.Value, (int) MaxParagons.Slider.maxValue);
     }
 
     private void UpdateDcm(Action<DailyChallengeModel> change)
