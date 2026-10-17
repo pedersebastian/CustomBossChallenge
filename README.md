@@ -115,8 +115,7 @@ How to build the mod from source and run its automated tests is described in
 
 This mod was made with the help of AI. Most of the code, tests, documentation and translations were written by
 Claude (Anthropic) through Claude Code, guided, reviewed and play-tested by me. The translations are machine-made and
-may sound unnatural in some languages; corrections are welcome as issues or pull requests. This is an unofficial fan
-mod and is not affiliated with or endorsed by Ninja Kiwi.
+may sound unnatural in some languages; corrections are welcome as issues or pull requests.
 
 ## License
 
