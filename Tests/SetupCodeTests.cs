@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Persistence;
 using Il2CppAssets.Scripts.Data.Boss;
@@ -89,4 +90,80 @@ public class SetupCodeTest : CustomBossTest
     }
 
     private static string Shorten(string? text) => text == null ? "null" : text.Length > 30 ? text[..30] + "..." : text;
+}
+
+/// <summary>
+/// Hand made codes can't create other types, push values out of range, break the game or dress up the popup
+/// </summary>
+public class MaliciousCodeTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        // Type names anywhere are removed before the game reads the challenge
+        var typed = SetupCode.Pack(
+            "{\"o\":{\"$type\":\"System.IO.FileInfo, System.IO.FileSystem\"},\"c\":{" +
+            "\"$type\":\"System.IO.FileInfo, System.IO.FileSystem\"," +
+            "\"customMapModel\":{\"$type\":\"System.Diagnostics.Process, System\",\"StartInfo\":{\"FileName\":\"calc\"}}," +
+            "\"bloonModifiers\":{\"$type\":\"Nope\",\"$ref\":\"1\",\"allCamo\":true}," +
+            "\"towers\":{\"$items\":{\"0\":{\"$type\":\"Nope\",\"max\":2}}}}}");
+        Assert(SetupCode.TryDecode(typed, out _, out var typedDcm, out var typedProblem),
+            $"A code with type names must still load without them: {typedProblem}");
+        Assert(typedDcm!.bloonModifiers.allCamo, "The rest of the code must still apply");
+        AssertEquals(typedDcm.customMapModel, null, "Custom map model");
+        AssertEquals(typedDcm.towers[0].max, 2, "Tower limit next to a type name");
+        var json = Newtonsoft.Json.Linq.JToken.Parse("{\"$type\":\"a\",\"x\":[{\"$id\":\"1\",\"y\":{\"$values\":[]}}]}");
+        DcmJson.RemoveMetadata(json);
+        AssertEquals(json.ToString(Newtonsoft.Json.Formatting.None), "{\"x\":[{\"y\":{}}]}", "Metadata removed everywhere");
+
+        // Values far outside what the editor allows are brought into range
+        var extreme = SetupCode.Pack(
+            "{\"o\":{\"Tiers\":9999,\"Boss\":99},\"c\":{" +
+            "\"bloonModifiers\":{\"bossSpeedMultiplier\":1e30,\"speedMultiplier\":NaN,\"moabSpeedMultiplier\":-3," +
+            "\"healthMultipliers\":{\"boss\":-5,\"moabs\":1e9}}," +
+            "\"startRules\":{\"cash\":2147483647,\"lives\":0,\"round\":-77,\"endRound\":2000000000,\"revives\":5000}," +
+            "\"maxTowers\":999999,\"abilityCooldownReductionMultiplier\":-1," +
+            "\"map\":\"NoSuchMap\",\"difficulty\":\"Nightmare\",\"mode\":\"Hacked\"," +
+            "\"name\":\"  Line\nbreak\u0000 and a very long name that keeps going and going and going on\"}}");
+        Assert(SetupCode.TryDecode(extreme, out var options, out var dcm, out var problem),
+            $"A code with extreme values must still load: {problem}");
+        AssertEquals(options.Tiers, TierMath.MaxTiers, "Tiers");
+        AssertEquals(options.Boss, new BossOptions().Boss, "Unknown boss number");
+        Assert(!SetupCode.TryDecode(SetupCode.Pack("{\"o\":{\"Boss\":\"NotABoss\"},\"c\":{}}"), out _, out _, out _),
+            "A boss this version doesn't know must not load");
+        var defaults = DailyChallengeModel.CreateDefaultEditorModel();
+        var modifiers = dcm!.bloonModifiers;
+        AssertEquals(modifiers.bossSpeedMultiplier, ChallengeLimits.MaxBossSpeed, "Boss speed");
+        AssertEquals(modifiers.speedMultiplier, ChallengeLimits.MinMultiplier, "NaN bloon speed");
+        AssertEquals(modifiers.moabSpeedMultiplier, ChallengeLimits.MinMultiplier, "Negative MOAB speed");
+        AssertEquals(modifiers.healthMultipliers.boss, ChallengeLimits.MinBossHealth, "Boss health");
+        AssertEquals(modifiers.healthMultipliers.moabs, ChallengeLimits.MaxMultiplier, "MOAB health");
+        AssertEquals(dcm.startRules.cash, ChallengeLimits.MaxCash, "Cash");
+        AssertEquals(dcm.startRules.lives, 1, "Lives");
+        AssertEquals(dcm.startRules.round, -1, "A negative start round means default");
+        AssertEquals(dcm.startRules.endRound, TierMath.MaxRound + TierMath.RoundsBetweenTiers, "End round");
+        AssertEquals(dcm.startRules.revives, ChallengeLimits.MaxRevives, "Revives");
+        AssertEquals(dcm.maxTowers, ChallengeLimits.MaxTowerCount, "Max towers");
+        AssertEquals(dcm.abilityCooldownReductionMultiplier, 0f, "Cooldown multiplier");
+        AssertEquals(dcm.map, defaults.map, "Unknown map");
+        AssertEquals(dcm.difficulty, defaults.difficulty, "Unknown difficulty");
+        AssertEquals(dcm.mode, defaults.mode, "Unknown mode");
+        Assert(dcm.name.Length <= ChallengeLimits.MaxNameLength && dcm.name.StartsWith("Linebreak and"),
+            $"Name without control characters and cut to length: '{dcm.name}'");
+
+        // Rich text in a shared name is shown as text, even if it tries to close the protection itself
+        dcm.name = "</noparse><size=500>Official</size>";
+        var summary = Menus.BossEditorSection.Summary(options, dcm);
+        Assert(summary.Contains("<noparse></\u200Bnoparse><size=500>Official</size></noparse>"), $"Summary: {summary}");
+        AssertEquals(Regex.Matches(summary, "</noparse>").Count, 3, $"Only the summary's own noparse tags: {summary}");
+
+        // Codes that unpack to too much or nest too deeply are refused, not crashed on
+        var bomb = SetupCode.Pack("{\"o\":{},\"c\":{\"name\":\"" + new string('A', SetupCode.MaxJsonLength) + "\"}}");
+        Assert(bomb.Length < SetupCode.MaxLength, $"The test bomb must be a small code, was {bomb.Length}");
+        Assert(!SetupCode.TryDecode(bomb, out _, out _, out var bombProblem), "A code unpacking to too much must not load");
+        AssertEquals(bombProblem, CodeProblem.Invalid, "Problem of a code unpacking to too much");
+        var deep = SetupCode.Pack("{\"o\":{},\"c\":{\"name\":" + new string('[', 5000) + new string(']', 5000) + "}}");
+        Assert(!SetupCode.TryDecode(deep, out _, out _, out var deepProblem), "A deeply nested code must not load");
+        AssertEquals(deepProblem, CodeProblem.Invalid, "Problem of a deeply nested code");
+        yield break;
+    }
 }

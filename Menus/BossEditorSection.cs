@@ -306,8 +306,16 @@ public sealed class BossEditorSection
     public static string Summary(BossOptions options, DailyChallengeModel dcm)
     {
         var boss = options.Elite ? $"{options.Boss} {Texts.Elite.T()}" : options.Boss.ToString();
-        return $"<b>{dcm.name}</b>\n{boss}, {Texts.TierCount.T(options.Tiers)}\n{dcm.map.T()}, {dcm.difficulty.T()}";
+        return $"<b>{PlainText(dcm.name)}</b>\n{boss}, {Texts.TierCount.T(options.Tiers)}\n" +
+               $"{PlainText(dcm.map.T())}, {PlainText(dcm.difficulty.T())}";
     }
+
+    /// <summary>
+    /// Shows text from a shared code as it is: rich text tags in it are not applied, so a name can't resize the
+    /// popup or pretend to be something else
+    /// </summary>
+    public static string PlainText(string? text) =>
+        $"<noparse>{(text ?? "").Replace("</noparse>", "</​noparse>", StringComparison.OrdinalIgnoreCase)}</noparse>";
 
     private GameObject BuildPlayButton()
     {

@@ -27,6 +27,8 @@ The mod ships with in-game automated tests built on Mod Helper's `ModTest`. They
 - the Max Paragons limit, enforced by the game in a custom game with a real paragon placed
 - saving and loading the last setup, including broken files and values out of range
 - share codes: the round trip, short codes, and broken, damaged or too new codes that must never load
+- hand made, malicious codes: type names, extreme values, rich text in the name, and codes that unpack to too much
+  or nest too deeply
 - the main menu button, and the whole Boss Creator flow in the real Challenge Editor, from editing the boss options
   to copying and pasting share codes and pressing Play, including that the normal Challenge Editor and your own
   draft stay untouched and that Play refuses unsupported modes and missing bosses
@@ -37,7 +39,7 @@ Run them from Visual Studio / Rider with the **BloonsTD6 (Tests)** launch profil
 BloonsTD6.exe moddingDev -batchmode --modhelper.offline --modhelper.only='CustomBossChallenge;' --modhelper.noaudio --modhelper.run -q test mod CustomBossChallenge
 ```
 
-The result is written to `MelonLoader/Latest.log`, e.g. `Ran 20 test(s), 20 succeeded, 0 failed`.
+The result is written to `MelonLoader/Latest.log`, e.g. `Ran 21 test(s), 21 succeeded, 0 failed`.
 
 The screenshots in the README come from the `ScreenshotTour` test. It only runs in a windowed game started with
 `--cbc.screenshots=<folder>` (and without `-batchmode`).

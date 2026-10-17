@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
+using CustomBossChallenge.Creator;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using MelonLoader.Utils;
 using Newtonsoft.Json;
@@ -64,7 +65,10 @@ public sealed class LastSetupStore
 
             options = file.Options.Sanitized();
             dcm = DcmJson.Deserialize(file.Challenge);
-            return dcm != null;
+            if (dcm == null) return false;
+
+            ChallengeLimits.Sanitize(dcm, BossMode.DefaultDcm(options));
+            return true;
         }
         catch (Exception e)
         {

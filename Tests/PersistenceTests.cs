@@ -53,6 +53,15 @@ public class PersistenceTest : CustomBossTest
             Assert(loaded.disableSelling, "No selling");
             AssertEquals(loaded.maxParagons, 2, "Max paragons");
 
+            // A hand edited file is held to the same limits as a shared code
+            var extreme = dcm.Clone();
+            extreme.bloonModifiers.bossSpeedMultiplier = 1e30f;
+            extreme.startRules.endRound = int.MaxValue;
+            store.Save(options, extreme);
+            Assert(store.TryLoad(out _, out var limited), "A file with extreme values must still load");
+            AssertEquals(limited!.bloonModifiers.bossSpeedMultiplier, ChallengeLimits.MaxBossSpeed, "Boss speed from a file");
+            AssertEquals(limited.startRules.endRound, TierMath.MaxRound + TierMath.RoundsBetweenTiers, "End round from a file");
+
             // Setups saved before Max Paragons existed have no limit
             var oldChallenge = System.Text.RegularExpressions.Regex.Replace(DcmJson.Serialize(dcm), "\"maxParagons\":-?[0-9]+,?", "");
             Assert(!oldChallenge.Contains("maxParagons"), "The old challenge still has max paragons");

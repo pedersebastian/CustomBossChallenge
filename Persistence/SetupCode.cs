@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Text;
 using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
+using CustomBossChallenge.Creator;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -57,8 +58,13 @@ public static class SetupCode
             ["o"] = Diff(OptionsJson(options), OptionsJson(new BossOptions())) ?? new JObject(),
             ["c"] = Diff(ChallengeJson(dcm), ChallengeJson(DailyChallengeModel.CreateDefaultEditorModel())) ?? new JObject()
         };
-        return Prefix + ToBase64Url(Deflate(payload.ToString(Formatting.None)));
+        return Pack(payload.ToString(Formatting.None));
     }
+
+    /// <summary>
+    /// Turns JSON into a code without any checks, for tests
+    /// </summary>
+    internal static string Pack(string json) => Prefix + ToBase64Url(Deflate(json));
 
     /// <summary>
     /// Reads a code. Never throws: anything that isn't a usable code gives a <see cref="CodeProblem"/>.
@@ -84,7 +90,7 @@ public static class SetupCode
 
             var optionsJson = OptionsJson(new BossOptions());
             if (payload["o"] is JObject optionsDiff) Apply(optionsJson, optionsDiff);
-            var decoded = optionsJson.ToObject<BossOptions>(OptionsSerializer);
+            var decoded = optionsJson.ToObject<BossOptions>(OptionsSerializer)?.Sanitized();
             if (decoded == null) return false;
 
             var challenge = ChallengeJson(DailyChallengeModel.CreateDefaultEditorModel());
@@ -95,8 +101,9 @@ public static class SetupCode
             // Same rule as saved setups: polymorphic models are never part of a setup
             model.customMapModel = null;
             model.simulationBehaviorsMod = null;
+            ChallengeLimits.Sanitize(model, BossMode.DefaultDcm(decoded));
 
-            options = decoded.Sanitized();
+            options = decoded;
             dcm = model;
             problem = CodeProblem.None;
             return true;

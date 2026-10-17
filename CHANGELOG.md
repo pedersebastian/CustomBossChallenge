@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   clipboard as a short text code (`CBC1:...`), and Paste loads a code someone shared after showing what it contains
   and asking before the current setup is replaced. Codes only store what differs from a new setup, so they fit in
   a chat message.
+- Shared codes and the saved setup are treated as untrusted: type names in the JSON are removed before the game
+  reads it, values are held to what the game can play (unknown maps, difficulties and modes fall back to the
+  defaults) and the challenge name is shown as plain text.
 
 ## [2.1.0] - 2026-10-17
 

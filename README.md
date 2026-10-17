@@ -60,6 +60,9 @@ rule, into a short text code:
 - **Paste** reads a code from the clipboard, shows the challenge name, boss, tiers, map and difficulty, and asks
   before it replaces your current setup.
 
+A code is only data: it can't run anything, and custom games are always unranked and never touch your records.
+Codes are checked before they load, so values outside what the game can play are brought back into range.
+
 Codes start with `CBC1:` and only contain what differs from a new setup, so they are usually a few hundred
 characters. A new, unchanged setup gives a code like this one:
 
