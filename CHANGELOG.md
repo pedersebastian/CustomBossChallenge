@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New in-game tests for the Boss Creator flow, the main menu button, extra tiers played to victory, tier math and saving the setup, plus a windowed screenshot tour.
 
 - Info buttons on every boss option that explain what the option does.
+- Translations for every language BTD6 supports, in `Localization/[Language].json`.
 
 ### Changed
 

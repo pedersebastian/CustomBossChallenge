@@ -28,6 +28,9 @@ Event and your Boss Challenge records and saves are never affected.
   - **Spawn Rounds** for every tier (default 40, 60, 80, 100, 120, then every 20 rounds).
   - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health
     percentages. Works for every boss and Elite tier (Lych uses its ethereal thresholds).
+- **Translated** into every language BTD6 supports (English, Arabic, Chinese Simplified and Traditional, Danish,
+  Dutch, Finnish, French, German, Italian, Japanese, Korean, Norwegian, Polish, Brazilian Portuguese, Russian,
+  Spanish, Latin American Spanish, Swedish, Thai and Turkish), following the game's language setting.
 - Every boss option has an **info button** (the "i" on its icon) that explains what it does.
 - **Play** starts the custom boss game straight from the editor.
 - Your **last setup is remembered** between sessions.
