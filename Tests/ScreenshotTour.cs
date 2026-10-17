@@ -63,6 +63,7 @@ public class ScreenshotTour : CustomBossTest
             };
             editor!.dcm.bloonModifiers.bossSpeedMultiplier = 1.5f;
             editor.dcm.bloonModifiers.healthMultipliers.boss = 3;
+            editor.dcm.maxParagons = 1;
             BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
             yield return new WaitForSecondsRealtime(1);
             yield return Capture(folder, "editor-top");
