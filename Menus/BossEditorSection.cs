@@ -369,6 +369,7 @@ public sealed class BossEditorSection
             SkullCount.Show(options.SkullCount);
             CustomSkulls.SetText(options.CustomSkulls, false);
             ShowSpawnRounds();
+            FollowBossName(options.Boss);
             ShowBoss();
         }
         finally
@@ -408,18 +409,21 @@ public sealed class BossEditorSection
 
     private void SelectBoss(BossType boss)
     {
-        var previous = BossMode.Options.Boss;
         BossMode.Options = BossMode.Options with {Boss = boss};
-
-        // Follow the boss in the challenge name as long as the player hasn't named it themselves
-        var name = Editor.chalName;
-        if (name != null && name.text == BossMode.DefaultName(previous))
-        {
-            name.text = BossMode.DefaultName(boss);
-            if (Editor.dcm != null) Editor.dcm.name = name.text;
-        }
-
+        FollowBossName(boss);
         ShowBoss();
+    }
+
+    /// <summary>
+    /// Follows the boss in the challenge name as long as the player hasn't named it themselves
+    /// </summary>
+    private void FollowBossName(BossType boss)
+    {
+        var name = Editor.chalName;
+        if (name == null || !Enum.GetValues<BossType>().Any(other => name.text == BossMode.DefaultName(other))) return;
+
+        name.text = BossMode.DefaultName(boss);
+        if (Editor.dcm != null) Editor.dcm.name = name.text;
     }
 
     private void SetElite(bool elite)

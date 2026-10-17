@@ -55,13 +55,13 @@ public class ScreenshotTour : CustomBossTest
             yield return new WaitForSecondsRealtime(2);
             yield return Capture(folder, "editor-default");
 
+            BossEditorSection.Current!.BossButtons[BossType.Vortex].Button.onClick.Invoke();
             BossMode.Options = new BossOptions
             {
                 Boss = BossType.Vortex, Elite = true, Tiers = 7, ExtraTierHealth = 175,
                 SkullMode = SkullMode.Custom, CustomSkulls = "80, 60, 40, 20"
             };
-            editor!.chalName.text = editor.dcm.name = BossMode.DefaultName(BossType.Vortex);
-            editor.dcm.bloonModifiers.bossSpeedMultiplier = 1.5f;
+            editor!.dcm.bloonModifiers.bossSpeedMultiplier = 1.5f;
             editor.dcm.bloonModifiers.healthMultipliers.boss = 3;
             BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
             yield return new WaitForSecondsRealtime(1);

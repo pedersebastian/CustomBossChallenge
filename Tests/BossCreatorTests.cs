@@ -112,6 +112,16 @@ public class BossCreatorTest : CustomBossTest
         editor.ApplyDcmSettingsToUI();
         AssertEquals(section.BossSpeed.Value, 150f, "The section must show the model's boss speed");
 
+        // Loading a setup with another boss also follows it in the name, unless the player named the challenge
+        editor.chalName.text = "My boss";
+        section.Load(editor.dcm, BossMode.Options with {Boss = BossType.Lych});
+        AssertEquals(editor.chalName.text, "My boss", "A loaded boss must keep the player's own name");
+        editor.chalName.text = BossMode.DefaultName(BossType.Vortex);
+        section.Load(editor.dcm, BossMode.Options with {Boss = BossType.Lych});
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Lych), "The name must follow a loaded boss");
+        section.BossButtons[BossType.Vortex].Button.onClick.Invoke();
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex), "The name must follow the boss back");
+
         Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
         yield return WaitFor(() => !BossMode.Active && MenuManager.instance.GetCurrentMenu()?.GetIl2CppType().Name != nameof(ChallengeEditor),
             "Leaving the Boss Creator");
