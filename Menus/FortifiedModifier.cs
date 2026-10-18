@@ -1,8 +1,11 @@
+using System;
+using System.Collections.Generic;
 using BTD_Mod_Helper.Api.Enums;
 using BTD_Mod_Helper.Extensions;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
 using UnityEngine;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace CustomBossChallenge.Menus;
@@ -59,6 +62,7 @@ public static class FortifiedModifier
             button.SetValue(false);
         }
 
+        Enlarge(settings, true);
         if (dcm?.bloonModifiers != null) button.SetValue(dcm.bloonModifiers.allFortified);
         settings.FillMsbLists();
         settings.SetDisplayIcons();
@@ -76,6 +80,7 @@ public static class FortifiedModifier
         // Out of its container right away, so the game's lists don't pick it up before it is destroyed
         button.transform.SetParent(null, false);
         Object.Destroy(button.gameObject);
+        Enlarge(settings, false);
         settings.FillMsbLists();
         settings.SetDisplayIcons();
     }
@@ -98,5 +103,51 @@ public static class FortifiedModifier
         if (button == null) return;
         dcm.bloonModifiers ??= new BloonModifiers();
         dcm.bloonModifiers.allFortified = button.includeToggle.isOn;
+    }
+
+    private static readonly HashSet<IntPtr> Enlarged = new();
+
+    /// <summary>
+    /// How much taller the modifier panels are than the game makes them: one row while the button is there, so all
+    /// nine modifiers fit without scrolling
+    /// </summary>
+    public static float ExtraHeight(ChallengeEditorModifierSettings settings) =>
+        Enlarged.Contains(settings.Pointer) ? RowHeight(settings) : 0;
+
+    private static float RowHeight(ChallengeEditorModifierSettings settings)
+    {
+        var grid = settings.excludedContainer.GetComponent<GridLayoutGroup>();
+        return grid != null ? grid.cellSize.y + grid.spacing.y : 245;
+    }
+
+    /// <summary>
+    /// The game sized the panels and their scroll area for its own eight modifiers. Grows them by a row upwards (there
+    /// is no room below, where the info box is) or shrinks them back exactly, so the normal editor is unchanged.
+    /// </summary>
+    private static void Enlarge(ChallengeEditorModifierSettings settings, bool enlarge)
+    {
+        if (enlarge == Enlarged.Contains(settings.Pointer)) return;
+
+        var scrollContent = settings.excludedContainer.parent;
+        var scroll = scrollContent?.parent;
+        var panel = scroll?.parent;
+        if (scrollContent == null || scroll == null || panel == null) return;
+
+        var delta = RowHeight(settings) * (enlarge ? 1 : -1);
+        Grow(scroll, delta, delta);
+        Grow(scrollContent, delta, 0);
+        foreach (var name in new[] {"ExcludedBg", "IncludedBg"}) Grow(panel.Find(name), delta, delta / 2);
+        foreach (var name in new[] {"ExcludedBanner", "IncludedBanner"}) Grow(panel.Find(name), 0, delta);
+
+        if (enlarge) Enlarged.Add(settings.Pointer);
+        else Enlarged.Remove(settings.Pointer);
+    }
+
+    private static void Grow(Transform? transform, float height, float up)
+    {
+        var rect = transform?.GetComponent<RectTransform>();
+        if (rect == null) return;
+        rect.sizeDelta += new Vector2(0, height);
+        rect.anchoredPosition += new Vector2(0, up);
     }
 }

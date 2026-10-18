@@ -98,6 +98,12 @@ public class BossCreatorTest : CustomBossTest
         }
         modifiers.OpenEditPopup();
         yield return new WaitForSecondsRealtime(1);
+        // The panels grow by a row, so all nine modifiers fit without scrolling
+        var scrollArea = modifiers.excludedContainer.parent.parent.GetComponent<RectTransform>();
+        var excludedSlots = modifiers.excludedContainer.GetComponent<RectTransform>();
+        Assert(FortifiedModifier.ExtraHeight(modifiers) > 0, "The modifier panels must grow");
+        Assert(scrollArea.rect.height >= excludedSlots.rect.height - 1,
+            $"All excluded modifiers must fit: area {scrollArea.rect.height}, modifiers {excludedSlots.rect.height}");
         fortified.Select();
         AssertEquals(modifiers.descriptionTitle.text, Texts.AllFortified.T(), "All Fortified info title");
         fortified.includeToggle.isOn = true;
@@ -320,6 +326,7 @@ public class BossCreatorTest : CustomBossTest
         var title = editor.transform.Find("TopInfo/Title")?.GetComponent<TMP_Text>();
         Assert(title == null || title.text != BossEditorSection.Title, "The normal Challenge Editor is titled Boss Creator");
         AssertEquals(FortifiedModifier.Find(FortifiedModifier.Settings(editor)), null, "The normal Challenge Editor has the All Fortified modifier");
+        AssertEquals(FortifiedModifier.ExtraHeight(FortifiedModifier.Settings(editor)!), 0f, "The normal editor's modifier panels must keep their size");
 
         MenuManager.instance.Back();
         yield return ToMainMenu();
