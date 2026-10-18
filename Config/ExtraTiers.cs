@@ -5,7 +5,8 @@ using Il2CppAssets.Scripts.Models.Bloons;
 namespace CustomBossChallenge.Config;
 
 /// <summary>
-/// The game only has boss models for tiers 1-5. Tiers 6-10 are copies of tier 5 with more health.
+/// The game only has boss models for tiers 1-5. Tiers 6-10 are copies of tier 5 with more health (see
+/// <see cref="TierScaling"/>).
 /// <br/>
 /// Related models that tier 5 refers to (Diamondback segments, Dreadbloon rocks, Lych's minions and tombstones) are
 /// shared with the copies instead of being copied too.
@@ -22,7 +23,7 @@ public static class ExtraTiers
         model.id = id;
         model.name = id;
         model._name = id;
-        model.maxHealth = TierMath.ScaleHealth(tier5.maxHealth, TierMath.HealthFactor(tier, options.ExtraTierHealth));
+        TierScaling.Scale(model, TierScaling.Values.Of(tier5), options, tier);
         return model;
     }
 

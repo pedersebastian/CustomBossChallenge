@@ -23,7 +23,7 @@ public class ExtraTierModelTest : CustomBossTest
         {
             foreach (var elite in new[] {false, true})
             {
-                var options = new BossOptions {Boss = boss, Elite = elite, Tiers = 10, ExtraTierHealth = 150};
+                var options = new BossOptions {Boss = boss, Elite = elite, Tiers = 10};
                 var tier5 = AssertNotNull(Game.instance.model.GetBloon(options.BossId(5)), $"No {options.BossId(5)}");
                 var skulls = SkullModifier.GetSkulls(tier5);
 
@@ -36,6 +36,7 @@ public class ExtraTierModelTest : CustomBossTest
                     AssertEquals(model.baseId, tier5.baseId, $"{model.id} base id");
                     AssertEquals(model.maxHealth,
                         TierMath.ScaleHealth(tier5.maxHealth, Math.Pow(1.5, tier - 5)), $"{model.id} health");
+                    AssertEquals(model.speed, tier5.speed, $"{model.id} speed");
                     Assert(SameValues(SkullModifier.GetSkulls(model), skulls), $"{model.id} skulls");
                 }
 
@@ -73,7 +74,7 @@ public class ExtraTierGameTest : CustomBossTest
 
     protected override IEnumerator Run()
     {
-        yield return PlayToVictory(new BossOptions {Tiers = 6, ExtraTierHealth = 200, SpawnRounds = "40,41,42,43,44,45"});
+        yield return PlayToVictory(new BossOptions {Tiers = 6, SpeedPerTier = 20, HealthPerTier = 30, SpawnRounds = "40,41,42,43,44,45"});
         yield return ToMainMenu();
         // On easy a normal game ends at round 40, which used to end boss games after the first tier
         yield return PlayToVictory(new BossOptions {Tiers = 2, SpawnRounds = "40,45"}, "Easy");
@@ -93,11 +94,7 @@ public class ExtraTierGameTest : CustomBossTest
 
         var gameModel = InGame.instance.GetGameModel();
         Assert(ExtraTiers.HasAllTiers(gameModel, options), "The match is missing boss tier models");
-        if (options.Tiers > 5)
-        {
-            AssertEquals(gameModel.GetBloon(options.BossId(6)).maxHealth,
-                gameModel.GetBloon(options.BossId(5)).maxHealth * 2, "Tier 6 health at 200% per tier");
-        }
+        AssertScaledTiers(gameModel, options);
 
         var bossManager = InGame.instance.bridge.Simulation.map.spawner.bossBloonManager;
         AssertEquals(TierMath.FormatRounds(bossManager.spawnRounds), TierMath.FormatRounds(options.GameSpawnRounds),
@@ -157,5 +154,54 @@ public class ExtraTierGameTest : CustomBossTest
         towerModel.range = 2000;
         towerModel.GetDescendants<FilterInvisibleModel>().ForEach(filter => filter.isActive = false);
         CreateTowerAt(InGame.instance.bridge, Vector2.zero, towerModel, costOverride: 0);
+    }
+}
+
+/// <summary>
+/// Speed and Health per Tier give every tier of every boss, normal and Elite, the values the formulas promise, and
+/// never touch the game's own models
+/// </summary>
+public class TierScalingTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        var game = Game.instance.model;
+        foreach (var boss in Enum.GetValues<BossType>())
+        {
+            foreach (var elite in new[] {false, true})
+            {
+                foreach (var (speed, health) in new[] {(0, 0), (20, 50), (-20, -30), (50, 100)})
+                {
+                    var options = new BossOptions
+                        {Boss = boss, Elite = elite, Tiers = 10, SpeedPerTier = speed, HealthPerTier = health};
+                    var tier5 = game.GetBloon(options.BossId(5));
+                    for (var tier = 1; tier <= 10; tier++)
+                    {
+                        var source = tier <= 5 ? game.GetBloon(options.BossId(tier)) : tier5;
+                        var gameSpeed = source.speed;
+                        var gameHealth = source.maxHealth;
+                        var model = tier <= 5 ? source.Clone().Cast<Il2CppAssets.Scripts.Models.Bloons.BloonModel>()
+                            : ExtraTiers.CreateTier(tier5, options, tier);
+                        TierScaling.Scale(model, TierScaling.Values.Of(source), options, tier);
+
+                        var factor = (float) TierMath.SpeedFactor(tier, speed);
+                        Assert(Math.Abs(model.speed - gameSpeed * factor) < 0.0001f, $"{options.BossId(tier)} speed at {speed} %");
+                        AssertEquals(model.maxHealth, TierMath.ScaleHealth(gameHealth,
+                            TierMath.ExtraTierFactor(tier) * TierMath.HealthFactor(tier, health)), $"{options.BossId(tier)} health at {health} %");
+                        AssertEquals(source.speed, gameSpeed, $"The game's {source.id} speed must stay untouched");
+                        AssertEquals(source.maxHealth, gameHealth, $"The game's {source.id} health must stay untouched");
+                    }
+                }
+            }
+        }
+
+        // Faster later tiers are faster than the tier before them, whatever the game's own steps are
+        var fast = new BossOptions {Boss = BossType.Phayze, SpeedPerTier = 25};
+        var tier1 = game.GetBloon(fast.BossId(1)).Clone().Cast<Il2CppAssets.Scripts.Models.Bloons.BloonModel>();
+        var tier2 = game.GetBloon(fast.BossId(2)).Clone().Cast<Il2CppAssets.Scripts.Models.Bloons.BloonModel>();
+        TierScaling.Scale(tier1, TierScaling.Values.Of(game.GetBloon(fast.BossId(1))), fast, 1);
+        TierScaling.Scale(tier2, TierScaling.Values.Of(game.GetBloon(fast.BossId(2))), fast, 2);
+        Assert(tier2.speed > tier1.speed, $"Phayze tier 2 ({tier2.speed}) must be faster than tier 1 ({tier1.speed})");
+        yield break;
     }
 }

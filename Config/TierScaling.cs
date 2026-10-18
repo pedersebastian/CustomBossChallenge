@@ -1,0 +1,75 @@
+using System;
+using System.Collections.Generic;
+using Il2CppAssets.Scripts.Models;
+using Il2CppAssets.Scripts.Models.Bloons;
+
+namespace CustomBossChallenge.Config;
+
+/// <summary>
+/// Gives every boss tier its speed and health from Speed per tier and Health per tier.
+/// <br/>
+/// The game has already applied the challenge's own multipliers to the match's tier models when the mod sees them,
+/// and a restart reuses those models. So the values a model had before it was first scaled are remembered per match,
+/// and scaling always starts from them: it keeps the game's multipliers and can't be applied twice.
+/// </summary>
+public static class TierScaling
+{
+    public readonly record struct Values(float Speed, float SpeedFrames, int MaxHealth)
+    {
+        public static Values Of(BloonModel model) => new(model.speed, model.speedFrames, model.maxHealth);
+    }
+
+    private static IntPtr originalsMatch;
+    private static readonly Dictionary<string, Values> Originals = new();
+
+    /// <summary>
+    /// Sets the speed and health of a tier from <paramref name="source"/>: the tier's values before scaling, or tier
+    /// 5's for the tiers above it
+    /// </summary>
+    public static void Scale(BloonModel model, Values source, BossOptions options, int tier)
+    {
+        var speed = (float) TierMath.SpeedFactor(tier, options.SpeedPerTier);
+        model.speed = source.Speed * speed;
+        model.speedFrames = source.SpeedFrames * speed;
+        model.maxHealth = TierMath.ScaleHealth(source.MaxHealth,
+            TierMath.ExtraTierFactor(tier) * TierMath.HealthFactor(tier, options.HealthPerTier));
+    }
+
+    /// <summary>
+    /// Scales every tier of the boss in the match's game model
+    /// </summary>
+    /// <returns>How many tier models were set</returns>
+    public static int Apply(GameModel match, BossOptions options)
+    {
+        if (match.Pointer != originalsMatch)
+        {
+            originalsMatch = match.Pointer;
+            Originals.Clear();
+        }
+
+        var scaled = 0;
+        for (var tier = TierMath.MinTiers; tier <= TierMath.ClampTiers(options.Tiers); tier++)
+        {
+            var id = options.BossId(tier);
+            var sourceId = options.BossId(Math.Min(tier, TierMath.VanillaTiers));
+            if (!match.DoesBloonExist(id) || !match.DoesBloonExist(sourceId)) continue;
+
+            Scale(match.GetBloon(id), Original(match, sourceId), options, tier);
+            scaled++;
+        }
+
+        return scaled;
+    }
+
+    /// <summary>
+    /// The values a tier model of the match had before it was first scaled
+    /// </summary>
+    public static Values Original(GameModel match, string id)
+    {
+        if (match.Pointer == originalsMatch && Originals.TryGetValue(id, out var values)) return values;
+
+        values = Values.Of(match.GetBloon(id));
+        if (match.Pointer == originalsMatch) Originals[id] = values;
+        return values;
+    }
+}

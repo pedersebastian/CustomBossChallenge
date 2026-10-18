@@ -34,8 +34,21 @@ public sealed record BossOptions
     /// <summary>Number of boss tiers, 1-10. Tiers above 5 are stronger copies of tier 5.</summary>
     public int Tiers { get; init; } = TierMath.VanillaTiers;
 
-    /// <summary>Health of each tier above 5, in percent of the tier before it</summary>
-    public int ExtraTierHealth { get; init; } = 150;
+    /// <summary>How much faster each tier is than the one before it, in percent on top of the game's own step</summary>
+    public int SpeedPerTier { get; init; }
+
+    /// <summary>
+    /// How much more health each tier has than the one before it, in percent on top of the game's own step. Tiers
+    /// above 5 have no step of their own; there the game's step is <see cref="TierMath.ExtraTierStep"/>.
+    /// </summary>
+    public int HealthPerTier { get; init; }
+
+    /// <summary>
+    /// Setups and codes from before 2.3 stored the health of tiers above 5 here, in percent of the tier before it.
+    /// <see cref="Sanitized"/> turns it into <see cref="HealthPerTier"/>.
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int? ExtraTierHealth { get; init; }
 
     /// <summary>Comma separated rounds the tiers spawn on, or null for the defaults (40, 60, 80, ...)</summary>
     public string? SpawnRounds { get; init; }
@@ -76,7 +89,11 @@ public sealed record BossOptions
             SkullCount = System.Math.Clamp(SkullCount, 0, SkullMath.MaxSkulls),
             CustomSkulls = SkullMath.NormalizeCustom(CustomSkulls, defaults.CustomSkulls),
             Tiers = TierMath.ClampTiers(Tiers),
-            ExtraTierHealth = System.Math.Clamp(ExtraTierHealth, TierMath.MinExtraTierHealth, TierMath.MaxExtraTierHealth)
+            SpeedPerTier = TierMath.ClampSpeedPerTier(SpeedPerTier),
+            HealthPerTier = TierMath.ClampHealthPerTier(ExtraTierHealth is { } legacy && HealthPerTier == 0
+                ? TierMath.HealthPerTierFromExtraTierHealth(legacy)
+                : HealthPerTier),
+            ExtraTierHealth = null
         };
     }
 

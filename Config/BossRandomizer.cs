@@ -18,7 +18,8 @@ public static class BossRandomizer
     public const double FortifiedChance = 0.15;
     public const double ParagonChance = 0.2;
     public const double TiersChance = 0.5;
-    public const double ExtraTierHealthChance = 0.5;
+    public const double SpeedPerTierChance = 0.4;
+    public const double HealthPerTierChance = 0.4;
     public const double SkullsChance = 0.3;
 
     /// <summary>
@@ -28,7 +29,8 @@ public static class BossRandomizer
     public const int MaxPercent = 200;
 
     public const int MaxRandomParagons = 3;
-    public const int MaxRandomExtraTierHealth = 300;
+    public const int MaxRandomSpeedPerTier = 25;
+    public const int MaxRandomHealthPerTier = 50;
 
     /// <summary>
     /// The random source; tests set a seeded one
@@ -49,9 +51,14 @@ public static class BossRandomizer
             Tiers = Chance(TiersChance) ? Random.Next(TierMath.MinTiers, TierMath.MaxTiers + 1) : TierMath.VanillaTiers
         };
 
-        if (options.Tiers > TierMath.VanillaTiers && Chance(ExtraTierHealthChance))
+        if (Chance(SpeedPerTierChance))
         {
-            options = options with {ExtraTierHealth = Step(TierMath.MinExtraTierHealth + 10, MaxRandomExtraTierHealth, 10)};
+            options = options with {SpeedPerTier = Step(TierMath.PerTierStep, MaxRandomSpeedPerTier, TierMath.PerTierStep)};
+        }
+
+        if (Chance(HealthPerTierChance))
+        {
+            options = options with {HealthPerTier = Step(TierMath.PerTierStep, MaxRandomHealthPerTier, TierMath.PerTierStep)};
         }
 
         if (Chance(SkullsChance))

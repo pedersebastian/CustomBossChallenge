@@ -13,7 +13,7 @@ public class RestartTest : CustomBossTest
 {
     protected override IEnumerator Run()
     {
-        var options = new BossOptions {Tiers = 7, SpawnRounds = "45"};
+        var options = new BossOptions {Tiers = 7, SpawnRounds = "45", SpeedPerTier = 30, HealthPerTier = 20};
         yield return LoadIntoGame(SetupBossChallenge(CustomBossState.Prepare(BaseDcm(), options), options.Boss));
         Assert(CustomBossState.IsActive, "Custom state is not active in game");
 
@@ -35,6 +35,7 @@ public class RestartTest : CustomBossTest
         Assert(CustomBossState.IsActive, "A restarted custom game must stay custom");
         AssertEquals(CustomBossState.HighestDefeatedTier, 0, "Defeated tiers after a restart");
         Assert(ExtraTiers.HasAllTiers(InGame.instance.GetGameModel(), options), "Tier models after a restart");
+        AssertScaledTiers(InGame.instance.GetGameModel(), options);
         AssertEquals(TierMath.FormatRounds(InGame.instance.bridge.Simulation.map.spawner.bossBloonManager.spawnRounds),
             TierMath.FormatRounds(options.GameSpawnRounds), "Spawn rounds after a restart");
         Assert(InGameData.CurrentGame.disableSaves, "A restarted custom game can be saved");

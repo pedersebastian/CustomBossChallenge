@@ -26,7 +26,7 @@ public class PersistenceTest : CustomBossTest
             var options = new BossOptions
             {
                 Boss = BossType.Diamondback, Elite = true, SkullMode = SkullMode.Custom, CustomSkulls = "90, 10",
-                Tiers = 7, ExtraTierHealth = 175, SpawnRounds = "30, 50, 70"
+                Tiers = 7, SpeedPerTier = 10, HealthPerTier = 25, SpawnRounds = "30, 50, 70"
             };
             var dcm = CustomEditorDcm();
             dcm.map = "Logs";
@@ -72,13 +72,23 @@ public class PersistenceTest : CustomBossTest
             var challenge = Newtonsoft.Json.JsonConvert.SerializeObject(DcmJson.Serialize(dcm));
             File.WriteAllText(store.FilePath,
                 $"{{\"Version\": 99, \"Future\": true, \"Challenge\": {challenge}, \"Options\": {{\"Boss\": 99, " +
-                "\"SkullMode\": 42, \"SkullCount\": 500, \"CustomSkulls\": null, \"Tiers\": 50, \"ExtraTierHealth\": -3}}");
+                "\"SkullMode\": 42, \"SkullCount\": 500, \"CustomSkulls\": null, \"Tiers\": 50, \"SpeedPerTier\": 999, \"ExtraTierHealth\": -3}}");
             Assert(store.TryLoad(out var odd, out var oddDcm), "A file with odd values must still load");
             AssertNotNull(oddDcm, "Challenge of a file with odd values");
             AssertEquals(odd, new BossOptions
             {
-                SkullCount = SkullMath.MaxSkulls, Tiers = TierMath.MaxTiers, ExtraTierHealth = TierMath.MinExtraTierHealth
+                SkullCount = SkullMath.MaxSkulls, Tiers = TierMath.MaxTiers, HealthPerTier = TierMath.MinHealthPerTier,
+                SpeedPerTier = TierMath.MaxSpeedPerTier
             }, "Odd values brought into range");
+
+            // Setups from before 2.3 stored Extra Tier Health for tiers above 5; it becomes Health per Tier
+            foreach (var (old, perTier) in new[] {(150, 0), (225, 50), (175, 15), (100, -30)})
+            {
+                File.WriteAllText(store.FilePath,
+                    $"{{\"Version\": 2, \"Challenge\": {challenge}, \"Options\": {{\"Tiers\": 7, \"ExtraTierHealth\": {old}}}}}");
+                Assert(store.TryLoad(out var migrated, out _), $"A setup with Extra Tier Health {old} must load");
+                AssertEquals(migrated, new BossOptions {Tiers = 7, HealthPerTier = perTier}, $"Extra Tier Health {old}");
+            }
 
             File.WriteAllText(store.FilePath, "{\"Version\": 2, \"Options\": {\"Boss\": \"Lych\"}}");
             Assert(!store.TryLoad(out var incomplete, out var incompleteDcm), "A file without a challenge must not load");

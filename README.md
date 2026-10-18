@@ -24,7 +24,11 @@ Event and your Boss Challenge records and saves are never affected.
     for weekly events such as "Vortex at 150% speed").
   - **All Fortified**, which the vanilla editor doesn't offer.
   - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
-  - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with **Extra Tier Health** (e.g. +50% per tier).
+  - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with +50 % health per tier.
+  - **Speed per Tier** and **Health per Tier**: make every tier faster and tougher than the one before it, on top of
+    the game's own steps (or easier, below 0).
+  - **Tier Preview**: a card per tier with the round it arrives on, its speed and its health, orange where it is
+    harder than the normal game and blue where it is easier.
     With fewer than 5 tiers, beating the last one wins the game.
   - **Spawn Rounds** for every tier (default 40, 60, 80, 100, 120, then every 20 rounds).
   - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health
@@ -83,11 +87,17 @@ CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA
 | All Fortified | on / off | off | |
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
 | Boss Tiers | 1–10 | 5 | The game is won when the last tier is defeated. |
-| Extra Tier Health | 100–500 % | 150 % | Health of each tier above 5 relative to the tier before it. |
+| Speed per Tier | −20 to +50 % | 0 % | Each tier this much faster than the one before it, on top of the game's own steps. Capped at ×5. |
+| Health per Tier | −30 to +100 % | 0 % | Each tier this much tougher than the one before it, on top of the game's own steps (tiers above 5 already get +50 % each). |
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
 | Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
 | Skull Health % | comma separated % (1–99) | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. Use a point for decimals (`33.5`). The field shows the list as it is used: sorted, duplicates merged, invalid values dropped. |
+
+![Tier Preview](docs/tier-preview.jpg)
+
+Health is capped per tier like the game's own boss health limit, so very strong Elite tiers can end up with the same
+health; the Tier Preview shows the capped values.
 
 The game's end round is moved to 20 rounds after the last tier (round 140 for the default 5 tiers, like the weekly
 events) unless you set a later one yourself, and a starting round after the last tier is reset. Otherwise the

@@ -27,7 +27,7 @@ public class SetupCodeTest : CustomBossTest
 
         var options = new BossOptions
         {
-            Boss = BossType.Lych, Elite = true, Tiers = 9, ExtraTierHealth = 220, SkullMode = SkullMode.Custom,
+            Boss = BossType.Lych, Elite = true, Tiers = 9, SpeedPerTier = 15, HealthPerTier = 45, SkullMode = SkullMode.Custom,
             CustomSkulls = "90, 45", SpawnRounds = "30, 45"
         };
         var dcm = CustomEditorDcm();
@@ -83,6 +83,11 @@ public class SetupCodeTest : CustomBossTest
             AssertEquals(badOptions, new BossOptions(), $"Options of '{Shorten(bad)}'");
             AssertEquals(badDcm, null, $"Challenge of '{Shorten(bad)}'");
         }
+
+        // Codes from before 2.3 had Extra Tier Health; it becomes Health per Tier
+        Assert(SetupCode.TryDecode(SetupCode.Pack("{\"o\":{\"Tiers\":7,\"ExtraTierHealth\":225},\"c\":{}}"), out var old, out _, out _),
+            "An old code must still load");
+        AssertEquals(old, new BossOptions {Tiers = 7, HealthPerTier = 50}, "Old code options");
 
         Assert(!SetupCode.TryDecode("CBC9:" + payload, out _, out _, out var tooNew), "A newer code must not decode");
         AssertEquals(tooNew, CodeProblem.TooNew, "Problem of a code from a newer version");

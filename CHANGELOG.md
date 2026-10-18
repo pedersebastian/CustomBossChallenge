@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Speed per Tier** and **Health per Tier**: every tier can be faster and tougher than the one before it, on top of
+  the game's own steps, also in normal 5 tier games. Below 0 makes later tiers easier.
+- **Tier Preview**: a card per tier showing the round it arrives on, its speed and its health with every boss option
+  applied, orange where it is harder than the normal game and blue where it is easier.
+
+### Changed
+
+- Health per Tier replaces Extra Tier Health. Tiers above 5 still get +50 % health each by default. Saved setups and
+  share codes with another Extra Tier Health are converted to the Health per Tier that gives those tiers the same
+  health; tiers 2-5 then get it too, and the log says so.
+
 ## [2.2.1] - 2026-10-18
 
 ### Added

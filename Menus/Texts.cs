@@ -42,10 +42,19 @@ public static class Texts
         "How many tiers of the boss you have to defeat, from 1 to 10. Each tier is stronger than the one before. " +
         "You win when the last tier is defeated. Tiers above 5 are copies of tier 5 with more health.");
 
-    public static readonly string ExtraTierHealth = Key(nameof(ExtraTierHealth), "Extra Tier Health");
-    public static readonly string ExtraTierHealthInfo = Key(nameof(ExtraTierHealthInfo),
-        "Only for tiers above 5: how much more health each of those tiers has than the tier before it.");
-    public static readonly string PerTier = Key(nameof(PerTier), "+{0} % / tier");
+    public static readonly string SpeedPerTier = Key(nameof(SpeedPerTier), "Speed per Tier");
+    public static readonly string SpeedPerTierInfo = Key(nameof(SpeedPerTierInfo),
+        "How much faster each tier is than the one before it, on top of the game's own steps. 0 % keeps the normal " +
+        "speeds; below 0 makes later tiers slower.");
+    public static readonly string HealthPerTier = Key(nameof(HealthPerTier), "Health per Tier");
+    public static readonly string HealthPerTierInfo = Key(nameof(HealthPerTierInfo),
+        "How much more health each tier has than the one before it, on top of the game's own steps. Tiers above 5 " +
+        "already get +50 % each, like the game's steps. 0 % keeps the normal health.");
+    public static readonly string TierPreview = Key(nameof(TierPreview), "Tier Preview");
+    public static readonly string TierPreviewInfo = Key(nameof(TierPreviewInfo),
+        "Every tier with the round it arrives on, its speed compared to the normal game and its health. Orange is " +
+        "more than the normal game, blue is less.");
+    public static readonly string PerTier = Key(nameof(PerTier), "{0} % / tier");
 
     public static readonly string SpawnRounds = Key(nameof(SpawnRounds), "Spawn Rounds");
     public static readonly string SpawnRoundsInfo = Key(nameof(SpawnRoundsInfo),

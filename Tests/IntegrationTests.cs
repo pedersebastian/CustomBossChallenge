@@ -92,7 +92,7 @@ public class BossGameLauncherTest : CustomBossTest
 {
     protected override IEnumerator Run()
     {
-        var options = new BossOptions {Boss = BossType.Vortex, Elite = true, Tiers = 6, ExtraTierHealth = 200};
+        var options = new BossOptions {Boss = BossType.Vortex, Elite = true, Tiers = 6, SpeedPerTier = 10};
         var editorDcm = CustomEditorDcm();
         var data = Creator.BossGameLauncher.BuildInGameData(editorDcm, options);
         AssertEquals(data.bossData.bossBloon, BossType.Vortex, "Boss");
@@ -115,7 +115,7 @@ public class BossGameLauncherTest : CustomBossTest
         var boss = AssertNotNull(bossManager.CurrentBoss, "Tier 6 did not spawn");
         AssertEquals(boss.bloonModel.id, "VortexElite6", "Tier 6 boss");
 
-        var expected = Game.instance.model.GetBloon("VortexElite5").maxHealth * 2 * 0.5f;
+        var expected = Game.instance.model.GetBloon("VortexElite5").maxHealth * 1.5f * 0.5f;
         Assert(System.Math.Abs(boss.health - expected) / expected < 0.01f, $"Tier 6 health {boss.health}, expected {expected}");
 
         yield return ToMainMenu();

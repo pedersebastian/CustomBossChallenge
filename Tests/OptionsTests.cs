@@ -79,9 +79,22 @@ public class TierMathTest : CustomBossTest
         Assert(capped.Zip(capped.Skip(1)).All(pair => pair.First < pair.Second) && capped[^1] == TierMath.MaxRound,
             $"Ten capped tiers must ascend: {Show(capped)}");
 
-        Assert(TierMath.HealthFactor(5, 150) == 1, "Tier 5 keeps its health");
-        Assert(TierMath.HealthFactor(3, 150) == 1, "Lower tiers keep their health");
-        Assert(System.Math.Abs(TierMath.HealthFactor(7, 150) - 2.25) < 1e-9, "Tier 7 at 150% per tier");
+        Assert(TierMath.SpeedFactor(1, 50) == 1 && TierMath.HealthFactor(1, 100) == 1, "Tier 1 keeps the game's values");
+        Assert(TierMath.SpeedFactor(7, 0) == 1 && TierMath.HealthFactor(7, 0) == 1, "0 % keeps every tier as the game makes it");
+        Assert(System.Math.Abs(TierMath.SpeedFactor(3, 20) - 1.44) < 1e-9, "Tier 3 at +20 % speed per tier");
+        Assert(System.Math.Abs(TierMath.SpeedFactor(3, -20) - 0.64) < 1e-9, "Tier 3 at -20 % speed per tier");
+        AssertEquals(TierMath.SpeedFactor(10, TierMath.MaxSpeedPerTier), TierMath.MaxSpeedFactor, "Speed is capped");
+        Assert(System.Math.Abs(TierMath.HealthFactor(3, 50) - 2.25) < 1e-9, "Tier 3 at +50 % health per tier");
+        Assert(TierMath.ExtraTierFactor(5) == 1 && System.Math.Abs(TierMath.ExtraTierFactor(7) - 2.25) < 1e-9,
+            "Tiers above 5 get +50 % each, like before");
+        foreach (var (old, perTier) in new[] {(150, 0), (225, 50), (175, 15), (100, -30), (500, 100)})
+        {
+            AssertEquals(TierMath.HealthPerTierFromExtraTierHealth(old), perTier, $"Extra Tier Health {old}");
+        }
+        AssertEquals(new BossOptions {ExtraTierHealth = 225}.Sanitized(), new BossOptions {HealthPerTier = 50},
+            "Old Extra Tier Health becomes Health per Tier");
+        AssertEquals(new BossOptions {ExtraTierHealth = 225, HealthPerTier = 10}.Sanitized(), new BossOptions {HealthPerTier = 10},
+            "A Health per Tier that is set wins over the old setting");
         AssertEquals(TierMath.ScaleHealth(3000000, 2.25), 6750000, "Scaled health");
         AssertEquals(TierMath.ScaleHealth(int.MaxValue, 1000), TierMath.MaxModelHealth, "Health must not overflow");
 
@@ -197,6 +210,10 @@ public class BossRandomizerTest : CustomBossTest
                 Assert(health >= 0.5f && health <= 2f, $"Boss health {health}");
                 Assert(dcm.maxParagons == ParagonMath.NoLimit || dcm.maxParagons is >= 0 and <= BossRandomizer.MaxRandomParagons,
                     $"Max paragons {dcm.maxParagons}");
+                Assert(options.SpeedPerTier is >= 0 and <= BossRandomizer.MaxRandomSpeedPerTier && options.SpeedPerTier % TierMath.PerTierStep == 0,
+                    $"Speed per tier {options.SpeedPerTier}");
+                Assert(options.HealthPerTier is >= 0 and <= BossRandomizer.MaxRandomHealthPerTier && options.HealthPerTier % TierMath.PerTierStep == 0,
+                    $"Health per tier {options.HealthPerTier}");
 
                 bosses.Add(options.Boss);
                 if (Approximately(speed, 1)) defaultSpeed++;

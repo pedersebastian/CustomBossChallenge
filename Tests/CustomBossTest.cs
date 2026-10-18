@@ -31,6 +31,39 @@ public abstract class CustomBossTest : ModTest
     protected void Log(string message) => ModHelper.Msg<CustomBossChallenge>($"{Name}: {message}");
 
     /// <summary>
+    /// Every tier in <paramref name="match"/> has the speed and health Speed and Health per Tier give it, worked out
+    /// from the values the match's models had before they were scaled
+    /// </summary>
+    protected void AssertScaledTiers(Il2CppAssets.Scripts.Models.GameModel match, Config.BossOptions options)
+    {
+        for (var tier = 1; tier <= options.Tiers; tier++)
+        {
+            var model = match.GetBloon(options.BossId(tier));
+            var source = Config.TierScaling.Original(match, options.BossId(Math.Min(tier, Config.TierMath.VanillaTiers)));
+            var speed = (float) Config.TierMath.SpeedFactor(tier, options.SpeedPerTier);
+            Assert(Math.Abs(model.speed - source.Speed * speed) < 0.0001f,
+                $"{model.id} speed {model.speed}, expected {source.Speed * speed}");
+            Assert(Math.Abs(model.speedFrames - source.SpeedFrames * speed) < 0.0001f, $"{model.id} speed frames");
+            // The game applies Boss Health to the models after they are scaled, so compare health with tier 1's
+            var expected = Config.TierMath.ScaleHealth(source.MaxHealth,
+                Config.TierMath.ExtraTierFactor(tier) * Config.TierMath.HealthFactor(tier, options.HealthPerTier)) /
+                (double) Config.TierScaling.Original(match, options.BossId(1)).MaxHealth;
+            var actual = model.maxHealth / (double) match.GetBloon(options.BossId(1)).maxHealth;
+            Assert(Math.Abs(actual / expected - 1) < 0.001, $"{model.id} health is x{actual} of tier 1, expected x{expected}");
+        }
+
+        // Compared with the game's own models, each tier is faster than tier 1 by exactly Speed per Tier
+        var game = Il2CppAssets.Scripts.Unity.Game.instance.model;
+        var tier1 = match.GetBloon(options.BossId(1)).speed / game.GetBloon(options.BossId(1)).speed;
+        for (var tier = 2; tier <= Math.Min(options.Tiers, Config.TierMath.VanillaTiers); tier++)
+        {
+            var ratio = match.GetBloon(options.BossId(tier)).speed / game.GetBloon(options.BossId(tier)).speed / tier1;
+            Assert(Math.Abs(ratio - Config.TierMath.SpeedFactor(tier, options.SpeedPerTier)) < 0.001,
+                $"Tier {tier} is x{ratio} as fast as the game makes it, compared with tier 1");
+        }
+    }
+
+    /// <summary>
     /// Steps through a coroutine and all managed coroutines it yields, turning any exception into a test failure.
     /// Without this, exceptions in nested coroutines are only logged and the test still counts as succeeded.
     /// </summary>

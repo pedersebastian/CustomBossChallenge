@@ -43,13 +43,15 @@ public class CustomBossChallenge : BloonsTD6Mod
             options = CustomBossState.LimitTiers(available);
         }
 
+        var scaled = TierScaling.Apply(result, options);
         var skulls = SkullModifier.Apply(result, options.SkullPercents);
         result.bossSpawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
         var bossData = InGameData.CurrentGame?.bossData;
         if (bossData != null) bossData.spawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
 
         ModHelper.Msg<CustomBossChallenge>(
-            $"Custom {options.BossId(options.Tiers)}: added {tiers} extra tiers, changed skulls of {skulls} boss models, " +
+            $"Custom {options.BossId(options.Tiers)}: added {tiers} extra tiers, scaled {scaled} tiers " +
+            $"(speed {options.SpeedPerTier:+0;-0} %, health {options.HealthPerTier:+0;-0} % per tier), changed skulls of {skulls} boss models, " +
             $"spawn rounds {TierMath.FormatRounds(options.EffectiveSpawnRounds)}");
     }
 }

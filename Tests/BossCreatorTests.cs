@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
 using CustomBossChallenge.Menus;
@@ -69,7 +70,7 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 12, "Info buttons in the boss section");
+        AssertEquals(infoButtons, 14, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
@@ -89,7 +90,8 @@ public class BossCreatorTest : CustomBossTest
         section.AllFortified.SetChecked(true, true);
         section.MaxParagons.Slider.value = 1;
         section.Tiers.Slider.value = 7;
-        section.ExtraTierHealth.Slider.value = 200;
+        section.SpeedPerTier.Slider.value = 20;
+        section.HealthPerTier.Slider.value = 50;
         section.SkullMode.Dropdown.value = (int) SkullMode.EvenlySpaced;
         section.SkullCount.Slider.value = 5;
         section.SpawnRounds.InputField.text = "30, 50";
@@ -97,13 +99,29 @@ public class BossCreatorTest : CustomBossTest
         yield return null;
 
         AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex), "The name must follow the boss");
-        Assert(section.ExtraTierHealth.Row.activeSelf, "Extra tier health must show above 5 tiers");
+        // The tier preview shows every tier with its round, speed and health, colored against the normal game
+        var cards = section.Strip.Cards;
+        AssertEquals(cards.Count(card => card.Panel.gameObject.activeSelf), 7, "Tier cards shown");
+        AssertEquals(cards[0].Round.Text.text, "R30", "Round of tier 1");
+        AssertEquals(cards[0].Speed.Text.text, "×1.5", "Speed of tier 1 (Boss Speed 150 %)");
+        AssertEquals(cards[0].Health.Text.text, "125k", "Health of Vortex Elite tier 1 at 300 %");
+        AssertEquals(cards[2].Speed.Text.text, "×2.16", "Speed of tier 3 (+20 % per tier)");
+        AssertEquals(cards[6].Speed.Text.text, "×4.48", "Speed of tier 7");
+        AssertEquals(cards[6].Health.Text.text, "201M", "Health of tier 7, capped like in the game");
+        AssertEquals(cards[0].Speed.Text.color, TierStrip.Higher, "Faster than the normal game is orange");
+        section.BossSpeed.Slider.value = 50;
+        AssertEquals(cards[0].Speed.Text.text, "×0.5", "The preview follows Boss Speed");
+        AssertEquals(cards[0].Speed.Text.color, TierStrip.Lower, "Slower than the normal game is blue");
+        section.BossSpeed.Slider.value = 150;
+        section.Elite.SetChecked(false, true);
+        AssertEquals(cards[0].Health.Text.text, "60k", "The preview follows Elite");
+        section.Elite.SetChecked(true, true);
         Assert(section.SkullCount.Row.activeSelf, "Skull count must show for evenly spaced skulls");
         AssertEquals(section.SpawnRounds.InputField.text, "30, 50, 70, 90, 110, 130, 150", "Normalized spawn rounds");
 
         var expected = new BossOptions
         {
-            Boss = BossType.Vortex, Elite = true, Tiers = 7, ExtraTierHealth = 200,
+            Boss = BossType.Vortex, Elite = true, Tiers = 7, SpeedPerTier = 20, HealthPerTier = 50,
             SkullMode = SkullMode.EvenlySpaced, SkullCount = 5, SpawnRounds = "30, 50"
         };
         AssertEquals(BossMode.Options, expected, "Options from the boss section");
@@ -225,6 +243,8 @@ public class BossCreatorTest : CustomBossTest
 
             Assert(BossMode.Options != before, "Random must change the boss options");
             AssertEquals(section.Tiers.Value, (float) BossMode.Options.Tiers, "Random tiers shown");
+            AssertEquals(section.SpeedPerTier.Value, (float) BossMode.Options.SpeedPerTier, "Random speed per tier shown");
+            AssertEquals(section.HealthPerTier.Value, (float) BossMode.Options.HealthPerTier, "Random health per tier shown");
             AssertEquals(section.SkullMode.Dropdown.value, (int) BossMode.Options.SkullMode, "Random skull mode shown");
             editor.ApplyUiSettingsToDCM();
             AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "A random setup must be playable");

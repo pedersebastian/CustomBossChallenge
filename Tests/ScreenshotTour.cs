@@ -58,7 +58,7 @@ public class ScreenshotTour : CustomBossTest
             BossEditorSection.Current!.BossButtons[BossType.Vortex].Button.onClick.Invoke();
             BossMode.Options = new BossOptions
             {
-                Boss = BossType.Vortex, Elite = true, Tiers = 7, ExtraTierHealth = 175,
+                Boss = BossType.Vortex, Elite = true, Tiers = 7, SpeedPerTier = 15, HealthPerTier = 40,
                 SkullMode = SkullMode.Custom, CustomSkulls = "80, 60, 40, 20"
             };
             editor!.dcm.bloonModifiers.bossSpeedMultiplier = 1.5f;

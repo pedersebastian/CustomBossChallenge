@@ -53,7 +53,9 @@ public sealed class BossEditorSection
     public SliderRow BossSpeed { get; private set; } = null!;
     public SliderRow BossHealth { get; private set; } = null!;
     public SliderRow Tiers { get; private set; } = null!;
-    public SliderRow ExtraTierHealth { get; private set; } = null!;
+    public SliderRow SpeedPerTier { get; private set; } = null!;
+    public SliderRow HealthPerTier { get; private set; } = null!;
+    public TierStrip Strip { get; private set; } = null!;
     public SliderRow SkullCount { get; private set; } = null!;
     public SliderRow MaxParagons { get; private set; } = null!;
     public ModHelperCheckbox Elite { get; private set; } = null!;
@@ -192,9 +194,14 @@ public sealed class BossEditorSection
         Tiers = SliderRow.Clone(template, rows, "TiersRow", Texts.BossTiers.T(), VanillaSprites.BossTiersIconSmall,
             TierMath.MinTiers, TierMath.MaxTiers, 1, TierMath.VanillaTiers, value => $"{value:0}",
             value => UpdateOptions(o => o with {Tiers = (int) value}));
-        ExtraTierHealth = SliderRow.Clone(template, rows, "ExtraTierHealthRow", Texts.ExtraTierHealth.T(),
-            VanillaSprites.BossT5Icon, TierMath.MinExtraTierHealth, TierMath.MaxExtraTierHealth, 10, 150, value => Texts.PerTier.T((int) (value - 100)),
-            value => UpdateOptions(o => o with {ExtraTierHealth = (int) value}));
+        SpeedPerTier = SliderRow.Clone(template, rows, "SpeedPerTierRow", Texts.SpeedPerTier.T(), VanillaSprites.FasterBossIcon,
+            TierMath.MinSpeedPerTier, TierMath.MaxSpeedPerTier, TierMath.PerTierStep, 0, PerTier,
+            value => UpdateOptions(o => o with {SpeedPerTier = (int) value}));
+        HealthPerTier = SliderRow.Clone(template, rows, "HealthPerTierRow", Texts.HealthPerTier.T(), VanillaSprites.BossBoostIcon,
+            TierMath.MinHealthPerTier, TierMath.MaxHealthPerTier, TierMath.PerTierStep, 0, PerTier,
+            value => UpdateOptions(o => o with {HealthPerTier = (int) value}));
+        var stripRow = EditorRows.LabelRow(template, rows, "TierStripRow", Texts.TierPreview.T(), VanillaSprites.BossT5Icon);
+        Strip = new TierStrip(stripRow);
 
         var roundsRow = EditorRows.LabelRow(template, rows, "SpawnRoundsRow", Texts.SpawnRounds.T(), VanillaSprites.BossT1Icon);
         SpawnRounds = ModHelperInputField.Create(EditorRows.ControlInfo("SpawnRounds", 1700, 150),
@@ -258,7 +265,9 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(fortifiedRow, Texts.AllFortified, Texts.AllFortifiedInfo);
         EditorRows.AddInfo(MaxParagons.Row, Texts.MaxParagons, Texts.MaxParagonsInfo);
         EditorRows.AddInfo(Tiers.Row, Texts.BossTiers, Texts.BossTiersInfo);
-        EditorRows.AddInfo(ExtraTierHealth.Row, Texts.ExtraTierHealth, Texts.ExtraTierHealthInfo);
+        EditorRows.AddInfo(SpeedPerTier.Row, Texts.SpeedPerTier, Texts.SpeedPerTierInfo);
+        EditorRows.AddInfo(HealthPerTier.Row, Texts.HealthPerTier, Texts.HealthPerTierInfo);
+        EditorRows.AddInfo(stripRow, Texts.TierPreview, Texts.TierPreviewInfo);
         EditorRows.AddInfo(roundsRow, Texts.SpawnRounds, Texts.SpawnRoundsInfo);
         EditorRows.AddInfo(skullModeRow, Texts.Skulls, Texts.SkullsInfo);
         EditorRows.AddInfo(SkullCount.Row, Texts.SkullCount, Texts.SkullCountInfo);
@@ -456,7 +465,8 @@ public sealed class BossEditorSection
 
             Elite.SetChecked(options.Elite, false);
             Tiers.Show(options.Tiers);
-            ExtraTierHealth.Show(options.ExtraTierHealth);
+            SpeedPerTier.Show(options.SpeedPerTier);
+            HealthPerTier.Show(options.HealthPerTier);
             SkullMode.Dropdown.SetValueWithoutNotify((int) options.SkullMode);
             SkullCount.Show(options.SkullCount);
             CustomSkulls.SetText(ShownSkulls(options), false);
@@ -491,6 +501,7 @@ public sealed class BossEditorSection
         Editor.dcm.bloonModifiers ??= new BloonModifiers();
         Editor.dcm.bloonModifiers.healthMultipliers ??= new BloonHealthMultipliers();
         change(Editor.dcm);
+        Strip.Show(BossMode.Options, Editor.dcm);
     }
 
     private void UpdateOptions(Func<BossOptions, BossOptions> change)
@@ -534,6 +545,8 @@ public sealed class BossEditorSection
             button.Image.SetSprite(Portrait(boss, BossMode.Options.Elite));
             button.transform.Find(SelectedMarker)?.gameObject.SetActive(selected);
         }
+
+        Strip.Show(BossMode.Options, Editor.dcm);
     }
 
     private static string ShownSkulls(BossOptions options) =>
@@ -548,14 +561,16 @@ public sealed class BossEditorSection
     public void Relayout()
     {
         var options = BossMode.Options;
-        ExtraTierHealth.Row.SetActive(options.Tiers > TierMath.VanillaTiers);
         SkullCount.Row.SetActive(options.SkullMode == Config.SkullMode.EvenlySpaced);
         customSkullsRow.SetActive(options.SkullMode == Config.SkullMode.Custom);
         ShowSpawnRounds();
+        Strip.Show(options, Editor.dcm);
 
-        var visibleRows = Enumerable.Range(0, rows.childCount).Count(i => rows.GetChild(i).gameObject.activeSelf);
+        // Rows are as high as the slider rows they copy, except the tier strip
+        var visible = Enumerable.Range(0, rows.childCount).Select(rows.GetChild).Where(row => row.gameObject.activeSelf).ToList();
+        var rowHeights = visible.Sum(row => row.GetComponent<RectTransform>().sizeDelta.y);
         var height = Section.activeSelf
-            ? Padding + visibleRows * EditorRows.RowHeight + Math.Max(visibleRows - 1, 0) * Spacing + Padding / 2
+            ? Padding + rowHeights + Math.Max(visible.Count - 1, 0) * Spacing + Padding / 2
             : 0;
 
         var sectionRect = Section.GetComponent<RectTransform>();
@@ -622,6 +637,8 @@ public sealed class BossEditorSection
     }
 
     private static string Percent(float value) => $"{value:0} %";
+
+    private static string PerTier(float value) => Texts.PerTier.T(value > 0 ? $"+{value:0}" : $"{value:0}");
 
     public static string Portrait(BossType boss, bool elite) => (boss, elite) switch
     {
