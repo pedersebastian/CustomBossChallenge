@@ -81,17 +81,19 @@ public class TierMathTest : CustomBossTest
 
         Assert(TierMath.SpeedFactor(1, 50) == 1 && TierMath.HealthFactor(1, 100) == 1, "Tier 1 keeps the game's values");
         Assert(TierMath.SpeedFactor(7, 0) == 1 && TierMath.HealthFactor(7, 0) == 1, "0 % keeps every tier as the game makes it");
-        Assert(System.Math.Abs(TierMath.SpeedFactor(3, 20) - 1.44) < 1e-9, "Tier 3 at +20 % speed per tier");
-        Assert(System.Math.Abs(TierMath.SpeedFactor(3, -20) - 0.64) < 1e-9, "Tier 3 at -20 % speed per tier");
+        Assert(System.Math.Abs(TierMath.SpeedFactor(3, 20) - 1.4) < 1e-9, "Tier 3 at +20 % speed per tier adds 2 x 20 %");
+        Assert(System.Math.Abs(TierMath.SpeedFactor(3, -10) - 0.8) < 1e-9, "Tier 3 at -10 % speed per tier");
+        AssertEquals(TierMath.HealthFactor(10, TierMath.MinHealthPerTier), TierMath.MinPerTierFactor, "Later tiers keep a minimum");
         AssertEquals(TierMath.SpeedFactor(10, TierMath.MaxSpeedPerTier), TierMath.MaxSpeedFactor, "Speed is capped");
-        Assert(System.Math.Abs(TierMath.HealthFactor(3, 50) - 2.25) < 1e-9, "Tier 3 at +50 % health per tier");
+        Assert(System.Math.Abs(TierMath.HealthFactor(3, 50) - 2) < 1e-9, "Tier 3 at +50 % health per tier");
+        Assert(System.Math.Abs(TierMath.HealthFactor(5, 100) - 5) < 1e-9, "Tier 5 at +100 % health per tier is x5, not x16");
         Assert(TierMath.ExtraTierFactor(5) == 1 && System.Math.Abs(TierMath.ExtraTierFactor(7) - 2.25) < 1e-9,
             "Tiers above 5 get +50 % each, like before");
-        foreach (var (old, perTier) in new[] {(150, 0), (225, 50), (175, 15), (100, -30), (500, 100)})
+        foreach (var (old, perTier) in new[] {(150, 0), (225, 10), (175, 5), (100, -5), (500, 45)})
         {
             AssertEquals(TierMath.HealthPerTierFromExtraTierHealth(old), perTier, $"Extra Tier Health {old}");
         }
-        AssertEquals(new BossOptions {ExtraTierHealth = 225}.Sanitized(), new BossOptions {HealthPerTier = 50},
+        AssertEquals(new BossOptions {ExtraTierHealth = 225}.Sanitized(), new BossOptions {HealthPerTier = 10},
             "Old Extra Tier Health becomes Health per Tier");
         AssertEquals(new BossOptions {ExtraTierHealth = 225, HealthPerTier = 10}.Sanitized(), new BossOptions {HealthPerTier = 10},
             "A Health per Tier that is set wins over the old setting");

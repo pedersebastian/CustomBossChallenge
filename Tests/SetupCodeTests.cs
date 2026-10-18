@@ -84,10 +84,22 @@ public class SetupCodeTest : CustomBossTest
             AssertEquals(badDcm, null, $"Challenge of '{Shorten(bad)}'");
         }
 
+        // A code that uses Speed or Health per Tier is version 2, so 2.2 asks for an update instead of dropping them;
+        // codes without them stay version 1 and still work in 2.2. Both read the same way.
+        Assert(code.StartsWith(SetupCode.Version2Prefix), $"A code with Speed per Tier must be version 2: {code}");
+        Assert(SetupCode.Encode(options with {SpeedPerTier = 0, HealthPerTier = 0}, dcm).StartsWith(SetupCode.Prefix),
+            "A code without per tier options must stay version 1");
+        Assert(SetupCode.TryDecode(SetupCode.Pack(SetupCode.Contents(code)), out var asVersion1, out _, out _),
+            "The same contents must also read as version 1");
+        AssertEquals(asVersion1, options, "Options read as version 1");
+        Assert(!SetupCode.TryDecode("CBC3:" + code[SetupCode.PrefixLength..], out _, out _, out var version3),
+            "A version 3 code must not decode");
+        AssertEquals(version3, CodeProblem.TooNew, "Problem of a version 3 code");
+
         // Codes from before 2.3 had Extra Tier Health; it becomes Health per Tier
         Assert(SetupCode.TryDecode(SetupCode.Pack("{\"o\":{\"Tiers\":7,\"ExtraTierHealth\":225},\"c\":{}}"), out var old, out _, out _),
             "An old code must still load");
-        AssertEquals(old, new BossOptions {Tiers = 7, HealthPerTier = 50}, "Old code options");
+        AssertEquals(old, new BossOptions {Tiers = 7, HealthPerTier = 10}, "Old code options");
 
         Assert(!SetupCode.TryDecode("CBC9:" + payload, out _, out _, out var tooNew), "A newer code must not decode");
         AssertEquals(tooNew, CodeProblem.TooNew, "Problem of a code from a newer version");

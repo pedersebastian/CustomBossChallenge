@@ -26,7 +26,8 @@ Event and your Boss Challenge records and saves are never affected.
   - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
   - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with +50 % health per tier.
   - **Speed per Tier** and **Health per Tier**: make every tier faster and tougher than the one before it, on top of
-    the game's own steps (or easier, below 0).
+    the game's own steps (or easier, below 0). The steps add up evenly: +100 % health makes tiers 2-5 ×2, ×3, ×4
+    and ×5.
   - **Tier Preview**: a card per tier with the round it arrives on, its speed and its health, orange where it is
     harder than the normal game and blue where it is easier.
     With fewer than 5 tiers, beating the last one wins the game.
@@ -68,8 +69,9 @@ rule, into a short text code:
 A code is only data: it can't run anything, and custom games are always unranked and never touch your records.
 Codes are checked before they load, so values outside what the game can play are brought back into range.
 
-Codes start with `CBC1:` and only contain what differs from a new setup, so they are usually a few hundred
-characters. A new, unchanged setup gives a code like this one:
+Codes start with `CBC1:`, or `CBC2:` when they use Speed or Health per Tier so that older versions of the mod
+ask for an update instead of loading them without those settings. They only contain what differs from a new
+setup, so they are usually a few hundred characters. A new, unchanged setup gives a code like this one:
 
 ```
 CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA
@@ -87,8 +89,8 @@ CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA
 | All Fortified | on / off | off | |
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
 | Boss Tiers | 1–10 | 5 | The game is won when the last tier is defeated. |
-| Speed per Tier | −20 to +50 % | 0 % | Each tier this much faster than the one before it, on top of the game's own steps. Capped at ×5. |
-| Health per Tier | −30 to +100 % | 0 % | Each tier this much tougher than the one before it, on top of the game's own steps (tiers above 5 already get +50 % each). |
+| Speed per Tier | −10 to +50 % | 0 % | This share of a tier's normal speed is added for every tier after the first: +20 % makes tier 3 ×1.4. Capped at ×5. |
+| Health per Tier | −10 to +200 % | 0 % | This share of a tier's normal health is added for every tier after the first: +100 % makes tier 5 ×5. Tiers above 5 already get +50 % each. |
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
 | Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |

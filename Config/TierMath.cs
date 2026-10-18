@@ -17,10 +17,10 @@ public static class TierMath
     public const int FirstSpawnRound = 40;
     public const int RoundsBetweenTiers = 20;
     public const int MaxRound = 1000;
-    public const int MinSpeedPerTier = -20;
+    public const int MinSpeedPerTier = -10;
     public const int MaxSpeedPerTier = 50;
-    public const int MinHealthPerTier = -30;
-    public const int MaxHealthPerTier = 100;
+    public const int MinHealthPerTier = -10;
+    public const int MaxHealthPerTier = 200;
     public const int PerTierStep = 5;
 
     /// <summary>
@@ -32,6 +32,11 @@ public static class TierMath
     /// No tier gets more than this much faster than the game makes it, however many tiers there are
     /// </summary>
     public const double MaxSpeedFactor = 5;
+
+    /// <summary>
+    /// Later tiers never drop below this share of the game's speed or health, however low the setting
+    /// </summary>
+    public const double MinPerTierFactor = 0.1;
 
     /// <summary>
     /// Boss models store health as an int, and boss health multipliers are applied on top of it
@@ -98,18 +103,23 @@ public static class TierMath
     public static string FormatRounds(IEnumerable<int> rounds) => string.Join(", ", rounds);
 
     /// <summary>
-    /// How much faster a tier is than the game makes it: <paramref name="percentPerTier"/> more for every tier after
-    /// the first, at most <see cref="MaxSpeedFactor"/>
+    /// How much faster a tier is than the game makes it: <paramref name="percentPerTier"/> of its speed added for
+    /// every tier after the first, so +20 % gives tier 3 ×1.4. At most <see cref="MaxSpeedFactor"/>.
     /// </summary>
     public static double SpeedFactor(int tier, int percentPerTier) =>
-        Math.Min(Math.Pow(1 + percentPerTier / 100.0, Math.Max(tier - 1, 0)), MaxSpeedFactor);
+        Math.Min(PerTierFactor(tier, percentPerTier), MaxSpeedFactor);
 
     /// <summary>
-    /// How much more health a tier has than the game would give it: <paramref name="percentPerTier"/> more for every
-    /// tier after the first
+    /// How much more health a tier has than the game would give it: <paramref name="percentPerTier"/> of its health
+    /// added for every tier after the first, so +100 % gives tier 5 ×5
     /// </summary>
-    public static double HealthFactor(int tier, int percentPerTier) =>
-        Math.Pow(1 + percentPerTier / 100.0, Math.Max(tier - 1, 0));
+    public static double HealthFactor(int tier, int percentPerTier) => PerTierFactor(tier, percentPerTier);
+
+    /// <summary>
+    /// 1 + percent × (tier - 1), never below <see cref="MinPerTierFactor"/>
+    /// </summary>
+    private static double PerTierFactor(int tier, int percentPerTier) =>
+        Math.Max(1 + percentPerTier / 100.0 * Math.Max(tier - 1, 0), MinPerTierFactor);
 
     /// <summary>
     /// Health of a tier relative to the game's tier of the same number, or to tier 5 above that: tiers above 5 get
@@ -122,12 +132,13 @@ public static class TierMath
     public static int ClampHealthPerTier(int percent) => Math.Clamp(percent, MinHealthPerTier, MaxHealthPerTier);
 
     /// <summary>
-    /// The Health per tier that gives tiers above 5 the health the old Extra Tier Health setting gave them, rounded
-    /// to the slider's step. Tiers 2-5 now get it too, which the old setting didn't do.
+    /// The Health per tier that gives tier 6 the health the old Extra Tier Health setting gave it, rounded to the
+    /// slider's step. Tiers 2-5 now get it too, which the old setting didn't do.
     /// </summary>
     public static int HealthPerTierFromExtraTierHealth(int extraTierHealth)
     {
-        var percent = (extraTierHealth / (ExtraTierStep * 100) - 1) * 100;
+        // Tier 6 used to be tier 5 x Extra Tier Health; now it is tier 5 x 1.5 x (1 + 5 x Health per tier)
+        var percent = (extraTierHealth / (ExtraTierStep * 100) - 1) / VanillaTiers * 100;
         return ClampHealthPerTier((int) Math.Round(percent / PerTierStep) * PerTierStep);
     }
 

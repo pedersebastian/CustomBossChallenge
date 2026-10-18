@@ -44,12 +44,12 @@ public static class Texts
 
     public static readonly string SpeedPerTier = Key(nameof(SpeedPerTier), "Speed per Tier");
     public static readonly string SpeedPerTierInfo = Key(nameof(SpeedPerTierInfo),
-        "How much faster each tier is than the one before it, on top of the game's own steps. 0 % keeps the normal " +
-        "speeds; below 0 makes later tiers slower.");
+        "Adds this share of the normal speed for every tier after the first, on top of the game's own steps: +20 % " +
+        "makes tier 2 ×1.2, tier 3 ×1.4 and so on. Below 0 makes later tiers slower.");
     public static readonly string HealthPerTier = Key(nameof(HealthPerTier), "Health per Tier");
     public static readonly string HealthPerTierInfo = Key(nameof(HealthPerTierInfo),
-        "How much more health each tier has than the one before it, on top of the game's own steps. Tiers above 5 " +
-        "already get +50 % each, like the game's steps. 0 % keeps the normal health.");
+        "Adds this share of the normal health for every tier after the first, on top of the game's own steps: " +
+        "+100 % makes tier 2 ×2, tier 3 ×3 and so on. Tiers above 5 already get +50 % each. 0 % keeps the normal health.");
     public static readonly string TierPreview = Key(nameof(TierPreview), "Tier Preview");
     public static readonly string TierPreviewInfo = Key(nameof(TierPreviewInfo),
         "Every tier with the round it arrives on, its speed compared to the normal game and its health. Orange is " +
@@ -89,7 +89,7 @@ public static class Texts
     public static readonly string LoadCodeQuestion = Key(nameof(LoadCodeQuestion),
         "Load this setup? Your current setup will be replaced.");
     public static readonly string CodeInvalid = Key(nameof(CodeInvalid),
-        "The clipboard doesn't contain a Boss Creator code. Copy the whole code, starting with CBC1:");
+        "The clipboard doesn't contain a Boss Creator code. Copy the whole code, starting with CBC");
     public static readonly string CodeTooNew = Key(nameof(CodeTooNew),
         "This code comes from a newer version of Custom Boss Challenge. Update the mod to load it.");
     public static readonly string Load = Key(nameof(Load), "Load");

@@ -82,7 +82,7 @@ public class PersistenceTest : CustomBossTest
             }, "Odd values brought into range");
 
             // Setups from before 2.3 stored Extra Tier Health for tiers above 5; it becomes Health per Tier
-            foreach (var (old, perTier) in new[] {(150, 0), (225, 50), (175, 15), (100, -30)})
+            foreach (var (old, perTier) in new[] {(150, 0), (225, 10), (175, 5), (100, -5)})
             {
                 File.WriteAllText(store.FilePath,
                     $"{{\"Version\": 2, \"Challenge\": {challenge}, \"Options\": {{\"Tiers\": 7, \"ExtraTierHealth\": {old}}}}}");

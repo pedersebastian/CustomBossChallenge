@@ -105,8 +105,8 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(cards[0].Round.Text.text, "R30", "Round of tier 1");
         AssertEquals(cards[0].Speed.Text.text, "×1.5", "Speed of tier 1 (Boss Speed 150 %)");
         AssertEquals(cards[0].Health.Text.text, "125k", "Health of Vortex Elite tier 1 at 300 %");
-        AssertEquals(cards[2].Speed.Text.text, "×2.16", "Speed of tier 3 (+20 % per tier)");
-        AssertEquals(cards[6].Speed.Text.text, "×4.48", "Speed of tier 7");
+        AssertEquals(cards[2].Speed.Text.text, "×2.1", "Speed of tier 3 (+20 % per tier)");
+        AssertEquals(cards[6].Speed.Text.text, "×3.3", "Speed of tier 7");
         AssertEquals(cards[6].Health.Text.text, "201M", "Health of tier 7, capped like in the game");
         AssertEquals(cards[0].Speed.Text.color, TierStrip.Higher, "Faster than the normal game is orange");
         section.BossSpeed.Slider.value = 50;

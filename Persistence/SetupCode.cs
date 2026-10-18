@@ -33,8 +33,14 @@ public enum CodeProblem
 /// </summary>
 public static class SetupCode
 {
+    /// <summary>
+    /// Codes start with "CBC", the format version and a colon. Version 1 codes (2.2) are read the same way; a code
+    /// that uses an option 2.2 doesn't know is version 2, so 2.2 asks for an update instead of silently dropping it.
+    /// </summary>
     public const string Prefix = "CBC1:";
+    public const string Version2Prefix = "CBC2:";
     public const string AnyVersionPrefix = "CBC";
+    public const int PrefixLength = 5;
 
     /// <summary>
     /// Longer codes are refused without being read
@@ -58,13 +64,18 @@ public static class SetupCode
             ["o"] = Diff(OptionsJson(options), OptionsJson(new BossOptions())) ?? new JObject(),
             ["c"] = Diff(ChallengeJson(dcm), ChallengeJson(DailyChallengeModel.CreateDefaultEditorModel())) ?? new JObject()
         };
-        return Pack(payload.ToString(Formatting.None));
+        return Pack(payload.ToString(Formatting.None), NeedsVersion2(options) ? Version2Prefix : Prefix);
     }
+
+    /// <summary>
+    /// Whether the code uses an option that version 1 readers (2.2) don't know
+    /// </summary>
+    public static bool NeedsVersion2(BossOptions options) => options.SpeedPerTier != 0 || options.HealthPerTier != 0;
 
     /// <summary>
     /// Turns JSON into a code without any checks, for tests
     /// </summary>
-    internal static string Pack(string json) => Prefix + ToBase64Url(Deflate(json));
+    internal static string Pack(string json, string prefix = Prefix) => prefix + ToBase64Url(Deflate(json));
 
     /// <summary>
     /// Reads a code. Never throws: anything that isn't a usable code gives a <see cref="CodeProblem"/>.
@@ -78,7 +89,7 @@ public static class SetupCode
 
         code = code?.Trim();
         if (string.IsNullOrEmpty(code) || code.Length > MaxLength) return false;
-        if (!code.StartsWith(Prefix))
+        if (!code.StartsWith(Prefix) && !code.StartsWith(Version2Prefix))
         {
             if (code.StartsWith(AnyVersionPrefix) && code.Length > 4 && char.IsDigit(code[3])) problem = CodeProblem.TooNew;
             return false;
@@ -86,7 +97,7 @@ public static class SetupCode
 
         try
         {
-            var payload = JObject.Parse(Inflate(FromBase64Url(code[Prefix.Length..])));
+            var payload = JObject.Parse(Inflate(FromBase64Url(code[PrefixLength..])));
 
             var optionsJson = OptionsJson(new BossOptions());
             if (payload["o"] is JObject optionsDiff) Apply(optionsJson, optionsDiff);
@@ -192,7 +203,7 @@ public static class SetupCode
     /// <summary>
     /// The JSON inside a code, for tests and troubleshooting
     /// </summary>
-    internal static string Contents(string code) => Inflate(FromBase64Url(code.Trim()[Prefix.Length..]));
+    internal static string Contents(string code) => Inflate(FromBase64Url(code.Trim()[PrefixLength..]));
 
     private static JObject OptionsJson(BossOptions options) => JObject.FromObject(options, OptionsSerializer);
 
