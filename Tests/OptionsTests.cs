@@ -160,3 +160,68 @@ public class ParagonMathTest : CustomBossTest
         yield break;
     }
 }
+
+/// <summary>
+/// The Random button's boss options are always playable, and spread like the game's own randomizer
+/// </summary>
+public class BossRandomizerTest : CustomBossTest
+{
+    public const int Runs = 1000;
+
+    protected override IEnumerator Run()
+    {
+        var random = BossRandomizer.Random;
+        BossRandomizer.Random = new System.Random(1234);
+        var modes = ChallengeLimits.Modes;
+        var unsupported = Menus.BossEditorSection.UnsupportedModes;
+        var bosses = new System.Collections.Generic.HashSet<BossType>();
+        int defaultSpeed = 0, defaultHealth = 0, elite = 0, defaultTiers = 0, limited = 0;
+        try
+        {
+            for (var i = 0; i < Runs; i++)
+            {
+                // Like the game's randomizer: any mode, and a start round up to 50
+                var dcm = BaseDcm();
+                dcm.mode = modes[i % modes.Length];
+                dcm.startRules.round = i % 50 + 1;
+                var options = BossRandomizer.Randomize(dcm, unsupported);
+
+                AssertEquals(options, options.Sanitized(), "Random options must already be in range");
+                Assert(!unsupported.Contains(dcm.mode), $"Random game mode {dcm.mode} can't be played with a boss");
+                Assert(dcm.startRules.round < options.EffectiveSpawnRounds[0],
+                    $"Start round {dcm.startRules.round} skips the first tier on {options.EffectiveSpawnRounds[0]}");
+                AssertEquals(Menus.BossEditorSection.PlayProblem(dcm, options), null, "A random setup must be playable");
+                var speed = dcm.bloonModifiers.bossSpeedMultiplier;
+                var health = dcm.bloonModifiers.healthMultipliers.boss;
+                Assert(speed >= 0.5f && speed <= 2f, $"Boss speed {speed}");
+                Assert(health >= 0.5f && health <= 2f, $"Boss health {health}");
+                Assert(dcm.maxParagons == ParagonMath.NoLimit || dcm.maxParagons is >= 0 and <= BossRandomizer.MaxRandomParagons,
+                    $"Max paragons {dcm.maxParagons}");
+
+                bosses.Add(options.Boss);
+                if (Approximately(speed, 1)) defaultSpeed++;
+                if (Approximately(health, 1)) defaultHealth++;
+                if (options.Elite) elite++;
+                if (options.Tiers == TierMath.VanillaTiers) defaultTiers++;
+                if (dcm.maxParagons != ParagonMath.NoLimit) limited++;
+            }
+        }
+        finally
+        {
+            BossRandomizer.Random = random;
+        }
+
+        Log($"default speed {defaultSpeed}, default health {defaultHealth}, elite {elite}, 5 tiers {defaultTiers}, " +
+            $"paragon limit {limited} of {Runs}");
+        AssertEquals(bosses.Count, System.Enum.GetValues<BossType>().Length, "Every boss can come up");
+        AssertBetween(defaultSpeed, 0.55, 0.7, "Boss speed left at 100 %");
+        AssertBetween(defaultHealth, 0.55, 0.7, "Boss health left at 100 %");
+        AssertBetween(elite, 0.25, 0.35, "Elite");
+        AssertBetween(defaultTiers, 0.5, 0.6, "5 tiers");
+        AssertBetween(limited, 0.15, 0.25, "Paragon limit");
+        yield break;
+    }
+
+    private void AssertBetween(int count, double min, double max, string what) =>
+        Assert(count >= min * Runs && count <= max * Runs, $"{what}: {count} of {Runs}");
+}

@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The log records copied and loaded share codes and every value a code or setup file had brought into range, and
   the README explains how to report a bug.
 
+### Fixed
+
+- The editor's **Random** button now also randomizes the boss options: boss, Elite, speed, health, All Fortified,
+  Max Paragons, tiers and skulls. Like the game's own randomizer, each option has a chance to change and otherwise
+  keeps its default. Random no longer picks game modes a boss can't be played in (Deflation, Apopalypse) or a
+  start round after the first tier.
+
 ## [2.2.0] - 2026-10-17
 
 ### Added

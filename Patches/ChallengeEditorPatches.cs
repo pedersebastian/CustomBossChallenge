@@ -50,6 +50,23 @@ internal static class ChallengeEditor_ApplyUiSettingsToDCM
     }
 }
 
+/// <summary>
+/// The editor's Random button also randomizes the boss options, and keeps the rest playable as a boss game
+/// </summary>
+[HarmonyPatch(typeof(ChallengeEditor), nameof(ChallengeEditor.Randomize))]
+internal static class ChallengeEditor_Randomize
+{
+    [HarmonyPostfix]
+    internal static void Postfix(ChallengeEditor __instance)
+    {
+        if (!BossMode.Active || __instance.dcm == null) return;
+
+        __instance.ApplyUiSettingsToDCM();
+        BossMode.Options = BossRandomizer.Randomize(__instance.dcm, BossEditorSection.UnsupportedModes);
+        __instance.ApplyDcmSettingsToUI();
+    }
+}
+
 [HarmonyPatch(typeof(ChallengeEditor), nameof(ChallengeEditor.Clear))]
 internal static class ChallengeEditor_Clear
 {

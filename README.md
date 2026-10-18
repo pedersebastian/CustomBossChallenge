@@ -47,7 +47,8 @@ Event and your Boss Challenge records and saves are never affected.
 2. Choose a boss, Elite or not, and set the boss options in the **Boss** section.
 3. Set the map, difficulty, rules, towers and sliders like in any custom challenge.
 4. Press **Play**. Pressing back saves the setup and returns to the main menu. After a game you return to the
-   Boss Creator with the same setup. **Reset** also resets the boss options (except the chosen boss).
+   Boss Creator with the same setup. **Reset** also resets the boss options (except the chosen boss), and
+   **Random** also randomizes them, always into a setup that can be played.
 
 ![Main menu](docs/main-menu.jpg)
 

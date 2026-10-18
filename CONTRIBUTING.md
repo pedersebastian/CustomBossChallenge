@@ -19,6 +19,7 @@ Technical notes for building and testing Custom Boss Challenge. For what the mod
 The mod ships with in-game automated tests built on Mod Helper's `ModTest`. They cover:
 
 - tier, spawn round and skull math, and preparing the editor's challenge for a boss game
+- the Random button: a thousand random setups that must all be playable, spread like the game's own randomizer
 - extra tier models for every boss and Elite tier, and real games played to victory with 6 and with 2 tiers
 - a vanilla and a custom Bloonarius game compared side by side (speed, health, skulls, cash, unranked)
 - the ranked and co-op guards, and that every record, boss progress and badge method is still guarded after a
@@ -39,7 +40,7 @@ Run them from Visual Studio / Rider with the **BloonsTD6 (Tests)** launch profil
 BloonsTD6.exe moddingDev -batchmode --modhelper.offline --modhelper.only='CustomBossChallenge;' --modhelper.noaudio --modhelper.run -q test mod CustomBossChallenge
 ```
 
-The result is written to `MelonLoader/Latest.log`, e.g. `Ran 21 test(s), 21 succeeded, 0 failed`.
+The result is written to `MelonLoader/Latest.log`, e.g. `Ran 22 test(s), 22 succeeded, 0 failed`.
 
 The screenshots in the README come from the `ScreenshotTour` test. It only runs in a windowed game started with
 `--cbc.screenshots=<folder>` (and without `-batchmode`).

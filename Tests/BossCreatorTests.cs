@@ -211,6 +211,31 @@ public class BossCreatorTest : CustomBossTest
         yield return ClosePopup(popup, true);
         AssertEquals(BossMode.Options, theirs, "A bad code must not change the setup");
 
+        // The editor's Random button randomizes the boss options too, into a setup that can be played
+        var random = BossRandomizer.Random;
+        BossRandomizer.Random = new System.Random(7);
+        try
+        {
+            var before = BossMode.Options;
+            for (var i = 0; i < 10 && BossMode.Options == before; i++)
+            {
+                editor.randomBtn.onClick.Invoke();
+                yield return new WaitForSecondsRealtime(0.5f);
+            }
+
+            Assert(BossMode.Options != before, "Random must change the boss options");
+            AssertEquals(section.Tiers.Value, (float) BossMode.Options.Tiers, "Random tiers shown");
+            AssertEquals(section.SkullMode.Dropdown.value, (int) BossMode.Options.SkullMode, "Random skull mode shown");
+            editor.ApplyUiSettingsToDCM();
+            AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "A random setup must be playable");
+            Assert(Approximately(editor.dcm.bloonModifiers.bossSpeedMultiplier, section.BossSpeed.Value / 100f),
+                "Random boss speed shown");
+        }
+        finally
+        {
+            BossRandomizer.Random = random;
+        }
+
         // Back to the setup from before, for the rest of the test
         clipboard = myCode;
         section.PasteCode.Button.onClick.Invoke();
