@@ -81,7 +81,11 @@ internal static class ChallengeEditor_Clear
         modifiers.healthMultipliers.boss = 1;
         modifiers.allFortified = false;
         __instance.dcm.maxParagons = ParagonMath.NoLimit;
-        BossMode.Options = new BossOptions {Boss = BossMode.Options.Boss};
+
+        // Like a new setup: the first boss, Bloonarius, with its default challenge name
+        BossMode.Options = new BossOptions();
+        __instance.dcm.name = BossMode.DefaultName(BossMode.Options.Boss);
+        if (__instance.chalName != null) __instance.chalName.text = __instance.dcm.name;
         BossEditorSection.Current?.Load(__instance.dcm, BossMode.Options);
     }
 }

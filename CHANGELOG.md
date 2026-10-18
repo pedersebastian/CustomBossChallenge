@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Reset** now also goes back to Bloonarius, the first boss, with its default challenge name, like a new setup.
+  It used to keep the chosen boss.
 - Health per Tier replaces Extra Tier Health. Tiers above 5 still get +50 % health each by default. Saved setups and
   share codes with another Extra Tier Health are converted to the Health per Tier that gives those tiers the same
   health; tiers 2-5 then get it too, and the log says so.

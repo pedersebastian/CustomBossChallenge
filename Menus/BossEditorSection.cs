@@ -27,7 +27,7 @@ public sealed class BossEditorSection
     public const string SectionName = "CustomBossSection";
     public const string PlayName = "CustomBossPlay";
     public static string Title => Texts.BossCreator.T();
-    private const string SelectedMarker = "Selected";
+    public const string SelectedMarker = "Selected";
 
     /// <summary>Game modes a boss game doesn't support</summary>
     public static readonly string[] UnsupportedModes = {"Deflation", "Apopalypse"};

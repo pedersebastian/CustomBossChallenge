@@ -389,7 +389,7 @@ public class BossCreatorTest : CustomBossTest
     }
 
     /// <summary>
-    /// The editor's reset button also resets the boss options, except for the chosen boss
+    /// The editor's reset button also resets the boss options, back to a new setup with Bloonarius
     /// </summary>
     private IEnumerator ResetClearsBossOptions(ChallengeEditor editor)
     {
@@ -411,7 +411,13 @@ public class BossCreatorTest : CustomBossTest
         editor.clearBtn.onClick.Invoke();
         yield return new WaitForSecondsRealtime(1);
 
-        AssertEquals(BossMode.Options, new BossOptions {Boss = BossType.Vortex}, "Options after reset");
+        AssertEquals(BossMode.Options, new BossOptions(), "Options after reset");
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Bloonarius), "Name after reset");
+        Assert(section.BossButtons[BossType.Bloonarius].transform.Find(BossEditorSection.SelectedMarker).gameObject.activeSelf,
+            "Bloonarius must be shown as chosen after reset");
+        Assert(!section.BossButtons[BossType.Vortex].transform.Find(BossEditorSection.SelectedMarker).gameObject.activeSelf,
+            "The previous boss must not be shown as chosen after reset");
+        AssertEquals(section.SpeedPerTier.Value, 0f, "Speed per tier shown after reset");
         AssertEquals(section.BossSpeed.Value, 100f, "Boss speed shown after reset");
         AssertEquals(section.BossHealth.Value, 100f, "Boss health shown after reset");
         AssertEquals(section.Tiers.Value, 5f, "Tiers shown after reset");
