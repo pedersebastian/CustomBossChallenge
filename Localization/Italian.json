@@ -47,6 +47,7 @@
   "CustomBossChallenge-Load": "Carica",
   "CustomBossChallenge-Cancel": "Annulla",
   "CustomBossChallenge-TierCount": "{0} livelli",
+  "CustomBossChallenge-HealthCap": "La salute si ferma a {0} per livello, il limite del gioco: alcuni livelli ne hanno meno di quanto chiedono le impostazioni.",
   "CustomBossChallenge-UnsupportedMode": "La modalità di gioco {0} non può essere usata per le partite con boss.",
   "CustomBossChallenge-BossUnavailable": "Questo boss non può essere giocato: il gioco non ha il bloon {0}. Un aggiornamento del gioco potrebbe averlo modificato."
 }

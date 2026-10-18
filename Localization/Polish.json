@@ -47,6 +47,7 @@
   "CustomBossChallenge-Load": "Wczytaj",
   "CustomBossChallenge-Cancel": "Anuluj",
   "CustomBossChallenge-TierCount": "Poziomy: {0}",
+  "CustomBossChallenge-HealthCap": "Zdrowie kończy się na {0} na poziom, limicie gry: niektóre poziomy dostają mniej, niż wynika z ustawień.",
   "CustomBossChallenge-UnsupportedMode": "Tryb gry {0} nie może być używany w grach z bossem.",
   "CustomBossChallenge-BossUnavailable": "Nie można zagrać z tym bossem: gra nie ma balonu {0}. Mogła go zmienić aktualizacja gry."
 }

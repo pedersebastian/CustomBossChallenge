@@ -47,6 +47,7 @@
   "CustomBossChallenge-Load": "載入",
   "CustomBossChallenge-Cancel": "取消",
   "CustomBossChallenge-TierCount": "{0} 個階段",
+  "CustomBossChallenge-HealthCap": "每階生命值最高為 {0}，這是遊戲的上限：部分階段的生命值會低於設定的數值。",
   "CustomBossChallenge-UnsupportedMode": "{0}遊戲模式不能用於Boss遊戲。",
   "CustomBossChallenge-BossUnavailable": "無法挑戰此Boss：遊戲中沒有{0}氣球。可能是遊戲更新更改了它。"
 }

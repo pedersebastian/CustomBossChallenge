@@ -334,6 +334,35 @@ public sealed class BossEditorSection
     public static string PlainText(string? text) =>
         $"<noparse>{(text ?? "").Replace("</noparse>", "</​noparse>", StringComparison.OrdinalIgnoreCase)}</noparse>";
 
+    public const float PlayWidth = 500;
+    public const float PlayGap = 16;
+
+    /// <summary>
+    /// The game's Play spot overlaps the Reset button, and further left is the title banner: a slightly narrower Play
+    /// fits between the two
+    /// </summary>
+    private void PlaceBesideReset(RectTransform play)
+    {
+        var reset = Editor.transform.Find("Reset")?.GetComponent<RectTransform>();
+        if (reset == null || play == null) return;
+
+        var button = play.GetComponentInChildren<Button>(true).GetComponent<RectTransform>();
+        if (button != play)
+        {
+            // The copied button sits at the right edge of its holder
+            button.sizeDelta = new Vector2(PlayWidth, button.sizeDelta.y);
+            button.anchoredPosition = new Vector2(-PlayWidth / 2, button.anchoredPosition.y);
+        }
+        else
+        {
+            play.sizeDelta = new Vector2(PlayWidth, play.sizeDelta.y);
+        }
+
+        var right = reset.anchoredPosition.x - reset.sizeDelta.x / 2 - PlayGap;
+        play.anchoredPosition = new Vector2(right - (button != play ? play.sizeDelta.x : PlayWidth) / 2,
+            play.anchoredPosition.y);
+    }
+
     private GameObject BuildPlayButton()
     {
         var template = Editor.transform.Find("Play");
@@ -358,6 +387,7 @@ public sealed class BossEditorSection
         }
 
         play.name = PlayName;
+        PlaceBesideReset(play.GetComponent<RectTransform>());
         play.SetActive(false);
         return play;
     }
@@ -495,7 +525,7 @@ public sealed class BossEditorSection
         Editor.dcm.bloonModifiers ??= new BloonModifiers();
         Editor.dcm.bloonModifiers.healthMultipliers ??= new BloonHealthMultipliers();
         change(Editor.dcm);
-        Strip.Show(BossMode.Options, Editor.dcm);
+        ShowStrip();
     }
 
     private void UpdateOptions(Func<BossOptions, BossOptions> change)
@@ -540,7 +570,15 @@ public sealed class BossEditorSection
             button.transform.Find(SelectedMarker)?.gameObject.SetActive(selected);
         }
 
-        Strip.Show(BossMode.Options, Editor.dcm);
+        ShowStrip();
+    }
+
+    /// <summary>
+    /// The strip grows when it shows the health cap line, and the rows below must move with it
+    /// </summary>
+    private void ShowStrip()
+    {
+        if (Strip.Show(BossMode.Options, Editor.dcm) && !refreshing) Relayout();
     }
 
     private static string ShownSkulls(BossOptions options) =>

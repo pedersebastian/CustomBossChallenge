@@ -47,6 +47,7 @@
   "CustomBossChallenge-Load": "Laden",
   "CustomBossChallenge-Cancel": "Annuleren",
   "CustomBossChallenge-TierCount": "{0} niveaus",
+  "CustomBossChallenge-HealthCap": "Gezondheid stopt bij {0} per niveau, de grens van het spel: sommige niveaus krijgen minder dan de instellingen vragen.",
   "CustomBossChallenge-UnsupportedMode": "De spelmodus {0} kan niet worden gebruikt voor bossspellen.",
   "CustomBossChallenge-BossUnavailable": "Deze boss kan niet worden gespeeld: het spel heeft geen {0}-bloon. Een game-update heeft deze mogelijk veranderd."
 }

@@ -20,6 +20,12 @@ public sealed class TierStrip
 {
     public const float Height = 300;
     public const float CardHeight = 270;
+    public const float NoteHeight = 46;
+
+    /// <summary>
+    /// The row's height while it also shows the health cap line
+    /// </summary>
+    public const float CappedHeight = 380;
     public const float MaxCardWidth = 330;
     public const float CardGap = 12;
     public const string CardName = "Tier";
@@ -34,6 +40,13 @@ public sealed class TierStrip
     /// The cards, for tiers 1 to 10
     /// </summary>
     public List<Card> Cards { get; } = new();
+
+    /// <summary>
+    /// The line under the cards with the most health a tier can have, only shown while a tier is held to it
+    /// </summary>
+    public ModHelperText Note { get; }
+
+    private readonly ModHelperPanel strip;
 
     public sealed class Card
     {
@@ -50,7 +63,7 @@ public sealed class TierStrip
         var rect = row.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(rect.sizeDelta.x, Height);
 
-        var strip = ModHelperPanel.Create(EditorRows.ControlInfo("TierStrip", EditorRows.ControlWidth, Height - 10),
+        strip = ModHelperPanel.Create(EditorRows.ControlInfo("TierStrip", EditorRows.ControlWidth, Height - 10),
             VanillaSprites.BlueInsertPanelRound);
         strip.transform.SetParent(row.transform, false);
 
@@ -82,35 +95,51 @@ public sealed class TierStrip
             card.Health = card.Panel.AddText(new Info("Health", 0, -112, 300, 64), "", 54);
             Cards.Add(card);
         }
+
+        Note = strip.AddText(new Info("HealthCap", 0, 18, EditorRows.ControlWidth - 40, NoteHeight)
+        {
+            Anchor = new Vector2(0.5f, 0), Pivot = new Vector2(0.5f, 0)
+        }, "", 40, TextAlignmentOptions.Center);
+        Note.Text.color = Higher;
     }
 
     /// <summary>
-    /// Cards share the strip's width, centered, but never get wider than <see cref="MaxCardWidth"/>
+    /// Cards share the strip's width, centered, but never get wider than <see cref="MaxCardWidth"/>. With the health
+    /// cap line the row grows and the cards stay at its top, above the line.
     /// </summary>
-    private void LayOut(int tiers)
+    private void LayOut(int tiers, bool capped)
     {
+        var height = capped ? CappedHeight : Height;
+        var rowRect = Row.GetComponent<RectTransform>();
+        rowRect.sizeDelta = new Vector2(rowRect.sizeDelta.x, height);
+        strip.RectTransform.sizeDelta = new Vector2(strip.RectTransform.sizeDelta.x, height - 10);
+        Note.gameObject.SetActive(capped);
+
+        var y = capped ? (height - 10 - CardHeight) / 2 - 8 : 0;
         var slot = Math.Min(EditorRows.ControlWidth / tiers, MaxCardWidth + CardGap);
         var left = (EditorRows.ControlWidth - slot * tiers) / 2;
         for (var i = 0; i < tiers; i++)
         {
             var cardRect = Cards[i].Panel.RectTransform;
-            cardRect.anchoredPosition = new Vector2(left + (i + 0.5f) * slot, 0);
+            cardRect.anchoredPosition = new Vector2(left + (i + 0.5f) * slot, y);
             cardRect.sizeDelta = new Vector2(slot - CardGap, CardHeight);
         }
     }
 
     /// <summary>
-    /// Shows the tiers <paramref name="options"/> asks for, with the boss multipliers from <paramref name="dcm"/>
+    /// Shows the tiers <paramref name="options"/> asks for, with the boss multipliers from <paramref name="dcm"/>.
+    /// Returns whether the row changed height, so the section must be laid out again.
     /// </summary>
-    public void Show(BossOptions options, DailyChallengeModel? dcm)
+    public bool Show(BossOptions options, DailyChallengeModel? dcm)
     {
+        var height = Row.GetComponent<RectTransform>().sizeDelta.y;
         var tiers = TierMath.ClampTiers(options.Tiers);
         var rounds = options.EffectiveSpawnRounds;
         var bossSpeed = dcm?.bloonModifiers?.bossSpeedMultiplier ?? 1;
         var bossHealth = dcm?.bloonModifiers?.healthMultipliers?.boss ?? 1;
         var portrait = BossEditorSection.Portrait(options.Boss, options.Elite);
         var game = Game.instance?.model;
-        LayOut(tiers);
+        var capped = false;
 
         for (var i = 0; i < Cards.Count; i++)
         {
@@ -127,12 +156,21 @@ public sealed class TierStrip
 
             var source = options.BossId(Math.Min(tier, TierMath.VanillaTiers));
             var health = TierMath.HealthFactor(tier, options.HealthPerTier) * bossHealth;
-            var shown = game != null && game.DoesBloonExist(source)
-                ? FormatHealth(Math.Min(game.GetBloon(source).maxHealth * TierMath.ExtraTierFactor(tier) * TierMath.HealthFactor(tier, options.HealthPerTier),
-                    TierMath.MaxModelHealth) * bossHealth)
-                : "?";
+            var shown = "?";
+            if (game != null && game.DoesBloonExist(source))
+            {
+                var model = game.GetBloon(source).maxHealth * TierMath.ExtraTierFactor(tier) *
+                            TierMath.HealthFactor(tier, options.HealthPerTier);
+                capped |= model > TierMath.MaxModelHealth;
+                shown = FormatHealth(Math.Min(model, TierMath.MaxModelHealth) * bossHealth);
+            }
             Paint(card.Health, shown, health);
         }
+
+        // The cap is on the boss model; Boss Health is applied on top of it, like in the game
+        EditorRows.SetText(Note.Text, Texts.HealthCap.T(FormatHealth(TierMath.MaxModelHealth * bossHealth)));
+        LayOut(tiers, capped);
+        return !Mathf.Approximately(height, Row.GetComponent<RectTransform>().sizeDelta.y);
     }
 
     private static void Paint(ModHelperText text, string value, double factor)

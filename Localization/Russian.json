@@ -47,6 +47,7 @@
   "CustomBossChallenge-Load": "Загрузить",
   "CustomBossChallenge-Cancel": "Отмена",
   "CustomBossChallenge-TierCount": "Уровней: {0}",
+  "CustomBossChallenge-HealthCap": "Здоровье ограничено {0} на уровень, пределом игры: некоторые уровни получают меньше, чем задано настройками.",
   "CustomBossChallenge-UnsupportedMode": "Игровой режим {0} нельзя использовать в играх с боссом.",
   "CustomBossChallenge-BossUnavailable": "С этим боссом нельзя сыграть: в игре нет шара {0}. Возможно, его изменило обновление игры."
 }

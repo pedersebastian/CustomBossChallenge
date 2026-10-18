@@ -61,6 +61,16 @@ public class BossCreatorTest : CustomBossTest
         var section = AssertNotNull(BossEditorSection.Current, "No boss section")!;
         Assert(section.Section.activeInHierarchy, "The boss section is hidden");
         Assert(section.Play.activeInHierarchy, "The Play button is hidden");
+        // GetWorldCorners can't fill a managed array through Il2Cpp, so the edges are worked out from the rects
+        float Edge(Component holder, bool right)
+        {
+            var rect = holder.GetComponentInChildren<Button>().GetComponent<RectTransform>();
+            return rect.TransformPoint(new Vector3(right ? rect.rect.xMax : rect.rect.xMin, 0, 0)).x;
+        }
+
+        var playRight = Edge(section.Play.transform, true);
+        var resetLeft = Edge(editor!.transform.Find("Reset")!, false);
+        Assert(playRight < resetLeft, $"Play (right edge {playRight}) overlaps Reset (left edge {resetLeft})");
         AssertEquals(section.BossButtons.Count, Enum.GetValues<BossType>().Length, "Boss buttons");
         AssertEquals(editor!.chalName.text, BossMode.DefaultName(BossType.Bloonarius), "Default challenge name");
 
@@ -133,6 +143,13 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(cards[2].Speed.Text.text, "×2.1", "Speed of tier 3 (+20 % per tier)");
         AssertEquals(cards[6].Speed.Text.text, "×3.3", "Speed of tier 7");
         AssertEquals(cards[6].Health.Text.text, "201M", "Health of tier 7, capped like in the game");
+        Assert(section.Strip.Note.Text.text.Contains("201M"), $"The cap line shows the cap with Boss Health: {section.Strip.Note.Text.text}");
+        Assert(section.Strip.Note.gameObject.activeSelf, "The cap line shows while a tier reaches the cap");
+        AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.CappedHeight, "The strip grows for the cap line");
+        section.Tiers.Slider.value = 3;
+        Assert(!section.Strip.Note.gameObject.activeSelf, "The cap line is hidden while no tier reaches the cap");
+        AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.Height, "The strip shrinks back without the cap line");
+        section.Tiers.Slider.value = 7;
         AssertEquals(cards[0].Speed.Text.color, TierStrip.Higher, "Faster than the normal game is orange");
         section.BossSpeed.Slider.value = 50;
         AssertEquals(cards[0].Speed.Text.text, "×0.5", "The preview follows Boss Speed");

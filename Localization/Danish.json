@@ -47,6 +47,7 @@
   "CustomBossChallenge-Load": "Indlæs",
   "CustomBossChallenge-Cancel": "Annuller",
   "CustomBossChallenge-TierCount": "{0} niveauer",
+  "CustomBossChallenge-HealthCap": "Liv stopper ved {0} pr. niveau, spillets grænse: nogle niveauer får mindre end indstillingerne beder om.",
   "CustomBossChallenge-UnsupportedMode": "Spiltilstanden {0} kan ikke bruges til bossspil.",
   "CustomBossChallenge-BossUnavailable": "Denne boss kan ikke spilles: spillet har ingen {0}-bloon. En spilopdatering kan have ændret den."
 }

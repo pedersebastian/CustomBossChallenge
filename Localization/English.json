@@ -47,6 +47,7 @@
   "CustomBossChallenge-Load": "Load",
   "CustomBossChallenge-Cancel": "Cancel",
   "CustomBossChallenge-TierCount": "{0} tiers",
+  "CustomBossChallenge-HealthCap": "Health stops at {0} per tier, the game's limit: some tiers get less than the settings ask for.",
   "CustomBossChallenge-UnsupportedMode": "The {0} game mode can't be used for boss games.",
   "CustomBossChallenge-BossUnavailable": "This boss can't be played: the game has no {0} bloon. A game update may have changed it."
 }

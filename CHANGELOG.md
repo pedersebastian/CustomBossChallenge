@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- When a tier would get more health than the game allows, the Tier Preview says so under the cards, with the limit
+  (Boss Health included).
+
+### Fixed
+
+- The Boss Creator's Play button no longer overlaps Reset.
+
 ## [2.3.0] - 2026-10-18
 
 ### Added

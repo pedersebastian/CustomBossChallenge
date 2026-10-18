@@ -47,6 +47,7 @@
   "CustomBossChallenge-Load": "読み込む",
   "CustomBossChallenge-Cancel": "キャンセル",
   "CustomBossChallenge-TierCount": "{0} ティア",
+  "CustomBossChallenge-HealthCap": "体力はティアごとに {0} が上限です（ゲームの制限）。一部のティアは設定より少なくなります。",
   "CustomBossChallenge-UnsupportedMode": "{0}ゲームモードはボスゲームでは使用できません。",
   "CustomBossChallenge-BossUnavailable": "このボスはプレイできません：ゲームに{0}のブルーンがありません。ゲームのアップデートで変更された可能性があります。"
 }

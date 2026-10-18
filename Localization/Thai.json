@@ -47,6 +47,7 @@
   "CustomBossChallenge-Load": "โหลด",
   "CustomBossChallenge-Cancel": "ยกเลิก",
   "CustomBossChallenge-TierCount": "{0} ระดับ",
+  "CustomBossChallenge-HealthCap": "พลังชีวิตหยุดที่ {0} ต่อระดับ ซึ่งเป็นขีดจำกัดของเกม: บางระดับจะได้น้อยกว่าที่ตั้งค่าไว้",
   "CustomBossChallenge-UnsupportedMode": "โหมดเกม {0} ไม่สามารถใช้กับเกมบอสได้",
   "CustomBossChallenge-BossUnavailable": "ไม่สามารถเล่นบอสนี้ได้: เกมไม่มีบลูน {0} การอัปเดตเกมอาจเปลี่ยนแปลงไปแล้ว"
 }

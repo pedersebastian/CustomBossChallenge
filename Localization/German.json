@@ -47,6 +47,7 @@
   "CustomBossChallenge-Load": "Laden",
   "CustomBossChallenge-Cancel": "Abbrechen",
   "CustomBossChallenge-TierCount": "{0} Stufen",
+  "CustomBossChallenge-HealthCap": "Die Gesundheit endet bei {0} pro Stufe, der Grenze des Spiels: Manche Stufen bekommen weniger als eingestellt.",
   "CustomBossChallenge-UnsupportedMode": "Der Spielmodus {0} kann nicht für Boss-Spiele verwendet werden.",
   "CustomBossChallenge-BossUnavailable": "Dieser Boss kann nicht gespielt werden: Das Spiel hat keinen {0}-Bloon. Ein Spielupdate hat ihn möglicherweise geändert."
 }

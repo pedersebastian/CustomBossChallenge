@@ -95,6 +95,8 @@ public static class Texts
     public static readonly string Load = Key(nameof(Load), "Load");
     public static readonly string Cancel = Key(nameof(Cancel), "Cancel");
     public static readonly string TierCount = Key(nameof(TierCount), "{0} tiers");
+    public static readonly string HealthCap = Key(nameof(HealthCap),
+        "Health stops at {0} per tier, the game's limit: some tiers get less than the settings ask for.");
 
     public static readonly string UnsupportedMode = Key(nameof(UnsupportedMode),
         "The {0} game mode can't be used for boss games.");

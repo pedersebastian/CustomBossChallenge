@@ -47,6 +47,7 @@
   "CustomBossChallenge-Load": "Lataa",
   "CustomBossChallenge-Cancel": "Peruuta",
   "CustomBossChallenge-TierCount": "{0} tasoa",
+  "CustomBossChallenge-HealthCap": "Kestävyys pysähtyy {0}:aan tasoa kohden, pelin rajaan: jotkin tasot saavat vähemmän kuin asetukset pyytävät.",
   "CustomBossChallenge-UnsupportedMode": "Pelitilaa {0} ei voi käyttää pomopeleihin.",
   "CustomBossChallenge-BossUnavailable": "Tätä pomoa ei voi pelata: pelissä ei ole {0}-bloonia. Pelipäivitys on ehkä muuttanut sen."
 }
