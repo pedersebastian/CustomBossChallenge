@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The log records copied and loaded share codes and every value a code or setup file had brought into range, and
+  the README explains how to report a bug.
+
 ## [2.2.0] - 2026-10-17
 
 ### Added

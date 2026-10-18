@@ -90,8 +90,9 @@ public static class SetupCode
 
             var optionsJson = OptionsJson(new BossOptions());
             if (payload["o"] is JObject optionsDiff) Apply(optionsJson, optionsDiff);
-            var decoded = optionsJson.ToObject<BossOptions>(OptionsSerializer)?.Sanitized();
-            if (decoded == null) return false;
+            var raw = optionsJson.ToObject<BossOptions>(OptionsSerializer);
+            if (raw == null) return false;
+            var decoded = raw.Sanitized();
 
             var challenge = ChallengeJson(DailyChallengeModel.CreateDefaultEditorModel());
             if (payload["c"] is JObject challengeDiff) Apply(challenge, challengeDiff);
@@ -101,7 +102,9 @@ public static class SetupCode
             // Same rule as saved setups: polymorphic models are never part of a setup
             model.customMapModel = null;
             model.simulationBehaviorsMod = null;
-            ChallengeLimits.Sanitize(model, BossMode.DefaultDcm(decoded));
+            var changes = ChallengeLimits.OptionChanges(raw, decoded);
+            changes.AddRange(ChallengeLimits.Sanitize(model, BossMode.DefaultDcm(decoded)));
+            ChallengeLimits.Report("Share code", changes);
 
             options = decoded;
             dcm = model;

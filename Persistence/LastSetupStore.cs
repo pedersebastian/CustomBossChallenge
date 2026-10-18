@@ -64,10 +64,12 @@ public sealed class LastSetupStore
             if (file?.Options == null || string.IsNullOrEmpty(file.Challenge)) throw new InvalidDataException("Incomplete setup");
 
             options = file.Options.Sanitized();
+            var changes = ChallengeLimits.OptionChanges(file.Options, options);
             dcm = DcmJson.Deserialize(file.Challenge);
             if (dcm == null) return false;
 
-            ChallengeLimits.Sanitize(dcm, BossMode.DefaultDcm(options));
+            changes.AddRange(ChallengeLimits.Sanitize(dcm, BossMode.DefaultDcm(options)));
+            ChallengeLimits.Report($"Boss Creator setup {FilePath}", changes);
             return true;
         }
         catch (Exception e)

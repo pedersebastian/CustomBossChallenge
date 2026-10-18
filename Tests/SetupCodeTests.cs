@@ -150,6 +150,18 @@ public class MaliciousCodeTest : CustomBossTest
         Assert(dcm.name.Length <= ChallengeLimits.MaxNameLength && dcm.name.StartsWith("Linebreak and"),
             $"Name without control characters and cut to length: '{dcm.name}'");
 
+        // What was brought into range is reported for the log, and normal setups report nothing
+        AssertEquals(ChallengeLimits.Sanitize(CustomEditorDcm(), defaults).Count, 0, "Changes to a normal setup");
+        var tooFast = CustomEditorDcm();
+        tooFast.bloonModifiers.bossSpeedMultiplier = 1e30f;
+        tooFast.map = "NoSuchMap";
+        var changes = ChallengeLimits.Sanitize(tooFast, defaults);
+        AssertEquals(string.Join("; ", changes), $"unknown map 'NoSuchMap' -> {defaults.map}; boss speed 1E+30 -> 10",
+            "Reported changes");
+        var tooMany = new BossOptions {Tiers = 50};
+        AssertEquals(string.Join("; ", ChallengeLimits.OptionChanges(tooMany, tooMany.Sanitized())), "Tiers 50 -> 10",
+            "Reported option changes");
+
         // Rich text in a shared name is shown as text, even if it tries to close the protection itself
         dcm.name = "</noparse><size=500>Official</size>";
         var summary = Menus.BossEditorSection.Summary(options, dcm);

@@ -129,6 +129,18 @@ The Boss Creator setup is stored in `BloonsTD6/UserData/CustomBossChallenge/Last
    [releases page](https://github.com/pedersebastian/CustomBossChallenge/releases).
 3. Put the file in the `Mods` folder of your BTD6 installation and start the game.
 
+## Reporting a bug
+
+Open an [issue](https://github.com/pedersebastian/CustomBossChallenge/issues) and include:
+
+- what you did, what you expected and what happened instead
+- the mod version (shown in Mod Helper's mod list) and the game version
+- the **Share Code** of your setup, if the bug happens in a boss game, so the setup can be loaded exactly
+- the log file `MelonLoader/Latest.log` from your BTD6 folder, from a session where the bug happened. Older logs
+  are kept in `MelonLoader/Logs`. Lines from this mod start with `[CustomBossChallenge]`; they say when a game
+  is made unranked, when a share code is copied or loaded, and which values from a code or setup file were brought
+  into range. Have a quick look before posting it: logs can contain folder paths from your PC.
+
 ## Building and testing
 
 How to build the mod from source and run its automated tests is described in

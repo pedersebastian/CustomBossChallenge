@@ -282,6 +282,8 @@ public sealed class BossEditorSection
         Editor.ApplyUiSettingsToDCM();
         var code = SetupCode.Encode(BossMode.Options, Editor.dcm);
         Clipboard.Write(code);
+        ModHelper.Msg<CustomBossChallenge>(
+            $"Copied a share code ({code.Length} characters): {Describe(BossMode.Options, Editor.dcm)}");
         PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.CodeCopied.T(code.Length), null));
     }
 
@@ -290,15 +292,29 @@ public sealed class BossEditorSection
         if (!SetupCode.TryDecode(Clipboard.Read(), out var options, out var dcm, out var problem) || dcm == null)
         {
             var text = problem == CodeProblem.TooNew ? Texts.CodeTooNew : Texts.CodeInvalid;
+            ModHelper.Msg<CustomBossChallenge>(problem == CodeProblem.TooNew
+                ? "Pasted a share code from a newer version of the mod"
+                : "Pasted text is not a share code");
             PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(text.T(), null));
             return;
         }
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.ShareCode.T(),
             $"{Texts.LoadCodeQuestion.T()}\n\n{Summary(options, dcm)}",
-            new Action(() => BossMode.Replace(Editor, options, dcm)), Texts.Load.T(),
+            new Action(() =>
+            {
+                BossMode.Replace(Editor, options, dcm);
+                ModHelper.Msg<CustomBossChallenge>($"Loaded a share code: {Describe(options, dcm)}");
+            }), Texts.Load.T(),
             null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
     }
+
+    /// <summary>
+    /// A setup in one line for the log, e.g. "'Custom Vortex', Vortex Elite, 7 tiers, Logs, Hard, Standard"
+    /// </summary>
+    public static string Describe(BossOptions options, DailyChallengeModel dcm) =>
+        $"'{dcm.name}', {options.Boss}{(options.Elite ? " Elite" : "")}, {options.Tiers} tiers, " +
+        $"{dcm.map}, {dcm.difficulty}, {dcm.mode}";
 
     /// <summary>
     /// What a shared setup is, in a few words
