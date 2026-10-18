@@ -3,6 +3,7 @@ using CustomBossChallenge.Creator;
 using CustomBossChallenge.Menus;
 using HarmonyLib;
 using Il2CppAssets.Scripts.Data.Boss;
+using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
 using Il2CppAssets.Scripts.Unity.UI_New.DailyChallenge;
 using Object = UnityEngine.Object;
@@ -81,6 +82,8 @@ internal static class ChallengeEditor_Clear
         modifiers.healthMultipliers.boss = 1;
         modifiers.allFortified = false;
         __instance.dcm.maxParagons = ParagonMath.NoLimit;
+        var settings = FortifiedModifier.Settings(__instance);
+        if (settings != null) FortifiedModifier.Show(settings, __instance.dcm);
 
         // Like a new setup: the first boss, Bloonarius, with its default challenge name
         BossMode.Options = new BossOptions();
@@ -129,4 +132,24 @@ internal static class MapSelectPanel_Open
         bossType = BossMode.Options.Boss;
         showBossVisuals = true;
     }
+}
+
+/// <summary>
+/// The Boss Creator's All Fortified button among the editor's modifiers shows and sets the challenge's value; the game
+/// only knows its own modifiers
+/// </summary>
+[HarmonyPatch(typeof(ChallengeEditorModifierSettings), nameof(ChallengeEditorModifierSettings.ApplyDCMtoUI))]
+internal static class ChallengeEditorModifierSettings_ApplyDCMtoUI
+{
+    [HarmonyPostfix]
+    internal static void Postfix(ChallengeEditorModifierSettings __instance, DailyChallengeModel dcm) =>
+        FortifiedModifier.Show(__instance, dcm);
+}
+
+[HarmonyPatch(typeof(ChallengeEditorModifierSettings), nameof(ChallengeEditorModifierSettings.ApplyUIToDCM))]
+internal static class ChallengeEditorModifierSettings_ApplyUIToDCM
+{
+    [HarmonyPostfix]
+    internal static void Postfix(ChallengeEditorModifierSettings __instance, DailyChallengeModel dcm) =>
+        FortifiedModifier.Save(__instance, dcm);
 }

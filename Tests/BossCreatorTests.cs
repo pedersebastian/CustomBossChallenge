@@ -70,7 +70,7 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 14, "Info buttons in the boss section");
+        AssertEquals(infoButtons, 13, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
@@ -87,7 +87,26 @@ public class BossCreatorTest : CustomBossTest
         section.Elite.SetChecked(true, true);
         section.BossSpeed.Slider.value = 150;
         section.BossHealth.Slider.value = 300;
-        section.AllFortified.SetChecked(true, true);
+        // All Fortified is among the editor's own modifiers, first in the excluded list
+        var modifiers = AssertNotNull(FortifiedModifier.Settings(editor), "No modifier settings")!;
+        var fortified = AssertNotNull(FortifiedModifier.Find(modifiers), "No All Fortified modifier")!;
+        AssertEquals(fortified.transform.parent.Pointer, modifiers.excludedContainer.Pointer, "All Fortified starts excluded");
+        AssertEquals(fortified.transform.GetSiblingIndex(), 0, "All Fortified comes first");
+        foreach (var label in fortified.GetComponentsInChildren<TMP_Text>(true))
+        {
+            AssertEquals(label.text, Texts.AllFortified.T(), "All Fortified label");
+        }
+        modifiers.OpenEditPopup();
+        yield return new WaitForSecondsRealtime(1);
+        fortified.Select();
+        AssertEquals(modifiers.descriptionTitle.text, Texts.AllFortified.T(), "All Fortified info title");
+        fortified.includeToggle.isOn = true;
+        yield return new WaitForSecondsRealtime(0.5f);
+        AssertEquals(fortified.transform.parent.Pointer, modifiers.includedContainer.Pointer, "All Fortified moves to included");
+        modifiers.FillMsbLists();
+        Assert(modifiers.includedMSB.Contains(fortified), "All Fortified is listed as included");
+        modifiers.CloseEditPopup();
+        yield return new WaitForSecondsRealtime(0.5f);
         section.MaxParagons.Slider.value = 1;
         section.Tiers.Slider.value = 7;
         section.SpeedPerTier.Slider.value = 20;
@@ -246,6 +265,8 @@ public class BossCreatorTest : CustomBossTest
             AssertEquals(section.SpeedPerTier.Value, (float) BossMode.Options.SpeedPerTier, "Random speed per tier shown");
             AssertEquals(section.HealthPerTier.Value, (float) BossMode.Options.HealthPerTier, "Random health per tier shown");
             AssertEquals(section.SkullMode.Dropdown.value, (int) BossMode.Options.SkullMode, "Random skull mode shown");
+            AssertEquals(FortifiedModifier.Find(FortifiedModifier.Settings(editor))!.includeToggle.isOn,
+                editor.dcm.bloonModifiers.allFortified, "Random All Fortified shown among the modifiers");
             editor.ApplyUiSettingsToDCM();
             AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "A random setup must be playable");
             Assert(Approximately(editor.dcm.bloonModifiers.bossSpeedMultiplier, section.BossSpeed.Value / 100f),
@@ -298,6 +319,7 @@ public class BossCreatorTest : CustomBossTest
         Assert(play == null || !play.gameObject.activeSelf, "The normal Challenge Editor shows the boss Play button");
         var title = editor.transform.Find("TopInfo/Title")?.GetComponent<TMP_Text>();
         Assert(title == null || title.text != BossEditorSection.Title, "The normal Challenge Editor is titled Boss Creator");
+        AssertEquals(FortifiedModifier.Find(FortifiedModifier.Settings(editor)), null, "The normal Challenge Editor has the All Fortified modifier");
 
         MenuManager.instance.Back();
         yield return ToMainMenu();
@@ -394,7 +416,8 @@ public class BossCreatorTest : CustomBossTest
     private IEnumerator ResetClearsBossOptions(ChallengeEditor editor)
     {
         var section = BossEditorSection.Current!;
-        section.AllFortified.SetChecked(true, true);
+        var fortified = FortifiedModifier.Find(FortifiedModifier.Settings(editor))!;
+        fortified.includeToggle.isOn = true;
         section.MaxParagons.Slider.value = 2;
         section.SkullMode.Dropdown.value = (int) SkullMode.Custom;
 
@@ -422,7 +445,7 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(section.BossHealth.Value, 100f, "Boss health shown after reset");
         AssertEquals(section.Tiers.Value, 5f, "Tiers shown after reset");
         AssertEquals(section.CustomSkulls.InputField.text, new BossOptions().CustomSkulls, "Skulls shown after reset");
-        Assert(!section.AllFortified.CurrentValue, "All fortified shown after reset");
+        Assert(!fortified.includeToggle.isOn, "All fortified shown after reset");
         Assert(Approximately(editor.dcm.bloonModifiers.bossSpeedMultiplier, 1), "Boss speed in the model after reset");
         Assert(Approximately(editor.dcm.bloonModifiers.healthMultipliers.boss, 1), "Boss health in the model after reset");
         Assert(!editor.dcm.bloonModifiers.allFortified, "All fortified in the model after reset");

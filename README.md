@@ -18,19 +18,20 @@ Event and your Boss Challenge records and saves are never affected.
 - **Boss Creator button** with the mod's logo on the main menu, just below the event buttons on the right.
 - **The real Challenge Editor** with everything it normally has: map, difficulty, game mode, starting cash, lives
   and rounds, special conditions, tower restrictions, bloon sliders and modifiers.
+- **All Fortified** among the editor's own modifiers, next to All Camo and All Regrow. The game has the rule but
+  the vanilla editor doesn't offer it; it is only added in the Boss Creator.
 - **Boss section** at the top of the editor:
   - Pick any boss (Bloonarius, Lych, Vortex, Dreadbloon, Phayze, Blastapopoulos, Diamondback) and toggle **Elite**.
   - **Boss Speed** and **Boss Health** sliders, using the game's own boss multipliers (the same ones Ninja Kiwi uses
     for weekly events such as "Vortex at 150% speed").
-  - **All Fortified**, which the vanilla editor doesn't offer.
   - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
-  - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with +50 % health per tier.
+  - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with +50 % health per tier. With fewer than 5
+    tiers, beating the last one wins the game.
   - **Speed per Tier** and **Health per Tier**: make every tier faster and tougher than the one before it, on top of
     the game's own steps (or easier, below 0). The steps add up evenly: +100 % health makes tiers 2-5 ×2, ×3, ×4
     and ×5.
   - **Tier Preview**: a card per tier with the round it arrives on, its speed and its health, orange where it is
     harder than the normal game and blue where it is easier.
-    With fewer than 5 tiers, beating the last one wins the game.
   - **Spawn Rounds** for every tier (default 40, 60, 80, 100, 120, then every 20 rounds).
   - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health
     percentages. Works for every boss and Elite tier (Lych uses its ethereal thresholds).
@@ -45,6 +46,8 @@ Event and your Boss Challenge records and saves are never affected.
 ![Boss options](docs/boss-options.jpg)
 
 ![Info popup](docs/info-popup.jpg)
+
+![All Fortified among the modifiers](docs/modifiers.jpg)
 
 ## Usage
 
@@ -86,7 +89,6 @@ CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA
 | Boss Type | 7 bosses | Bloonarius | Elite toggle next to it. |
 | Boss Speed | 10–1000 % | 100 % | |
 | Boss Health | 10–2000 % | 100 % | |
-| All Fortified | on / off | off | |
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
 | Boss Tiers | 1–10 | 5 | The game is won when the last tier is defeated. |
 | Speed per Tier | −10 to +50 % | 0 % | This share of a tier's normal speed is added for every tier after the first: +20 % makes tier 3 ×1.4. Capped at ×5. |

@@ -59,7 +59,6 @@ public sealed class BossEditorSection
     public SliderRow SkullCount { get; private set; } = null!;
     public SliderRow MaxParagons { get; private set; } = null!;
     public ModHelperCheckbox Elite { get; private set; } = null!;
-    public ModHelperCheckbox AllFortified { get; private set; } = null!;
     public ModHelperDropdown SkullMode { get; private set; } = null!;
     public ModHelperInputField CustomSkulls { get; private set; } = null!;
     public ModHelperInputField SpawnRounds { get; private set; } = null!;
@@ -179,12 +178,6 @@ public sealed class BossEditorSection
         BossHealth = SliderRow.Clone(template, rows, "BossHealthRow", Texts.BossHealth.T(), VanillaSprites.BossBoostIcon,
             10, 2000, 10, 100, Percent, value => UpdateDcm(dcm => dcm.bloonModifiers.healthMultipliers.boss = value / 100f));
 
-        var fortifiedRow = EditorRows.LabelRow(template, rows, "FortifiedRow", Texts.AllFortified.T(), VanillaSprites.FortifiedBloonsIcon);
-        AllFortified = ModHelperCheckbox.Create(EditorRows.ControlInfo("AllFortified", 150, 150),
-            false, VanillaSprites.BlueInsertPanelRound,
-            new Action<bool>(value => UpdateDcm(dcm => dcm.bloonModifiers.allFortified = value)), VanillaSprites.TickGreenIcon, 20);
-        AllFortified.transform.SetParent(fortifiedRow.transform, false);
-
         // The last position means no limit
         var paragons = ParagonMath.Available;
         MaxParagons = SliderRow.Clone(template, rows, "MaxParagonsRow", Texts.MaxParagons.T(), VanillaSprites.ParagonLimitIcon,
@@ -262,7 +255,6 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(bossRow, Texts.BossType, Texts.BossTypeInfo);
         EditorRows.AddInfo(BossSpeed.Row, Texts.BossSpeed, Texts.BossSpeedInfo);
         EditorRows.AddInfo(BossHealth.Row, Texts.BossHealth, Texts.BossHealthInfo);
-        EditorRows.AddInfo(fortifiedRow, Texts.AllFortified, Texts.AllFortifiedInfo);
         EditorRows.AddInfo(MaxParagons.Row, Texts.MaxParagons, Texts.MaxParagonsInfo);
         EditorRows.AddInfo(Tiers.Row, Texts.BossTiers, Texts.BossTiersInfo);
         EditorRows.AddInfo(SpeedPerTier.Row, Texts.SpeedPerTier, Texts.SpeedPerTierInfo);
@@ -422,6 +414,7 @@ public sealed class BossEditorSection
 
         editor.sliderSettings?.transform.parent?.Find(SectionName)?.gameObject.SetActive(false);
         editor.transform.Find(PlayName)?.gameObject.SetActive(false);
+        FortifiedModifier.Remove(editor);
     }
 
     private void SetVisible(bool show)
@@ -443,6 +436,9 @@ public sealed class BossEditorSection
             }
         }
 
+        if (show) FortifiedModifier.Add(Editor, Editor.dcm);
+        else FortifiedModifier.Remove(Editor);
+
         if (show) Load(Editor.dcm, BossMode.Options);
         Relayout();
     }
@@ -459,7 +455,6 @@ public sealed class BossEditorSection
             {
                 BossSpeed.Show(Mathf.Round(dcm.bloonModifiers.bossSpeedMultiplier * 100));
                 BossHealth.Show(Mathf.Round(dcm.bloonModifiers.healthMultipliers.boss * 100));
-                AllFortified.SetChecked(dcm.bloonModifiers.allFortified, false);
                 MaxParagons.Show(ParagonMath.ToSlider(dcm.maxParagons, (int) MaxParagons.Slider.maxValue));
             }
 
@@ -491,7 +486,6 @@ public sealed class BossEditorSection
         dcm.bloonModifiers.healthMultipliers ??= new BloonHealthMultipliers();
         dcm.bloonModifiers.bossSpeedMultiplier = BossSpeed.Value / 100f;
         dcm.bloonModifiers.healthMultipliers.boss = BossHealth.Value / 100f;
-        dcm.bloonModifiers.allFortified = AllFortified.CurrentValue;
         dcm.maxParagons = ParagonMath.FromSlider((int) MaxParagons.Value, (int) MaxParagons.Slider.maxValue);
     }
 

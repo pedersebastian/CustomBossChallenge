@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **All Fortified** moved from the Boss section to the editor's own modifiers, next to All Camo and All Regrow,
+  with the same include/exclude button, info and icon as the game's modifiers. It is only there in the Boss Creator.
 - **Reset** now also goes back to Bloonarius, the first boss, with its default challenge name, like a new setup.
   It used to keep the chosen boss.
 - Health per Tier replaces Extra Tier Health. Tiers above 5 still get +50 % health each by default. Saved setups and

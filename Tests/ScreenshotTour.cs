@@ -64,6 +64,8 @@ public class ScreenshotTour : CustomBossTest
             editor!.dcm.bloonModifiers.bossSpeedMultiplier = 1.5f;
             editor.dcm.bloonModifiers.healthMultipliers.boss = 3;
             editor.dcm.maxParagons = 1;
+            editor.dcm.bloonModifiers.allFortified = true;
+            editor.dcm.bloonModifiers.allCamo = true;
             BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
             yield return new WaitForSecondsRealtime(1);
             yield return Capture(folder, "editor-top");
@@ -80,6 +82,20 @@ public class ScreenshotTour : CustomBossTest
                 scroll.verticalNormalizedPosition = position;
                 yield return new WaitForSecondsRealtime(1);
                 yield return Capture(folder, $"editor-{(int) (100 - position * 100)}");
+            }
+
+            // All Fortified among the editor's own modifiers
+            var modifiers = FortifiedModifier.Settings(editor);
+            if (modifiers != null)
+            {
+                modifiers.ApplyDCMtoUI(editor.dcm);
+                modifiers.OpenEditPopup();
+                yield return new WaitForSecondsRealtime(1.5f);
+                FortifiedModifier.Find(modifiers)?.Select();
+                yield return new WaitForSecondsRealtime(0.5f);
+                yield return Capture(folder, "modifiers");
+                modifiers.CloseEditPopup();
+                yield return new WaitForSecondsRealtime(1);
             }
 
             Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
