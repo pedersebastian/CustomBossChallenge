@@ -40,7 +40,10 @@ public class ScreenshotTour : CustomBossTest
 
         // Use a throwaway setup file so the screenshots don't change the player's own last setup
         var store = BossMode.Store;
+        var saved = BossMode.Saved;
         BossMode.Store = new LastSetupStore(Path.Combine(folder, "LastSetup.json"));
+        BossMode.Saved = new SavedSetupsStore(Path.Combine(folder, "SavedSetups.json"));
+        if (File.Exists(BossMode.Saved.FilePath)) File.Delete(BossMode.Saved.FilePath);
         try
         {
             BossMode.Enter();
@@ -91,6 +94,29 @@ public class ScreenshotTour : CustomBossTest
             yield return new WaitForSecondsRealtime(1);
             yield return Capture(folder, "skull-preview");
 
+            // A few saved setups, and the question before loading one
+            var section = BossEditorSection.Current!;
+            foreach (var (name, boss, tiers) in new[] {("Lych marathon", BossType.Lych, 10), ("Speedy Vortex", BossType.Vortex, 5), ("Phayze practice", BossType.Phayze, 3)})
+            {
+                var setup = editor.dcm.Clone();
+                setup.name = name;
+                BossMode.Saved.Save(new BossOptions {Boss = boss, Elite = true, Tiers = tiers}, setup);
+            }
+            section.ShowSavedSetups();
+            scroll.verticalNormalizedPosition = 0.4f;
+            yield return new WaitForSecondsRealtime(1);
+            yield return Capture(folder, "saved-setups");
+            section.SavedList.Dropdown.Show();
+            yield return new WaitForSecondsRealtime(1);
+            yield return Capture(folder, "saved-setups-open");
+            section.SavedList.Dropdown.Hide();
+            yield return new WaitForSecondsRealtime(1);
+            section.LoadSetup.Button.onClick.Invoke();
+            yield return new WaitForSecondsRealtime(1.5f);
+            yield return Capture(folder, "saved-setups-load");
+            Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()?.CancelClicked();
+            yield return new WaitForSecondsRealtime(1);
+
             // All Fortified among the editor's own modifiers
             var modifiers = FortifiedModifier.Settings(editor);
             if (modifiers != null)
@@ -113,6 +139,7 @@ public class ScreenshotTour : CustomBossTest
         finally
         {
             BossMode.Store = store;
+            BossMode.Saved = saved;
         }
     }
 

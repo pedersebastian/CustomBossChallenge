@@ -1,3 +1,4 @@
+using System.Linq;
 using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Persistence;
@@ -33,6 +34,11 @@ public static class BossMode
     /// Where the last setup is remembered; tests point this at a temporary file
     /// </summary>
     public static LastSetupStore Store { get; set; } = LastSetupStore.Default;
+
+    /// <summary>
+    /// The player's saved setups; tests point this at a temporary file
+    /// </summary>
+    public static SavedSetupsStore Saved { get; set; } = SavedSetupsStore.Default;
 
     private static DailyChallengeModel? userDraft;
 
@@ -125,12 +131,23 @@ public static class BossMode
         userDraft = null;
     }
 
-    public static string DefaultName(Il2CppAssets.Scripts.Data.Boss.BossType boss) => $"Custom {boss}";
+    /// <summary>
+    /// The challenge name a new setup gets, e.g. "Custom Lych" or "Custom Elite Lych"
+    /// </summary>
+    public static string DefaultName(Il2CppAssets.Scripts.Data.Boss.BossType boss, bool elite = false) =>
+        elite ? $"Custom Elite {boss}" : $"Custom {boss}";
+
+    /// <summary>
+    /// Whether a challenge still has a name the Boss Creator gave it, rather than one the player chose
+    /// </summary>
+    public static bool IsDefaultName(string? name) =>
+        System.Enum.GetValues<Il2CppAssets.Scripts.Data.Boss.BossType>()
+            .Any(boss => name == DefaultName(boss) || name == DefaultName(boss, true));
 
     public static DailyChallengeModel DefaultDcm(BossOptions options)
     {
         var dcm = DailyChallengeModel.CreateDefaultEditorModel();
-        dcm.name = DefaultName(options.Boss);
+        dcm.name = DefaultName(options.Boss, options.Elite);
         return dcm;
     }
 }

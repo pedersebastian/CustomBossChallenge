@@ -85,6 +85,22 @@ public static class Texts
         "uses its special ability each time its health drops past a skull.");
     public static readonly string NoSkulls = Key(nameof(NoSkulls), "No skulls");
 
+    public static readonly string SavedSetups = Key(nameof(SavedSetups), "Saved Setups");
+    public static readonly string SavedSetupsInfo = Key(nameof(SavedSetupsInfo),
+        "Keeps your favorite setups in the game. Save stores this whole setup under the challenge's name; a saved " +
+        "setup with the same name is replaced. Pick one in the list and press Load to play it again, or Delete to " +
+        "remove it.");
+    public static readonly string SaveSetup = Key(nameof(SaveSetup), "Save");
+    public static readonly string DeleteSetup = Key(nameof(DeleteSetup), "Delete");
+    public static readonly string NoSavedSetups = Key(nameof(NoSavedSetups), "No saved setups");
+    public static readonly string OverwriteSetupQuestion = Key(nameof(OverwriteSetupQuestion), "Replace the saved setup {0}?");
+    public static readonly string DeleteSetupQuestion = Key(nameof(DeleteSetupQuestion), "Delete the saved setup {0}?");
+    public static readonly string LoadSetupQuestion = Key(nameof(LoadSetupQuestion),
+        "Load this saved setup? Your current setup will be replaced.");
+    public static readonly string SetupSaved = Key(nameof(SetupSaved), "Saved as {0}.");
+    public static readonly string TooManySetups = Key(nameof(TooManySetups),
+        "You can keep up to {0} saved setups. Delete one to save a new one.");
+
     public static readonly string ShareCode = Key(nameof(ShareCode), "Share Code");
     public static readonly string ShareCodeInfo = Key(nameof(ShareCodeInfo),
         "Copy puts this whole setup, boss options and Challenge Editor rules, on the clipboard as a code you can " +
