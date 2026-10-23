@@ -655,8 +655,9 @@ public sealed class BossEditorSection
         {
             if (dcm != null)
             {
-                BossSpeed.Show(Mathf.Round(dcm.bloonModifiers.bossSpeedMultiplier * 100));
-                BossHealth.Show(Mathf.Round(dcm.bloonModifiers.healthMultipliers.boss * 100));
+                // A model without bloon modifiers has the game's defaults
+                BossSpeed.Show(Mathf.Round((dcm.bloonModifiers?.bossSpeedMultiplier ?? 1) * 100));
+                BossHealth.Show(Mathf.Round((dcm.bloonModifiers?.healthMultipliers?.boss ?? 1) * 100));
                 MaxParagons.Show(ParagonMath.ToSlider(dcm.maxParagons, (int) MaxParagons.Slider.maxValue));
             }
 
@@ -836,6 +837,11 @@ public sealed class BossEditorSection
     public static string? PlayProblem(DailyChallengeModel dcm, BossOptions options)
     {
         if (UnsupportedModes.Contains(dcm.mode)) return Texts.UnsupportedMode.T(dcm.mode);
+
+        // Starting on or after a tier's round skips it, the same rule the Random button keeps to
+        var start = dcm.startRules?.round ?? -1;
+        var firstSpawn = options.EffectiveSpawnRounds[0];
+        if (start >= firstSpawn) return Texts.StartRoundAfterBoss.T(start, firstSpawn);
 
         var missing = ExtraTiers.MissingVanillaTier(Il2CppAssets.Scripts.Unity.Game.instance.model, options);
         if (missing == null) return null;

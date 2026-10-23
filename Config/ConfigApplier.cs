@@ -39,7 +39,10 @@ public static class ConfigApplier
         var rules = dcm.startRules ??= new StartRules();
         var lastSpawn = options.EffectiveSpawnRounds[^1];
         if (rules.endRound <= lastSpawn) rules.endRound = lastSpawn + TierMath.RoundsBetweenTiers;
-        if (rules.round >= lastSpawn) rules.round = -1;
+
+        // Starting on or after a tier's round skips it. Play refuses such a start round; this is the backstop for
+        // any other way in, with the same rule as Play and the Random button.
+        if (rules.round >= options.EffectiveSpawnRounds[0]) rules.round = -1;
 
         // Custom games never overwrite the player's Boss Challenge save and are never treated as a custom map
         dcm.disableSaves = true;
@@ -47,7 +50,7 @@ public static class ConfigApplier
 
         if (!IsMarked(dcm))
         {
-            var name = string.IsNullOrWhiteSpace(dcm.name) ? $"Custom {options.Boss}" : dcm.name;
+            var name = string.IsNullOrWhiteSpace(dcm.name) ? Creator.BossMode.DefaultName(options.Boss, options.Elite) : dcm.name;
             dcm.name = name + Marker;
         }
 

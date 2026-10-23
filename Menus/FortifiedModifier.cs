@@ -105,14 +105,25 @@ public static class FortifiedModifier
         dcm.bloonModifiers.allFortified = button.includeToggle.isOn;
     }
 
-    private static readonly HashSet<IntPtr> Enlarged = new();
+    /// <summary>
+    /// The panels that are enlarged. Holding the panels themselves, not just their addresses, keeps a destroyed panel's
+    /// address from being given to a new one that would then count as enlarged.
+    /// </summary>
+    private static readonly List<ChallengeEditorModifierSettings> Enlarged = new();
+
+    private static bool IsEnlarged(ChallengeEditorModifierSettings settings)
+    {
+        // Panels destroyed with their editor (e.g. after Play) are forgotten
+        Enlarged.RemoveAll(panel => panel == null);
+        return Enlarged.Exists(panel => panel.Pointer == settings.Pointer);
+    }
 
     /// <summary>
     /// How much taller the modifier panels are than the game makes them: one row while the button is there, so all
     /// nine modifiers fit without scrolling
     /// </summary>
     public static float ExtraHeight(ChallengeEditorModifierSettings settings) =>
-        Enlarged.Contains(settings.Pointer) ? RowHeight(settings) : 0;
+        IsEnlarged(settings) ? RowHeight(settings) : 0;
 
     private static float RowHeight(ChallengeEditorModifierSettings settings)
     {
@@ -126,7 +137,7 @@ public static class FortifiedModifier
     /// </summary>
     private static void Enlarge(ChallengeEditorModifierSettings settings, bool enlarge)
     {
-        if (enlarge == Enlarged.Contains(settings.Pointer)) return;
+        if (enlarge == IsEnlarged(settings)) return;
 
         var scrollContent = settings.excludedContainer.parent;
         var scroll = scrollContent?.parent;
@@ -139,8 +150,8 @@ public static class FortifiedModifier
         foreach (var name in new[] {"ExcludedBg", "IncludedBg"}) Grow(panel.Find(name), delta, delta / 2);
         foreach (var name in new[] {"ExcludedBanner", "IncludedBanner"}) Grow(panel.Find(name), 0, delta);
 
-        if (enlarge) Enlarged.Add(settings.Pointer);
-        else Enlarged.Remove(settings.Pointer);
+        if (enlarge) Enlarged.Add(settings);
+        else Enlarged.RemoveAll(panel => panel.Pointer == settings.Pointer);
     }
 
     private static void Grow(Transform? transform, float height, float up)

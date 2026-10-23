@@ -127,6 +127,9 @@ public static class Texts
 
     public static readonly string UnsupportedMode = Key(nameof(UnsupportedMode),
         "The {0} game mode can't be used for boss games.");
+    public static readonly string StartRoundAfterBoss = Key(nameof(StartRoundAfterBoss),
+        "The game starts on round {0}, but the first boss tier comes on round {1} and would be skipped. Choose an " +
+        "earlier start round or later spawn rounds.");
 
     public static readonly string BossUnavailable = Key(nameof(BossUnavailable),
         "This boss can't be played: the game has no {0} bloon. A game update may have changed it.");
@@ -137,4 +140,6 @@ public static class Texts
     public static string T(this string key) => BTD_Mod_Helper.Extensions.StringExt.Localize(key);
 
     public static string T(this string key, object arg) => string.Format(key.T(), arg);
+
+    public static string T(this string key, object arg0, object arg1) => string.Format(key.T(), arg0, arg1);
 }

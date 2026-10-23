@@ -64,5 +64,6 @@
   "CustomBossChallenge-TierCount": "{0} níveis",
   "CustomBossChallenge-HealthCap": "A vida para em {0} por nível, o limite do jogo: alguns níveis recebem menos do que as configurações pedem.",
   "CustomBossChallenge-UnsupportedMode": "O modo de jogo {0} não pode ser usado em jogos de chefe.",
+  "CustomBossChallenge-StartRoundAfterBoss": "O jogo começa na rodada {0}, mas o primeiro nível do chefe aparece na rodada {1} e seria pulado. Escolha uma rodada inicial anterior ou rodadas de surgimento posteriores.",
   "CustomBossChallenge-BossUnavailable": "Este chefe não pode ser jogado: o jogo não tem o bloon {0}. Uma atualização do jogo pode tê-lo alterado."
 }

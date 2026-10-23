@@ -64,5 +64,6 @@
   "CustomBossChallenge-TierCount": "{0} ระดับ",
   "CustomBossChallenge-HealthCap": "พลังชีวิตหยุดที่ {0} ต่อระดับ ซึ่งเป็นขีดจำกัดของเกม: บางระดับจะได้น้อยกว่าที่ตั้งค่าไว้",
   "CustomBossChallenge-UnsupportedMode": "โหมดเกม {0} ไม่สามารถใช้กับเกมบอสได้",
+  "CustomBossChallenge-StartRoundAfterBoss": "เกมเริ่มที่รอบ {0} แต่บอสระดับแรกมาในรอบ {1} และจะถูกข้ามไป เลือกรอบเริ่มต้นที่เร็วกว่านี้หรือรอบที่บอสปรากฏที่ช้ากว่านี้",
   "CustomBossChallenge-BossUnavailable": "ไม่สามารถเล่นบอสนี้ได้: เกมไม่มีบลูน {0} การอัปเดตเกมอาจเปลี่ยนแปลงไปแล้ว"
 }

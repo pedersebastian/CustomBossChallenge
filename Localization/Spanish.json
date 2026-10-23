@@ -64,5 +64,6 @@
   "CustomBossChallenge-TierCount": "{0} niveles",
   "CustomBossChallenge-HealthCap": "La vida se detiene en {0} por nivel, el límite del juego: algunos niveles reciben menos de lo que piden los ajustes.",
   "CustomBossChallenge-UnsupportedMode": "El modo de juego {0} no se puede usar en partidas de jefe.",
+  "CustomBossChallenge-StartRoundAfterBoss": "La partida empieza en la ronda {0}, pero el primer nivel del jefe llega en la ronda {1} y se saltaría. Elige una ronda inicial anterior o rondas de aparición posteriores.",
   "CustomBossChallenge-BossUnavailable": "No se puede jugar contra este jefe: el juego no tiene el globo {0}. Puede que una actualización del juego lo haya cambiado."
 }

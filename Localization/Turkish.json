@@ -64,5 +64,6 @@
   "CustomBossChallenge-TierCount": "{0} kademe",
   "CustomBossChallenge-HealthCap": "Can, kademe başına {0} değerinde durur, oyunun sınırı: bazı kademeler ayarların istediğinden az alır.",
   "CustomBossChallenge-UnsupportedMode": "{0} oyun modu boss oyunlarında kullanılamaz.",
+  "CustomBossChallenge-StartRoundAfterBoss": "Oyun {0}. turda başlıyor, ancak bossun ilk kademesi {1}. turda geliyor ve atlanır. Daha erken bir başlangıç turu veya daha geç çıkış turları seçin.",
   "CustomBossChallenge-BossUnavailable": "Bu boss oynanamaz: oyunda {0} balonu yok. Bir oyun güncellemesi onu değiştirmiş olabilir."
 }

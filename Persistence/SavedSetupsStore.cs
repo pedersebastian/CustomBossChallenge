@@ -86,7 +86,7 @@ public sealed class SavedSetupsStore
     public bool TryLoad(string name, out BossOptions options, out DailyChallengeModel? dcm, out CodeProblem problem)
     {
         var entry = Read().FirstOrDefault(entry => Same(entry.Name, name));
-        if (entry != null) return SetupCode.TryDecode(entry.Code, out options, out dcm, out problem);
+        if (entry != null) return SetupCode.TryDecode(entry.Code, out options, out dcm, out problem, $"Saved setup '{entry.Name}'");
 
         options = new BossOptions();
         dcm = null;

@@ -19,8 +19,15 @@ public static class TierScaling
         public static Values Of(BloonModel model) => new(model.speed, model.speedFrames, model.maxHealth);
     }
 
-    private static IntPtr originalsMatch;
+    /// <summary>
+    /// The match the originals belong to. Holding the model itself, not just its address, keeps it from being freed,
+    /// so a later match can never get the same address and be taken for this one.
+    /// </summary>
+    private static GameModel? originalsMatch;
+
     private static readonly Dictionary<string, Values> Originals = new();
+
+    private static bool IsOriginalsMatch(GameModel match) => originalsMatch != null && originalsMatch.Pointer == match.Pointer;
 
     /// <summary>
     /// Sets the speed and health of a tier from <paramref name="source"/>: the tier's values before scaling, or tier
@@ -41,9 +48,9 @@ public static class TierScaling
     /// <returns>How many tier models were set</returns>
     public static int Apply(GameModel match, BossOptions options, double bossHealth)
     {
-        if (match.Pointer != originalsMatch)
+        if (!IsOriginalsMatch(match))
         {
-            originalsMatch = match.Pointer;
+            originalsMatch = match;
             Originals.Clear();
         }
 
@@ -66,10 +73,10 @@ public static class TierScaling
     /// </summary>
     public static Values Original(GameModel match, string id)
     {
-        if (match.Pointer == originalsMatch && Originals.TryGetValue(id, out var values)) return values;
+        if (IsOriginalsMatch(match) && Originals.TryGetValue(id, out var values)) return values;
 
         values = Values.Of(match.GetBloon(id));
-        if (match.Pointer == originalsMatch) Originals[id] = values;
+        if (IsOriginalsMatch(match)) Originals[id] = values;
         return values;
     }
 }

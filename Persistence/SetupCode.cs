@@ -79,9 +79,10 @@ public static class SetupCode
 
     /// <summary>
     /// Reads a code. Never throws: anything that isn't a usable code gives a <see cref="CodeProblem"/>.
+    /// <paramref name="source"/> says in the log where the code came from.
     /// </summary>
     public static bool TryDecode(string? code, out BossOptions options, out DailyChallengeModel? dcm,
-        out CodeProblem problem)
+        out CodeProblem problem, string source = "Share code")
     {
         options = new BossOptions();
         dcm = null;
@@ -115,7 +116,7 @@ public static class SetupCode
             model.simulationBehaviorsMod = null;
             var changes = ChallengeLimits.OptionChanges(raw, decoded);
             changes.AddRange(ChallengeLimits.Sanitize(model, BossMode.DefaultDcm(decoded)));
-            ChallengeLimits.Report("Share code", changes);
+            ChallengeLimits.Report(source, changes);
 
             options = decoded;
             dcm = model;
@@ -124,7 +125,7 @@ public static class SetupCode
         }
         catch (Exception e)
         {
-            ModHelper.Warning<CustomBossChallenge>($"Ignoring unreadable setup code: {e.Message}");
+            ModHelper.Warning<CustomBossChallenge>($"{source}: ignoring unreadable setup code: {e.Message}");
             return false;
         }
     }
@@ -234,10 +235,18 @@ public static class SetupCode
     {
         using var deflate = new DeflateStream(new MemoryStream(data), CompressionMode.Decompress);
         using var reader = new StreamReader(deflate, Encoding.UTF8);
-        var buffer = new char[MaxJsonLength + 1];
-        var length = reader.ReadBlock(buffer, 0, buffer.Length);
-        if (length > MaxJsonLength) throw new InvalidDataException("Setup code unpacks to too much data");
-        return new string(buffer, 0, length);
+
+        // Read in small pieces, so a normal code of a few KB doesn't need a buffer for the largest allowed one
+        var text = new StringBuilder();
+        var buffer = new char[4096];
+        int read;
+        while ((read = reader.Read(buffer, 0, buffer.Length)) > 0)
+        {
+            text.Append(buffer, 0, read);
+            if (text.Length > MaxJsonLength) throw new InvalidDataException("Setup code unpacks to too much data");
+        }
+
+        return text.ToString();
     }
 
     /// <summary>

@@ -64,5 +64,6 @@
   "CustomBossChallenge-TierCount": "{0} niveauer",
   "CustomBossChallenge-HealthCap": "Liv stopper ved {0} pr. niveau, spillets grænse: nogle niveauer får mindre end indstillingerne beder om.",
   "CustomBossChallenge-UnsupportedMode": "Spiltilstanden {0} kan ikke bruges til bossspil.",
+  "CustomBossChallenge-StartRoundAfterBoss": "Spillet starter på runde {0}, men bossens første tier kommer på runde {1} og ville blive sprunget over. Vælg en tidligere startrunde eller senere spawn-runder.",
   "CustomBossChallenge-BossUnavailable": "Denne boss kan ikke spilles: spillet har ingen {0}-bloon. En spilopdatering kan have ændret den."
 }

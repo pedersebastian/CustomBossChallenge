@@ -49,6 +49,13 @@ public class ConfigApplierTest : CustomBossTest
         unnamed.name = "";
         AssertEquals(ConfigApplier.Prepare(unnamed, new BossOptions {Boss = BossType.Vortex}).name,
             "Custom Vortex" + ConfigApplier.Marker, "Name of an unnamed challenge");
+        AssertEquals(ConfigApplier.Prepare(unnamed, new BossOptions {Boss = BossType.Lych, Elite = true}).name,
+            "Custom Elite Lych" + ConfigApplier.Marker, "Name of an unnamed Elite challenge");
+
+        // Starting between two tiers skips the earlier ones, so it falls back to the default start round
+        var between = BaseDcm();
+        between.startRules.round = 50;
+        AssertEquals(ConfigApplier.Prepare(between, CustomOptions).startRules.round, -1, "A start round after the first tier is reset");
         yield break;
     }
 }

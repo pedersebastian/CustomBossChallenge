@@ -64,5 +64,6 @@
   "CustomBossChallenge-TierCount": "{0} مستويات",
   "CustomBossChallenge-HealthCap": "تتوقف الصحة عند {0} لكل مستوى، وهو حد اللعبة: بعض المستويات تحصل على أقل مما تطلبه الإعدادات.",
   "CustomBossChallenge-UnsupportedMode": "لا يمكن استخدام وضع اللعبة {0} في ألعاب الزعيم.",
+  "CustomBossChallenge-StartRoundAfterBoss": "تبدأ اللعبة في الجولة {0}، لكن أول مستوى للزعيم يأتي في الجولة {1} وسيتم تخطيه. اختر جولة بداية أبكر أو جولات ظهور لاحقة.",
   "CustomBossChallenge-BossUnavailable": "لا يمكن لعب هذا الزعيم: لا تحتوي اللعبة على بالون {0}. ربما غيّره تحديث للعبة."
 }

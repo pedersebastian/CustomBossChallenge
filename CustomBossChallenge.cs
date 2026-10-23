@@ -36,10 +36,17 @@ public class CustomBossChallenge : BloonsTD6Mod
 
         // If a game update removed boss models, play the tiers that exist instead of failing when one is missing
         var available = ExtraTiers.AvailableTiers(result, options);
+        if (available == 0)
+        {
+            // Not even tier 1 exists, so there is no boss to give custom tiers to; Play refuses this, a restart doesn't
+            ModHelper.Warning<CustomBossChallenge>($"No model for {options.BossId(1)}, the boss options can't be applied");
+            return;
+        }
+
         if (available < TierMath.ClampTiers(options.Tiers))
         {
             ModHelper.Warning<CustomBossChallenge>(
-                $"No model for {options.BossId(available + 1)}, playing {Math.Max(available, 1)} tiers instead of {options.Tiers}");
+                $"No model for {options.BossId(available + 1)}, playing {available} tiers instead of {options.Tiers}");
             options = CustomBossState.LimitTiers(available);
         }
 
