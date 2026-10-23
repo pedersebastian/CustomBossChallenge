@@ -15,8 +15,9 @@
 
     <Import Project="..\btd6.targets" />
 
-    <!-- README screenshots are not mod resources -->
+    <!-- README screenshots are not mod resources; the README itself is, so the tests can check its example codes -->
     <ItemGroup>
         <EmbeddedResource Remove="docs\**" />
+        <EmbeddedResource Include="README.md" LogicalName="CustomBossChallenge.README.md" />
     </ItemGroup>
 </Project>

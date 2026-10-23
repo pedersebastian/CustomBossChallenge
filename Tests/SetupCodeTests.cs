@@ -103,6 +103,22 @@ public class SetupCodeTest : CustomBossTest
 
         Assert(!SetupCode.TryDecode("CBC9:" + payload, out _, out _, out var tooNew), "A newer code must not decode");
         AssertEquals(tooNew, CodeProblem.TooNew, "Problem of a code from a newer version");
+
+        // The example codes in the README load, and each is the version its options need
+        using var readme = new System.IO.StreamReader(AssertNotNull(
+            typeof(SetupCodeTest).Assembly.GetManifestResourceStream("CustomBossChallenge.README.md"), "No README in the mod")!);
+        var examples = Regex.Matches(readme.ReadToEnd(), @"CBC\d:[A-Za-z0-9_-]{20,}")
+            .Select(match => match.Value).ToList();
+        Assert(examples.Any(example => example.StartsWith(SetupCode.Prefix)), "The README must show a version 1 code");
+        Assert(examples.Any(example => example.StartsWith(SetupCode.Version2Prefix)), "The README must show a version 2 code");
+        foreach (var example in examples)
+        {
+            Assert(SetupCode.TryDecode(example, out var readmeOptions, out _, out var readmeProblem),
+                $"README code {Shorten(example)} doesn't load: {readmeProblem}");
+            AssertEquals(example.StartsWith(SetupCode.Version2Prefix), SetupCode.NeedsVersion2(readmeOptions),
+                $"README code {Shorten(example)} must be the version its options need");
+        }
+        Log($"{examples.Count} README codes load");
         yield break;
     }
 
