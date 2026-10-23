@@ -135,7 +135,7 @@ public class ExtraTierGameTest : CustomBossTest
     /// <summary>
     /// Makes the match's dart monkey pop everything on screen, including bosses
     /// </summary>
-    private static void PlaceStrongTower(TowerModel towerModel)
+    internal static void PlaceStrongTower(TowerModel towerModel)
     {
         foreach (var attack in towerModel.GetAttackModels())
         {

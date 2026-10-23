@@ -142,10 +142,21 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(cards[0].Health.Text.text, "125k", "Health of Vortex Elite tier 1 at 300 %");
         AssertEquals(cards[2].Speed.Text.text, "×2.1", "Speed of tier 3 (+20 % per tier)");
         AssertEquals(cards[6].Speed.Text.text, "×3.3", "Speed of tier 7");
-        AssertEquals(cards[6].Health.Text.text, "201M", "Health of tier 7, capped like in the game");
-        Assert(section.Strip.Note.Text.text.Contains("201M"), $"The cap line shows the cap with Boss Health: {section.Strip.Note.Text.text}");
+        var tier7 = Game.instance.model.GetBloon("VortexElite5").maxHealth * TierMath.ExtraTierFactor(7) * TierMath.HealthFactor(7, 50);
+        AssertEquals(cards[6].Health.Text.text, TierStrip.FormatHealth(Math.Min(tier7, TierMath.MaxModelHealth(3)) * 3), "Health of tier 7");
+
+        // A tier above the game's limit is held to it, with a line under the cards saying so
+        section.BossHealth.Slider.value = 2000;
+        section.HealthPerTier.Slider.value = 200;
+        section.Tiers.Slider.value = 10;
+        // The game's text may put a space before the unit
+        AssertEquals(string.Concat(cards[9].Health.Text.text.Where(c => !char.IsWhiteSpace(c))), "2B",
+            "Health of tier 10, capped like in the game");
+        Assert(section.Strip.Note.Text.text.Contains("2B"), $"The cap line shows the game's limit: {section.Strip.Note.Text.text}");
         Assert(section.Strip.Note.gameObject.activeSelf, "The cap line shows while a tier reaches the cap");
         AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.CappedHeight, "The strip grows for the cap line");
+        section.BossHealth.Slider.value = 300;
+        section.HealthPerTier.Slider.value = 50;
         section.Tiers.Slider.value = 3;
         Assert(!section.Strip.Note.gameObject.activeSelf, "The cap line is hidden while no tier reaches the cap");
         AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.Height, "The strip shrinks back without the cap line");

@@ -39,9 +39,17 @@ public static class TierMath
     public const double MinPerTierFactor = 0.1;
 
     /// <summary>
-    /// Boss models store health as an int, and boss health multipliers are applied on top of it
+    /// The most health a boss can have in a game. Boss models store health as an int that the game multiplies by Boss
+    /// Health (through a float) when the match starts; above about 2.147 billion the boss gets 1 health or less.
+    /// BossHealthLimitTest checks that this much still works.
     /// </summary>
-    public const int MaxModelHealth = int.MaxValue / 32;
+    public const int MaxGameHealth = 2_000_000_000;
+
+    /// <summary>
+    /// The most health a boss model can have so that Boss Health doesn't take it past <see cref="MaxGameHealth"/>
+    /// </summary>
+    public static int MaxModelHealth(double bossHealth) =>
+        (int) Math.Floor(MaxGameHealth / Math.Max(bossHealth, 1));
 
     public static string BossId(BossType boss, bool elite, int tier) => $"{boss}{(elite ? "Elite" : "")}{tier}";
 
@@ -142,6 +150,10 @@ public static class TierMath
         return ClampHealthPerTier((int) Math.Round(percent / PerTierStep) * PerTierStep);
     }
 
-    public static int ScaleHealth(int health, double factor) =>
-        (int) Math.Clamp(Math.Round(health * factor), 1, MaxModelHealth);
+    /// <summary>
+    /// <paramref name="health"/> times <paramref name="factor"/>, held to what the game can take with
+    /// <paramref name="bossHealth"/> on top
+    /// </summary>
+    public static int ScaleHealth(int health, double factor, double bossHealth = 1) =>
+        (int) Math.Clamp(Math.Round(health * factor), 1, MaxModelHealth(bossHealth));
 }

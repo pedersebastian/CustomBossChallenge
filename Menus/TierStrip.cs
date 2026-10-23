@@ -139,6 +139,7 @@ public sealed class TierStrip
         var bossHealth = dcm?.bloonModifiers?.healthMultipliers?.boss ?? 1;
         var portrait = BossEditorSection.Portrait(options.Boss, options.Elite);
         var game = Game.instance?.model;
+        var cap = TierMath.MaxModelHealth(bossHealth);
         var capped = false;
 
         for (var i = 0; i < Cards.Count; i++)
@@ -161,14 +162,14 @@ public sealed class TierStrip
             {
                 var model = game.GetBloon(source).maxHealth * TierMath.ExtraTierFactor(tier) *
                             TierMath.HealthFactor(tier, options.HealthPerTier);
-                capped |= model > TierMath.MaxModelHealth;
-                shown = FormatHealth(Math.Min(model, TierMath.MaxModelHealth) * bossHealth);
+                capped |= model > cap;
+                shown = FormatHealth(Math.Min(model, cap) * bossHealth);
             }
             Paint(card.Health, shown, health);
         }
 
-        // The cap is on the boss model; Boss Health is applied on top of it, like in the game
-        EditorRows.SetText(Note.Text, Texts.HealthCap.T(FormatHealth(TierMath.MaxModelHealth * bossHealth)));
+        // The cap is on the boss model and leaves room for Boss Health, which is applied on top of it like in the game
+        EditorRows.SetText(Note.Text, Texts.HealthCap.T(FormatHealth(cap * bossHealth)));
         LayOut(tiers, capped);
         return !Mathf.Approximately(height, Row.GetComponent<RectTransform>().sizeDelta.y);
     }

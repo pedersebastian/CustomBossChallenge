@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Skull Health %** is now called **Skulls at Boss HP %**, and its info explains that the percentages are the
   boss's health left when it reaches each skull, the same for every tier.
+- A tier can now have up to **2 billion** health, Boss Health included. The limit used to leave room for the highest
+  Boss Health in every game, which held tiers to about 67 million at 100 %. A test checks that the game still takes
+  this much health, so a game update that changes it is noticed.
 
 ## [2.3.1] - 2026-10-18
 

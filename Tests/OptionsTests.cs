@@ -98,7 +98,10 @@ public class TierMathTest : CustomBossTest
         AssertEquals(new BossOptions {ExtraTierHealth = 225, HealthPerTier = 10}.Sanitized(), new BossOptions {HealthPerTier = 10},
             "A Health per Tier that is set wins over the old setting");
         AssertEquals(TierMath.ScaleHealth(3000000, 2.25), 6750000, "Scaled health");
-        AssertEquals(TierMath.ScaleHealth(int.MaxValue, 1000), TierMath.MaxModelHealth, "Health must not overflow");
+        AssertEquals(TierMath.ScaleHealth(int.MaxValue, 1000), TierMath.MaxGameHealth, "Health must not overflow");
+        AssertEquals(TierMath.ScaleHealth(int.MaxValue, 1000, 20), TierMath.MaxGameHealth / 20, "Room for Boss Health");
+        AssertEquals(TierMath.ScaleHealth(int.MaxValue, 1000, 0.1), TierMath.MaxGameHealth, "Less Boss Health doesn't raise the cap");
+        AssertEquals(TierMath.MaxModelHealth(3), 666_666_666, "Cap with Boss Health 300 %");
 
         AssertEquals(TierMath.BossId(BossType.Vortex, true, 7), "VortexElite7", "Elite boss id");
         AssertEquals(TierMath.TierOf("VortexElite7"), 7, "Tier of an elite boss id");

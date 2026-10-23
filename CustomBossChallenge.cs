@@ -43,7 +43,10 @@ public class CustomBossChallenge : BloonsTD6Mod
             options = CustomBossState.LimitTiers(available);
         }
 
-        var scaled = TierScaling.Apply(result, options);
+        // The game multiplies the tiers by Boss Health after this, so their health must leave room for it. Without the
+        // challenge, assume the highest Boss Health.
+        var bossHealth = InGameData.CurrentGame?.dcModel?.bloonModifiers?.healthMultipliers?.boss ?? ChallengeLimits.MaxBossHealth;
+        var scaled = TierScaling.Apply(result, options, bossHealth);
         var skulls = SkullModifier.Apply(result, options.SkullPercents);
         result.bossSpawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
         var bossData = InGameData.CurrentGame?.bossData;

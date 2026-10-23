@@ -24,22 +24,22 @@ public static class TierScaling
 
     /// <summary>
     /// Sets the speed and health of a tier from <paramref name="source"/>: the tier's values before scaling, or tier
-    /// 5's for the tiers above it
+    /// 5's for the tiers above it. Health is held to what the game can take with <paramref name="bossHealth"/>.
     /// </summary>
-    public static void Scale(BloonModel model, Values source, BossOptions options, int tier)
+    public static void Scale(BloonModel model, Values source, BossOptions options, int tier, double bossHealth = 1)
     {
         var speed = (float) TierMath.SpeedFactor(tier, options.SpeedPerTier);
         model.speed = source.Speed * speed;
         model.speedFrames = source.SpeedFrames * speed;
         model.maxHealth = TierMath.ScaleHealth(source.MaxHealth,
-            TierMath.ExtraTierFactor(tier) * TierMath.HealthFactor(tier, options.HealthPerTier));
+            TierMath.ExtraTierFactor(tier) * TierMath.HealthFactor(tier, options.HealthPerTier), bossHealth);
     }
 
     /// <summary>
-    /// Scales every tier of the boss in the match's game model
+    /// Scales every tier of the boss in the match's game model, for a challenge with <paramref name="bossHealth"/>
     /// </summary>
     /// <returns>How many tier models were set</returns>
-    public static int Apply(GameModel match, BossOptions options)
+    public static int Apply(GameModel match, BossOptions options, double bossHealth)
     {
         if (match.Pointer != originalsMatch)
         {
@@ -54,7 +54,7 @@ public static class TierScaling
             var sourceId = options.BossId(Math.Min(tier, TierMath.VanillaTiers));
             if (!match.DoesBloonExist(id) || !match.DoesBloonExist(sourceId)) continue;
 
-            Scale(match.GetBloon(id), Original(match, sourceId), options, tier);
+            Scale(match.GetBloon(id), Original(match, sourceId), options, tier, bossHealth);
             scaled++;
         }
 

@@ -22,7 +22,7 @@ public class ScreenshotTour : CustomBossTest
 {
     public const string Argument = "--cbc.screenshots=";
 
-    private static string? Folder => System.Environment.GetCommandLineArgs()
+    internal static string? Folder => System.Environment.GetCommandLineArgs()
         .FirstOrDefault(arg => arg.StartsWith(Argument))?[Argument.Length..].Trim('"', '\'');
 
     protected override IEnumerator Run()
@@ -116,8 +116,9 @@ public class ScreenshotTour : CustomBossTest
         }
     }
 
-    private IEnumerator Capture(string folder, string name)
+    internal static IEnumerator Capture(string folder, string name)
     {
+        Directory.CreateDirectory(folder);
         var path = Path.Combine(folder, name + ".png");
         yield return new WaitForEndOfFrame();
 
@@ -125,6 +126,6 @@ public class ScreenshotTour : CustomBossTest
         var texture = ScreenCapture.CaptureScreenshotAsTexture();
         File.WriteAllBytes(path, ImageConversion.EncodeToPNG(texture));
         Object.Destroy(texture);
-        Log($"saved {path}");
+        BTD_Mod_Helper.ModHelper.Msg<CustomBossChallenge>($"{nameof(ScreenshotTour)}: saved {path}");
     }
 }
