@@ -131,7 +131,10 @@ The Boss Creator setup is stored in `BloonsTD6/UserData/CustomBossChallenge/Last
 
 ## Known limitations
 
-- Co-op is not supported.
+- **Co-op is turned off on purpose.** Custom boss games are single player only: in co-op every player runs the game
+  on their own PC, so everyone would need the mod and the same setup, or the games would get out of sync. A co-op
+  Boss Challenge is always a normal one, with the game's own bosses, even if you were in the Boss Creator before.
+  This is not a bug.
 - Tiers above 5 reuse the tier 5 look and abilities; the in-game tier display shows them like tier 5.
 
 ## Installation
