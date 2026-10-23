@@ -7,8 +7,8 @@ websiteUrl = "https://github.com/pedersebastian/CustomBossChallenge" # Optional 
 # Thunderstore package dependencies use the format Namespace-PackageName = "version".
 # Versions listed are minimums, not exact requirements, so it's ok if you don't change these frequenty
 [package.dependencies]
-LavaGang-MelonLoader = "0.7.3"
-doombubbles-Btd6ModHelper = "3.6.5"
+LavaGang-MelonLoader = "0.7.2"
+doombubbles-Btd6ModHelper = "3.6.9"
 
 [build]
 icon = "./Icon.png"
