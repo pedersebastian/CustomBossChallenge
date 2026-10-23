@@ -74,9 +74,16 @@ public static class Texts
     public static readonly string SkullCountInfo = Key(nameof(SkullCountInfo),
         "How many evenly spaced skulls the boss has. 0 removes all skulls.");
 
-    public static readonly string SkullHealth = Key(nameof(SkullHealth), "Skull Health %");
+    public static readonly string SkullHealth = Key(nameof(SkullHealth), "Skulls at Boss HP %");
     public static readonly string SkullHealthInfo = Key(nameof(SkullHealthInfo),
-        "The health percentages where the skulls are, separated by commas, e.g. 80, 60, 40, 20.");
+        "How much of its health the boss has left when it reaches each skull and uses its special ability, " +
+        "separated by commas, e.g. 80, 60, 40, 20. The percentages are the same for every tier.");
+
+    public static readonly string SkullPreview = Key(nameof(SkullPreview), "Skull Preview");
+    public static readonly string SkullPreviewInfo = Key(nameof(SkullPreviewInfo),
+        "Where the skulls sit on the boss's health bar, from full health on the left to none on the right. The boss " +
+        "uses its special ability each time its health drops past a skull.");
+    public static readonly string NoSkulls = Key(nameof(NoSkulls), "No skulls");
 
     public static readonly string ShareCode = Key(nameof(ShareCode), "Share Code");
     public static readonly string ShareCodeInfo = Key(nameof(ShareCodeInfo),

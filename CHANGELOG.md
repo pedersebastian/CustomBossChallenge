@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Skull Preview**: a health bar like the boss's own, under the skull options, with a skull at every health
+  percentage where the boss uses its special ability. It follows Evenly Spaced and Custom %, and shows the boss's
+  own skulls for Vanilla.
+
+### Changed
+
+- **Skull Health %** is now called **Skulls at Boss HP %**, and its info explains that the percentages are the
+  boss's health left when it reaches each skull, the same for every tier.
+
 ## [2.3.1] - 2026-10-18
 
 ### Changed

@@ -84,6 +84,13 @@ public class ScreenshotTour : CustomBossTest
                 yield return Capture(folder, $"editor-{(int) (100 - position * 100)}");
             }
 
+            // The skull preview with percentages that need decimals
+            BossMode.Options = BossMode.Options with {SkullMode = SkullMode.EvenlySpaced, SkullCount = 5};
+            BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
+            scroll.verticalNormalizedPosition = 0.5f;
+            yield return new WaitForSecondsRealtime(1);
+            yield return Capture(folder, "skull-preview");
+
             // All Fortified among the editor's own modifiers
             var modifiers = FortifiedModifier.Settings(editor);
             if (modifiers != null)

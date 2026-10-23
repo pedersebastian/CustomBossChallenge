@@ -80,7 +80,7 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 13, "Info buttons in the boss section");
+        AssertEquals(infoButtons, 14, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
@@ -159,6 +159,39 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(cards[0].Health.Text.text, "60k", "The preview follows Elite");
         section.Elite.SetChecked(true, true);
         Assert(section.SkullCount.Row.activeSelf, "Skull count must show for evenly spaced skulls");
+
+        // The skull preview puts a skull at every percentage, from full health on the left to none on the right
+        AssertEquals(ShownSkulls(section), "83.33%, 66.67%, 50%, 33.33%, 16.67%", "Evenly spaced skulls in the preview");
+        var markers = section.Skulls.Markers.Where(marker => marker.Panel.gameObject.activeSelf).ToList();
+        Assert(markers.Zip(markers.Skip(1)).All(pair =>
+                pair.First.Panel.RectTransform.anchoredPosition.x < pair.Second.Panel.RectTransform.anchoredPosition.x),
+            "Skulls must go from left to right");
+        AssertEquals(markers[2].Panel.RectTransform.anchoredPosition.x, SkullStrip.BarWidth / 2, "50 % is in the middle of the bar");
+        AssertEquals(section.Skulls.Empty.Text.text, "", "No empty text while there are skulls");
+        section.SkullCount.Slider.value = 0;
+        AssertEquals(ShownSkulls(section), "", "No skulls in the preview");
+        AssertEquals(section.Skulls.Empty.Text.text, Texts.NoSkulls.T(), "The preview says there are no skulls");
+        section.SkullCount.Slider.value = 5;
+
+        section.SkullMode.Dropdown.value = (int) SkullMode.Custom;
+        section.CustomSkulls.InputField.onEndEdit.Invoke("50, 75, 51");
+        AssertEquals(ShownSkulls(section), "75%, 51%, 50%", "Custom skulls in the preview");
+        var close = section.Skulls.Markers.Take(3).Select(marker => marker.Percent.RectTransform.anchoredPosition.y).ToList();
+        AssertEquals(close[1], SkullStrip.TextY, "51 % far from 75 % stays on the upper line");
+        AssertEquals(close[2], SkullStrip.LowerTextY, "50 % right next to 51 % goes on the lower line");
+        section.CustomSkulls.InputField.onEndEdit.Invoke("75, 50, 25");
+
+        // Vanilla shows the boss's own skulls, following the boss
+        section.SkullMode.Dropdown.value = (int) SkullMode.Vanilla;
+        foreach (var boss in new[] {BossType.Lych, BossType.Bloonarius, BossType.Vortex})
+        {
+            section.BossButtons[boss].Button.onClick.Invoke();
+            var own = SkullModifier.GetSkulls(Game.instance.model.GetBloon(BossMode.Options.BossId(1)))!;
+            AssertEquals(ShownSkulls(section), string.Join(", ", own.OrderByDescending(p => p).Select(SkullStrip.Format)),
+                $"{boss} own skulls in the preview");
+            Log($"{boss} own skulls {ShownSkulls(section)}{(section.Skulls.Tier.Text.text == "" ? "" : ", differ between tiers")}");
+        }
+        section.SkullMode.Dropdown.value = (int) SkullMode.EvenlySpaced;
         AssertEquals(section.SpawnRounds.InputField.text, "30, 50, 70, 90, 110, 130, 150", "Normalized spawn rounds");
 
         var expected = new BossOptions
@@ -498,4 +531,11 @@ public class BossCreatorTest : CustomBossTest
     }
 
     private static bool Approximately(float a, float b) => Math.Abs(a - b) < 0.0001f;
+
+    /// <summary>
+    /// The percentages of the skulls the preview shows, e.g. "75%, 50%"
+    /// </summary>
+    private static string ShownSkulls(BossEditorSection section) => string.Join(", ", section.Skulls.Markers
+        .Where(marker => marker.Panel.gameObject.activeSelf)
+        .Select(marker => marker.Percent.Text.text));
 }

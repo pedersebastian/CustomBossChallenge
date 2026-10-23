@@ -61,6 +61,7 @@ public sealed class BossEditorSection
     public ModHelperCheckbox Elite { get; private set; } = null!;
     public ModHelperDropdown SkullMode { get; private set; } = null!;
     public ModHelperInputField CustomSkulls { get; private set; } = null!;
+    public SkullStrip Skulls { get; private set; } = null!;
     public ModHelperInputField SpawnRounds { get; private set; } = null!;
     public ModHelperButton CopyCode { get; private set; } = null!;
     public ModHelperButton PasteCode { get; private set; } = null!;
@@ -246,6 +247,10 @@ public sealed class BossEditorSection
             CustomSkulls.SetText(skulls, false);
         }));
 
+        // Below whichever skull rows show, so the bar sits right under the setting it follows
+        var skullStripRow = EditorRows.LabelRow(template, rows, "SkullStripRow", Texts.SkullPreview.T(), VanillaSprites.CrossboneSkull);
+        Skulls = new SkullStrip(skullStripRow);
+
         // Sharing the setup as a text code, after all the boss options
         var shareRow = EditorRows.LabelRow(template, rows, "ShareCodeRow", Texts.ShareCode.T(), VanillaSprites.CopyClipboardBtn);
         var shareX = EditorRows.ControlX - EditorRows.ControlWidth / 2 + 300;
@@ -264,6 +269,7 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(skullModeRow, Texts.Skulls, Texts.SkullsInfo);
         EditorRows.AddInfo(SkullCount.Row, Texts.SkullCount, Texts.SkullCountInfo);
         EditorRows.AddInfo(customSkullsRow, Texts.SkullHealth, Texts.SkullHealthInfo);
+        EditorRows.AddInfo(skullStripRow, Texts.SkullPreview, Texts.SkullPreviewInfo);
         EditorRows.AddInfo(shareRow, Texts.ShareCode, Texts.ShareCodeInfo);
     }
 
@@ -578,6 +584,8 @@ public sealed class BossEditorSection
     /// </summary>
     private void ShowStrip()
     {
+        // The boss's own skulls follow the boss and Elite
+        Skulls.Show(BossMode.Options);
         if (Strip.Show(BossMode.Options, Editor.dcm) && !refreshing) Relayout();
     }
 
@@ -597,8 +605,9 @@ public sealed class BossEditorSection
         customSkullsRow.SetActive(options.SkullMode == Config.SkullMode.Custom);
         ShowSpawnRounds();
         Strip.Show(options, Editor.dcm);
+        Skulls.Show(options);
 
-        // Rows are as high as the slider rows they copy, except the tier strip
+        // Rows are as high as the slider rows they copy, except the tier strip and the skull bar
         var visible = Enumerable.Range(0, rows.childCount).Select(rows.GetChild).Where(row => row.gameObject.activeSelf).ToList();
         var rowHeights = visible.Sum(row => row.GetComponent<RectTransform>().sizeDelta.y);
         var height = Section.activeSelf
