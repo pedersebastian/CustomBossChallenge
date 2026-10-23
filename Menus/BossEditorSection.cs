@@ -63,6 +63,16 @@ public sealed class BossEditorSection
     public ModHelperInputField CustomSkulls { get; private set; } = null!;
     public SkullStrip Skulls { get; private set; } = null!;
     public ModHelperInputField SpawnRounds { get; private set; } = null!;
+    public ModHelperDropdown SavedList { get; private set; } = null!;
+    public ModHelperButton SaveSetup { get; private set; } = null!;
+    public ModHelperButton LoadSetup { get; private set; } = null!;
+    public ModHelperButton DeleteSetup { get; private set; } = null!;
+
+    /// <summary>
+    /// The saved setup picked in the list, or null when there are none
+    /// </summary>
+    public string? SelectedSetup { get; private set; }
+
     public ModHelperButton CopyCode { get; private set; } = null!;
     public ModHelperButton PasteCode { get; private set; } = null!;
     public Dictionary<BossType, ModHelperButton> BossButtons { get; } = new();
@@ -251,7 +261,23 @@ public sealed class BossEditorSection
         var skullStripRow = EditorRows.LabelRow(template, rows, "SkullStripRow", Texts.SkullPreview.T(), VanillaSprites.CrossboneSkull);
         Skulls = new SkullStrip(skullStripRow);
 
-        // Sharing the setup as a text code, after all the boss options
+        // Saved setups and sharing the setup as a text code, after all the boss options
+        var savedRow = EditorRows.LabelRow(template, rows, "SavedSetupsRow", Texts.SavedSetups.T(), VanillaSprites.FavouriteHeartIcon);
+        SavedList = ModHelperDropdown.Create(EditorRows.ControlInfo("SavedList", SavedListWidth, 150),
+            new Il2CppSystem.Collections.Generic.List<string>(), SavedListHeight, new Action<int>(index =>
+            {
+                var names = BossMode.Saved.All;
+                if (index >= 0 && index < names.Count) SelectedSetup = names[index].Name;
+            }), VanillaSprites.BlueInsertPanelRound, 60);
+        SavedList.transform.SetParent(savedRow.transform, false);
+        var savedX = EditorRows.ControlX - EditorRows.ControlWidth / 2 + SavedListWidth + SetupButtonGap + SetupButtonWidth / 2;
+        SaveSetup = ShareButton(savedRow, "SaveSetup", savedX, Texts.SaveSetup.T(), OnSaveSetup, SetupButtonWidth);
+        LoadSetup = ShareButton(savedRow, "LoadSetup", savedX + SetupButtonWidth + SetupButtonGap, Texts.Load.T(),
+            OnLoadSetup, SetupButtonWidth);
+        DeleteSetup = ShareButton(savedRow, "DeleteSetup", savedX + 2 * (SetupButtonWidth + SetupButtonGap),
+            Texts.DeleteSetup.T(), OnDeleteSetup, SetupButtonWidth);
+        ShowSavedSetups();
+
         var shareRow = EditorRows.LabelRow(template, rows, "ShareCodeRow", Texts.ShareCode.T(), VanillaSprites.CopyClipboardBtn);
         var shareX = EditorRows.ControlX - EditorRows.ControlWidth / 2 + 300;
         CopyCode = ShareButton(shareRow, "CopyCode", shareX, Texts.CopyCode.T(), OnCopyCode);
@@ -270,12 +296,19 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(SkullCount.Row, Texts.SkullCount, Texts.SkullCountInfo);
         EditorRows.AddInfo(customSkullsRow, Texts.SkullHealth, Texts.SkullHealthInfo);
         EditorRows.AddInfo(skullStripRow, Texts.SkullPreview, Texts.SkullPreviewInfo);
+        EditorRows.AddInfo(savedRow, Texts.SavedSetups, Texts.SavedSetupsInfo);
         EditorRows.AddInfo(shareRow, Texts.ShareCode, Texts.ShareCodeInfo);
     }
 
-    private static ModHelperButton ShareButton(GameObject row, string name, float x, string label, Action action)
+    public const float SavedListWidth = 760;
+    public const float SavedListHeight = 750;
+    public const float SetupButtonWidth = 380;
+    public const float SetupButtonGap = 30;
+
+    private static ModHelperButton ShareButton(GameObject row, string name, float x, string label, Action action,
+        float width = 560)
     {
-        var button = ModHelperButton.Create(new Info(name, x, 0, 560, 170)
+        var button = ModHelperButton.Create(new Info(name, x, 0, width, 170)
         {
             Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
         }, VanillaSprites.BlueBtnLong, action);
@@ -313,6 +346,127 @@ public sealed class BossEditorSection
                 BossMode.Replace(Editor, options, dcm);
                 ModHelper.Msg<CustomBossChallenge>($"Loaded a share code: {Describe(options, dcm)}");
             }), Texts.Load.T(),
+            null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
+    }
+
+    /// <summary>
+    /// Fills the saved setups list, keeping <see cref="SelectedSetup"/> picked when it is still there. Without saved
+    /// setups the list says so, and Load and Delete can't be pressed.
+    /// </summary>
+    public void ShowSavedSetups()
+    {
+        var names = BossMode.Saved.All.Select(entry => entry.Name).ToList();
+        if (SelectedSetup == null || !names.Contains(SelectedSetup)) SelectedSetup = names.FirstOrDefault();
+
+        var shown = new Il2CppSystem.Collections.Generic.List<string>();
+        foreach (var name in names) shown.Add(PlainText(name));
+        if (names.Count == 0) shown.Add(Texts.NoSavedSetups.T());
+
+        var dropdown = SavedList.Dropdown;
+        dropdown.ClearOptions();
+        dropdown.AddOptions(shown);
+        dropdown.SetValueWithoutNotify(SelectedSetup == null ? 0 : names.IndexOf(SelectedSetup));
+        dropdown.RefreshShownValue();
+        dropdown.interactable = names.Count > 0;
+
+        // Mod Helper sizes the opened list for the options it was created with, so size it for the current ones
+        var template = SavedList.TemplatePanel.RectTransform;
+        var itemHeight = SavedList.RectTransform.sizeDelta.y;
+        var listHeight = Math.Min(SavedListHeight, Math.Max(shown.Count, 1) * itemHeight);
+        template.sizeDelta = new Vector2(template.sizeDelta.x, listHeight);
+        template.anchoredPosition = new Vector2(template.anchoredPosition.x, -itemHeight / 2 - listHeight / 2);
+        LoadSetup.Button.interactable = names.Count > 0;
+        DeleteSetup.Button.interactable = names.Count > 0;
+    }
+
+    private void OnSaveSetup()
+    {
+        Editor.ApplyUiSettingsToDCM();
+        var options = BossMode.Options;
+        var dcm = Editor.dcm;
+        var name = SavedSetupsStore.NameOf(options, dcm);
+        if (!BossMode.Saved.Contains(name))
+        {
+            SaveAs(name, options, dcm);
+            return;
+        }
+
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
+            Texts.SavedSetups.T(), Texts.OverwriteSetupQuestion.T($"<b>{PlainText(name)}</b>"),
+            new Action(() => SaveAs(name, options, dcm)), Texts.SaveSetup.T(),
+            null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
+    }
+
+    private void SaveAs(string name, BossOptions options, DailyChallengeModel dcm)
+    {
+        SavedSetupsStore.SaveResult result;
+        try
+        {
+            result = BossMode.Saved.Save(options, dcm);
+        }
+        catch (Exception e)
+        {
+            ModHelper.Warning<CustomBossChallenge>($"Could not save the setup '{name}': {e.Message}");
+            return;
+        }
+
+        if (result == SavedSetupsStore.SaveResult.Full)
+        {
+            PopupScreen.instance.SafelyQueue(screen =>
+                screen.ShowOkPopup(Texts.TooManySetups.T(SavedSetupsStore.MaxSetups), null));
+            return;
+        }
+
+        ModHelper.Msg<CustomBossChallenge>($"{(result == SavedSetupsStore.SaveResult.Replaced ? "Replaced" : "Saved")} the saved setup {Describe(options, dcm)}");
+        SelectedSetup = name;
+        ShowSavedSetups();
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.SetupSaved.T($"<b>{PlainText(name)}</b>"), null));
+    }
+
+    private void OnLoadSetup()
+    {
+        var name = SelectedSetup;
+        if (name == null) return;
+
+        if (!BossMode.Saved.TryLoad(name, out var options, out var dcm, out var problem) || dcm == null)
+        {
+            ModHelper.Msg<CustomBossChallenge>($"Could not load the saved setup '{name}': {problem}");
+            var text = problem == CodeProblem.TooNew ? Texts.CodeTooNew : Texts.CodeInvalid;
+            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(text.T(), null));
+            return;
+        }
+
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.SavedSetups.T(),
+            $"{Texts.LoadSetupQuestion.T()}\n\n{Summary(options, dcm)}",
+            new Action(() =>
+            {
+                BossMode.Replace(Editor, options, dcm);
+                ModHelper.Msg<CustomBossChallenge>($"Loaded a saved setup: {Describe(options, dcm)}");
+            }), Texts.Load.T(),
+            null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
+    }
+
+    private void OnDeleteSetup()
+    {
+        var name = SelectedSetup;
+        if (name == null) return;
+
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
+            Texts.SavedSetups.T(), Texts.DeleteSetupQuestion.T($"<b>{PlainText(name)}</b>"),
+            new Action(() =>
+            {
+                try
+                {
+                    BossMode.Saved.Delete(name);
+                    ModHelper.Msg<CustomBossChallenge>($"Deleted the saved setup '{name}'");
+                }
+                catch (Exception e)
+                {
+                    ModHelper.Warning<CustomBossChallenge>($"Could not delete the setup '{name}': {e.Message}");
+                }
+
+                ShowSavedSetups();
+            }), Texts.DeleteSetup.T(),
             null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
     }
 
@@ -502,7 +656,7 @@ public sealed class BossEditorSection
             SkullCount.Show(options.SkullCount);
             CustomSkulls.SetText(ShownSkulls(options), false);
             ShowSpawnRounds();
-            FollowBossName(options.Boss);
+            FollowBossName(options.Boss, options.Elite);
             ShowBoss();
         }
         finally
@@ -544,19 +698,19 @@ public sealed class BossEditorSection
     private void SelectBoss(BossType boss)
     {
         BossMode.Options = BossMode.Options with {Boss = boss};
-        FollowBossName(boss);
+        FollowBossName(boss, BossMode.Options.Elite);
         ShowBoss();
     }
 
     /// <summary>
-    /// Follows the boss in the challenge name as long as the player hasn't named it themselves
+    /// Follows the boss and Elite in the challenge name as long as the player hasn't named it themselves
     /// </summary>
-    private void FollowBossName(BossType boss)
+    private void FollowBossName(BossType boss, bool elite)
     {
         var name = Editor.chalName;
-        if (name == null || !Enum.GetValues<BossType>().Any(other => name.text == BossMode.DefaultName(other))) return;
+        if (name == null || !BossMode.IsDefaultName(name.text)) return;
 
-        name.text = BossMode.DefaultName(boss);
+        name.text = BossMode.DefaultName(boss, elite);
         if (Editor.dcm != null) Editor.dcm.name = name.text;
     }
 
@@ -564,6 +718,7 @@ public sealed class BossEditorSection
     {
         if (refreshing) return;
         BossMode.Options = BossMode.Options with {Elite = elite};
+        FollowBossName(BossMode.Options.Boss, elite);
         ShowBoss();
     }
 

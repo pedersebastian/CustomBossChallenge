@@ -60,6 +60,20 @@ Event and your Boss Challenge records and saves are never affected.
 
 ![Main menu](docs/main-menu.jpg)
 
+## Saved setups
+
+The **Saved Setups** row keeps your favorite setups in the game, so you can switch between them without share codes:
+
+- **Save** stores the whole setup, boss options and every Challenge Editor rule, under the challenge's name. Saving
+  a name you already have asks before replacing it.
+- Pick a setup in the list and press **Load** to play it again. Like Paste, it shows the setup and asks before it
+  replaces your current one.
+- **Delete** removes the picked setup, after asking.
+
+Up to 50 setups are kept, in `BloonsTD6/UserData/CustomBossChallenge/SavedSetups.json`.
+
+![Saved Setups](docs/saved-setups.jpg)
+
 ## Sharing setups
 
 The **Share Code** row at the bottom of the Boss section turns the whole setup, boss options and every Challenge Editor

@@ -33,17 +33,21 @@ public class BossCreatorTest : CustomBossTest
     {
         folder = Path.Combine(Path.GetTempPath(), "CustomBossChallengeTest-" + Guid.NewGuid().ToString("N"));
         var store = BossMode.Store;
+        var saved = BossMode.Saved;
         BossMode.Store = new LastSetupStore(Path.Combine(folder, "LastSetup.json"));
+        BossMode.Saved = new SavedSetupsStore(Path.Combine(folder, "SavedSetups.json"));
         try
         {
             yield return EditSetup();
             yield return ShareCodes();
+            yield return SavedSetups();
             yield return NormalEditorHasNoBossSection();
             yield return PlayLaunchesTheGame();
         }
         finally
         {
             BossMode.Store = store;
+            BossMode.Saved = saved;
             Menus.Clipboard.Reset();
             if (Directory.Exists(folder)) Directory.Delete(folder, true);
         }
@@ -80,7 +84,7 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 14, "Info buttons in the boss section");
+        AssertEquals(infoButtons, 15, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
@@ -133,7 +137,7 @@ public class BossCreatorTest : CustomBossTest
         section.SpawnRounds.InputField.onEndEdit.Invoke("30, 50");
         yield return null;
 
-        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex), "The name must follow the boss");
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex, BossMode.Options.Elite), "The name must follow the boss");
         // The tier preview shows every tier with its round, speed and health, colored against the normal game
         var cards = section.Strip.Cards;
         AssertEquals(cards.Count(card => card.Panel.gameObject.activeSelf), 7, "Tier cards shown");
@@ -227,11 +231,24 @@ public class BossCreatorTest : CustomBossTest
         editor.chalName.text = "My boss";
         section.Load(editor.dcm, BossMode.Options with {Boss = BossType.Lych});
         AssertEquals(editor.chalName.text, "My boss", "A loaded boss must keep the player's own name");
-        editor.chalName.text = BossMode.DefaultName(BossType.Vortex);
+        editor.chalName.text = BossMode.DefaultName(BossType.Vortex, BossMode.Options.Elite);
         section.Load(editor.dcm, BossMode.Options with {Boss = BossType.Lych});
-        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Lych), "The name must follow a loaded boss");
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Lych, BossMode.Options.Elite), "The name must follow a loaded boss");
         section.BossButtons[BossType.Vortex].Button.onClick.Invoke();
-        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex), "The name must follow the boss back");
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex, BossMode.Options.Elite), "The name must follow the boss back");
+
+        // The name says Elite, and follows the Elite box too
+        Assert(BossMode.Options.Elite, "Elite is on here");
+        AssertEquals(editor.chalName.text, "Custom Elite Vortex", "The name of an Elite boss");
+        section.Elite.SetChecked(false, true);
+        AssertEquals(editor.chalName.text, "Custom Vortex", "The name must follow Elite off");
+        section.Elite.SetChecked(true, true);
+        AssertEquals(editor.chalName.text, "Custom Elite Vortex", "The name must follow Elite on");
+        editor.chalName.text = "My boss";
+        section.Elite.SetChecked(false, true);
+        AssertEquals(editor.chalName.text, "My boss", "Elite must keep the player's own name");
+        section.Elite.SetChecked(true, true);
+        editor.chalName.text = editor.dcm.name = BossMode.DefaultName(BossType.Vortex, true);
 
         Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
         yield return WaitFor(() => !BossMode.Active && MenuManager.instance.GetCurrentMenu()?.GetIl2CppType().Name != nameof(ChallengeEditor),
@@ -287,7 +304,7 @@ public class BossCreatorTest : CustomBossTest
         Assert(popup.body.text.Contains("Shared Lych"), $"Paste popup: {popup.body.text}");
         yield return ClosePopup(popup, false);
         AssertEquals(BossMode.Options, mine, "Cancel must keep the options");
-        AssertEquals(editor!.dcm.name, BossMode.DefaultName(BossType.Vortex), "Cancel must keep the challenge");
+        AssertEquals(editor!.dcm.name, BossMode.DefaultName(BossType.Vortex, BossMode.Options.Elite), "Cancel must keep the challenge");
 
         // Load replaces it, in the section, the editor and the saved setup
         section.PasteCode.Button.onClick.Invoke();
@@ -351,6 +368,104 @@ public class BossCreatorTest : CustomBossTest
         yield return ClosePopup(popup, true);
         AssertEquals(BossMode.Options, mine, "Options pasted back");
         AssertEquals(editor.dcm.maxParagons, 1, "Max paragons pasted back");
+
+        Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
+        yield return WaitFor(() => !BossMode.Active, "Leaving the Boss Creator");
+        yield return ToMainMenu();
+    }
+
+    /// <summary>
+    /// Saving setups by the challenge's name, loading one back after asking, and deleting one
+    /// </summary>
+    private IEnumerator SavedSetups()
+    {
+        BossMode.Enter();
+        ChallengeEditor? editor = null;
+        yield return WaitForEditor(e => editor = e);
+        var section = BossEditorSection.Current!;
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup popup = null!;
+        editor!.ApplyUiSettingsToDCM();
+        var before = SetupCode.Encode(BossMode.Options, editor.dcm);
+
+        // Without saved setups the list says so, and only Save can be pressed
+        AssertEquals(section.SavedList.Dropdown.options.Count, 1, "One line in an empty list");
+        Assert(section.SavedList.Dropdown.captionText.text.Contains(Texts.NoSavedSetups.T()), "The empty list says so");
+        Assert(!section.LoadSetup.Button.interactable && !section.DeleteSetup.Button.interactable, "Nothing to load or delete");
+        AssertEquals(section.SelectedSetup, null, "Nothing picked");
+
+        // Save stores the setup under the challenge's name
+        section.BossButtons[BossType.Lych].Button.onClick.Invoke();
+        section.Tiers.Slider.value = 4;
+        editor.chalName.text = "My Lych";
+        var lych = BossMode.Options;
+        section.SaveSetup.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains("My Lych"), $"Saved popup: {popup.body.text}");
+        yield return ClosePopup(popup, true);
+        Assert(BossMode.Saved.Contains("My Lych"), "The setup was not saved under the challenge's name");
+        AssertEquals(section.SelectedSetup, "My Lych", "The saved setup is picked");
+        Assert(section.LoadSetup.Button.interactable && section.DeleteSetup.Button.interactable, "Load and Delete work now");
+
+        // Saving the same name again asks first; Cancel keeps the saved one
+        section.Tiers.Slider.value = 6;
+        section.SaveSetup.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains("My Lych"), $"Replace popup: {popup.body.text}");
+        yield return ClosePopup(popup, false);
+        Assert(BossMode.Saved.TryLoad("My Lych", out var kept, out _, out _) && kept == lych, "Cancel must keep the saved setup");
+
+        // A second setup
+        section.BossButtons[BossType.Vortex].Button.onClick.Invoke();
+        editor.chalName.text = "Speedy Vortex";
+        var vortex = BossMode.Options;
+        section.SaveSetup.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        yield return ClosePopup(popup, true);
+        AssertEquals(string.Join(", ", BossMode.Saved.All.Select(entry => entry.Name)), "My Lych, Speedy Vortex", "Saved setups");
+        AssertEquals(section.SavedList.Dropdown.options.Count, 2, "Both setups in the list");
+        AssertEquals(section.SavedList.TemplatePanel.RectTransform.sizeDelta.y, 2 * section.SavedList.RectTransform.sizeDelta.y,
+            "The opened list must have room for both setups");
+
+        // Opening the list shows both setups, and clicking one picks it
+        section.SavedList.Dropdown.Show();
+        yield return new WaitForSecondsRealtime(0.5f);
+        var items = section.SavedList.GetComponentsInChildren<Toggle>().Where(toggle => toggle.gameObject.activeInHierarchy).ToList();
+        AssertEquals(items.Count, 2, "Setups in the opened list");
+        Assert(items[0].GetComponent<RectTransform>().rect.height > 0, "The setups in the opened list must be visible");
+        items[0].isOn = true;
+        yield return new WaitForSecondsRealtime(0.5f);
+        AssertEquals(section.SelectedSetup, "My Lych", "Clicked in the opened list");
+        section.SavedList.Dropdown.value = 1;
+        AssertEquals(section.SelectedSetup, "Speedy Vortex", "The new setup is picked");
+
+        // Picking the first one and loading it asks first; Cancel keeps the current setup
+        section.SavedList.Dropdown.value = 0;
+        AssertEquals(section.SelectedSetup, "My Lych", "Picked in the list");
+        section.LoadSetup.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains("My Lych") && popup.body.text.Contains(Texts.TierCount.T(4)), $"Load popup: {popup.body.text}");
+        yield return ClosePopup(popup, false);
+        AssertEquals(BossMode.Options, vortex, "Cancel must keep the current setup");
+
+        section.LoadSetup.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        yield return ClosePopup(popup, true);
+        AssertEquals(BossMode.Options, lych, "Loaded options");
+        AssertEquals(editor.dcm.name, "My Lych", "Loaded challenge name");
+        AssertEquals(section.Tiers.Value, 4f, "Loaded tiers shown");
+
+        // Delete asks first, then removes the setup from the list
+        section.DeleteSetup.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains("My Lych"), $"Delete popup: {popup.body.text}");
+        yield return ClosePopup(popup, true);
+        Assert(!BossMode.Saved.Contains("My Lych"), "The setup was not deleted");
+        AssertEquals(section.SavedList.Dropdown.options.Count, 1, "One setup left in the list");
+        AssertEquals(section.SelectedSetup, "Speedy Vortex", "The setup left is picked");
+
+        // Back to the setup from before, for the rest of the test
+        Assert(SetupCode.TryDecode(before, out var beforeOptions, out var beforeDcm, out _), "The setup from before");
+        BossMode.Replace(editor, beforeOptions, beforeDcm!);
 
         Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
         yield return WaitFor(() => !BossMode.Active, "Leaving the Boss Creator");
