@@ -61,60 +61,18 @@ public class ConfigApplierTest : CustomBossTest
 }
 
 /// <summary>
-/// Tier and spawn round calculations
+/// Tier options that use the game's boss types. The calculations themselves are unit tested in UnitTests.
 /// </summary>
 public class TierMathTest : CustomBossTest
 {
     protected override IEnumerator Run()
     {
-        AssertEquals(Show(TierMath.DefaultSpawnRounds(5)), "40, 60, 80, 100, 120", "Vanilla spawn rounds");
-        AssertEquals(Show(TierMath.DefaultSpawnRounds(7)), "40, 60, 80, 100, 120, 140, 160", "Extra tier rounds");
-        AssertEquals(Show(TierMath.DefaultSpawnRounds(1)), "40", "One tier");
-        AssertEquals(TierMath.DefaultSpawnRounds(99).Length, TierMath.MaxTiers, "Tiers must be capped");
-        AssertEquals(TierMath.DefaultSpawnRounds(0).Length, TierMath.MinTiers, "At least one tier");
-
-        AssertEquals(Show(TierMath.SpawnRounds(5, null)), "40, 60, 80, 100, 120", "No custom rounds");
-        AssertEquals(Show(TierMath.SpawnRounds(3, "30, 50,70")), "30, 50, 70", "Custom rounds");
-        AssertEquals(Show(TierMath.SpawnRounds(4, "30;45")), "30, 45, 65, 85", "Too few rounds are continued");
-        AssertEquals(Show(TierMath.SpawnRounds(2, "30, 50, 70")), "30, 50", "Too many rounds are cut");
-        AssertEquals(Show(TierMath.SpawnRounds(3, "50, 50, 20")), "50, 51, 52", "Rounds must ascend");
-        AssertEquals(Show(TierMath.SpawnRounds(2, "x, -5, 0, 60")), "60, 80", "Junk is ignored");
-        AssertEquals(Show(TierMath.SpawnRounds(1, "5000")), $"{TierMath.MaxRound}", "Rounds are capped");
-        AssertEquals(Show(TierMath.SpawnRounds(2, "1000")), "999, 1000", "Capped tiers must not share a round");
-        AssertEquals(Show(TierMath.SpawnRounds(3, "995, 2000")), "995, 999, 1000", "Capped later tiers");
-        var capped = TierMath.SpawnRounds(TierMath.MaxTiers, "990");
-        Assert(capped.Zip(capped.Skip(1)).All(pair => pair.First < pair.Second) && capped[^1] == TierMath.MaxRound,
-            $"Ten capped tiers must ascend: {Show(capped)}");
-
-        Assert(TierMath.SpeedFactor(1, 50) == 1 && TierMath.HealthFactor(1, 100) == 1, "Tier 1 keeps the game's values");
-        Assert(TierMath.SpeedFactor(7, 0) == 1 && TierMath.HealthFactor(7, 0) == 1, "0 % keeps every tier as the game makes it");
-        Assert(System.Math.Abs(TierMath.SpeedFactor(3, 20) - 1.4) < 1e-9, "Tier 3 at +20 % speed per tier adds 2 x 20 %");
-        Assert(System.Math.Abs(TierMath.SpeedFactor(3, -10) - 0.8) < 1e-9, "Tier 3 at -10 % speed per tier");
-        AssertEquals(TierMath.HealthFactor(10, TierMath.MinHealthPerTier), TierMath.MinPerTierFactor, "Later tiers keep a minimum");
-        AssertEquals(TierMath.SpeedFactor(10, TierMath.MaxSpeedPerTier), TierMath.MaxSpeedFactor, "Speed is capped");
-        Assert(System.Math.Abs(TierMath.HealthFactor(3, 50) - 2) < 1e-9, "Tier 3 at +50 % health per tier");
-        Assert(System.Math.Abs(TierMath.HealthFactor(5, 100) - 5) < 1e-9, "Tier 5 at +100 % health per tier is x5, not x16");
-        Assert(TierMath.ExtraTierFactor(5) == 1 && System.Math.Abs(TierMath.ExtraTierFactor(7) - 2.25) < 1e-9,
-            "Tiers above 5 get +50 % each, like before");
-        foreach (var (old, perTier) in new[] {(150, 0), (225, 10), (175, 5), (100, -5), (500, 45)})
-        {
-            AssertEquals(TierMath.HealthPerTierFromExtraTierHealth(old), perTier, $"Extra Tier Health {old}");
-        }
         AssertEquals(new BossOptions {ExtraTierHealth = 225}.Sanitized(), new BossOptions {HealthPerTier = 10},
             "Old Extra Tier Health becomes Health per Tier");
         AssertEquals(new BossOptions {ExtraTierHealth = 225, HealthPerTier = 10}.Sanitized(), new BossOptions {HealthPerTier = 10},
             "A Health per Tier that is set wins over the old setting");
-        AssertEquals(TierMath.ScaleHealth(3000000, 2.25), 6750000, "Scaled health");
-        AssertEquals(TierMath.ScaleHealth(int.MaxValue, 1000), TierMath.MaxGameHealth, "Health must not overflow");
-        AssertEquals(TierMath.ScaleHealth(int.MaxValue, 1000, 20), TierMath.MaxGameHealth / 20, "Room for Boss Health");
-        AssertEquals(TierMath.ScaleHealth(int.MaxValue, 1000, 0.1), TierMath.MaxGameHealth, "Less Boss Health doesn't raise the cap");
-        AssertEquals(TierMath.MaxModelHealth(3), 666_666_666, "Cap with Boss Health 300 %");
 
-        AssertEquals(TierMath.BossId(BossType.Vortex, true, 7), "VortexElite7", "Elite boss id");
-        AssertEquals(TierMath.TierOf("VortexElite7"), 7, "Tier of an elite boss id");
-        AssertEquals(TierMath.TierOf("Bloonarius10"), 10, "Tier of a two digit tier");
-        AssertEquals(TierMath.TierOf("Moab"), 0, "Tier of a bloon without one");
-        AssertEquals(Show(TierMath.ToGameRounds(new[] {1, 40, 60})), "0, 39, 59", "The game counts rounds from 0");
+        AssertEquals(new BossOptions {Boss = BossType.Vortex, Elite = true}.BossId(7), "VortexElite7", "Elite boss id");
         AssertEquals(new BossOptions {Boss = BossType.Lych}.BossId(2), "Lych2", "Boss id");
         AssertEquals(Show(new BossOptions {Tiers = 6, SpawnRounds = "45"}.EffectiveSpawnRounds),
             "45, 65, 85, 105, 125, 145", "Effective spawn rounds");
@@ -125,31 +83,12 @@ public class TierMathTest : CustomBossTest
 }
 
 /// <summary>
-/// Skull threshold calculations
+/// Skull options. The calculations themselves are unit tested in UnitTests.
 /// </summary>
 public class SkullMathTest : CustomBossTest
 {
     protected override IEnumerator Run()
     {
-        Assert(SameValues(SkullMath.EvenlySpaced(3), new[] {0.75f, 0.5f, 0.25f}),
-            $"EvenlySpaced(3) = {Show(SkullMath.EvenlySpaced(3))}");
-        Assert(SameValues(SkullMath.EvenlySpaced(4), new[] {0.8f, 0.6f, 0.4f, 0.2f}),
-            $"EvenlySpaced(4) = {Show(SkullMath.EvenlySpaced(4))}");
-        AssertEquals(SkullMath.EvenlySpaced(0).Length, 0, "EvenlySpaced(0) must be empty");
-        AssertEquals(SkullMath.EvenlySpaced(99).Length, SkullMath.MaxSkulls, "EvenlySpaced must be capped");
-
-        Assert(SameValues(SkullMath.ParseCustom("75,50,25"), new[] {0.75f, 0.5f, 0.25f}), "Simple list");
-        Assert(SameValues(SkullMath.ParseCustom(" 25 ; 90%, 50, 50 "), new[] {0.9f, 0.5f, 0.25f}),
-            $"Messy list = {Show(SkullMath.ParseCustom(" 25 ; 90%, 50, 50 "))}");
-        Assert(SameValues(SkullMath.ParseCustom("abc, 0, 100, 150, 33.5"), new[] {0.335f}),
-            $"Invalid values must be ignored = {Show(SkullMath.ParseCustom("abc, 0, 100, 150, 33.5"))}");
-        AssertEquals(SkullMath.ParseCustom("nothing valid"), null, "Junk must give null");
-        AssertEquals(SkullMath.ParseCustom(""), null, "Empty must give null");
-
-        AssertEquals(SkullMath.NormalizeCustom("25,25,50", "x"), "50, 25", "Duplicates are shown merged");
-        AssertEquals(SkullMath.NormalizeCustom(" 33.5% ; 90 abc", "x"), "90, 33.5", "Decimals and junk");
-        AssertEquals(SkullMath.NormalizeCustom("33,5", "x"), "33, 5", "A decimal comma separates two skulls");
-        AssertEquals(SkullMath.NormalizeCustom("junk, 0, 100", "75, 50, 25"), "75, 50, 25", "Nothing valid keeps the fallback");
         AssertEquals(SkullMath.NormalizeCustom(new BossOptions().CustomSkulls, "x"), new BossOptions().CustomSkulls,
             "The default skulls are already normalized");
 

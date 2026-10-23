@@ -20,4 +20,11 @@
         <EmbeddedResource Remove="docs\**" />
         <EmbeddedResource Include="README.md" LogicalName="CustomBossChallenge.README.md" />
     </ItemGroup>
+
+    <!-- The unit tests are their own project -->
+    <ItemGroup>
+        <Compile Remove="UnitTests\**" />
+        <EmbeddedResource Remove="UnitTests\**" />
+        <None Remove="UnitTests\**" />
+    </ItemGroup>
 </Project>

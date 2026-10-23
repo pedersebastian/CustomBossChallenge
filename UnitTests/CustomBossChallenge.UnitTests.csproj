@@ -1,0 +1,22 @@
+<!-- Tests for the mod's pure logic, which runs without the game. Everything that needs the game is tested in-game,
+     see Tests/ and CONTRIBUTING.md. Run with: dotnet test UnitTests -->
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <RootNamespace>CustomBossChallenge.UnitTests</RootNamespace>
+        <Nullable>enable</Nullable>
+        <LangVersion>preview</LangVersion>
+        <IsPackable>false</IsPackable>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <!-- The mod's files that don't use the game, compiled straight into the tests -->
+    <ItemGroup>
+        <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />
+        <Compile Include="..\Config\TierMath.cs" Link="Mod\TierMath.cs" />
+        <Compile Include="..\Persistence\SafeFile.cs" Link="Mod\SafeFile.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="xunit.v3" Version="4.0.2" />
+    </ItemGroup>
+</Project>
