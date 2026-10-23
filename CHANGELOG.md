@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
 ### Added
 
 - **Saved Setups**: keep up to 50 favorite setups in the game, by the challenge's name, and load or delete them from
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The challenge name the Boss Creator gives a setup now says Elite, e.g. **Custom Elite Lych**, and follows the Elite
   box like it follows the boss, as long as you haven't named the challenge yourself.
+- The Tier Preview shows each tier's round on its own line under the tier, so the cards stay readable with 10 tiers.
 
 ## [2.4.0] - 2026-10-23
 

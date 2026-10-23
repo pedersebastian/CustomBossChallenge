@@ -18,14 +18,14 @@ namespace CustomBossChallenge.Menus;
 /// </summary>
 public sealed class TierStrip
 {
-    public const float Height = 300;
-    public const float CardHeight = 270;
+    public const float Height = 350;
+    public const float CardHeight = 320;
     public const float NoteHeight = 46;
 
     /// <summary>
     /// The row's height while it also shows the health cap line
     /// </summary>
-    public const float CappedHeight = 380;
+    public const float CappedHeight = 430;
     public const float MaxCardWidth = 330;
     public const float CardGap = 12;
     public const string CardName = "Tier";
@@ -51,6 +51,7 @@ public sealed class TierStrip
     public sealed class Card
     {
         public ModHelperPanel Panel = null!;
+        public ModHelperText Tier = null!;
         public ModHelperImage Portrait = null!;
         public ModHelperText Round = null!;
         public ModHelperText Speed = null!;
@@ -78,21 +79,28 @@ public sealed class TierStrip
             };
             card.Panel.transform.SetParent(strip.transform, false);
 
-            // The tier in the top left corner and its round in the top right one
-            card.Panel.AddText(new Info("Tier", 16, -6, 120, 70)
+            // The tier at the top and its round on the line below, so even T10 R1000 fits a narrow card
+            card.Tier = card.Panel.AddText(new Info("Tier", 0, -8, MaxCardWidth, 56)
             {
-                Anchor = new Vector2(0, 1), Pivot = new Vector2(0, 1)
-            }, $"T{tier}", 52, TextAlignmentOptions.TopLeft);
-            card.Round = card.Panel.AddText(new Info("Round", -16, -10, 160, 70)
+                Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
+            }, $"T{tier}", 52, TextAlignmentOptions.Top);
+            card.Round = card.Panel.AddText(new Info("Round", 0, -60, MaxCardWidth, 46)
             {
-                Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 1)
-            }, "", 42, TextAlignmentOptions.TopRight);
+                Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
+            }, "", 40, TextAlignmentOptions.Top);
+            foreach (var text in new[] { card.Tier, card.Round })
+            {
+                text.Text.enableAutoSizing = true;
+                text.Text.fontSizeMin = 24;
+                text.Text.fontSizeMax = text.Text.fontSize;
+                text.Text.textWrappingMode = TextWrappingModes.NoWrap;
+            }
 
             // Later tiers get a slightly bigger portrait, so the strip reads as a climb
             var size = 84 + tier * 6;
-            card.Portrait = card.Panel.AddImage(new Info("Portrait", 0, 22, size, size), VanillaSprites.BossTiersIconSmall);
-            card.Speed = card.Panel.AddText(new Info("Speed", 0, -62, 300, 64), "", 54);
-            card.Health = card.Panel.AddText(new Info("Health", 0, -112, 300, 64), "", 54);
+            card.Portrait = card.Panel.AddImage(new Info("Portrait", 0, -3, size, size), VanillaSprites.BossTiersIconSmall);
+            card.Speed = card.Panel.AddText(new Info("Speed", 0, -87, 300, 64), "", 54);
+            card.Health = card.Panel.AddText(new Info("Health", 0, -137, 300, 64), "", 54);
             Cards.Add(card);
         }
 
@@ -123,6 +131,12 @@ public sealed class TierStrip
             var cardRect = Cards[i].Panel.RectTransform;
             cardRect.anchoredPosition = new Vector2(left + (i + 0.5f) * slot, y);
             cardRect.sizeDelta = new Vector2(slot - CardGap, CardHeight);
+
+            // The tier and round shrink to the card instead of running into the next one
+            foreach (var text in new[] { Cards[i].Tier, Cards[i].Round })
+            {
+                text.RectTransform.sizeDelta = new Vector2(slot - CardGap - 16, text.RectTransform.sizeDelta.y);
+            }
         }
     }
 
