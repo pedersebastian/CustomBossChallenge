@@ -100,5 +100,5 @@ public sealed record BossOptions
     /// <summary>
     /// The bloon id of this boss at the given tier, e.g. "VortexElite3"
     /// </summary>
-    public string BossId(int tier) => TierMath.BossId(Boss, Elite, tier);
+    public string BossId(int tier) => $"{Boss}{(Elite ? "Elite" : "")}{tier}";
 }

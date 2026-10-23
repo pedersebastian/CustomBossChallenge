@@ -16,9 +16,23 @@ Technical notes for building and testing Custom Boss Challenge. For what the mod
 
 ## Running the tests
 
-The mod ships with in-game automated tests built on Mod Helper's `ModTest`. They cover:
+### Unit tests
 
-- tier, spawn round and skull math, and preparing the editor's challenge for a boss game
+The logic that doesn't need the game (tier, spawn round and skull math, and writing the mod's files) has xUnit tests
+in `UnitTests/`. That project compiles those few source files straight in, so it builds and runs in seconds without
+BTD6:
+
+```
+dotnet test --project UnitTests
+```
+
+Keep files tested there free of the game's types (`Il2Cpp...`, `BTD_Mod_Helper`), or the project won't build.
+
+### In-game tests
+
+Everything else runs inside the game, with automated tests built on Mod Helper's `ModTest`. They cover:
+
+- preparing the editor's challenge for a boss game
 - the Random button: a thousand random setups that must all be playable, spread like the game's own randomizer
 - extra tier models for every boss and Elite tier, Speed and Health per Tier for every tier of every boss, and real
   games played to victory with 6 and with 2 tiers
@@ -41,7 +55,7 @@ Run them from Visual Studio / Rider with the **BloonsTD6 (Tests)** launch profil
 BloonsTD6.exe moddingDev -batchmode --modhelper.offline --modhelper.only='CustomBossChallenge;' --modhelper.noaudio --modhelper.run -q test mod CustomBossChallenge
 ```
 
-The result is written to `MelonLoader/Latest.log`, e.g. `Ran 23 test(s), 23 succeeded, 0 failed`.
+The result is written to `MelonLoader/Latest.log`, e.g. `Ran 25 test(s), 25 succeeded, 0 failed`.
 
 The screenshots in the README come from the `ScreenshotTour` test. It only runs in a windowed game started with
 `--cbc.screenshots=<folder>` (and without `-batchmode`).
@@ -56,8 +70,10 @@ The screenshots in the README come from the `ScreenshotTour` test. It only runs 
 - **Release version** (tags only): the tag must match `Version` in `ModHelperData.cs`, which Mod Helper uses to tell
   players about updates, and `CHANGELOG.md` must have notes for it. This runs next to the release in `build.yml`, so
   it marks a bad release instead of stopping it: run it before tagging.
+- **Unit tests**: `dotnet test --project UnitTests`, see above. The in-game tests can't run on GitHub and still have
+  to be run locally.
 
-Both are PowerShell scripts that also run locally in Windows PowerShell:
+The first two are PowerShell scripts that also run locally in Windows PowerShell:
 
 ```
 powershell -ExecutionPolicy Bypass -File .github/scripts/Check-Localization.ps1

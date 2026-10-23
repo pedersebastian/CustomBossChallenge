@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Il2CppAssets.Scripts.Data.Boss;
 
 namespace CustomBossChallenge.Config;
 
@@ -50,8 +49,6 @@ public static class TierMath
     /// </summary>
     public static int MaxModelHealth(double bossHealth) =>
         (int) Math.Floor(MaxGameHealth / Math.Max(bossHealth, 1));
-
-    public static string BossId(BossType boss, bool elite, int tier) => $"{boss}{(elite ? "Elite" : "")}{tier}";
 
     /// <summary>
     /// The tier in a boss bloon id like "VortexElite7", or 0 if it has none
