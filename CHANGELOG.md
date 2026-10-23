@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-10-23
+
 ### Added
 
 - **Skull Preview**: a health bar like the boss's own, under the skull options, with a skull at every health
@@ -154,7 +156,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety guards: only Boss Challenges are affected; custom games are always unranked, never saved and never update Boss Challenge records. The weekly Boss Event, co-op and all other modes are untouched.
 - In-game automated tests (Mod Helper `ModTest`) covering config application, skull math, all boss/Elite skulls, ranked/co-op guards, the Customize button and a game test comparing a vanilla and a custom Bloonarius challenge.
 
-[unreleased]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.3.1...HEAD
+[unreleased]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.4.0...HEAD
+[2.4.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.3.1...2.4.0
 [2.3.1]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.3.0...2.3.1
 [2.3.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.2.1...2.3.0
 [2.2.1]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.2.0...2.2.1
