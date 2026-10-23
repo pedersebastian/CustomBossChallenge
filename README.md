@@ -152,7 +152,8 @@ The Boss Creator setup is stored in `BloonsTD6/UserData/CustomBossChallenge/Last
 
 ## Reporting a bug
 
-Open an [issue](https://github.com/pedersebastian/CustomBossChallenge/issues) and include:
+Open a [bug report](https://github.com/pedersebastian/CustomBossChallenge/issues/new?template=bug_report.yml). It
+asks for:
 
 - what you did, what you expected and what happened instead
 - the mod version (shown in Mod Helper's mod list) and the game version
@@ -172,7 +173,9 @@ How to build the mod from source and run its automated tests is described in
 
 This mod was made with the help of AI. Most of the code, tests, documentation and translations were written by
 Claude (Anthropic) through Claude Code, guided, reviewed and play-tested by me. The translations are machine-made and
-may sound unnatural in some languages; corrections are welcome as issues or pull requests.
+may sound unnatural in some languages; corrections are welcome as a
+[translation fix](https://github.com/pedersebastian/CustomBossChallenge/issues/new?template=translation.yml) or a
+pull request (see [Translations](https://github.com/pedersebastian/CustomBossChallenge/blob/master/CONTRIBUTING.md#translations)).
 
 ## License
 

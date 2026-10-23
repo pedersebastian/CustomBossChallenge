@@ -1,0 +1,74 @@
+name: Translation fix
+description: A text in your language is wrong, unclear or sounds unnatural
+labels: ["translation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The translations were machine-made, so corrections from players are very welcome. You don't need to know
+        anything about coding: say where the text is and what it should say.
+
+        If you'd rather change the file yourself, see
+        [Translations](https://github.com/pedersebastian/CustomBossChallenge/blob/master/CONTRIBUTING.md#translations)
+        in CONTRIBUTING.md.
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - Arabic
+        - Chinese (Simplified)
+        - Chinese (Traditional)
+        - Danish
+        - Dutch
+        - English
+        - Finnish
+        - French
+        - German
+        - Italian
+        - Japanese
+        - Korean
+        - Norwegian
+        - Polish
+        - Portuguese (Brazil)
+        - Russian
+        - Spanish
+        - Spanish (Latin America)
+        - Swedish
+        - Thai
+        - Turkish
+    validations:
+      required: true
+
+  - type: input
+    id: where
+    attributes:
+      label: Where is the text?
+      description: The screen and the row, button or info popup it is on.
+      placeholder: Boss Creator, info popup of Skull Preview
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Text now
+      description: The text as the game shows it. A screenshot works too.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Better text
+      description: >-
+        What it should say. Keep things like `{0}` as they are: the game puts a number or name there.
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why (optional)
+      description: E.g. a wrong word, the game itself uses another word for it, or it doesn't fit on the button.

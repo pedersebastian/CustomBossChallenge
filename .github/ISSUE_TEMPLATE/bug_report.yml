@@ -1,0 +1,86 @@
+name: Bug report
+description: Something in Custom Boss Challenge doesn't work as it should
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! The more of this you fill in, the faster it can be found and fixed.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected and what happened instead.
+      placeholder: |
+        1. Opened the Boss Creator and chose Lych Elite with 7 tiers
+        2. Pressed Play
+        3. Expected tier 6 on round 140, but the game ended after tier 5
+    validations:
+      required: true
+
+  - type: input
+    id: mod-version
+    attributes:
+      label: Mod version
+      description: Shown in Mod Helper's mod list.
+      placeholder: "2.4.0"
+    validations:
+      required: true
+
+  - type: input
+    id: game-version
+    attributes:
+      label: Game version
+      placeholder: "57.3"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: store
+    attributes:
+      label: Where is the game from?
+      options:
+        - Steam
+        - Epic Games
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: other-mods
+    attributes:
+      label: Other mods
+      description: Other mods you have enabled, if any. Bugs sometimes come from two mods changing the same thing.
+      placeholder: Faster Forward, Useful Utilities
+
+  - type: textarea
+    id: share-code
+    attributes:
+      label: Share Code
+      description: >-
+        If the bug happens in a boss game or in the Boss Creator, press **Copy** in the Share Code row and paste the
+        code here, so your setup can be loaded exactly.
+      placeholder: CBC1:...
+      render: text
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: >-
+        Drag the file `MelonLoader/Latest.log` from your BTD6 folder into this box, from a session where the bug
+        happened (older logs are in `MelonLoader/Logs`). Lines from this mod start with `[CustomBossChallenge]`.
+      placeholder: Drag Latest.log here, or paste the lines around the problem.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Before posting
+      options:
+        - label: >-
+            I had a quick look at the log: it can contain folder paths from my PC, and I removed anything I don't
+            want to share.
+          required: true
