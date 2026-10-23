@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "هل تريد تحميل هذا الإعداد المحفوظ؟ سيتم استبدال إعدادك الحالي.",
   "CustomBossChallenge-SetupSaved": "تم الحفظ باسم {0}.",
   "CustomBossChallenge-TooManySetups": "يمكنك الاحتفاظ بما يصل إلى {0} من الإعدادات المحفوظة. احذف واحدًا لحفظ إعداد جديد.",
+  "CustomBossChallenge-SetupFileError": "تعذّر تغيير الإعدادات المحفوظة. تأكد من إمكانية الكتابة في UserData/CustomBossChallenge.",
+  "CustomBossChallenge-SetupUnreadable": "هذا الإعداد المحفوظ تالف ولا يمكن تحميله. يمكنك حذفه.",
   "CustomBossChallenge-ShareCode": "رمز المشاركة",
   "CustomBossChallenge-ShareCodeInfo": "يضع النسخ هذا الإعداد بالكامل، أي خيارات الزعيم وقواعد محرر التحديات، في الحافظة كرمز يمكنك لصقه في Discord أو Reddit أو في رسالة. ويحمّل اللصق رمزًا شاركه معك شخص آخر.",
   "CustomBossChallenge-CopyCode": "نسخ",

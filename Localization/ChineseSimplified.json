@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "要加载这个已保存的设置吗？你当前的设置将被替换。",
   "CustomBossChallenge-SetupSaved": "已保存为 {0}。",
   "CustomBossChallenge-TooManySetups": "最多可以保存 {0} 个设置。请删除一个后再保存新的设置。",
+  "CustomBossChallenge-SetupFileError": "无法更改已保存的设置。请检查 UserData/CustomBossChallenge 是否可写入。",
+  "CustomBossChallenge-SetupUnreadable": "此已保存的设置已损坏，无法加载。你可以将其删除。",
   "CustomBossChallenge-ShareCode": "分享代码",
   "CustomBossChallenge-ShareCodeInfo": "复制会把整个配置（首领选项和挑战编辑器规则）作为代码放入剪贴板，你可以把它粘贴到 Discord、Reddit 或消息中。粘贴会加载别人分享给你的代码。",
   "CustomBossChallenge-CopyCode": "复制",

@@ -72,7 +72,8 @@ public class SavedSetupsStoreTest : CustomBossTest
             // Damaged entries are skipped, the rest still loads; values out of range come back like in a share code
             File.WriteAllText(store.FilePath,
                 "{\"Version\":1,\"Setups\":[{\"Name\":\"Good\",\"Code\":\"" + SetupCode.Encode(lych, lychDcm) + "\"}," +
-                "{\"Name\":\"\",\"Code\":\"CBC1:x\"},{\"Name\":\"good\",\"Code\":\"CBC1:x\"},{\"Name\":\"Broken\",\"Code\":\"not a code\"}," +
+                "{\"Name\":\"\",\"Code\":\"CBC1:x\"},{\"Name\":\"good\",\"Code\":\"CBC1:x\"},{\"Name\":\"  Good \\n\",\"Code\":\"CBC1:x\"}," +
+                "{\"Name\":\"Broken\",\"Code\":\"not a code\"}," +
                 "{\"Name\":\"Future\",\"Code\":\"CBC7:abc\"},{\"Name\":\"Wild\",\"Code\":\"" +
                 SetupCode.Pack("{\"o\":{\"Tiers\":9999},\"c\":{}}") + "\"},null]}");
             AssertEquals(string.Join(", ", store.All.Select(entry => entry.Name)), "Broken, Future, Good, Wild", "Readable entries");
@@ -84,13 +85,34 @@ public class SavedSetupsStoreTest : CustomBossTest
             Assert(store.TryLoad("Wild", out var wild, out _, out _), "A code with values out of range loads");
             AssertEquals(wild.Tiers, TierMath.MaxTiers, "Tiers brought into range");
 
-            // An unreadable file is kept aside, so saving a new setup can't throw the old ones away for good
+            // A hand edited file with more than the limit keeps them all: only new setups are refused
+            var code = SetupCode.Encode(lych, lychDcm);
+            var many = Enumerable.Range(0, SavedSetupsStore.MaxSetups + 5)
+                .Select(i => "{\"Name\":\"Many " + i.ToString("00") + "\",\"Code\":\"" + code + "\"}");
+            File.WriteAllText(store.FilePath, "{\"Version\":1,\"Setups\":[" + string.Join(",", many) + "]}");
+            AssertEquals(store.All.Count, SavedSetupsStore.MaxSetups + 5, "Setups over the limit are shown");
+            AssertEquals(store.Save(lych, Setup("Yet another", "Tutorial")), SavedSetupsStore.SaveResult.Full, "Saving over the limit");
+            Assert(store.Delete("Many 00"), "Deleting over the limit");
+            AssertEquals(store.All.Count, SavedSetupsStore.MaxSetups + 4, "Writing the file must not drop setups over the limit");
+
+            // An unreadable file is kept aside, so saving a new setup can't throw the old ones away for good, and a
+            // later, different breakage doesn't replace that copy
+            var folder = Path.GetDirectoryName(store.FilePath)!;
+            string[] Backups() => Directory.GetFiles(folder, "*.broken");
             const string unreadable = "{ this is not json";
             File.WriteAllText(store.FilePath, unreadable);
+            File.SetLastWriteTimeUtc(store.FilePath, new DateTime(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc));
             AssertEquals(store.All.Count, 0, "An unreadable file gives no setups");
-            AssertEquals(File.ReadAllText(store.FilePath + ".broken"), unreadable, "The unreadable file is kept");
+            AssertEquals(store.All.Count, 0, "Reading it again");
+            AssertEquals(Backups().Length, 1, "One copy of the unreadable file");
+            AssertEquals(File.ReadAllText(Backups()[0]), unreadable, "The unreadable file is kept");
             AssertEquals(store.Save(lych, lychDcm), SavedSetupsStore.SaveResult.Saved, "Saving over an unreadable file");
             AssertEquals(store.All.Count, 1, "A new file after an unreadable one");
+
+            File.WriteAllText(store.FilePath, "[ broken again");
+            File.SetLastWriteTimeUtc(store.FilePath, new DateTime(2026, 2, 1, 12, 0, 0, DateTimeKind.Utc));
+            AssertEquals(store.All.Count, 0, "A second unreadable file");
+            AssertEquals(Backups().Length, 2, "The first copy must survive a second breakage");
         }
         finally
         {

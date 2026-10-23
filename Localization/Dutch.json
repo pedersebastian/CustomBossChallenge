@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Deze opgeslagen instelling laden? Je huidige instelling wordt vervangen.",
   "CustomBossChallenge-SetupSaved": "Opgeslagen als {0}.",
   "CustomBossChallenge-TooManySetups": "Je kunt tot {0} instellingen opslaan. Verwijder er een om een nieuwe op te slaan.",
+  "CustomBossChallenge-SetupFileError": "De opgeslagen opstellingen konden niet worden gewijzigd. Controleer of er naar UserData/CustomBossChallenge kan worden geschreven.",
+  "CustomBossChallenge-SetupUnreadable": "Deze opgeslagen opstelling is beschadigd en kan niet worden geladen. Je kunt hem verwijderen.",
   "CustomBossChallenge-ShareCode": "Deelcode",
   "CustomBossChallenge-ShareCodeInfo": "Kopiëren zet deze hele opzet, bossopties en Challenge Editor-regels, op het klembord als een code die je in Discord, Reddit of een bericht kunt plakken. Plakken laadt een code die iemand met je heeft gedeeld.",
   "CustomBossChallenge-CopyCode": "Kopiëren",

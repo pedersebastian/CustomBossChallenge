@@ -100,6 +100,10 @@ public static class Texts
     public static readonly string SetupSaved = Key(nameof(SetupSaved), "Saved as {0}.");
     public static readonly string TooManySetups = Key(nameof(TooManySetups),
         "You can keep up to {0} saved setups. Delete one to save a new one.");
+    public static readonly string SetupFileError = Key(nameof(SetupFileError),
+        "The saved setups couldn't be changed. Check that UserData/CustomBossChallenge can be written to.");
+    public static readonly string SetupUnreadable = Key(nameof(SetupUnreadable),
+        "This saved setup is damaged and can't be loaded. You can delete it.");
 
     public static readonly string ShareCode = Key(nameof(ShareCode), "Share Code");
     public static readonly string ShareCodeInfo = Key(nameof(ShareCodeInfo),

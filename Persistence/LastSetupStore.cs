@@ -40,13 +40,7 @@ public sealed class LastSetupStore
     public void Save(BossOptions options, DailyChallengeModel dcm)
     {
         var file = new SetupFile {Version = Version, Options = options, Challenge = DcmJson.Serialize(dcm)};
-        var directory = Path.GetDirectoryName(FilePath);
-        if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
-
-        // Write to a temporary file first so a crash can't leave a half written setup behind
-        var temp = FilePath + ".tmp";
-        File.WriteAllText(temp, JsonConvert.SerializeObject(file, JsonSettings));
-        File.Move(temp, FilePath, true);
+        SafeFile.WriteAllText(FilePath, JsonConvert.SerializeObject(file, JsonSettings));
     }
 
     /// <summary>

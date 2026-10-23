@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Wczytać to zapisane ustawienie? Twoje obecne ustawienie zostanie zastąpione.",
   "CustomBossChallenge-SetupSaved": "Zapisano jako {0}.",
   "CustomBossChallenge-TooManySetups": "Możesz mieć do {0} zapisanych ustawień. Usuń jedno, aby zapisać nowe.",
+  "CustomBossChallenge-SetupFileError": "Nie udało się zmienić zapisanych ustawień. Sprawdź, czy można zapisywać w UserData/CustomBossChallenge.",
+  "CustomBossChallenge-SetupUnreadable": "To zapisane ustawienie jest uszkodzone i nie można go wczytać. Możesz je usunąć.",
   "CustomBossChallenge-ShareCode": "Kod udostępniania",
   "CustomBossChallenge-ShareCodeInfo": "Kopiuj umieszcza całą tę konfigurację, opcje bossa i zasady edytora wyzwań, w schowku jako kod, który możesz wkleić na Discordzie, Reddicie lub w wiadomości. Wklej wczytuje kod, który ktoś ci udostępnił.",
   "CustomBossChallenge-CopyCode": "Kopiuj",

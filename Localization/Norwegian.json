@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Laste inn dette lagrede oppsettet? Det nåværende oppsettet ditt blir erstattet.",
   "CustomBossChallenge-SetupSaved": "Lagret som {0}.",
   "CustomBossChallenge-TooManySetups": "Du kan ha opptil {0} lagrede oppsett. Slett ett for å lagre et nytt.",
+  "CustomBossChallenge-SetupFileError": "De lagrede oppsettene kunne ikke endres. Sjekk at det går an å skrive til UserData/CustomBossChallenge.",
+  "CustomBossChallenge-SetupUnreadable": "Dette lagrede oppsettet er skadet og kan ikke lastes. Du kan slette det.",
   "CustomBossChallenge-ShareCode": "Delingskode",
   "CustomBossChallenge-ShareCodeInfo": "Kopier legger hele dette oppsettet, boss-valg og Challenge Editor-regler, i utklippstavlen som en kode du kan lime inn på Discord, Reddit eller i en melding. Lim inn laster en kode noen har delt med deg.",
   "CustomBossChallenge-CopyCode": "Kopier",

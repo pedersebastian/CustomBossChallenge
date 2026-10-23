@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Carregar esta configuração salva? Sua configuração atual será substituída.",
   "CustomBossChallenge-SetupSaved": "Salva como {0}.",
   "CustomBossChallenge-TooManySetups": "Você pode ter até {0} configurações salvas. Exclua uma para salvar uma nova.",
+  "CustomBossChallenge-SetupFileError": "Não foi possível alterar as configurações salvas. Verifique se é possível gravar em UserData/CustomBossChallenge.",
+  "CustomBossChallenge-SetupUnreadable": "Esta configuração salva está danificada e não pode ser carregada. Você pode excluí-la.",
   "CustomBossChallenge-ShareCode": "Código de compartilhamento",
   "CustomBossChallenge-ShareCodeInfo": "Copiar coloca toda esta configuração, opções do chefe e regras do Editor de Desafios, na área de transferência como um código que você pode colar no Discord, no Reddit ou em uma mensagem. Colar carrega um código que alguém compartilhou com você.",
   "CustomBossChallenge-CopyCode": "Copiar",

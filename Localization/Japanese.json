@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "この保存した設定を読み込みますか？現在の設定は置き換えられます。",
   "CustomBossChallenge-SetupSaved": "{0} として保存しました。",
   "CustomBossChallenge-TooManySetups": "保存できる設定は最大 {0} 個です。新しく保存するには、どれかを削除してください。",
+  "CustomBossChallenge-SetupFileError": "保存した設定を変更できませんでした。UserData/CustomBossChallenge に書き込めるか確認してください。",
+  "CustomBossChallenge-SetupUnreadable": "この保存した設定は破損しているため読み込めません。削除できます。",
   "CustomBossChallenge-ShareCode": "共有コード",
   "CustomBossChallenge-ShareCodeInfo": "コピーすると、ボスのオプションとチャレンジエディターのルールを含むこの設定全体がコードとしてクリップボードに入ります。Discord や Reddit、メッセージに貼り付けて共有できます。貼り付けると、誰かが共有したコードを読み込みます。",
   "CustomBossChallenge-CopyCode": "コピー",

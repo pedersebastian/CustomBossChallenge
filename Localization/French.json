@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Charger cette configuration enregistrée ? Ta configuration actuelle sera remplacée.",
   "CustomBossChallenge-SetupSaved": "Enregistrée sous {0}.",
   "CustomBossChallenge-TooManySetups": "Tu peux garder jusqu'à {0} configurations enregistrées. Supprimes-en une pour en enregistrer une nouvelle.",
+  "CustomBossChallenge-SetupFileError": "Les configurations enregistrées n'ont pas pu être modifiées. Vérifiez que UserData/CustomBossChallenge est accessible en écriture.",
+  "CustomBossChallenge-SetupUnreadable": "Cette configuration enregistrée est endommagée et ne peut pas être chargée. Vous pouvez la supprimer.",
   "CustomBossChallenge-ShareCode": "Code de partage",
   "CustomBossChallenge-ShareCodeInfo": "Copier place toute cette configuration, options du boss et règles de l'éditeur de défis, dans le presse-papiers sous forme de code à coller sur Discord, Reddit ou dans un message. Coller charge un code que quelqu'un vous a partagé.",
   "CustomBossChallenge-CopyCode": "Copier",

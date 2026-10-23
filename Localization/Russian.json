@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Загрузить эту сохранённую настройку? Текущая настройка будет заменена.",
   "CustomBossChallenge-SetupSaved": "Сохранено как {0}.",
   "CustomBossChallenge-TooManySetups": "Можно хранить до {0} сохранённых настроек. Удалите одну, чтобы сохранить новую.",
+  "CustomBossChallenge-SetupFileError": "Не удалось изменить сохранённые настройки. Проверьте, что в UserData/CustomBossChallenge можно записывать.",
+  "CustomBossChallenge-SetupUnreadable": "Эта сохранённая настройка повреждена и не может быть загружена. Её можно удалить.",
   "CustomBossChallenge-ShareCode": "Код для обмена",
   "CustomBossChallenge-ShareCodeInfo": "«Копировать» помещает всю эту настройку, параметры босса и правила редактора испытаний, в буфер обмена в виде кода, который можно вставить в Discord, Reddit или сообщение. «Вставить» загружает код, которым с вами поделились.",
   "CustomBossChallenge-CopyCode": "Копировать",

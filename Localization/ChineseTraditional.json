@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "要載入這個已儲存的設定嗎？你目前的設定將被取代。",
   "CustomBossChallenge-SetupSaved": "已儲存為 {0}。",
   "CustomBossChallenge-TooManySetups": "最多可以儲存 {0} 個設定。請刪除一個後再儲存新的設定。",
+  "CustomBossChallenge-SetupFileError": "無法變更已儲存的設定。請檢查 UserData/CustomBossChallenge 是否可寫入。",
+  "CustomBossChallenge-SetupUnreadable": "此已儲存的設定已損壞，無法載入。你可以將其刪除。",
   "CustomBossChallenge-ShareCode": "分享代碼",
   "CustomBossChallenge-ShareCodeInfo": "複製會把整個設定（首領選項和挑戰編輯器規則）作為代碼放入剪貼簿，你可以把它貼到 Discord、Reddit 或訊息中。貼上會載入別人分享給你的代碼。",
   "CustomBossChallenge-CopyCode": "複製",

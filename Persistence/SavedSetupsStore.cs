@@ -115,27 +115,33 @@ public sealed class SavedSetupsStore
             var entries = new List<Entry>();
             foreach (var entry in file?.Setups ?? new List<Entry>())
             {
-                // Entries without a name or code, and later ones with a name already used, can't be told apart
-                if (entry == null || string.IsNullOrWhiteSpace(entry.Name) || string.IsNullOrWhiteSpace(entry.Code) ||
-                    entries.Any(other => Same(other.Name, entry.Name)))
+                // Entries without a name or code, and later ones with a name already used, can't be told apart. The
+                // name is cleaned first, so names that only differ in what cleaning removes count as the same.
+                var name = entry == null ? "" : ChallengeLimits.CleanName(entry.Name, "");
+                if (entry == null || name.Length == 0 || string.IsNullOrWhiteSpace(entry.Code) ||
+                    entries.Any(other => Same(other.Name, name)))
                 {
                     ModHelper.Warning<CustomBossChallenge>($"Ignoring a damaged saved setup in {FilePath}");
                     continue;
                 }
 
-                entry.Name = ChallengeLimits.CleanName(entry.Name, entry.Name);
+                entry.Name = name;
                 entries.Add(entry);
             }
 
-            return entries.Take(MaxSetups).ToList();
+            // More than MaxSetups (a hand edited file) are all kept, so writing the file never drops any; only new
+            // setups are refused while the list is full
+            return entries;
         }
         catch (Exception e)
         {
-            // Keep the unreadable file, so saving a new setup doesn't throw away the player's old ones for good
+            // Keep the unreadable file, so saving a new setup doesn't throw away the player's old ones for good. The
+            // copy is named by the broken file's time, so a later, different breakage doesn't replace it.
             ModHelper.Warning<CustomBossChallenge>($"Ignoring unreadable saved setups {FilePath}: {e.Message}");
             try
             {
-                File.Copy(FilePath, FilePath + ".broken", true);
+                var time = File.GetLastWriteTimeUtc(FilePath).ToString("yyyyMMdd-HHmmss");
+                File.Copy(FilePath, $"{FilePath}.{time}.broken", true);
             }
             catch (Exception)
             {
@@ -149,12 +155,6 @@ public sealed class SavedSetupsStore
     private void Write(List<Entry> entries)
     {
         var file = new SetupsFile {Version = Version, Setups = entries};
-        var directory = Path.GetDirectoryName(FilePath);
-        if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
-
-        // Write to a temporary file first so a crash can't leave a half written file behind
-        var temp = FilePath + ".tmp";
-        File.WriteAllText(temp, JsonConvert.SerializeObject(file, JsonSettings));
-        File.Move(temp, FilePath, true);
+        SafeFile.WriteAllText(FilePath, JsonConvert.SerializeObject(file, JsonSettings));
     }
 }

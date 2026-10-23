@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Bu kayıtlı ayar yüklensin mi? Mevcut ayarın değiştirilecek.",
   "CustomBossChallenge-SetupSaved": "{0} olarak kaydedildi.",
   "CustomBossChallenge-TooManySetups": "En fazla {0} kayıtlı ayar tutabilirsin. Yenisini kaydetmek için birini sil.",
+  "CustomBossChallenge-SetupFileError": "Kayıtlı kurulumlar değiştirilemedi. UserData/CustomBossChallenge klasörüne yazılabildiğini kontrol edin.",
+  "CustomBossChallenge-SetupUnreadable": "Bu kayıtlı kurulum bozuk ve yüklenemiyor. Silebilirsiniz.",
   "CustomBossChallenge-ShareCode": "Paylaşım Kodu",
   "CustomBossChallenge-ShareCodeInfo": "Kopyala, bu kurulumun tamamını, boss seçeneklerini ve Challenge Editor kurallarını, Discord'a, Reddit'e veya bir mesaja yapıştırabileceğin bir kod olarak panoya koyar. Yapıştır, birinin seninle paylaştığı bir kodu yükler.",
   "CustomBossChallenge-CopyCode": "Kopyala",

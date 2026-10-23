@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Ladataanko tämä tallennettu asetus? Nykyiset asetuksesi korvataan.",
   "CustomBossChallenge-SetupSaved": "Tallennettu nimellä {0}.",
   "CustomBossChallenge-TooManySetups": "Voit säilyttää enintään {0} tallennettua asetusta. Poista yksi tallentaaksesi uuden.",
+  "CustomBossChallenge-SetupFileError": "Tallennettuja asetuksia ei voitu muuttaa. Tarkista, että kansioon UserData/CustomBossChallenge voi kirjoittaa.",
+  "CustomBossChallenge-SetupUnreadable": "Tämä tallennettu asetus on vioittunut, eikä sitä voi ladata. Voit poistaa sen.",
   "CustomBossChallenge-ShareCode": "Jakokoodi",
   "CustomBossChallenge-ShareCodeInfo": "Kopioi vie koko tämän asetelman, pomovalinnat ja Challenge Editorin säännöt, leikepöydälle koodina, jonka voit liittää Discordiin, Redditiin tai viestiin. Liitä lataa koodin, jonka joku on jakanut sinulle.",
   "CustomBossChallenge-CopyCode": "Kopioi",

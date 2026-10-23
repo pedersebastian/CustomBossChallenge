@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "¿Cargar esta configuración guardada? Tu configuración actual se reemplazará.",
   "CustomBossChallenge-SetupSaved": "Guardada como {0}.",
   "CustomBossChallenge-TooManySetups": "Puedes tener hasta {0} configuraciones guardadas. Borra una para guardar una nueva.",
+  "CustomBossChallenge-SetupFileError": "No se han podido cambiar las configuraciones guardadas. Comprueba que se puede escribir en UserData/CustomBossChallenge.",
+  "CustomBossChallenge-SetupUnreadable": "Esta configuración guardada está dañada y no se puede cargar. Puedes eliminarla.",
   "CustomBossChallenge-ShareCode": "Código para compartir",
   "CustomBossChallenge-ShareCodeInfo": "Copiar pone toda esta configuración, opciones del jefe y reglas del editor de desafíos, en el portapapeles como un código que puedes pegar en Discord, Reddit o en un mensaje. Pegar carga un código que alguien ha compartido contigo.",
   "CustomBossChallenge-CopyCode": "Copiar",

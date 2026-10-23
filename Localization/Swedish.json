@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Läsa in detta sparade upplägg? Ditt nuvarande upplägg ersätts.",
   "CustomBossChallenge-SetupSaved": "Sparat som {0}.",
   "CustomBossChallenge-TooManySetups": "Du kan ha upp till {0} sparade upplägg. Ta bort ett för att spara ett nytt.",
+  "CustomBossChallenge-SetupFileError": "De sparade uppläggen kunde inte ändras. Kontrollera att det går att skriva till UserData/CustomBossChallenge.",
+  "CustomBossChallenge-SetupUnreadable": "Det här sparade upplägget är skadat och kan inte laddas. Du kan ta bort det.",
   "CustomBossChallenge-ShareCode": "Delningskod",
   "CustomBossChallenge-ShareCodeInfo": "Kopiera lägger hela den här uppsättningen, bossinställningar och Challenge Editor-regler, i urklipp som en kod du kan klistra in på Discord, Reddit eller i ett meddelande. Klistra in läser in en kod som någon har delat med dig.",
   "CustomBossChallenge-CopyCode": "Kopiera",

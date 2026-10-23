@@ -80,11 +80,12 @@ public sealed class TierStrip
             card.Panel.transform.SetParent(strip.transform, false);
 
             // The tier at the top and its round on the line below, so even T10 R1000 fits a narrow card
-            card.Tier = card.Panel.AddText(new Info("Tier", 0, -8, MaxCardWidth, 56)
+            // The boxes are taller than the font, so auto-sizing only shrinks the text for width, on narrow cards
+            card.Tier = card.Panel.AddText(new Info("Tier", 0, -4, MaxCardWidth, 70)
             {
                 Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
             }, $"T{tier}", 52, TextAlignmentOptions.Top);
-            card.Round = card.Panel.AddText(new Info("Round", 0, -60, MaxCardWidth, 46)
+            card.Round = card.Panel.AddText(new Info("Round", 0, -56, MaxCardWidth, 60)
             {
                 Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
             }, "", 40, TextAlignmentOptions.Top);

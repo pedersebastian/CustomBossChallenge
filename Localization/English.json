@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Load this saved setup? Your current setup will be replaced.",
   "CustomBossChallenge-SetupSaved": "Saved as {0}.",
   "CustomBossChallenge-TooManySetups": "You can keep up to {0} saved setups. Delete one to save a new one.",
+  "CustomBossChallenge-SetupFileError": "The saved setups couldn't be changed. Check that UserData/CustomBossChallenge can be written to.",
+  "CustomBossChallenge-SetupUnreadable": "This saved setup is damaged and can't be loaded. You can delete it.",
   "CustomBossChallenge-ShareCode": "Share Code",
   "CustomBossChallenge-ShareCodeInfo": "Copy puts this whole setup, boss options and Challenge Editor rules, on the clipboard as a code you can paste into Discord, Reddit or a message. Paste loads a code someone shared with you.",
   "CustomBossChallenge-CopyCode": "Copy",

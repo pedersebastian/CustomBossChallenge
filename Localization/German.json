@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Dieses gespeicherte Setup laden? Dein aktuelles Setup wird ersetzt.",
   "CustomBossChallenge-SetupSaved": "Gespeichert als {0}.",
   "CustomBossChallenge-TooManySetups": "Du kannst bis zu {0} Setups speichern. Lösche eines, um ein neues zu speichern.",
+  "CustomBossChallenge-SetupFileError": "Die gespeicherten Setups konnten nicht geändert werden. Prüfe, ob in UserData/CustomBossChallenge geschrieben werden kann.",
+  "CustomBossChallenge-SetupUnreadable": "Dieses gespeicherte Setup ist beschädigt und kann nicht geladen werden. Du kannst es löschen.",
   "CustomBossChallenge-ShareCode": "Teilen-Code",
   "CustomBossChallenge-ShareCodeInfo": "Kopieren legt dieses ganze Setup, Boss-Optionen und Challenge-Editor-Regeln, als Code in die Zwischenablage, den du in Discord, Reddit oder eine Nachricht einfügen kannst. Einfügen lädt einen Code, den jemand mit dir geteilt hat.",
   "CustomBossChallenge-CopyCode": "Kopieren",

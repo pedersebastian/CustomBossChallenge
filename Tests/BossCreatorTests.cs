@@ -463,6 +463,28 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(section.SavedList.Dropdown.options.Count, 1, "One setup left in the list");
         AssertEquals(section.SelectedSetup, "Speedy Vortex", "The setup left is picked");
 
+        // A damaged saved setup says so when loaded, instead of talking about the clipboard
+        var store = BossMode.Saved;
+        var savedFile = File.ReadAllText(store.FilePath);
+        File.WriteAllText(store.FilePath, "{\"Version\":1,\"Setups\":[{\"Name\":\"Damaged\",\"Code\":\"not a code\"}]}");
+        section.ShowSavedSetups();
+        AssertEquals(section.SelectedSetup, "Damaged", "The damaged setup is picked");
+        section.LoadSetup.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains(Texts.SetupUnreadable.T()), $"Damaged setup popup: {popup.body.text}");
+        yield return ClosePopup(popup, true);
+        File.WriteAllText(store.FilePath, savedFile);
+
+        // A file that can't be written tells the player, not only the log: the folder is a file here
+        BossMode.Saved = new SavedSetupsStore(Path.Combine(store.FilePath, "SavedSetups.json"));
+        section.SaveSetup.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains(Texts.SetupFileError.T()), $"File error popup: {popup.body.text}");
+        yield return ClosePopup(popup, true);
+        BossMode.Saved = store;
+        section.ShowSavedSetups();
+        AssertEquals(section.SelectedSetup, "Speedy Vortex", "The setups are back");
+
         // Back to the setup from before, for the rest of the test
         Assert(SetupCode.TryDecode(before, out var beforeOptions, out var beforeDcm, out _), "The setup from before");
         BossMode.Replace(editor, beforeOptions, beforeDcm!);

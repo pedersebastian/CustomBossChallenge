@@ -73,6 +73,11 @@ public sealed class BossEditorSection
     /// </summary>
     public string? SelectedSetup { get; private set; }
 
+    /// <summary>
+    /// The names shown in the saved setups list, in its order
+    /// </summary>
+    private List<string> savedNames = new();
+
     public ModHelperButton CopyCode { get; private set; } = null!;
     public ModHelperButton PasteCode { get; private set; } = null!;
     public Dictionary<BossType, ModHelperButton> BossButtons { get; } = new();
@@ -266,8 +271,7 @@ public sealed class BossEditorSection
         SavedList = ModHelperDropdown.Create(EditorRows.ControlInfo("SavedList", SavedListWidth, 150),
             new Il2CppSystem.Collections.Generic.List<string>(), SavedListHeight, new Action<int>(index =>
             {
-                var names = BossMode.Saved.All;
-                if (index >= 0 && index < names.Count) SelectedSetup = names[index].Name;
+                if (index >= 0 && index < savedNames.Count) SelectedSetup = savedNames[index];
             }), VanillaSprites.BlueInsertPanelRound, 60);
         SavedList.transform.SetParent(savedRow.transform, false);
         var savedX = EditorRows.ControlX - EditorRows.ControlWidth / 2 + SavedListWidth + SetupButtonGap + SetupButtonWidth / 2;
@@ -355,7 +359,7 @@ public sealed class BossEditorSection
     /// </summary>
     public void ShowSavedSetups()
     {
-        var names = BossMode.Saved.All.Select(entry => entry.Name).ToList();
+        var names = savedNames = BossMode.Saved.All.Select(entry => entry.Name).ToList();
         if (SelectedSetup == null || !names.Contains(SelectedSetup)) SelectedSetup = names.FirstOrDefault();
 
         var shown = new Il2CppSystem.Collections.Generic.List<string>();
@@ -385,7 +389,7 @@ public sealed class BossEditorSection
         var options = BossMode.Options;
         var dcm = Editor.dcm;
         var name = SavedSetupsStore.NameOf(options, dcm);
-        if (!BossMode.Saved.Contains(name))
+        if (!savedNames.Contains(name, StringComparer.OrdinalIgnoreCase))
         {
             SaveAs(name, options, dcm);
             return;
@@ -407,6 +411,7 @@ public sealed class BossEditorSection
         catch (Exception e)
         {
             ModHelper.Warning<CustomBossChallenge>($"Could not save the setup '{name}': {e.Message}");
+            ShowFileError();
             return;
         }
 
@@ -423,6 +428,12 @@ public sealed class BossEditorSection
         PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.SetupSaved.T($"<b>{PlainText(name)}</b>"), null));
     }
 
+    /// <summary>
+    /// Tells the player the saved setups file couldn't be written, instead of only the log knowing
+    /// </summary>
+    private static void ShowFileError() =>
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.SetupFileError.T(), null));
+
     private void OnLoadSetup()
     {
         var name = SelectedSetup;
@@ -431,7 +442,7 @@ public sealed class BossEditorSection
         if (!BossMode.Saved.TryLoad(name, out var options, out var dcm, out var problem) || dcm == null)
         {
             ModHelper.Msg<CustomBossChallenge>($"Could not load the saved setup '{name}': {problem}");
-            var text = problem == CodeProblem.TooNew ? Texts.CodeTooNew : Texts.CodeInvalid;
+            var text = problem == CodeProblem.TooNew ? Texts.CodeTooNew : Texts.SetupUnreadable;
             PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(text.T(), null));
             return;
         }
@@ -463,6 +474,7 @@ public sealed class BossEditorSection
                 catch (Exception e)
                 {
                     ModHelper.Warning<CustomBossChallenge>($"Could not delete the setup '{name}': {e.Message}");
+                    ShowFileError();
                 }
 
                 ShowSavedSetups();

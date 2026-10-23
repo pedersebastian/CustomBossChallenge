@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Caricare questa configurazione salvata? La configurazione attuale verrà sostituita.",
   "CustomBossChallenge-SetupSaved": "Salvata come {0}.",
   "CustomBossChallenge-TooManySetups": "Puoi conservare fino a {0} configurazioni salvate. Eliminane una per salvarne una nuova.",
+  "CustomBossChallenge-SetupFileError": "Non è stato possibile modificare le configurazioni salvate. Controlla che UserData/CustomBossChallenge sia scrivibile.",
+  "CustomBossChallenge-SetupUnreadable": "Questa configurazione salvata è danneggiata e non può essere caricata. Puoi eliminarla.",
   "CustomBossChallenge-ShareCode": "Codice di condivisione",
   "CustomBossChallenge-ShareCodeInfo": "Copia mette l'intera configurazione, opzioni del boss e regole dell'editor delle sfide, negli appunti come codice da incollare su Discord, Reddit o in un messaggio. Incolla carica un codice che qualcuno ha condiviso con te.",
   "CustomBossChallenge-CopyCode": "Copia",

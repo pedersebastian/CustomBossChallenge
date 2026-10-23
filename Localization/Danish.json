@@ -49,6 +49,8 @@
   "CustomBossChallenge-LoadSetupQuestion": "Indlæs denne gemte opsætning? Din nuværende opsætning bliver erstattet.",
   "CustomBossChallenge-SetupSaved": "Gemt som {0}.",
   "CustomBossChallenge-TooManySetups": "Du kan have op til {0} gemte opsætninger. Slet en for at gemme en ny.",
+  "CustomBossChallenge-SetupFileError": "De gemte opsætninger kunne ikke ændres. Tjek, at der kan skrives i UserData/CustomBossChallenge.",
+  "CustomBossChallenge-SetupUnreadable": "Denne gemte opsætning er beskadiget og kan ikke indlæses. Du kan slette den.",
   "CustomBossChallenge-ShareCode": "Delingskode",
   "CustomBossChallenge-ShareCodeInfo": "Kopiér lægger hele denne opsætning, bossindstillinger og Challenge Editor-regler, i udklipsholderen som en kode, du kan indsætte på Discord, Reddit eller i en besked. Indsæt indlæser en kode, som nogen har delt med dig.",
   "CustomBossChallenge-CopyCode": "Kopiér",
