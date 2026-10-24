@@ -16,14 +16,18 @@ namespace CustomBossChallenge.Tests;
 
 /// <summary>
 /// Saves screenshots of the Boss Creator button and editor for visual checks and the README. Does nothing unless the
-/// game is started (without -batchmode) with <c>--cbc.screenshots=&lt;folder&gt;</c>.
+/// game is started (without -batchmode) with <c>--cbc.screenshots=&lt;folder&gt;</c> or the environment variable
+/// <c>CBC_SCREENSHOTS=&lt;folder&gt;</c>.
 /// </summary>
 public class ScreenshotTour : CustomBossTest
 {
     public const string Argument = "--cbc.screenshots=";
 
+    public const string EnvironmentVariable = "CBC_SCREENSHOTS";
+
     internal static string? Folder => System.Environment.GetCommandLineArgs()
-        .FirstOrDefault(arg => arg.StartsWith(Argument))?[Argument.Length..].Trim('"', '\'');
+        .FirstOrDefault(arg => arg.StartsWith(Argument))?[Argument.Length..].Trim('"', '\'') ??
+        System.Environment.GetEnvironmentVariable(EnvironmentVariable);
 
     protected override IEnumerator Run()
     {
@@ -70,6 +74,7 @@ public class ScreenshotTour : CustomBossTest
             editor.dcm.bloonModifiers.allFortified = true;
             editor.dcm.bloonModifiers.allCamo = true;
             BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
+            editor.chalName.text = editor.dcm.name = "Tanky Elite Vortex";
             yield return new WaitForSecondsRealtime(1);
             yield return Capture(folder, "editor-top");
 

@@ -60,6 +60,15 @@ public static class Texts
     public static readonly string SpawnRoundsInfo = Key(nameof(SpawnRoundsInfo),
         "The round each tier arrives on, separated by commas, e.g. 40, 60, 80. Missing rounds continue every 20 " +
         "rounds. The game's last round is moved to after the last tier so every tier can be played.");
+    public static readonly string FirstBossRound = Key(nameof(FirstBossRound), "First Boss Round");
+    public static readonly string FirstBossRoundInfo = Key(nameof(FirstBossRoundInfo),
+        "The round the first tier arrives on. Together with Rounds Between Tiers it fills in Spawn Rounds; type in " +
+        "Spawn Rounds instead to give every tier its own round.");
+    public static readonly string RoundsBetweenTiers = Key(nameof(RoundsBetweenTiers), "Rounds Between Tiers");
+    public static readonly string RoundsBetweenTiersInfo = Key(nameof(RoundsBetweenTiersInfo),
+        "How many rounds pass between one tier and the next. 20 is the normal game; 1 sends a new tier every round.");
+    public static readonly string OutOfTimeEachTier = Key(nameof(OutOfTimeEachTier), "You must beat each tier within {0} rounds");
+    public static readonly string OutOfTimeTier = Key(nameof(OutOfTimeTier), "You must beat tier {0} within {1} rounds");
 
     public static readonly string Skulls = Key(nameof(Skulls), "Skulls");
     public static readonly string SkullsInfo = Key(nameof(SkullsInfo),

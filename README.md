@@ -32,7 +32,8 @@ Event and your Boss Challenge records and saves are never affected.
     and ×5.
   - **Tier Preview**: a card per tier with the round it arrives on, its speed and its health, orange where it is
     harder than the normal game and blue where it is easier.
-  - **Spawn Rounds** for every tier (default 40, 60, 80, 100, 120, then every 20 rounds).
+  - **Spawn Rounds** for every tier (default 40, 60, 80, 100, 120, then every 20 rounds), set evenly with the
+    **First Boss Round** and **Rounds Between Tiers** sliders or typed one by one.
   - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health
     percentages. Works for every boss and Elite tier (Lych uses its ethereal thresholds).
 - **Translated** into every language BTD6 supports (English, Arabic, Chinese Simplified and Traditional, Danish,
@@ -113,6 +114,8 @@ CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJS
 | Boss Tiers | 1–10 | 5 | The game is won when the last tier is defeated. |
 | Speed per Tier | −10 to +50 % | 0 % | This share of a tier's normal speed is added for every tier after the first: +20 % makes tier 3 ×1.4. Capped at ×5. |
 | Health per Tier | −10 to +200 % | 0 % | This share of a tier's normal health is added for every tier after the first: +100 % makes tier 5 ×5. Tiers above 5 already get +50 % each. |
+| First Boss Round | 1–200 | 40 | Fills in Spawn Rounds together with Rounds Between Tiers. |
+| Rounds Between Tiers | 1–50 | 20 | Fills in Spawn Rounds; 1 sends a new tier every round. |
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
 | Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
@@ -123,8 +126,8 @@ CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJS
 Health is capped per tier like the game's own boss health limit, so very strong Elite tiers can end up with the same
 health; the Tier Preview shows the capped values.
 
-The game's end round is moved to 20 rounds after the last tier (round 140 for the default 5 tiers, like the weekly
-events) unless you set a later one yourself, and a starting round after the last tier is reset. Otherwise the
+The game always ends 20 rounds after the last tier arrives (round 140 for the default 5 tiers, like the weekly
+events), whatever end round the editor has, and a starting round after the last tier is reset. Otherwise the
 difficulty's normal last round (e.g. 60 on medium) would end the game before the later tiers arrive.
 
 Game modes without boss support (Deflation and Apopalypse) can't be played as a boss game.

@@ -16,6 +16,8 @@ public static class TierMath
     public const int FirstSpawnRound = 40;
     public const int RoundsBetweenTiers = 20;
     public const int MaxRound = 1000;
+    public const int MaxFirstSpawnRound = 200;
+    public const int MaxRoundsBetweenTiers = 50;
     public const int MinSpeedPerTier = -10;
     public const int MaxSpeedPerTier = 50;
     public const int MinHealthPerTier = -10;
@@ -106,6 +108,47 @@ public static class TierMath
     public static int[] ToGameRounds(IEnumerable<int> rounds) => rounds.Select(r => Math.Max(r - 1, 0)).ToArray();
 
     public static string FormatRounds(IEnumerable<int> rounds) => string.Join(", ", rounds);
+
+    /// <summary>
+    /// Spawn rounds for every possible tier that start at <paramref name="first"/> and come every
+    /// <paramref name="gap"/> rounds, so changing the tier count later keeps the spacing
+    /// </summary>
+    public static string EvenRounds(int first, int gap) =>
+        FormatRounds(Enumerable.Range(0, MaxTiers).Select(i => first + i * Math.Max(gap, 1)));
+
+    /// <summary>
+    /// The first round and the rounds between the first two tiers, or <paramref name="gap"/> with a single tier
+    /// </summary>
+    public static (int First, int Gap) FirstAndGap(int[] rounds, int gap) =>
+        (rounds.Length > 0 ? rounds[0] : FirstSpawnRound, rounds.Length > 1 ? rounds[1] - rounds[0] : gap);
+
+    /// <summary>
+    /// The tier that had to be defeated on <paramref name="round"/> and how many rounds it had before the next tier
+    /// arrived, for telling the player why they ran out of time
+    /// </summary>
+    public static (int Tier, int Rounds) TimeLimit(int[] rounds, int round)
+    {
+        var ends = WithEndRound(rounds);
+        var tier = Math.Clamp(rounds.Count(r => r <= round), 1, rounds.Length);
+        return (tier, ends[tier] - ends[tier - 1]);
+    }
+
+    /// <summary>
+    /// Whether every tier, the last one included, has the same number of rounds before time runs out
+    /// </summary>
+    public static bool EvenlySpaced(int[] rounds)
+    {
+        var ends = WithEndRound(rounds);
+        return ends.Zip(ends.Skip(1), (a, b) => b - a).Distinct().Count() <= 1;
+    }
+
+    /// <summary>
+    /// The round the game ends on: the last tier always gets <see cref="RoundsBetweenTiers"/> rounds, like the
+    /// weekly events
+    /// </summary>
+    public static int EndRound(int[] rounds) => (rounds.Length > 0 ? rounds[^1] : FirstSpawnRound) + RoundsBetweenTiers;
+
+    private static int[] WithEndRound(int[] rounds) => rounds.Append(EndRound(rounds)).ToArray();
 
     /// <summary>
     /// How much faster a tier is than the game makes it: <paramref name="percentPerTier"/> of its speed added for

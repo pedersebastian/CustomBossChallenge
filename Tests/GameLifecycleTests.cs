@@ -1,7 +1,10 @@
 using System.Collections;
 using CustomBossChallenge.Config;
+using CustomBossChallenge.Menus;
+using Il2CppAssets.Scripts.Unity.UI_New.GameOver;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using static CustomBossChallenge.Tests.TestUtils;
 
 namespace CustomBossChallenge.Tests;
@@ -53,7 +56,7 @@ public class BossNotDefeatedTest : CustomBossTest
 
     protected override IEnumerator Run()
     {
-        var options = new BossOptions {Tiers = 2, SpawnRounds = "40, 41"};
+        var options = new BossOptions {Tiers = 3, SpawnRounds = "40, 41, 43"};
         var dcm = BaseDcm();
         dcm.startRules.round = 39;
         dcm.startRules.lives = dcm.startRules.maxLives = 5000;
@@ -79,6 +82,16 @@ public class BossNotDefeatedTest : CustomBossTest
         Assert(!bridge.Simulation.gameWon, "A lost game must not be won");
         AssertEquals(CustomBossState.HighestDefeatedTier, 0, "Defeated tiers");
         Log($"lost on round {bridge.GetCurrentRound() + 1}");
+
+        // The defeat screen tells the rounds the tier really had instead of the game's 20
+        BossDefeatScreen? screen = null;
+        start = Time.realtimeSinceStartup;
+        while ((screen = Object.FindObjectOfType<BossDefeatScreen>()) == null)
+        {
+            if (Time.realtimeSinceStartup - start > 30) Fail("The defeat screen did not open");
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+        AssertEquals(screen.ranOutOfTimeSubTxt.text, Texts.OutOfTimeTier.T(1, 1), "Out of time text on the defeat screen");
         yield return ToMainMenu();
     }
 }

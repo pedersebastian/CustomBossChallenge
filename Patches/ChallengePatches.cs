@@ -1,9 +1,12 @@
 using BTD_Mod_Helper;
+using CustomBossChallenge.Config;
+using CustomBossChallenge.Menus;
 using HarmonyLib;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Models.Profile;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity.Player;
+using Il2CppAssets.Scripts.Unity.UI_New.GameOver;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
@@ -40,6 +43,26 @@ internal static class InGameData_SetupBossChallenge
             __instance.bossData.spawnRounds =
                 new Il2CppStructArray<int>(CustomBossState.ActiveOptions.GameSpawnRounds);
         }
+    }
+}
+
+/// <summary>
+/// The defeat screen says every tier has 20 rounds; custom games tell the rounds their tiers really had
+/// </summary>
+[HarmonyPatch(typeof(BossDefeatScreen), nameof(BossDefeatScreen.Open))]
+internal static class BossDefeatScreen_Open
+{
+    [HarmonyPostfix]
+    internal static void Postfix(BossDefeatScreen __instance)
+    {
+        var options = CustomBossState.ActiveOptions;
+        if (!CustomBossState.IsActive || options == null || InGame.instance?.bridge == null) return;
+
+        var rounds = options.EffectiveSpawnRounds;
+        var (tier, between) = TierMath.TimeLimit(rounds, InGame.instance.bridge.GetCurrentRound() + 1);
+        __instance.ranOutOfTimeSubTxt.text = TierMath.EvenlySpaced(rounds)
+            ? Texts.OutOfTimeEachTier.T(between)
+            : Texts.OutOfTimeTier.T(tier, between);
     }
 }
 
