@@ -36,6 +36,8 @@ Event and your Boss Challenge records and saves are never affected.
     **First Boss Round** and **Rounds Between Tiers** sliders or typed one by one.
   - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health
     percentages. Works for every boss and Elite tier (Lych uses its ethereal thresholds).
+- **Free retries**: after losing, retry the last round or go back to the round the current tier arrived on, as often
+  as you like and without Monkey Money. Your own Boss Challenge saves are never touched.
 - **Translated** into every language BTD6 supports (English, Arabic, Chinese Simplified and Traditional, Danish,
   Dutch, Finnish, French, German, Italian, Japanese, Korean, Norwegian, Polish, Brazilian Portuguese, Russian,
   Spanish, Latin American Spanish, Swedish, Thai and Turkish), following the game's language setting.

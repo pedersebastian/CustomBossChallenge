@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Kuinka monta kierrosta kuluu tasosta seuraavaan. 20 on tavallinen peli; 1 lähettää uuden tason joka kierros.",
   "CustomBossChallenge-OutOfTimeEachTier": "Jokainen taso on voitettava {0} kierroksen kuluessa",
   "CustomBossChallenge-OutOfTimeTier": "Taso {0} on voitettava {1} kierroksen kuluessa",
+  "CustomBossChallenge-Free": "Ilmainen",
+  "CustomBossChallenge-RetryFromRound": "Yritä uudelleen kierrokselta {0}",
   "CustomBossChallenge-Skulls": "Kallot",
   "CustomBossChallenge-SkullsInfo": "Kallot ovat pisteitä pomon terveyspalkissa, joissa se käyttää erikoiskykyään. Vakio säilyttää tavalliset kallot, Tasavälein jakaa tietyn määrän kalloja terveyspalkille ja Mukautettu % sijoittaa ne valitsemiisi terveysprosentteihin.",
   "CustomBossChallenge-SkullsVanilla": "Vakio",

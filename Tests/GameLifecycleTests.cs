@@ -1,5 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using CustomBossChallenge.Config;
+using Il2CppAssets.Scripts.Unity;
 using CustomBossChallenge.Menus;
 using Il2CppAssets.Scripts.Unity.UI_New.GameOver;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
@@ -92,6 +95,115 @@ public class BossNotDefeatedTest : CustomBossTest
             yield return new WaitForSecondsRealtime(0.25f);
         }
         AssertEquals(screen.ranOutOfTimeSubTxt.text, Texts.OutOfTimeTier.T(1, 1), "Out of time text on the defeat screen");
+
+        // Lost on the round the tier arrived on: retrying that round and its checkpoint would be the same
+        Assert(screen.retryButton.gameObject.activeSelf, "Retry Last Round is offered");
+        Assert(!screen.continueButton.gameObject.activeSelf, "No checkpoint retry for the tier's own round");
         yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// A lost custom game can be retried from the last round and from the round the tier arrived on, as often as the
+/// player wants, without Monkey Money and without touching the player's own saves
+/// </summary>
+public class RetryTest : CustomBossTest
+{
+    private static string SavedMaps()
+    {
+        var maps = new List<string>();
+        foreach (var entry in Game.instance.playerService.Player.Data.savedMaps) maps.Add($"{entry.Key}@{entry.Value.round}");
+        return string.Join(", ", maps.OrderBy(map => map));
+    }
+
+    protected override IEnumerator Run()
+    {
+        var savedMaps = SavedMaps();
+        var options = new BossOptions {Tiers = 3, SpawnRounds = "40, 43, 46"};
+        var dcm = BaseDcm();
+        dcm.startRules.round = 38;
+        dcm.startRules.lives = dcm.startRules.maxLives = 5000;
+        yield return LoadIntoGame(SetupBossChallenge(CustomBossState.Prepare(dcm, options), options.Boss));
+        var monkeyMoney = Game.instance.playerService.Player.Data.monkeyMoney.Value;
+
+        // Tier 1 arrives on round 40 and is lost to before tier 2 arrives on 43
+        BossDefeatScreen? screen = null;
+        yield return LoseAndOpenDefeatScreen(found => screen = found);
+        var lostRound = InGame.instance.bridge.GetCurrentRound() + 1;
+        Assert(lostRound is > 40 and < 43, $"Lost on round {lostRound}, after the checkpoint and before tier 2");
+        Assert(screen!.retryButton.gameObject.activeSelf, "Retry Last Round is offered");
+        Assert(screen.continueButton.gameObject.activeSelf, "Retry From Checkpoint is offered");
+        AssertEquals(screen.retryCostTxt.text, Texts.Free.T(), "Retry Last Round cost");
+        AssertEquals(screen.continueCostTxt.text, Texts.Free.T(), "Retry From Checkpoint cost");
+        AssertEquals(screen.continueDescTxt.text, Texts.RetryFromRound.T(40), "Retry From Checkpoint text");
+
+        screen.retryButton.onClick.Invoke();
+        yield return WaitForResume();
+        AssertEquals(InGame.instance.bridge.GetCurrentRound() + 1, lostRound, "Round after Retry Last Round");
+        AssertRetried(options, monkeyMoney, savedMaps);
+
+        // Again, from the checkpoint this time
+        yield return LoseAndOpenDefeatScreen(found => screen = found);
+        screen!.continueButton.onClick.Invoke();
+        yield return WaitForResume();
+        AssertEquals(InGame.instance.bridge.GetCurrentRound() + 1, 40, "Round after Retry From Checkpoint");
+        AssertRetried(options, monkeyMoney, savedMaps);
+
+        yield return ToMainMenu();
+        AssertEquals(SavedMaps(), savedMaps, "The player's map saves after leaving");
+    }
+
+    private void AssertRetried(BossOptions options, double monkeyMoney, string savedMaps)
+    {
+        var bridge = InGame.instance.bridge;
+        Assert(!bridge.Simulation.GameOver, "The game goes on after a retry");
+        Assert(CustomBossState.IsActive, "A retried custom game stays custom");
+        AssertEquals(CustomBossState.HighestDefeatedTier, 0, "Defeated tiers after a retry");
+        AssertEquals(TierMath.FormatRounds(bridge.Simulation.map.spawner.bossBloonManager.spawnRounds),
+            TierMath.FormatRounds(options.GameSpawnRounds), "Spawn rounds after a retry");
+        Assert(ExtraTiers.HasAllTiers(InGame.instance.GetGameModel(), options), "Tier models after a retry");
+        AssertEquals(Game.instance.playerService.Player.Data.monkeyMoney.Value, monkeyMoney, "Monkey Money after a retry");
+        AssertEquals(SavedMaps(), savedMaps, "The player's map saves after a retry");
+    }
+
+    private IEnumerator LoseAndOpenDefeatScreen(System.Action<BossDefeatScreen> found)
+    {
+        var bridge = InGame.instance.bridge;
+        bridge.SetFastForward(true);
+        var start = Time.realtimeSinceStartup;
+        while (!bridge.Simulation.GameOver)
+        {
+            if (Time.realtimeSinceStartup - start > BossNotDefeatedTest.TimeoutSeconds) Fail("The game didn't end");
+            if (!bridge.AreRoundsActive()) bridge.StartRound();
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+        Log($"lost on round {bridge.GetCurrentRound() + 1}");
+
+        BossDefeatScreen? screen;
+        start = Time.realtimeSinceStartup;
+        while ((screen = Object.FindObjectOfType<BossDefeatScreen>()) == null)
+        {
+            if (Time.realtimeSinceStartup - start > 30) Fail("The defeat screen did not open");
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+        yield return new WaitForSecondsRealtime(1);
+        found(screen);
+    }
+
+    private IEnumerator WaitForResume()
+    {
+        var start = Time.realtimeSinceStartup;
+        while (InGame.instance?.bridge?.Simulation == null || InGame.instance.bridge.Simulation.GameOver ||
+               Object.FindObjectOfType<BossDefeatScreen>() != null)
+        {
+            if (Time.realtimeSinceStartup - start > 30)
+            {
+                var screen = Object.FindObjectOfType<BossDefeatScreen>();
+                Fail($"The game did not resume after the retry: game over {InGame.instance?.bridge?.Simulation?.GameOver}, " +
+                     $"defeat screen {(screen == null ? "closed" : $"open, active {screen.gameObject.activeInHierarchy}")}");
+            }
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+        yield return new WaitForSecondsRealtime(1);
     }
 }

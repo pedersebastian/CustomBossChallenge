@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Hoeveel rondes er tussen de ene tier en de volgende zitten. 20 is het normale spel; 1 stuurt elke ronde een nieuwe tier.",
   "CustomBossChallenge-OutOfTimeEachTier": "Je moet elke tier binnen {0} rondes verslaan",
   "CustomBossChallenge-OutOfTimeTier": "Je moet tier {0} binnen {1} rondes verslaan",
+  "CustomBossChallenge-Free": "Gratis",
+  "CustomBossChallenge-RetryFromRound": "Opnieuw vanaf ronde {0}",
   "CustomBossChallenge-Skulls": "Schedels",
   "CustomBossChallenge-SkullsInfo": "Schedels zijn punten op de gezondheidsbalk van de boss waar hij zijn speciale vaardigheid gebruikt. Standaard houdt de normale schedels, Gelijkmatig verdeeld spreidt een aantal schedels over de gezondheidsbalk en Aangepast % plaatst ze op de gezondheidspercentages die je kiest.",
   "CustomBossChallenge-SkullsVanilla": "Standaard",

@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **First Boss Round** and **Rounds Between Tiers** sliders above Spawn Rounds fill in evenly spaced rounds without
   typing. They show the first round and spacing of whatever Spawn Rounds holds, and typed rounds still work as before.
+- **Free retries** on the defeat screen: Retry Last Round and Retry From Round (the round the current tier arrived
+  on), unlimited and without Monkey Money, after leaking or running out of time. The player's own saves are untouched.
 
 ### Fixed
 

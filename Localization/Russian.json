@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Сколько раундов проходит между одним уровнем и следующим. 20 — как в обычной игре; 1 — новый уровень каждый раунд.",
   "CustomBossChallenge-OutOfTimeEachTier": "Нужно победить каждый уровень за {0} раундов",
   "CustomBossChallenge-OutOfTimeTier": "Нужно победить уровень {0} за {1} раундов",
+  "CustomBossChallenge-Free": "Бесплатно",
+  "CustomBossChallenge-RetryFromRound": "Повторить с раунда {0}",
   "CustomBossChallenge-Skulls": "Черепа",
   "CustomBossChallenge-SkullsInfo": "Черепа — это точки на шкале здоровья босса, в которых он использует особую способность. Стандарт сохраняет обычные черепа, Равномерно распределяет заданное число черепов по шкале здоровья, а Свои % ставит их на выбранные вами проценты здоровья.",
   "CustomBossChallenge-SkullsVanilla": "Стандарт",

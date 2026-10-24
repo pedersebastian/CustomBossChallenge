@@ -134,6 +134,12 @@ public static class TierMath
     }
 
     /// <summary>
+    /// The round the tier being played on <paramref name="round"/> arrived on, where Retry From Checkpoint goes back to
+    /// </summary>
+    public static int CheckpointRound(int[] rounds, int round) =>
+        rounds.Length == 0 ? FirstSpawnRound : rounds[TimeLimit(rounds, round).Tier - 1];
+
+    /// <summary>
     /// Whether every tier, the last one included, has the same number of rounds before time runs out
     /// </summary>
     public static bool EvenlySpaced(int[] rounds)

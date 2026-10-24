@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "How many rounds pass between one tier and the next. 20 is the normal game; 1 sends a new tier every round.",
   "CustomBossChallenge-OutOfTimeEachTier": "You must beat each tier within {0} rounds",
   "CustomBossChallenge-OutOfTimeTier": "You must beat tier {0} within {1} rounds",
+  "CustomBossChallenge-Free": "Free",
+  "CustomBossChallenge-RetryFromRound": "Retry From Round {0}",
   "CustomBossChallenge-Skulls": "Skulls",
   "CustomBossChallenge-SkullsInfo": "Skulls are points on the boss's health bar where it uses its special ability. Vanilla keeps the normal skulls, Evenly Spaced spreads a number of skulls over the health bar and Custom % puts them at the health percentages you choose.",
   "CustomBossChallenge-SkullsVanilla": "Vanilla",

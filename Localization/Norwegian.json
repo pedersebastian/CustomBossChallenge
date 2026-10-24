@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Hvor mange runder det går mellom ett nivå og det neste. 20 er som i vanlig spill; 1 sender et nytt nivå hver runde.",
   "CustomBossChallenge-OutOfTimeEachTier": "Du må slå hvert nivå innen {0} runder",
   "CustomBossChallenge-OutOfTimeTier": "Du må slå nivå {0} innen {1} runder",
+  "CustomBossChallenge-Free": "Gratis",
+  "CustomBossChallenge-RetryFromRound": "Prøv igjen fra runde {0}",
   "CustomBossChallenge-Skulls": "Hodeskaller",
   "CustomBossChallenge-SkullsInfo": "Hodeskaller er punkter på bossens helselinje der den bruker spesialevnen sin. Standard beholder de vanlige hodeskallene, Jevnt fordelt sprer et antall hodeskaller over helselinjen, og Egendefinert % plasserer dem ved helseprosentene du velger.",
   "CustomBossChallenge-SkullsVanilla": "Standard",

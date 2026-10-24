@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Combien de manches séparent un palier du suivant. 20 correspond au jeu normal ; 1 envoie un nouveau palier à chaque manche.",
   "CustomBossChallenge-OutOfTimeEachTier": "Tu dois vaincre chaque palier en {0} manches",
   "CustomBossChallenge-OutOfTimeTier": "Tu dois vaincre le palier {0} en {1} manches",
+  "CustomBossChallenge-Free": "Gratuit",
+  "CustomBossChallenge-RetryFromRound": "Réessayer depuis la manche {0}",
   "CustomBossChallenge-Skulls": "Crânes",
   "CustomBossChallenge-SkullsInfo": "Les crânes sont des points sur la barre de santé du boss où il utilise sa capacité spéciale. Standard conserve les crânes normaux, Répartis uniformément répartit un certain nombre de crânes sur la barre de santé et % perso les place aux pourcentages de santé que vous choisissez.",
   "CustomBossChallenge-SkullsVanilla": "Standard",
