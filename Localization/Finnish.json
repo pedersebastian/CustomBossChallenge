@@ -31,6 +31,8 @@
   "CustomBossChallenge-FirstBossRoundInfo": "Kierros, jolla ensimmäinen taso ilmestyy. Yhdessä asetuksen Kierroksia tasojen välillä kanssa se täyttää Ilmestymiskierrokset; kirjoita Ilmestymiskierroksiin, jos haluat antaa jokaiselle tasolle oman kierroksen.",
   "CustomBossChallenge-RoundsBetweenTiers": "Kierroksia tasojen välillä",
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Kuinka monta kierrosta kuluu tasosta seuraavaan. 20 on tavallinen peli; 1 lähettää uuden tason joka kierros.",
+  "CustomBossChallenge-OutOfTimeEachTier": "Jokainen taso on voitettava {0} kierroksen kuluessa",
+  "CustomBossChallenge-OutOfTimeTier": "Taso {0} on voitettava {1} kierroksen kuluessa",
   "CustomBossChallenge-Skulls": "Kallot",
   "CustomBossChallenge-SkullsInfo": "Kallot ovat pisteitä pomon terveyspalkissa, joissa se käyttää erikoiskykyään. Vakio säilyttää tavalliset kallot, Tasavälein jakaa tietyn määrän kalloja terveyspalkille ja Mukautettu % sijoittaa ne valitsemiisi terveysprosentteihin.",
   "CustomBossChallenge-SkullsVanilla": "Vakio",

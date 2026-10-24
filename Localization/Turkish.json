@@ -31,6 +31,8 @@
   "CustomBossChallenge-FirstBossRoundInfo": "İlk kademenin geldiği tur. Kademeler Arası Tur ile birlikte Çıkış Turları'nı doldurur; her kademeye kendi turunu vermek için bunun yerine Çıkış Turları'na yazın.",
   "CustomBossChallenge-RoundsBetweenTiers": "Kademeler Arası Tur",
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Bir kademe ile sonraki arasında kaç tur geçtiği. 20 normal oyundur; 1 her tur yeni bir kademe gönderir.",
+  "CustomBossChallenge-OutOfTimeEachTier": "Her kademeyi {0} tur içinde yenmelisin",
+  "CustomBossChallenge-OutOfTimeTier": "{0}. kademeyi {1} tur içinde yenmelisin",
   "CustomBossChallenge-Skulls": "Kafatasları",
   "CustomBossChallenge-SkullsInfo": "Kafatasları, bossun can çubuğunda özel yeteneğini kullandığı noktalardır. Standart normal kafataslarını korur, Eşit Aralıklı belirli sayıda kafatasını can çubuğuna eşit dağıtır, Özel % ise onları seçtiğin can yüzdelerine koyar.",
   "CustomBossChallenge-SkullsVanilla": "Standart",

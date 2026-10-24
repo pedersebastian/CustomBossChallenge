@@ -31,6 +31,8 @@
   "CustomBossChallenge-FirstBossRoundInfo": "La ronda en la que llega el primer nivel. Junto con Rondas entre niveles llena las Rondas de aparición; escribe en Rondas de aparición para darle a cada nivel su propia ronda.",
   "CustomBossChallenge-RoundsBetweenTiers": "Rondas entre niveles",
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Cuántas rondas pasan entre un nivel y el siguiente. 20 es el juego normal; 1 manda un nivel nuevo cada ronda.",
+  "CustomBossChallenge-OutOfTimeEachTier": "Tienes que derrotar cada nivel en {0} rondas",
+  "CustomBossChallenge-OutOfTimeTier": "Tienes que derrotar el nivel {0} en {1} rondas",
   "CustomBossChallenge-Skulls": "Calaveras",
   "CustomBossChallenge-SkullsInfo": "Las calaveras son puntos en la barra de salud del jefe donde usa su habilidad especial. Estándar mantiene las calaveras normales, Equidistantes reparte un número de calaveras a lo largo de la barra de salud y % personal. las coloca en los porcentajes de salud que elijas.",
   "CustomBossChallenge-SkullsVanilla": "Estándar",

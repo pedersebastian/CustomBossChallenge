@@ -31,6 +31,8 @@
   "CustomBossChallenge-FirstBossRoundInfo": "รอบที่ระดับแรกปรากฏ เมื่อใช้ร่วมกับรอบระหว่างระดับ จะเติมรอบที่ปรากฏให้ หากต้องการกำหนดรอบของแต่ละระดับเอง ให้พิมพ์ในรอบที่ปรากฏแทน",
   "CustomBossChallenge-RoundsBetweenTiers": "รอบระหว่างระดับ",
   "CustomBossChallenge-RoundsBetweenTiersInfo": "จำนวนรอบระหว่างระดับหนึ่งกับระดับถัดไป 20 คือเกมปกติ 1 จะส่งระดับใหม่มาทุกรอบ",
+  "CustomBossChallenge-OutOfTimeEachTier": "คุณต้องเอาชนะแต่ละระดับภายใน {0} รอบ",
+  "CustomBossChallenge-OutOfTimeTier": "คุณต้องเอาชนะระดับ {0} ภายใน {1} รอบ",
   "CustomBossChallenge-Skulls": "หัวกะโหลก",
   "CustomBossChallenge-SkullsInfo": "หัวกะโหลกคือจุดบนแถบพลังชีวิตของบอสที่บอสใช้ความสามารถพิเศษ ค่าเริ่มต้นคงหัวกะโหลกปกติไว้ เว้นระยะเท่ากันจะกระจายหัวกะโหลกตามจำนวนที่กำหนดบนแถบพลังชีวิต และกำหนดเอง % จะวางตามเปอร์เซ็นต์พลังชีวิตที่คุณเลือก",
   "CustomBossChallenge-SkullsVanilla": "ค่าเริ่มต้น",

@@ -34,6 +34,23 @@ public class TierMathTests
         Assert.Equal((first, expectedGap), TierMath.FirstAndGap(TierMath.ParseRounds(rounds).ToArray(), gap));
 
     [Theory]
+    [InlineData("40, 50, 60", 49, 1, 10)]
+    [InlineData("40, 50, 60", 59, 2, 10)]
+    [InlineData("40, 45, 80", 79, 2, 35)]
+    [InlineData("40, 45, 80", 90, 2, 35)]
+    [InlineData("40, 41", 40, 1, 1)]
+    [InlineData("40", 60, 1, TierMath.RoundsBetweenTiers)]
+    public void TimeLimit_is_the_rounds_until_the_next_tier(string rounds, int round, int tier, int between) =>
+        Assert.Equal((tier, between), TierMath.TimeLimit(TierMath.ParseRounds(rounds).ToArray(), round));
+
+    [Theory]
+    [InlineData("40, 50, 60", true)]
+    [InlineData("40", true)]
+    [InlineData("40, 45, 80", false)]
+    public void EvenlySpaced_needs_the_same_rounds_between_all_tiers(string rounds, bool expected) =>
+        Assert.Equal(expected, TierMath.EvenlySpaced(TierMath.ParseRounds(rounds).ToArray()));
+
+    [Theory]
     [InlineData(99, TierMath.MaxTiers)]
     [InlineData(0, TierMath.MinTiers)]
     [InlineData(-3, TierMath.MinTiers)]

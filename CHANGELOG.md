@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **First Boss Round** and **Rounds Between Tiers** sliders above Spawn Rounds fill in evenly spaced rounds without
   typing. They show the first round and spacing of whatever Spawn Rounds holds, and typed rounds still work as before.
 
+### Fixed
+
+- Running out of time on a tier now says how many rounds that tier really had, instead of always 20.
+
 ## [2.5.1] - 2026-10-24
 
 ### Changed

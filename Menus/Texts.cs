@@ -67,6 +67,8 @@ public static class Texts
     public static readonly string RoundsBetweenTiers = Key(nameof(RoundsBetweenTiers), "Rounds Between Tiers");
     public static readonly string RoundsBetweenTiersInfo = Key(nameof(RoundsBetweenTiersInfo),
         "How many rounds pass between one tier and the next. 20 is the normal game; 1 sends a new tier every round.");
+    public static readonly string OutOfTimeEachTier = Key(nameof(OutOfTimeEachTier), "You must beat each tier within {0} rounds");
+    public static readonly string OutOfTimeTier = Key(nameof(OutOfTimeTier), "You must beat tier {0} within {1} rounds");
 
     public static readonly string Skulls = Key(nameof(Skulls), "Skulls");
     public static readonly string SkullsInfo = Key(nameof(SkullsInfo),

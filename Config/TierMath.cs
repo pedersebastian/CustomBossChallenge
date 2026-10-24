@@ -123,6 +123,18 @@ public static class TierMath
         (rounds.Length > 0 ? rounds[0] : FirstSpawnRound, rounds.Length > 1 ? rounds[1] - rounds[0] : gap);
 
     /// <summary>
+    /// The tier that had to be defeated on <paramref name="round"/> and how many rounds it had before the next tier
+    /// arrived, for telling the player why they ran out of time
+    /// </summary>
+    public static (int Tier, int Rounds) TimeLimit(int[] rounds, int round)
+    {
+        var tier = Math.Clamp(rounds.Count(r => r <= round), 1, Math.Max(rounds.Length - 1, 1));
+        return (tier, rounds.Length > tier ? rounds[tier] - rounds[tier - 1] : RoundsBetweenTiers);
+    }
+
+    public static bool EvenlySpaced(int[] rounds) => rounds.Zip(rounds.Skip(1), (a, b) => b - a).Distinct().Count() <= 1;
+
+    /// <summary>
     /// How much faster a tier is than the game makes it: <paramref name="percentPerTier"/> of its speed added for
     /// every tier after the first, so +20 % gives tier 3 ×1.4. At most <see cref="MaxSpeedFactor"/>.
     /// </summary>

@@ -31,6 +31,8 @@
   "CustomBossChallenge-FirstBossRoundInfo": "Il round in cui arriva il primo livello. Insieme a Round tra i livelli compila i Round di comparsa; scrivi nei Round di comparsa per dare a ogni livello il proprio round.",
   "CustomBossChallenge-RoundsBetweenTiers": "Round tra i livelli",
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Quanti round passano tra un livello e il successivo. 20 è il gioco normale; 1 manda un nuovo livello ogni round.",
+  "CustomBossChallenge-OutOfTimeEachTier": "Devi sconfiggere ogni livello entro {0} round",
+  "CustomBossChallenge-OutOfTimeTier": "Devi sconfiggere il livello {0} entro {1} round",
   "CustomBossChallenge-Skulls": "Teschi",
   "CustomBossChallenge-SkullsInfo": "I teschi sono punti sulla barra della salute del boss in cui usa la sua abilità speciale. Standard mantiene i teschi normali, Equidistanti distribuisce un numero di teschi lungo la barra della salute e % personal. li colloca alle percentuali di salute che scegli.",
   "CustomBossChallenge-SkullsVanilla": "Standard",

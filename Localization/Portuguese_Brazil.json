@@ -31,6 +31,8 @@
   "CustomBossChallenge-FirstBossRoundInfo": "A rodada em que o primeiro nível chega. Junto com Rodadas entre Níveis, preenche as Rodadas de Surgimento; digite nas Rodadas de Surgimento para dar a cada nível sua própria rodada.",
   "CustomBossChallenge-RoundsBetweenTiers": "Rodadas entre Níveis",
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Quantas rodadas passam entre um nível e o próximo. 20 é o jogo normal; 1 envia um novo nível a cada rodada.",
+  "CustomBossChallenge-OutOfTimeEachTier": "Você precisa derrotar cada nível em até {0} rodadas",
+  "CustomBossChallenge-OutOfTimeTier": "Você precisa derrotar o nível {0} em até {1} rodadas",
   "CustomBossChallenge-Skulls": "Caveiras",
   "CustomBossChallenge-SkullsInfo": "Caveiras são pontos na barra de vida do chefe em que ele usa sua habilidade especial. Padrão mantém as caveiras normais, Espaçadas distribui um número de caveiras pela barra de vida e % Personalizada coloca-as nas porcentagens de vida que você escolher.",
   "CustomBossChallenge-SkullsVanilla": "Padrão",
