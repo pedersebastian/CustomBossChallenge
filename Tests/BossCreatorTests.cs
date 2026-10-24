@@ -84,7 +84,7 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 15, "Info buttons in the boss section");
+        AssertEquals(infoButtons, 17, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
@@ -215,6 +215,16 @@ public class BossCreatorTest : CustomBossTest
             SkullMode = SkullMode.EvenlySpaced, SkullCount = 5, SpawnRounds = "30, 50"
         };
         AssertEquals(BossMode.Options, expected, "Options from the boss section");
+
+        // The two round sliders show the typed rounds, and fill them in evenly when moved
+        AssertEquals(section.FirstSpawnRound.Value, 30f, "First boss round from the typed rounds");
+        AssertEquals(section.RoundsBetween.Value, 20f, "Rounds between tiers from the typed rounds");
+        section.FirstSpawnRound.Slider.value = 25;
+        section.RoundsBetween.Slider.value = 10;
+        AssertEquals(section.SpawnRounds.InputField.text, "25, 35, 45, 55, 65, 75, 85", "Spawn rounds from the sliders");
+        AssertEquals(section.Strip.Cards[1].Round.Text.text, "R35", "Round of tier 2 from the sliders");
+        section.SpawnRounds.InputField.onEndEdit.Invoke("30, 50");
+        AssertEquals(BossMode.Options, expected, "Typed rounds replace the sliders' rounds");
 
         editor.ApplyUiSettingsToDCM();
         var dcm = editor.dcm;

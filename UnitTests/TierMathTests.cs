@@ -18,6 +18,22 @@ public class TierMathTests
         Assert.Equal(expected, Show(TierMath.DefaultSpawnRounds(tiers)));
 
     [Theory]
+    [InlineData(40, 20, 5, "40, 60, 80, 100, 120")]
+    [InlineData(25, 10, 7, "25, 35, 45, 55, 65, 75, 85")]
+    [InlineData(60, 1, 3, "60, 61, 62")]
+    [InlineData(10, 0, 3, "10, 11, 12")]
+    public void EvenRounds_keep_their_spacing_for_any_tier_count(int first, int gap, int tiers, string expected) =>
+        Assert.Equal(expected, Show(TierMath.SpawnRounds(tiers, TierMath.EvenRounds(first, gap))));
+
+    [Theory]
+    [InlineData("40, 60, 80", 20, 40, 20)]
+    [InlineData("30, 35, 90", 20, 30, 5)]
+    [InlineData("70", 15, 70, 15)]
+    [InlineData("", 20, TierMath.FirstSpawnRound, 20)]
+    public void FirstAndGap_read_the_first_two_tiers(string rounds, int gap, int first, int expectedGap) =>
+        Assert.Equal((first, expectedGap), TierMath.FirstAndGap(TierMath.ParseRounds(rounds).ToArray(), gap));
+
+    [Theory]
     [InlineData(99, TierMath.MaxTiers)]
     [InlineData(0, TierMath.MinTiers)]
     [InlineData(-3, TierMath.MinTiers)]

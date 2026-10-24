@@ -16,6 +16,8 @@ public static class TierMath
     public const int FirstSpawnRound = 40;
     public const int RoundsBetweenTiers = 20;
     public const int MaxRound = 1000;
+    public const int MaxFirstSpawnRound = 200;
+    public const int MaxRoundsBetweenTiers = 50;
     public const int MinSpeedPerTier = -10;
     public const int MaxSpeedPerTier = 50;
     public const int MinHealthPerTier = -10;
@@ -106,6 +108,19 @@ public static class TierMath
     public static int[] ToGameRounds(IEnumerable<int> rounds) => rounds.Select(r => Math.Max(r - 1, 0)).ToArray();
 
     public static string FormatRounds(IEnumerable<int> rounds) => string.Join(", ", rounds);
+
+    /// <summary>
+    /// Spawn rounds for every possible tier that start at <paramref name="first"/> and come every
+    /// <paramref name="gap"/> rounds, so changing the tier count later keeps the spacing
+    /// </summary>
+    public static string EvenRounds(int first, int gap) =>
+        FormatRounds(Enumerable.Range(0, MaxTiers).Select(i => first + i * Math.Max(gap, 1)));
+
+    /// <summary>
+    /// The first round and the rounds between the first two tiers, or <paramref name="gap"/> with a single tier
+    /// </summary>
+    public static (int First, int Gap) FirstAndGap(int[] rounds, int gap) =>
+        (rounds.Length > 0 ? rounds[0] : FirstSpawnRound, rounds.Length > 1 ? rounds[1] - rounds[0] : gap);
 
     /// <summary>
     /// How much faster a tier is than the game makes it: <paramref name="percentPerTier"/> of its speed added for

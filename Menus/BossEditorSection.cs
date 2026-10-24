@@ -58,6 +58,12 @@ public sealed class BossEditorSection
     public TierStrip Strip { get; private set; } = null!;
     public SliderRow SkullCount { get; private set; } = null!;
     public SliderRow MaxParagons { get; private set; } = null!;
+
+    /// <summary>
+    /// Fill in Spawn Rounds evenly; they show the first two tiers of whatever Spawn Rounds holds
+    /// </summary>
+    public SliderRow FirstSpawnRound { get; private set; } = null!;
+    public SliderRow RoundsBetween { get; private set; } = null!;
     public ModHelperCheckbox Elite { get; private set; } = null!;
     public ModHelperDropdown SkullMode { get; private set; } = null!;
     public ModHelperInputField CustomSkulls { get; private set; } = null!;
@@ -212,6 +218,13 @@ public sealed class BossEditorSection
         var stripRow = EditorRows.LabelRow(template, rows, "TierStripRow", Texts.TierPreview.T(), VanillaSprites.BossT5Icon);
         Strip = new TierStrip(stripRow);
 
+        FirstSpawnRound = SliderRow.Clone(template, rows, "FirstSpawnRoundRow", Texts.FirstBossRound.T(),
+            VanillaSprites.BossT1Icon, 1, TierMath.MaxFirstSpawnRound, 1, TierMath.FirstSpawnRound, value => $"{value:0}",
+            _ => SpreadSpawnRounds());
+        RoundsBetween = SliderRow.Clone(template, rows, "RoundsBetweenRow", Texts.RoundsBetweenTiers.T(),
+            VanillaSprites.BossTiersIconSmall, 1, TierMath.MaxRoundsBetweenTiers, 1, TierMath.RoundsBetweenTiers,
+            value => $"{value:0}", _ => SpreadSpawnRounds());
+
         var roundsRow = EditorRows.LabelRow(template, rows, "SpawnRoundsRow", Texts.SpawnRounds.T(), VanillaSprites.BossT1Icon);
         SpawnRounds = ModHelperInputField.Create(EditorRows.ControlInfo("SpawnRounds", 1700, 150),
             TierMath.FormatRounds(TierMath.DefaultSpawnRounds(TierMath.VanillaTiers)), VanillaSprites.BlueInsertPanelRound,
@@ -295,6 +308,8 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(SpeedPerTier.Row, Texts.SpeedPerTier, Texts.SpeedPerTierInfo);
         EditorRows.AddInfo(HealthPerTier.Row, Texts.HealthPerTier, Texts.HealthPerTierInfo);
         EditorRows.AddInfo(stripRow, Texts.TierPreview, Texts.TierPreviewInfo);
+        EditorRows.AddInfo(FirstSpawnRound.Row, Texts.FirstBossRound, Texts.FirstBossRoundInfo);
+        EditorRows.AddInfo(RoundsBetween.Row, Texts.RoundsBetweenTiers, Texts.RoundsBetweenTiersInfo);
         EditorRows.AddInfo(roundsRow, Texts.SpawnRounds, Texts.SpawnRoundsInfo);
         EditorRows.AddInfo(skullModeRow, Texts.Skulls, Texts.SkullsInfo);
         EditorRows.AddInfo(SkullCount.Row, Texts.SkullCount, Texts.SkullCountInfo);
@@ -760,8 +775,20 @@ public sealed class BossEditorSection
     private static string ShownSkulls(BossOptions options) =>
         SkullMath.NormalizeCustom(options.CustomSkulls, new BossOptions().CustomSkulls);
 
-    private void ShowSpawnRounds() =>
-        SpawnRounds.SetText(TierMath.FormatRounds(BossMode.Options.EffectiveSpawnRounds), false);
+    private void ShowSpawnRounds()
+    {
+        var rounds = BossMode.Options.EffectiveSpawnRounds;
+        SpawnRounds.SetText(TierMath.FormatRounds(rounds), false);
+        var (first, gap) = TierMath.FirstAndGap(rounds, (int) RoundsBetween.Value);
+        FirstSpawnRound.Show(first);
+        RoundsBetween.Show(gap);
+    }
+
+    /// <summary>
+    /// Replaces Spawn Rounds with evenly spaced rounds from the two sliders
+    /// </summary>
+    private void SpreadSpawnRounds() =>
+        UpdateOptions(o => o with {SpawnRounds = TierMath.EvenRounds((int) FirstSpawnRound.Value, (int) RoundsBetween.Value)});
 
     /// <summary>
     /// Shows only the rows that apply, and makes room for the section in the editor's scroll area

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **First Boss Round** and **Rounds Between Tiers** sliders above Spawn Rounds fill in evenly spaced rounds without
+  typing. They show the first round and spacing of whatever Spawn Rounds holds, and typed rounds still work as before.
+
 ## [2.5.1] - 2026-10-24
 
 ### Changed
