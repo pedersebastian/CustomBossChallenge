@@ -37,18 +37,27 @@ public class TierMathTests
     [InlineData("40, 50, 60", 49, 1, 10)]
     [InlineData("40, 50, 60", 59, 2, 10)]
     [InlineData("40, 45, 80", 79, 2, 35)]
-    [InlineData("40, 45, 80", 90, 2, 35)]
+    [InlineData("40, 45, 80", 90, 3, 20)]
     [InlineData("40, 41", 40, 1, 1)]
-    [InlineData("40", 60, 1, TierMath.RoundsBetweenTiers)]
-    public void TimeLimit_is_the_rounds_until_the_next_tier(string rounds, int round, int tier, int between) =>
+    [InlineData("40, 51, 80, 100, 120", 50, 1, 11)]
+    [InlineData("40, 51, 80, 100, 120", 139, 5, 20)]
+    [InlineData("40", 59, 1, TierMath.RoundsBetweenTiers)]
+    public void TimeLimit_is_the_rounds_until_the_next_tier_or_the_end(string rounds, int round, int tier, int between) =>
         Assert.Equal((tier, between), TierMath.TimeLimit(TierMath.ParseRounds(rounds).ToArray(), round));
 
     [Theory]
-    [InlineData("40, 50, 60", true)]
+    [InlineData("40, 60, 80", true)]
     [InlineData("40", true)]
+    [InlineData("40, 50, 60", false)]
     [InlineData("40, 45, 80", false)]
-    public void EvenlySpaced_needs_the_same_rounds_between_all_tiers(string rounds, bool expected) =>
+    public void EvenlySpaced_counts_the_last_tiers_20_rounds(string rounds, bool expected) =>
         Assert.Equal(expected, TierMath.EvenlySpaced(TierMath.ParseRounds(rounds).ToArray()));
+
+    [Theory]
+    [InlineData("40, 60, 80, 100, 120", 140)]
+    [InlineData("40, 51", 71)]
+    public void EndRound_gives_the_last_tier_20_rounds(string rounds, int expected) =>
+        Assert.Equal(expected, TierMath.EndRound(TierMath.ParseRounds(rounds).ToArray()));
 
     [Theory]
     [InlineData(99, TierMath.MaxTiers)]

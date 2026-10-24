@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Running out of time on a tier now says how many rounds that tier really had, instead of always 20.
 
+### Changed
+
+- The last tier always has 20 rounds to be beaten; a later end round set in the editor no longer gives it more.
+
 ## [2.5.1] - 2026-10-24
 
 ### Changed

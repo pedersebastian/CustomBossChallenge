@@ -43,7 +43,8 @@ public class ConfigApplierTest : CustomBossTest
         AssertEquals(lateDcm.startRules.round, -1, "A start round after the last tier is reset");
         var kept = BaseDcm();
         kept.startRules.endRound = 150;
-        AssertEquals(ConfigApplier.Prepare(kept, CustomOptions).startRules.endRound, 150, "A later end round is kept");
+        AssertEquals(ConfigApplier.Prepare(kept, CustomOptions).startRules.endRound,
+            CustomOptions.EffectiveSpawnRounds[^1] + TierMath.RoundsBetweenTiers, "A later end round still gives the last tier 20 rounds");
 
         var unnamed = BaseDcm();
         unnamed.name = "";

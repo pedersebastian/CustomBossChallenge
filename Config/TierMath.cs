@@ -128,11 +128,27 @@ public static class TierMath
     /// </summary>
     public static (int Tier, int Rounds) TimeLimit(int[] rounds, int round)
     {
-        var tier = Math.Clamp(rounds.Count(r => r <= round), 1, Math.Max(rounds.Length - 1, 1));
-        return (tier, rounds.Length > tier ? rounds[tier] - rounds[tier - 1] : RoundsBetweenTiers);
+        var ends = WithEndRound(rounds);
+        var tier = Math.Clamp(rounds.Count(r => r <= round), 1, rounds.Length);
+        return (tier, ends[tier] - ends[tier - 1]);
     }
 
-    public static bool EvenlySpaced(int[] rounds) => rounds.Zip(rounds.Skip(1), (a, b) => b - a).Distinct().Count() <= 1;
+    /// <summary>
+    /// Whether every tier, the last one included, has the same number of rounds before time runs out
+    /// </summary>
+    public static bool EvenlySpaced(int[] rounds)
+    {
+        var ends = WithEndRound(rounds);
+        return ends.Zip(ends.Skip(1), (a, b) => b - a).Distinct().Count() <= 1;
+    }
+
+    /// <summary>
+    /// The round the game ends on: the last tier always gets <see cref="RoundsBetweenTiers"/> rounds, like the
+    /// weekly events
+    /// </summary>
+    public static int EndRound(int[] rounds) => (rounds.Length > 0 ? rounds[^1] : FirstSpawnRound) + RoundsBetweenTiers;
+
+    private static int[] WithEndRound(int[] rounds) => rounds.Append(EndRound(rounds)).ToArray();
 
     /// <summary>
     /// How much faster a tier is than the game makes it: <paramref name="percentPerTier"/> of its speed added for

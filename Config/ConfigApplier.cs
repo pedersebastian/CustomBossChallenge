@@ -35,10 +35,9 @@ public static class ConfigApplier
         dcm.chalType = ChallengeType.BossChallenge;
 
         // Tiers spawning on or after the end round never count: with the default end round (60 on medium) only the
-        // first tier would be played. Like the weekly events, leave room to beat the last tier.
+        // first tier would be played. Like the weekly events, the last tier always gets 20 rounds to be beaten.
         var rules = dcm.startRules ??= new StartRules();
-        var lastSpawn = options.EffectiveSpawnRounds[^1];
-        if (rules.endRound <= lastSpawn) rules.endRound = lastSpawn + TierMath.RoundsBetweenTiers;
+        rules.endRound = TierMath.EndRound(options.EffectiveSpawnRounds);
 
         // Starting on or after a tier's round skips it. Play refuses such a start round; this is the backstop for
         // any other way in, with the same rule as Play and the Random button.
