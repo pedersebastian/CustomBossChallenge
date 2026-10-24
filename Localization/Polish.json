@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Ile rund mija między jednym poziomem a następnym. 20 to normalna gra; 1 wysyła nowy poziom co rundę.",
   "CustomBossChallenge-OutOfTimeEachTier": "Musisz pokonać każdy poziom w ciągu {0} rund",
   "CustomBossChallenge-OutOfTimeTier": "Musisz pokonać poziom {0} w ciągu {1} rund",
+  "CustomBossChallenge-Free": "Za darmo",
+  "CustomBossChallenge-RetryFromRound": "Spróbuj ponownie od rundy {0}",
   "CustomBossChallenge-Skulls": "Czaszki",
   "CustomBossChallenge-SkullsInfo": "Czaszki to punkty na pasku zdrowia bossa, w których używa on swojej umiejętności specjalnej. Standard zachowuje normalne czaszki, Równomiernie rozmieszcza określoną liczbę czaszek na pasku zdrowia, a Własne % umieszcza je w wybranych procentach zdrowia.",
   "CustomBossChallenge-SkullsVanilla": "Standard",

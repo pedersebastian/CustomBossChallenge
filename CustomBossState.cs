@@ -58,6 +58,8 @@ public static class CustomBossState
 
         ActiveOptions = PendingOptions ?? new BossOptions();
         HighestDefeatedTier = 0;
+        resumeTiers = null;
+        CustomBossRetries.Clear();
         return true;
     }
 
@@ -89,12 +91,36 @@ public static class CustomBossState
     /// Called when a (custom) match starts or restarts. Restarts reuse the game model, so this is also called from
     /// the boss manager's Init.
     /// </summary>
-    public static void OnMatchStart() => HighestDefeatedTier = 0;
+    public static void OnMatchStart()
+    {
+        // A retry loads a snapshot into a match that already defeated some tiers; anything else starts over
+        if (resumeTiers == null) CustomBossRetries.Clear();
+        HighestDefeatedTier = resumeTiers ?? 0;
+        resumeTiers = null;
+    }
+
+    private static int? resumeTiers;
+
+    /// <summary>
+    /// Called right before a retry loads a snapshot, with the tiers that were defeated when it was taken
+    /// </summary>
+    public static void ResumeWith(int defeatedTiers)
+    {
+        HighestDefeatedTier = defeatedTiers;
+        resumeTiers = defeatedTiers;
+    }
+
+    /// <summary>
+    /// The first round after a retry has started, so a later restart starts over
+    /// </summary>
+    public static void OnRoundStart() => resumeTiers = null;
 
     public static void Clear()
     {
         PendingOptions = null;
         ActiveOptions = null;
         HighestDefeatedTier = 0;
+        resumeTiers = null;
+        CustomBossRetries.Clear();
     }
 }

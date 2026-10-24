@@ -1,3 +1,4 @@
+using System;
 using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Menus;
@@ -8,7 +9,9 @@ using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity.Player;
 using Il2CppAssets.Scripts.Unity.UI_New.GameOver;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
+using Il2CppAssets.Scripts.Utils;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using UnityEngine.UI;
 
 namespace CustomBossChallenge.Patches;
 
@@ -59,10 +62,104 @@ internal static class BossDefeatScreen_Open
         if (!CustomBossState.IsActive || options == null || InGame.instance?.bridge == null) return;
 
         var rounds = options.EffectiveSpawnRounds;
-        var (tier, between) = TierMath.TimeLimit(rounds, InGame.instance.bridge.GetCurrentRound() + 1);
+        var lostRound = LostRound;
+        var (tier, between) = TierMath.TimeLimit(rounds, lostRound);
         __instance.ranOutOfTimeSubTxt.text = TierMath.EvenlySpaced(rounds)
             ? Texts.OutOfTimeEachTier.T(between)
             : Texts.OutOfTimeTier.T(tier, between);
+
+        ShowRetries(__instance, rounds, lostRound);
+    }
+
+    /// <summary>
+    /// The game's retry buttons need its map saves, which custom games don't write; they use the mod's own
+    /// snapshots instead and cost nothing
+    /// </summary>
+    private static void ShowRetries(BossDefeatScreen screen, int[] spawnRounds, int lostRound)
+    {
+        var canRetry = CustomBossRetries.HasLastRound(lostRound);
+        screen.canRetry = canRetry;
+        screen.retryMapSave = CustomBossRetries.SaveFor(lostRound);
+        screen.retryButton.gameObject.SetActive(canRetry);
+        screen.retryButton.interactable = canRetry;
+        screen.retryCostTxt.text = Texts.Free.T();
+
+        var checkpoint = CustomBossRetries.CheckpointRound(spawnRounds, lostRound);
+        screen.canContinue = checkpoint != null;
+        screen.continueMapSave = checkpoint == null ? null : CustomBossRetries.SaveFor(checkpoint.Value);
+        screen.continueButton.gameObject.SetActive(checkpoint != null);
+        screen.continueButton.interactable = checkpoint != null;
+        screen.continueCostTxt.text = Texts.Free.T();
+        if (checkpoint != null) screen.continueDescTxt.text = Texts.RetryFromRound.T(checkpoint.Value);
+
+        OnClick(screen.retryButton, () => CustomBossRetries.RetryFrom(lostRound, true));
+        OnClick(screen.continueButton, () =>
+        {
+            if (checkpoint != null) CustomBossRetries.RetryFrom(checkpoint.Value, false);
+        });
+    }
+
+    /// <summary>
+    /// The game's own click handlers skip retrying without its map saves. The screen may be reused for a normal Boss
+    /// Challenge later, so outside custom games the click still goes to the game's handlers.
+    /// </summary>
+    private static void OnClick(Button button, Action retry)
+    {
+        var original = button.onClick;
+        button.onClick = new Button.ButtonClickedEvent();
+        button.onClick.AddListener(new Action(() =>
+        {
+            if (CustomBossState.IsActive) retry();
+            else original.Invoke();
+        }));
+    }
+
+    private static int LostRound => InGame.instance.bridge.GetCurrentRound() + 1;
+}
+
+/// <summary>
+/// Custom games retry for free; backstops for anything else that asks what a retry costs
+/// </summary>
+[HarmonyPatch(typeof(BossDefeatScreen), nameof(BossDefeatScreen.GetRetryMmCost), new System.Type[0])]
+internal static class BossDefeatScreen_GetRetryMmCost
+{
+    [HarmonyPostfix]
+    internal static void Postfix(ref KonFuze __result)
+    {
+        if (CustomBossState.IsActive) __result = new KonFuze(0);
+    }
+}
+
+[HarmonyPatch(typeof(CheckpointDefeatScreen), nameof(CheckpointDefeatScreen.GetContinueMmCost))]
+internal static class CheckpointDefeatScreen_GetContinueMmCost
+{
+    [HarmonyPostfix]
+    internal static void Postfix(ref KonFuze __result)
+    {
+        if (CustomBossState.IsActive) __result = new KonFuze(0);
+    }
+}
+
+/// <summary>
+/// Every completed round of a custom game is snapshotted for the defeat screen's retries
+/// </summary>
+[HarmonyPatch(typeof(InGame), nameof(InGame.RoundEnd))]
+internal static class InGame_RoundEnd
+{
+    [HarmonyPostfix]
+    internal static void Postfix(InGame __instance, int highestCompletedRound)
+    {
+        if (CustomBossState.IsActive) CustomBossRetries.OnRoundEnd(__instance, highestCompletedRound);
+    }
+}
+
+[HarmonyPatch(typeof(InGame), nameof(InGame.RoundStart))]
+internal static class InGame_RoundStart
+{
+    [HarmonyPostfix]
+    internal static void Postfix()
+    {
+        if (CustomBossState.IsActive) CustomBossState.OnRoundStart();
     }
 }
 

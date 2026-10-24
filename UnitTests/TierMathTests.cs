@@ -54,6 +54,15 @@ public class TierMathTests
         Assert.Equal(expected, TierMath.EvenlySpaced(TierMath.ParseRounds(rounds).ToArray()));
 
     [Theory]
+    [InlineData("40, 60, 80", 45, 40)]
+    [InlineData("40, 51, 80", 79, 51)]
+    [InlineData("40, 51, 80", 51, 51)]
+    [InlineData("40, 51, 80", 95, 80)]
+    [InlineData("40, 51, 80", 12, 40)]
+    public void CheckpointRound_is_where_the_current_tier_arrived(string rounds, int round, int expected) =>
+        Assert.Equal(expected, TierMath.CheckpointRound(TierMath.ParseRounds(rounds).ToArray(), round));
+
+    [Theory]
     [InlineData("40, 60, 80, 100, 120", 140)]
     [InlineData("40, 51", 71)]
     public void EndRound_gives_the_last_tier_20_rounds(string rounds, int expected) =>

@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Wie viele Runden zwischen einer Stufe und der nächsten vergehen. 20 entspricht dem normalen Spiel; 1 schickt jede Runde eine neue Stufe.",
   "CustomBossChallenge-OutOfTimeEachTier": "Du musst jede Stufe innerhalb von {0} Runden besiegen",
   "CustomBossChallenge-OutOfTimeTier": "Du musst Stufe {0} innerhalb von {1} Runden besiegen",
+  "CustomBossChallenge-Free": "Kostenlos",
+  "CustomBossChallenge-RetryFromRound": "Ab Runde {0} erneut versuchen",
   "CustomBossChallenge-Skulls": "Totenköpfe",
   "CustomBossChallenge-SkullsInfo": "Totenköpfe sind Punkte auf der Lebensleiste des Bosses, an denen er seine Spezialfähigkeit einsetzt. Standard behält die normalen Totenköpfe, Gleichmäßig verteilt verteilt eine Anzahl Totenköpfe über die Lebensleiste und Eigene % setzt sie auf die gewählten Gesundheitsprozente.",
   "CustomBossChallenge-SkullsVanilla": "Standard",

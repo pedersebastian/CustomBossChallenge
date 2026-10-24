@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Hvor mange runder der går mellem et niveau og det næste. 20 er som i det normale spil; 1 sender et nyt niveau hver runde.",
   "CustomBossChallenge-OutOfTimeEachTier": "Du skal besejre hvert niveau inden for {0} runder",
   "CustomBossChallenge-OutOfTimeTier": "Du skal besejre niveau {0} inden for {1} runder",
+  "CustomBossChallenge-Free": "Gratis",
+  "CustomBossChallenge-RetryFromRound": "Prøv igen fra runde {0}",
   "CustomBossChallenge-Skulls": "Kranier",
   "CustomBossChallenge-SkullsInfo": "Kranier er punkter på bossens helbredslinje, hvor den bruger sin specialevne. Standard beholder de normale kranier, Jævnt fordelt spreder et antal kranier over helbredslinjen, og Brugerdefineret % placerer dem ved de helbredsprocenter, du vælger.",
   "CustomBossChallenge-SkullsVanilla": "Standard",

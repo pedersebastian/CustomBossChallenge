@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Hur många rundor som går mellan en nivå och nästa. 20 är som i vanligt spel; 1 skickar en ny nivå varje runda.",
   "CustomBossChallenge-OutOfTimeEachTier": "Du måste besegra varje nivå inom {0} rundor",
   "CustomBossChallenge-OutOfTimeTier": "Du måste besegra nivå {0} inom {1} rundor",
+  "CustomBossChallenge-Free": "Gratis",
+  "CustomBossChallenge-RetryFromRound": "Försök igen från runda {0}",
   "CustomBossChallenge-Skulls": "Dödskallar",
   "CustomBossChallenge-SkullsInfo": "Dödskallar är punkter på bossens hälsomätare där den använder sin specialförmåga. Standard behåller de vanliga dödskallarna, Jämnt fördelade sprider ett antal dödskallar över hälsomätaren och Anpassad % placerar dem vid de hälsoprocent du väljer.",
   "CustomBossChallenge-SkullsVanilla": "Standard",

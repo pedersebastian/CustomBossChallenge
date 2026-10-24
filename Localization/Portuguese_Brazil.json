@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "Quantas rodadas passam entre um nível e o próximo. 20 é o jogo normal; 1 envia um novo nível a cada rodada.",
   "CustomBossChallenge-OutOfTimeEachTier": "Você precisa derrotar cada nível em até {0} rodadas",
   "CustomBossChallenge-OutOfTimeTier": "Você precisa derrotar o nível {0} em até {1} rodadas",
+  "CustomBossChallenge-Free": "Grátis",
+  "CustomBossChallenge-RetryFromRound": "Tentar novamente da rodada {0}",
   "CustomBossChallenge-Skulls": "Caveiras",
   "CustomBossChallenge-SkullsInfo": "Caveiras são pontos na barra de vida do chefe em que ele usa sua habilidade especial. Padrão mantém as caveiras normais, Espaçadas distribui um número de caveiras pela barra de vida e % Personalizada coloca-as nas porcentagens de vida que você escolher.",
   "CustomBossChallenge-SkullsVanilla": "Padrão",

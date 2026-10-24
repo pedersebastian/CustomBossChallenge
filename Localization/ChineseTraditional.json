@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "相鄰兩階之間相隔多少回合。20為正常遊戲；1表示每回合出現新的一階。",
   "CustomBossChallenge-OutOfTimeEachTier": "你必須在 {0} 回合內擊敗每一階",
   "CustomBossChallenge-OutOfTimeTier": "你必須在 {1} 回合內擊敗第 {0} 階",
+  "CustomBossChallenge-Free": "免費",
+  "CustomBossChallenge-RetryFromRound": "從第 {0} 回合重試",
   "CustomBossChallenge-Skulls": "骷髏",
   "CustomBossChallenge-SkullsInfo": "骷髏是Boss血條上Boss使用特殊能力的節點。預設保留原有骷髏，平均分布會在血條上平均分布一定數量的骷髏，自訂 %則將骷髏放在你選擇的生命值百分比處。",
   "CustomBossChallenge-SkullsVanilla": "預設",

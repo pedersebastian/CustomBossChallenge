@@ -33,6 +33,8 @@
   "CustomBossChallenge-RoundsBetweenTiersInfo": "한 단계와 다음 단계 사이에 지나가는 라운드 수입니다. 20이 일반 게임이며, 1이면 매 라운드 새 단계가 옵니다.",
   "CustomBossChallenge-OutOfTimeEachTier": "각 단계를 {0}라운드 안에 처치해야 합니다",
   "CustomBossChallenge-OutOfTimeTier": "{0}단계를 {1}라운드 안에 처치해야 합니다",
+  "CustomBossChallenge-Free": "무료",
+  "CustomBossChallenge-RetryFromRound": "{0}라운드부터 재시도",
   "CustomBossChallenge-Skulls": "해골",
   "CustomBossChallenge-SkullsInfo": "해골은 보스의 체력 막대에서 보스가 특수 능력을 사용하는 지점입니다. 기본은 원래 해골을 유지하고, 균등 배치는 체력 막대에 지정한 수의 해골을 고르게 배치하며, 사용자 지정 %는 선택한 체력 퍼센트에 배치합니다.",
   "CustomBossChallenge-SkullsVanilla": "기본",
