@@ -61,62 +61,95 @@ $hlBrush.CenterColor = New-Color 70 255 255 255
 $hlBrush.SurroundColors = [System.Drawing.Color[]]@((New-Color 0 255 255 255))
 $g.FillPath($hlBrush, $hlPath)
 
-# ---------- Skull ----------
-$skullFill = New-Object System.Drawing.SolidBrush((New-Color 255 245 242 235))
-$skullShade = New-Object System.Drawing.SolidBrush((New-Color 255 205 198 188))
-$outline = New-Object System.Drawing.Pen((New-Color 255 40 10 30), 4)
+# ---------- Skull (styled after the in-game boss skull icon) ----------
+# Round cranium that narrows into a slightly smaller jaw, symmetric around x = 124
+function New-SkullPath([float]$dx, [float]$dy) {
+    $pts = @(
+        @(124, 48),
+        @(162, 48), @(188, 74), @(188, 106),
+        @(188, 128), @(178, 140), @(168, 150),
+        @(163, 156), @(163, 170), @(155, 178),
+        @(147, 186), @(134, 187), @(124, 187),
+        @(114, 187), @(101, 186), @(93, 178),
+        @(85, 170), @(85, 156), @(80, 150),
+        @(70, 140), @(60, 128), @(60, 106),
+        @(60, 74), @(86, 48), @(124, 48)
+    )
+    $pf = [System.Drawing.PointF[]]($pts | ForEach-Object { New-Object System.Drawing.PointF(($_[0] + $dx), ($_[1] + $dy)) })
+    $p = New-Object System.Drawing.Drawing2D.GraphicsPath
+    $p.AddBeziers($pf)
+    $p.CloseFigure()
+    return $p
+}
+
+$boneDark = New-Color 255 62 34 18
+$outline = New-Object System.Drawing.Pen($boneDark, 5)
 $outline.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
 
 # Shift the skull slightly up-left so the customize panel does not cover the jaw
 $g.TranslateTransform(-10, -6)
+# Scale the skull up around its center so it overlaps the ring and panel a bit
+$skullScale = 1.18
+$g.TranslateTransform(124, 118)
+$g.ScaleTransform($skullScale, $skullScale)
+$g.TranslateTransform(-124, -118)
 
 # Drop shadow
-$shadow = New-Object System.Drawing.SolidBrush((New-Color 90 0 0 0))
-$g.FillEllipse($shadow, 70, 58, 116, 104)
-$g.FillPath($shadow, (New-RoundedRectPath 94 140 68 46 12))
+$g.FillPath((New-Object System.Drawing.SolidBrush((New-Color 90 0 0 0))), (New-SkullPath 4 6))
 
-# Cranium + jaw as a single outlined shape
-$skullPath = New-Object System.Drawing.Drawing2D.GraphicsPath
-$skullPath.FillMode = [System.Drawing.Drawing2D.FillMode]::Winding
-$skullPath.AddEllipse(66, 52, 116, 104)
-$skullPath.AddPath((New-RoundedRectPath 90 132 68 48 12), $false)
-$region = New-Object System.Drawing.Region($skullPath)
-# outline: draw both, then fill over seams
-$g.DrawEllipse($outline, 66, 52, 116, 104)
-$g.DrawPath($outline, (New-RoundedRectPath 90 132 68 48 12))
-$g.FillRegion($skullFill, $region)
+# Bone fill: cream on top, warmer tan towards the jaw
+$skullPath = New-SkullPath 0 0
+$boneBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush((New-Object System.Drawing.RectangleF(60, 48, 128, 140)), (New-Color 255 250 243 226), (New-Color 255 214 192 156), 90.0)
+$boneBlend = New-Object System.Drawing.Drawing2D.Blend(3)
+$boneBlend.Factors = [float[]]@(0.0, 0.15, 1.0)
+$boneBlend.Positions = [float[]]@(0.0, 0.55, 1.0)
+$boneBrush.Blend = $boneBlend
+$g.FillPath($boneBrush, $skullPath)
 
-# Shading on the right side of cranium
-$shadePath = New-Object System.Drawing.Drawing2D.GraphicsPath
-$shadePath.AddEllipse(66, 52, 116, 104)
-$shadeBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush((New-Object System.Drawing.RectangleF(66, 52, 116, 104)), (New-Color 0 0 0 0), (New-Color 60 80 40 60), 20.0)
-$g.FillPath($shadeBrush, $shadePath)
+# Soft highlight on the upper-left of the cranium
+$state = $g.Save()
+$g.SetClip($skullPath)
+$hl = New-Object System.Drawing.Drawing2D.GraphicsPath
+$hl.AddEllipse(70, 54, 70, 46)
+$hlSkull = New-Object System.Drawing.Drawing2D.PathGradientBrush($hl)
+$hlSkull.CenterColor = New-Color 150 255 255 255
+$hlSkull.SurroundColors = [System.Drawing.Color[]]@((New-Color 0 255 255 255))
+$g.FillPath($hlSkull, $hl)
+$g.Restore($state)
 
-# Eye sockets
-$eyeBrush = New-Object System.Drawing.SolidBrush((New-Color 255 20 5 15))
-$g.FillEllipse($eyeBrush, 82, 96, 34, 30)
-$g.FillEllipse($eyeBrush, 132, 96, 34, 30)
-# Red eye glints
-$glint = New-Object System.Drawing.SolidBrush((New-Color 255 230 40 50))
-$g.FillEllipse($glint, 94, 106, 9, 9)
-$g.FillEllipse($glint, 144, 106, 9, 9)
+$g.DrawPath($outline, $skullPath)
 
-# Nose (inverted heart-ish triangle)
+# Eye sockets: big tilted ovals, dark brown with an orange glow at the bottom
+$socketBrush = New-Object System.Drawing.SolidBrush($boneDark)
+$glowBrush = New-Object System.Drawing.SolidBrush((New-Color 255 226 110 30))
+foreach ($eye in @(@{ X = 99; R = -14 }, @{ X = 149; R = 14 })) {
+    $state = $g.Save()
+    $g.TranslateTransform($eye.X, 112)
+    $g.RotateTransform($eye.R)
+    $g.FillEllipse($socketBrush, -19, -23, 38, 46)
+    $g.FillEllipse($glowBrush, -14, 2, 28, 18)
+    $g.FillEllipse($socketBrush, -16, -21, 32, 36)
+    $g.Restore($state)
+}
+
+# Nose: small rounded inverted triangle
 $nose = New-Object System.Drawing.Drawing2D.GraphicsPath
 $nose.AddPolygon([System.Drawing.PointF[]]@(
-    (New-Object System.Drawing.PointF(124, 128)),
-    (New-Object System.Drawing.PointF(114, 146)),
-    (New-Object System.Drawing.PointF(134, 146))
+    (New-Object System.Drawing.PointF(118, 141)),
+    (New-Object System.Drawing.PointF(130, 141)),
+    (New-Object System.Drawing.PointF(124, 151))
 ))
-$g.FillPath($eyeBrush, $nose)
+$nosePen = New-Object System.Drawing.Pen($boneDark, 4)
+$nosePen.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+$g.FillPath($socketBrush, $nose)
+$g.DrawPath($nosePen, $nose)
 
-# Teeth
-$toothPen = New-Object System.Drawing.Pen((New-Color 255 40 10 30), 3)
+# Teeth: short, soft lines on the jaw
+$toothPen = New-Object System.Drawing.Pen((New-Color 255 150 112 76), 3)
 $toothPen.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
 $toothPen.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
-$g.DrawLine($toothPen, 98, 160, 150, 160)
-foreach ($x in 108, 118, 128, 138) {
-    $g.DrawLine($toothPen, $x, 152, $x, 172)
+foreach ($x in 111, 124, 137) {
+    $g.DrawLine($toothPen, $x, 166, $x, 178)
 }
 
 $g.ResetTransform()
