@@ -27,6 +27,56 @@
   box-sizing: border-box;
 }
 
+/* Text for screen readers only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The hidden text box copying falls back to on plain http */
+.copy-box {
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  opacity: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 20;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: #ffd84d;
+  color: #3a2a00;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 10px;
+}
+
+/* main only gets focus from the skip link; the page itself shows where it went */
+main:focus {
+  outline: none;
+}
+
+a:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #ffd84d;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 76px;
@@ -424,25 +474,24 @@ main {
   margin: 0;
 }
 
-.rules dt {
-  display: none;
-}
-
-.rules dd {
-  margin: 0;
+.rule {
   display: flex;
   justify-content: space-between;
   gap: 12px;
   padding: 6px 10px;
   background: var(--card);
   border-radius: 10px;
-  font-weight: 800;
 }
 
-.rules dd::before {
-  content: attr(data-label);
+.rule dt {
   color: var(--muted);
   font-weight: 700;
+}
+
+.rule dd {
+  margin: 0;
+  font-weight: 800;
+  text-align: right;
 }
 
 .chips {

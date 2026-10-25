@@ -9,14 +9,12 @@
       content="A BTD6 mod that adds a Boss Creator: any boss or Elite, custom speed, health, skulls and 1-10 tiers. Read and share Boss Creator codes here."
     />
     <link rel="icon" type="image/png" href="./icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>
+    <a class="skip-link" href="#top">Skip to content</a>
     <header class="top">
-      <nav class="nav">
+      <nav class="nav" aria-label="Main">
         <a class="brand" href="#top"><img src="./icon.png" alt="" width="40" height="40" /> Custom Boss Challenge</a>
         <div class="nav-links">
           <a href="#codes">Read a code</a>
@@ -27,7 +25,7 @@
       </nav>
     </header>
 
-    <main id="top">
+    <main id="top" tabindex="-1">
       <section class="hero">
         <img class="hero-logo" src="./icon.png" alt="Custom Boss Challenge logo" width="160" height="160" />
         <div>
@@ -100,7 +98,16 @@
           </article>
         </div>
         <figure class="screenshot">
-          <img src="./screens/boss-options.jpg" alt="The Boss section in the Challenge Editor" loading="lazy" />
+          <img
+            src="./screens/boss-options-1280.webp"
+            srcset="./screens/boss-options-640.webp 640w, ./screens/boss-options-1280.webp 1280w"
+            sizes="(max-width: 1100px) 100vw, 1060px"
+            width="1280"
+            height="720"
+            alt="The Boss section in the Challenge Editor"
+            loading="lazy"
+            decoding="async"
+          />
           <figcaption>The Boss section, added to the game's own Challenge Editor.</figcaption>
         </figure>
       </section>

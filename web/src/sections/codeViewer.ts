@@ -2,7 +2,7 @@
 
 import { decode } from "../code/decode";
 import { copyWithFeedback, h } from "../dom";
-import { renderSetup } from "../preview/render";
+import { releaseSetup, renderSetup } from "../preview/render";
 
 const HASH_KEY = "code=";
 
@@ -15,13 +15,22 @@ export function linkTo(code: string): string {
   return `${location.origin}${location.pathname}#${HASH_KEY}${encodeURIComponent(code)}`;
 }
 
+/** How long to wait after the last key press before reading the code */
+const TYPING_DELAY = 150;
+
 export function setUpCodeViewer(input: HTMLTextAreaElement, result: HTMLElement): (code: string) => void {
   let latest = 0;
+  let typing: number | undefined;
+
+  const replace = (...nodes: Node[]): void => {
+    releaseSetup(result);
+    result.replaceChildren(...nodes);
+  };
 
   async function show(code: string): Promise<void> {
     const request = ++latest;
     if (code.trim() === "") {
-      result.replaceChildren();
+      replace();
       return;
     }
 
@@ -30,7 +39,7 @@ export function setUpCodeViewer(input: HTMLTextAreaElement, result: HTMLElement)
     if (request !== latest) return;
 
     if (!decoded.ok) {
-      result.replaceChildren(h("p", { class: decoded.problem === "TooNew" ? "warning" : "error" }, decoded.reason));
+      replace(h("p", { class: decoded.problem === "TooNew" ? "warning" : "error" }, decoded.reason));
       return;
     }
 
@@ -40,13 +49,17 @@ export function setUpCodeViewer(input: HTMLTextAreaElement, result: HTMLElement)
     const copyLink = h("button", { class: "button small blue", type: "button" }, "Copy link");
     copyLink.addEventListener("click", () => copyWithFeedback(copyLink, linkTo(trimmed), "Link copied!"));
 
-    result.replaceChildren(renderSetup(decoded.options, decoded.challenge), h("div", { class: "actions" }, copyCode, copyLink));
+    replace(renderSetup(decoded.options, decoded.challenge), h("div", { class: "actions" }, copyCode, copyLink));
     history.replaceState(null, "", `#${HASH_KEY}${encodeURIComponent(trimmed)}`);
   }
 
-  input.addEventListener("input", () => void show(input.value));
+  input.addEventListener("input", () => {
+    clearTimeout(typing);
+    typing = window.setTimeout(() => void show(input.value), TYPING_DELAY);
+  });
 
   return (code: string) => {
+    clearTimeout(typing);
     input.value = code;
     void show(code);
   };

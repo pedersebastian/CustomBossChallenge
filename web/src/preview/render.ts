@@ -12,6 +12,17 @@ import { skulls, tierCards } from "./compute";
 /** Orange where a tier is harder than the normal game, blue where it is easier, like the in-game preview */
 const tone = (factor: number): string => (factor > 1.0001 ? "harder" : factor < 0.9999 ? "easier" : "same");
 
+/** The same as tone without colour: an arrow on screen, and words for screen readers */
+const ARROW: Record<string, string> = { harder: "▲", easier: "▼", same: "" };
+const SPOKEN: Record<string, [string, string]> = {
+  harder: ["faster than normal", "tougher than normal"],
+  easier: ["slower than normal", "weaker than normal"],
+  same: ["normal speed", "normal health"],
+};
+
+/** Text only screen readers get */
+const spoken = (text: string): HTMLElement => h("span", { class: "sr-only" }, text);
+
 const percent = (multiplier: number): string => `${formatDecimals(multiplier * 100, 0)} %`;
 
 export const bossTitle = (options: BossOptions): string => `${options.Elite ? "Elite " : ""}${options.Boss}`;
@@ -25,7 +36,7 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
     h(
       "div",
       { class: "setup-head" },
-      h("div", { class: "boss-badge" + (options.Elite ? " elite" : "") }, options.Boss.slice(0, 1)),
+      h("div", { class: "boss-badge" + (options.Elite ? " elite" : ""), "aria-hidden": "true" }, options.Boss.slice(0, 1)),
       h(
         "div",
         {},
@@ -54,14 +65,21 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
   const cards = tierCards(options, challenge);
   const strip = h("div", { class: "tiers", role: "list" });
   for (const card of cards) {
+    const speed = `×${formatDecimals(card.speed, 2)}`;
+    const speedTone = tone(card.speed);
+    const healthTone = tone(card.healthFactor);
     strip.append(
       h(
         "div",
         { class: "tier", role: "listitem" },
-        h("span", { class: "tier-label" }, `T${card.tier}`),
-        h("span", { class: "tier-round" }, `R${card.round}`),
-        h("span", { class: `tier-speed ${tone(card.speed)}`, title: "Speed compared with the normal game" }, `×${formatDecimals(card.speed, 2)}`),
-        h("span", { class: `tier-health ${tone(card.healthFactor)}`, title: "Health" }, card.health),
+        spoken(
+          `Tier ${card.tier}, round ${card.round}, speed ${speed}, ${SPOKEN[speedTone][0]}, ` +
+            `health ${card.health}, ${SPOKEN[healthTone][1]}`,
+        ),
+        h("span", { class: "tier-label", "aria-hidden": "true" }, `T${card.tier}`),
+        h("span", { class: "tier-round", "aria-hidden": "true" }, `R${card.round}`),
+        h("span", { class: `tier-speed ${speedTone}`, title: "Speed compared with the normal game", "aria-hidden": "true" }, speed + ARROW[speedTone]),
+        h("span", { class: `tier-health ${healthTone}`, title: "Health", "aria-hidden": "true" }, card.health + ARROW[healthTone]),
       ),
     );
   }
@@ -82,14 +100,18 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
 
 function renderSkulls(options: BossOptions): HTMLElement {
   const { percents, tier } = skulls(options);
-  const bar = h("div", { class: "skull-bar" }, h("div", { class: "skull-fill" }));
+  const bar = h(
+    "div",
+    { class: "skull-bar", role: "img", "aria-label": `Health bar with skulls at ${percents.map(formatPercent).join(", ")} of the boss's health` },
+    h("div", { class: "skull-fill" }),
+  );
   for (const value of percents) {
     const marker = h("div", { class: "skull" }, h("span", {}, formatPercent(value)));
     marker.style.left = `${(1 - value) * 100}%`;
     bar.append(marker);
   }
   // Whether labels fit side by side depends on the bar's width, so they are laid out again when it changes
-  new ResizeObserver(() => layOutSkullLabels(bar)).observe(bar);
+  skullBars.observe(bar);
 
   const mode =
     options.SkullMode === "Vanilla" ? "the boss's own skulls" : options.SkullMode === "EvenlySpaced" ? "evenly spaced" : "custom";
@@ -99,6 +121,16 @@ function renderSkulls(options: BossOptions): HTMLElement {
     h("h4", {}, `Skulls (${mode}${tier ? `, tier ${tier}` : ""})`),
     percents.length === 0 ? h("p", { class: "muted" }, "No skulls: the boss never triggers its skull effect.") : bar,
   );
+}
+
+/** One observer for every skull bar; releaseSetup stops watching the bars of a setup that is taken away */
+const skullBars = new ResizeObserver((entries) => {
+  for (const entry of entries) layOutSkullLabels(entry.target as HTMLElement);
+});
+
+/** Call before a rendered setup is removed, so its skull bar can be freed */
+export function releaseSetup(root: Element): void {
+  for (const bar of root.querySelectorAll(".skull-bar")) skullBars.unobserve(bar);
 }
 
 const LABEL_TOP = 48;
@@ -164,8 +196,7 @@ function renderRules(options: BossOptions, challenge: Challenge, rounds: number[
   });
 
   const list = h("dl", { class: "rules" });
-  // The label is shown from data-label so each rule stays one row; dt keeps it for screen readers
-  for (const [label, value] of rows) list.append(h("dt", {}, label), h("dd", { "data-label": label }, value));
+  for (const [label, value] of rows) list.append(h("div", { class: "rule" }, h("dt", {}, label), h("dd", {}, value)));
 
   return h(
     "div",

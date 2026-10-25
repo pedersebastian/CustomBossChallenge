@@ -1,3 +1,8 @@
+// The fonts are part of the site, so it loads nothing from other servers. The site is in English: Latin is enough.
+import "@fontsource/luckiest-guy/latin-400.css";
+import "@fontsource/nunito/latin-400.css";
+import "@fontsource/nunito/latin-700.css";
+import "@fontsource/nunito/latin-800.css";
 import { GAME } from "./data/types";
 import { codeFromHash, setUpCodeViewer } from "./sections/codeViewer";
 import { setUpExamples } from "./sections/examples";
