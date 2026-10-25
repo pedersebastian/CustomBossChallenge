@@ -1,0 +1,1591 @@
+{
+  "gameVersion": "57.4",
+  "defaultChallenge": {
+    "towers": [
+      {
+        "tower": "ChosenPrimaryHero",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Quincy",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Gwendolin",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "StrikerJones",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "ObynGreenfoot",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "CaptainChurchill",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Benjamin",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Ezili",
+        "max": 1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "PatFusty",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Adora",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "AdmiralBrickell",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Etienne",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Sauda",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Psi",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Geraldo",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Corvus",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Rosalia",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Silas",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "DanDMonke",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true,
+        "restrictParagon": false
+      },
+      {
+        "tower": "DartMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "BoomerangMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "BombShooter",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "TackShooter",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "IceMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "GlueGunner",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Desperado",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "SniperMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "MonkeySub",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "MonkeyBuccaneer",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "MonkeyAce",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "HeliPilot",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "MortarMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "DartlingGunner",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "WizardMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "SuperMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "NinjaMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Alchemist",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Druid",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Mermonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "Skywarden",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "BananaFarm",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "SpikeFactory",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "MonkeyVillage",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "EngineerMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      },
+      {
+        "tower": "BeastHandler",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false,
+        "restrictParagon": false
+      }
+    ],
+    "powers": [
+      {
+        "power": "HealthPotion",
+        "max": -1
+      },
+      {
+        "power": "StaminaPotion",
+        "max": -1
+      },
+      {
+        "power": "SwordOfPower",
+        "max": -1
+      },
+      {
+        "power": "SheRa",
+        "max": -1
+      },
+      {
+        "power": "BattleCat",
+        "max": -1
+      },
+      {
+        "power": "Skeletor",
+        "max": -1
+      },
+      {
+        "power": "BananaFarmerPro",
+        "max": -1
+      },
+      {
+        "power": "SuperMonkeyBeacon",
+        "max": -1
+      },
+      {
+        "power": "MonkeyBoostPro",
+        "max": -1
+      },
+      {
+        "power": "TechBotPrime",
+        "max": -1
+      },
+      {
+        "power": "PortableLakePro",
+        "max": -1
+      },
+      {
+        "power": "SuperMonkeyStorm",
+        "max": -1
+      },
+      {
+        "power": "MonkeyBoost",
+        "max": -1
+      },
+      {
+        "power": "Thrive",
+        "max": -1
+      },
+      {
+        "power": "DartTime",
+        "max": -1
+      },
+      {
+        "power": "CashDrop",
+        "max": -1
+      },
+      {
+        "power": "BananaFarmer",
+        "max": -1
+      },
+      {
+        "power": "Pontoon",
+        "max": -1
+      },
+      {
+        "power": "RoadSpikes",
+        "max": -1
+      },
+      {
+        "power": "GlueTrap",
+        "max": -1
+      },
+      {
+        "power": "MoabMine",
+        "max": -1
+      },
+      {
+        "power": "CamoTrap",
+        "max": -1
+      },
+      {
+        "power": "PortableLake",
+        "max": -1
+      },
+      {
+        "power": "TechBot",
+        "max": -1
+      },
+      {
+        "power": "EnergisingTotem",
+        "max": -1
+      },
+      {
+        "power": "CaveMonkey",
+        "max": -1
+      }
+    ],
+    "map": "Tutorial",
+    "difficulty": "Medium",
+    "rewards": "",
+    "mode": "Standard",
+    "id": -1,
+    "maxTowers": -1,
+    "maxPowers": -1,
+    "leastCashUsed": -1,
+    "leastTiersUsed": -1,
+    "ignoreLeastMode": false,
+    "bloonModifiers": {
+      "speedMultiplier": 1.0,
+      "moabSpeedMultiplier": 1.0,
+      "bossSpeedMultiplier": 1.0,
+      "regrowRateMultiplier": 1.0,
+      "healthMultipliers": {
+        "bloons": 1.0,
+        "moabs": 1.0,
+        "boss": 1.0
+      },
+      "allCamo": false,
+      "allRegen": false,
+      "allFortified": false
+    },
+    "removeableCostMultiplier": 1.0,
+    "abilityCooldownReductionMultiplier": 1.0,
+    "roundSets": [],
+    "disableMK": false,
+    "disableSelling": false,
+    "disablePowers": false,
+    "disableInstas": false,
+    "disableDoubleCash": false,
+    "disableFastTrack": false,
+    "noContinues": false,
+    "noInstaReward": true,
+    "startRules": {
+      "lives": -1,
+      "maxLives": -1,
+      "cash": -1,
+      "round": -1,
+      "endRound": -1,
+      "revives": 0
+    },
+    "name": "",
+    "displayIncludedTowers": true,
+    "displayIncludedPowers": false,
+    "seed": 0,
+    "numberOfPlayers": 1,
+    "coopDivisionType": 5,
+    "temporaryUnlockedTowers": [],
+    "temporaryUnlockedPowerPros": [],
+    "maxParagons": -1,
+    "prePlacedAssets": null,
+    "simulationBehaviorsMod": null,
+    "disableSaves": false,
+    "disableHeroBoosting": false,
+    "disableTowerXp": false,
+    "overriddenPlayerCosmetics": [],
+    "disablePlayerCosmetics": false,
+    "cashModifiers": {
+      "popCashMultiplier": 1.0,
+      "towerCashMultiplier": 1.0,
+      "roundCashMultiplier": 1.0,
+      "sellValueMultiplier": 1.0
+    }
+  },
+  "defaultOptions": {
+    "Boss": "Bloonarius",
+    "Elite": false,
+    "SkullMode": "Vanilla",
+    "SkullCount": 3,
+    "CustomSkulls": "75, 50, 25",
+    "Tiers": 5,
+    "SpeedPerTier": 0,
+    "HealthPerTier": 0,
+    "SpawnRounds": null
+  },
+  "bosses": {
+    "Bloonarius": {
+      "normal": [
+        {
+          "health": 20000,
+          "speed": 1.25,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 75000,
+          "speed": 1.25,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 350000,
+          "speed": 1.25,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 750000,
+          "speed": 1.5,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 3000000,
+          "speed": 1.5,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        }
+      ],
+      "elite": [
+        {
+          "health": 50000,
+          "speed": 1.25,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 300000,
+          "speed": 1.25,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 2000000,
+          "speed": 1.25,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 8000000,
+          "speed": 1.5,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 40000000,
+          "speed": 1.5,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        }
+      ]
+    },
+    "Lych": {
+      "normal": [
+        {
+          "health": 14000,
+          "speed": 2.0,
+          "skulls": [
+            0.8333,
+            0.6666,
+            0.5,
+            0.3333,
+            0.1666
+          ]
+        },
+        {
+          "health": 52500,
+          "speed": 2.05,
+          "skulls": [
+            0.8333,
+            0.6666,
+            0.5,
+            0.3333,
+            0.1666
+          ]
+        },
+        {
+          "health": 220000,
+          "speed": 2.1,
+          "skulls": [
+            0.8333,
+            0.6666,
+            0.5,
+            0.3333,
+            0.1666
+          ]
+        },
+        {
+          "health": 525000,
+          "speed": 2.15,
+          "skulls": [
+            0.8333,
+            0.6666,
+            0.5,
+            0.3333,
+            0.1666
+          ]
+        },
+        {
+          "health": 2100000,
+          "speed": 2.2,
+          "skulls": [
+            0.8333,
+            0.6666,
+            0.5,
+            0.3333,
+            0.1666
+          ]
+        }
+      ],
+      "elite": [
+        {
+          "health": 30000,
+          "speed": 2.4,
+          "skulls": [
+            0.8333,
+            0.6666,
+            0.5,
+            0.3333,
+            0.1666
+          ]
+        },
+        {
+          "health": 180000,
+          "speed": 2.5,
+          "skulls": [
+            0.8333,
+            0.6666,
+            0.5,
+            0.3333,
+            0.1666
+          ]
+        },
+        {
+          "health": 1100000,
+          "speed": 2.7,
+          "skulls": [
+            0.8333,
+            0.6666,
+            0.5,
+            0.3333,
+            0.1666
+          ]
+        },
+        {
+          "health": 4800000,
+          "speed": 2.8,
+          "skulls": [
+            0.8333,
+            0.6666,
+            0.5,
+            0.3333,
+            0.1666
+          ]
+        },
+        {
+          "health": 24000000,
+          "speed": 2.9,
+          "skulls": [
+            0.8333,
+            0.6666,
+            0.5,
+            0.3333,
+            0.1666
+          ]
+        }
+      ]
+    },
+    "Vortex": {
+      "normal": [
+        {
+          "health": 20000,
+          "speed": 3.6,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 62800,
+          "speed": 3.6,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 294000,
+          "speed": 3.9,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 628000,
+          "speed": 4.05,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 2512500,
+          "speed": 4.2,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        }
+      ],
+      "elite": [
+        {
+          "health": 41800,
+          "speed": 3.75,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 251000,
+          "speed": 4.05,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 1675000,
+          "speed": 4.5,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 6700000,
+          "speed": 4.65,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 33500000,
+          "speed": 4.8,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        }
+      ]
+    },
+    "Dreadbloon": {
+      "normal": [
+        {
+          "health": 7500,
+          "speed": 1.25,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 25000,
+          "speed": 1.3,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 120000,
+          "speed": 1.4,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 260000,
+          "speed": 1.5,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 1000000,
+          "speed": 1.6,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        }
+      ],
+      "elite": [
+        {
+          "health": 15000,
+          "speed": 1.25,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 90000,
+          "speed": 1.3,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 650000,
+          "speed": 1.4,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 2625000,
+          "speed": 1.5,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 12500000,
+          "speed": 1.6,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        }
+      ]
+    },
+    "Phayze": {
+      "normal": [
+        {
+          "health": 9500,
+          "speed": 0.8,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 35000,
+          "speed": 0.8,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 160000,
+          "speed": 0.8,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 350000,
+          "speed": 0.8,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        },
+        {
+          "health": 1450000,
+          "speed": 0.8,
+          "skulls": [
+            0.75,
+            0.5,
+            0.25
+          ]
+        }
+      ],
+      "elite": [
+        {
+          "health": 19000,
+          "speed": 0.8,
+          "skulls": [
+            0.8333335,
+            0.6666668,
+            0.5,
+            0.3333334,
+            0.1666667
+          ]
+        },
+        {
+          "health": 110000,
+          "speed": 0.8,
+          "skulls": [
+            0.8333335,
+            0.6666668,
+            0.5,
+            0.3333334,
+            0.1666667
+          ]
+        },
+        {
+          "health": 770000,
+          "speed": 0.8,
+          "skulls": [
+            0.8333335,
+            0.6666668,
+            0.5,
+            0.3333334,
+            0.1666667
+          ]
+        },
+        {
+          "health": 3100000,
+          "speed": 0.8,
+          "skulls": [
+            0.8333335,
+            0.6666668,
+            0.5,
+            0.3333334,
+            0.1666667
+          ]
+        },
+        {
+          "health": 15500000,
+          "speed": 0.8,
+          "skulls": [
+            0.8333335,
+            0.6666668,
+            0.5,
+            0.3333334,
+            0.1666667
+          ]
+        }
+      ]
+    },
+    "Blastapopoulos": {
+      "normal": [
+        {
+          "health": 17500,
+          "speed": 1.0,
+          "skulls": [
+            0.8,
+            0.6,
+            0.4,
+            0.2
+          ]
+        },
+        {
+          "health": 65000,
+          "speed": 1.05,
+          "skulls": [
+            0.8,
+            0.6,
+            0.4,
+            0.2
+          ]
+        },
+        {
+          "health": 300000,
+          "speed": 1.1,
+          "skulls": [
+            0.8,
+            0.6,
+            0.4,
+            0.2
+          ]
+        },
+        {
+          "health": 650000,
+          "speed": 1.15,
+          "skulls": [
+            0.8,
+            0.6,
+            0.4,
+            0.2
+          ]
+        },
+        {
+          "health": 3000000,
+          "speed": 1.25,
+          "skulls": [
+            0.8,
+            0.6,
+            0.4,
+            0.2
+          ]
+        }
+      ],
+      "elite": [
+        {
+          "health": 43000,
+          "speed": 1.0,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 270000,
+          "speed": 1.05,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 1700000,
+          "speed": 1.1,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 7000000,
+          "speed": 1.15,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 35000000,
+          "speed": 1.25,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        }
+      ]
+    },
+    "Diamondback": {
+      "normal": [
+        {
+          "health": 20000,
+          "speed": 2.0,
+          "skulls": [
+            0.8333333,
+            0.6666667,
+            0.5,
+            0.33333334,
+            0.16666667
+          ]
+        },
+        {
+          "health": 95000,
+          "speed": 2.0,
+          "skulls": [
+            0.8333333,
+            0.6666667,
+            0.5,
+            0.33333334,
+            0.16666667
+          ]
+        },
+        {
+          "health": 444000,
+          "speed": 2.0,
+          "skulls": [
+            0.8333333,
+            0.6666667,
+            0.5,
+            0.33333334,
+            0.16666667
+          ]
+        },
+        {
+          "health": 900000,
+          "speed": 2.0,
+          "skulls": [
+            0.8333333,
+            0.6666667,
+            0.5,
+            0.33333334,
+            0.16666667
+          ]
+        },
+        {
+          "health": 3800000,
+          "speed": 2.0,
+          "skulls": [
+            0.8333333,
+            0.6666667,
+            0.5,
+            0.33333334,
+            0.16666667
+          ]
+        }
+      ],
+      "elite": [
+        {
+          "health": 95000,
+          "speed": 2.0,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 550000,
+          "speed": 2.0,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 4000000,
+          "speed": 2.0,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 15000000,
+          "speed": 2.0,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        },
+        {
+          "health": 65000000,
+          "speed": 2.0,
+          "skulls": [
+            0.875,
+            0.75,
+            0.625,
+            0.5,
+            0.375,
+            0.25,
+            0.125
+          ]
+        }
+      ]
+    }
+  },
+  "maps": {
+    "BaseEditorMap": "Base Editor Map",
+    "Tutorial": "Monkey Meadow",
+    "InTheLoop": "In The Loop",
+    "SkullTweak": "Skull Tweak",
+    "ThreeMinesAround": "Three Mines 'Round",
+    "SpaPits": "Spa Pits",
+    "Tinkerton": "Tinkerton",
+    "TreeStump": "Tree Stump",
+    "TownCentre": "Town Center",
+    "MiddleOfTheRoad": "Middle of the Road",
+    "OneTwoTree": "One Two Tree",
+    "Scrapyard": "Scrapyard",
+    "TheCabin": "The Cabin",
+    "Resort": "Resort",
+    "Skates": "Skates",
+    "LotusIsland": "Lotus Island",
+    "CandyFalls": "Candy Falls",
+    "WinterPark": "Winter Park",
+    "Carved": "Carved",
+    "ParkPath": "Park Path",
+    "AlpineRun": "Alpine Run",
+    "FrozenOver": "Frozen Over",
+    "Cubism": "Cubism",
+    "FourCircles": "Four Circles",
+    "Hedge": "Hedge",
+    "Logs": "Logs",
+    "EndOfTheRoad": "End Of The Road",
+    "LostCrevasse": "Lost Crevasse",
+    "LuminousCove": "Luminous Cove",
+    "AncientPortal": "Ancient Portal",
+    "SulfurSprings": "Sulfur Springs",
+    "WaterPark": "Water Park",
+    "Polyphemus": "Polyphemus",
+    "CoveredGarden": "Covered Garden",
+    "Quarry": "Quarry",
+    "QuietStreet": "Quiet Street",
+    "BloonariusPrime": "Bloonarius Prime",
+    "Balance": "Balance",
+    "Encrypted": "Encrypted",
+    "Bazaar": "Bazaar",
+    "AdorasTemple": "Adora's Temple",
+    "SpringSpring": "Spring Spring",
+    "KartsNDarts": "KartsNDarts",
+    "MoonLanding": "Moon Landing",
+    "Haunted": "Haunted",
+    "Downstream": "Downstream",
+    "FiringRange": "Firing Range",
+    "Cracked": "Cracked",
+    "Streambed": "Streambed",
+    "Chutes": "Chutes",
+    "Rake": "Rake",
+    "SpiceIslands": "Spice Islands",
+    "ShipCapture": "Ship Capture",
+    "Ascent": "Ascent",
+    "MushroomGrotto": "Mushroom Grotto",
+    "PartyParade": "Party Parade",
+    "SunsetGulch": "Sunset Gulch",
+    "EnchantedGlade": "Enchanted Glade",
+    "LastResort": "Last Resort",
+    "CastleRevenge": "Castle Revenge",
+    "DarkPath": "Dark Path",
+    "Erosion": "Erosion",
+    "MidnightMansion": "Midnight Mansion",
+    "SunkenColumns": "Sunken Columns",
+    "XFactor": "X Factor",
+    "Mesa": "Mesa",
+    "Geared": "Geared",
+    "Spillway": "Spillway",
+    "Cargo": "Cargo",
+    "PatsPond": "Pat's Pond",
+    "Peninsula": "Peninsula",
+    "HighFinance": "High Finance",
+    "AnotherBrick": "Another Brick",
+    "OffTheCoast": "Off The Coast",
+    "Cornfield": "Cornfield",
+    "Underground": "Underground",
+    "TrickyTracks": "Tricky Tracks",
+    "GlacialTrail": "Glacial Trail",
+    "DarkDungeons": "Dark Dungeons",
+    "Sanctuary": "Sanctuary",
+    "Ravine": "Ravine",
+    "FloodedValley": "Flooded Valley",
+    "Infernal": "Infernal",
+    "BloodyPuddles": "Bloody Puddles",
+    "Workshop": "Workshop",
+    "Quad": "Quad",
+    "DarkCastle": "Dark Castle",
+    "MuddyPuddles": "Muddy Puddles",
+    "#ouch": "#Ouch",
+    "ProtectTheYacht": "Protect The Yacht",
+    "Blons": "Blons"
+  },
+  "towers": {
+    "ChosenPrimaryHero": "Chosen Primary Hero",
+    "Quincy": "Quincy",
+    "Gwendolin": "Gwendolin",
+    "StrikerJones": "Striker Jones",
+    "ObynGreenfoot": "Obyn Greenfoot",
+    "CaptainChurchill": "Captain Churchill",
+    "Benjamin": "Benjamin",
+    "Ezili": "Ezili",
+    "PatFusty": "Pat Fusty",
+    "Adora": "Adora",
+    "AdmiralBrickell": "Admiral Brickell",
+    "Etienne": "Etienne",
+    "Sauda": "Sauda",
+    "Psi": "Psi",
+    "Geraldo": "Geraldo",
+    "Corvus": "Corvus",
+    "Rosalia": "Rosalia",
+    "Silas": "Silas",
+    "DanDMonke": "Dan D'Monke",
+    "DartMonkey": "Dart Monkey",
+    "BoomerangMonkey": "Boomerang Monkey",
+    "BombShooter": "Bomb Shooter",
+    "TackShooter": "Tack Shooter",
+    "IceMonkey": "Ice Monkey",
+    "GlueGunner": "Glue Gunner",
+    "Desperado": "Desperado",
+    "SniperMonkey": "Sniper Monkey",
+    "MonkeySub": "Monkey Sub",
+    "MonkeyBuccaneer": "Monkey Buccaneer",
+    "MonkeyAce": "Monkey Ace",
+    "HeliPilot": "Heli Pilot",
+    "MortarMonkey": "Mortar Monkey",
+    "DartlingGunner": "Dartling Gunner",
+    "WizardMonkey": "Wizard Monkey",
+    "SuperMonkey": "Super Monkey",
+    "NinjaMonkey": "Ninja Monkey",
+    "Alchemist": "Alchemist",
+    "Druid": "Druid",
+    "Mermonkey": "Mermonkey",
+    "Skywarden": "Skywarden",
+    "BananaFarm": "Banana Farm",
+    "SpikeFactory": "Spike Factory",
+    "MonkeyVillage": "Monkey Village",
+    "EngineerMonkey": "Engineer Monkey",
+    "BeastHandler": "Beast Handler"
+  },
+  "modes": {
+    "Standard": "Standard",
+    "PrimaryOnly": "Primary Only",
+    "Deflation": "Deflation",
+    "MilitaryOnly": "Military Only",
+    "Apopalypse": "Apopalypse",
+    "Reverse": "Reverse",
+    "MagicOnly": "Magic Only",
+    "DoubleMoabHealth": "Double Moab Health",
+    "HalfCash": "Half Cash",
+    "AlternateBloonsRounds": "Alternate Bloons Rounds",
+    "Impoppable": "Impoppable",
+    "Clicks": "Clicks"
+  },
+  "difficulties": {
+    "Easy": "Easy",
+    "Medium": "Medium",
+    "Hard": "Hard"
+  },
+  "unsupportedModes": [
+    "Deflation",
+    "Apopalypse"
+  ],
+  "limits": {
+    "maxCodeLength": 20000,
+    "maxJsonLength": 1000000,
+    "maxNameLength": 60,
+    "minMultiplier": 0.01,
+    "maxMultiplier": 100.0,
+    "minBossSpeed": 0.1,
+    "maxBossSpeed": 10.0,
+    "minBossHealth": 0.1,
+    "maxBossHealth": 20.0,
+    "maxCash": 100000000,
+    "maxLives": 1000000,
+    "maxRevives": 100,
+    "maxTowerCount": 1000
+  }
+}

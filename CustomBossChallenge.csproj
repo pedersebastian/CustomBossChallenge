@@ -21,6 +21,16 @@
         <EmbeddedResource Include="README.md" LogicalName="CustomBossChallenge.README.md" />
     </ItemGroup>
 
+    <!-- The website is its own project. Only the data it gets from the game is built in, so WebDataTest can check it,
+         and only in Debug builds, which the tests run on: the released mod doesn't carry it -->
+    <ItemGroup>
+        <Compile Remove="web\**" />
+        <EmbeddedResource Remove="web\**" />
+        <None Remove="web\**" />
+        <EmbeddedResource Include="web\src\data\*.json" LogicalName="CustomBossChallenge.web.%(Filename)%(Extension)"
+                          Condition="'$(Configuration)' == 'Debug'" />
+    </ItemGroup>
+
     <!-- The unit tests are their own project -->
     <ItemGroup>
         <Compile Remove="UnitTests\**" />

@@ -206,13 +206,13 @@ public static class SetupCode
     /// </summary>
     internal static string Contents(string code) => Inflate(FromBase64Url(code.Trim()[PrefixLength..]));
 
-    private static JObject OptionsJson(BossOptions options) => JObject.FromObject(options, OptionsSerializer);
+    internal static JObject OptionsJson(BossOptions options) => JObject.FromObject(options, OptionsSerializer);
 
     /// <summary>
     /// The challenge as JSON, without the read only creation type: the game works it out itself, and a challenge read
     /// from JSON reports a different one, which would make the same setup give different codes
     /// </summary>
-    private static JObject ChallengeJson(DailyChallengeModel dcm)
+    internal static JObject ChallengeJson(DailyChallengeModel dcm)
     {
         var json = JObject.Parse(DcmJson.Serialize(dcm));
         json.Remove("ChallengeCreationType");

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Marathon Lych",
+    "description": "Ten tiers of Elite Lych, each 30 % tougher than the last. Bring snacks.",
+    "code": "CBC2:q1bKV7KqVnLKLy5WslLyqUzOUNJRcs3JLElVsiopKk3VUQrJTC0Cyhka6Ch5pCbmlGQEpBaBxJSsjA1qdZSSQdrzEnOB6pV8E4sSSzLy8xSg5hSnpqYoWRkZGJnV1gIA"
+  },
+  {
+    "name": "Speed Demon Vortex",
+    "description": "Vortex gets 40 % faster every tier, with three evenly spaced skulls.",
+    "code": "CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lEKzi7NyfHNT0kFCrqWpeblVAYXJCanpoCkClJTUwJSi0IyU4uUrEwManWUkkFG5CXmglSDpRVcUnPz8xTgxhUDxZSsjAyMzGprAQ"
+  },
+  {
+    "name": "Glass Cannon",
+    "description": "One Bloonarius at three times the speed and a tenth of the health. Blink and it's gone.",
+    "code": "CBC1:RYwxCsJAEEWvIr9ewiaCxbQpUqXSC6xmJAuTmeDEKuzd3SBo-d9_vB0G2nHL_HJQWwIex76LmY425ef3qMTcryvzNL5ly6tUDjo3MWDmJNv8xz8dFJu21KSmhUEYJLmf-qRqigCvMVAXu0spHw"
+  },
+  {
+    "name": "No Skulls, No Mercy",
+    "description": "Elite Phayze without a single skull, every bloon fortified and no selling.",
+    "code": "CBC1:NY0xDsIwDEWvUnnOUHVgyAgqWxFST5AmBiJMjJK0Uqlyd5wiNuv7_fc3YNAbHDkl0HB9mPWDoKAnnxF0jjMqGJ8z0cBOAugXDLSOb2PRCbe_TjyHDLotCmyVTcQchPc3j1G0GxiiM8dcA_ezCut8MhPhiEQ-3P9jwbzqzoWb3Z1UI-eA0a4yl7D2u7Y7lPIF"
+  },
+  {
+    "name": "Speedrun Dreadbloon",
+    "description": "All five tiers by round 40: a new Dreadbloon every five rounds from round 20.",
+    "code": "CBC1:q1bKV7KqVnLKLy5WslJyKUpNTEnKyc_PU9JRCi5ILM8Lyi_NSwFJGRnoKBiZ6igYA2ljIG1ioFSro5QM0pyXmJsKVBFckJqaUlSap4BiSjFQUMnKyMDIrLYWAA"
+  },
+  {
+    "name": "Paragon Ban",
+    "description": "Elite Blastapopoulos on Infernal, Hard, and not a single paragon allowed.",
+    "code": "CBC1:LY2xCgMhEER_JUxtcVyRwlI4uHT5heXUIHiuuAoJh_-eDaR982bmAsNecCwCC5dJOlWuPDILDLaceoDtbYRpcPzUk6qajxJDK5TV8SnGdIzcP8p3al5ZoVNreFKjF5ebo6JQQvCw67Leja68_6H-LnN-AQ"
+  }
+]

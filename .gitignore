@@ -338,3 +338,7 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# Website (web/): npm packages and the built site
+web/node_modules/
+web/dist/

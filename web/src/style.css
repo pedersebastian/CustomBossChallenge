@@ -1,0 +1,610 @@
+:root {
+  --sky: #0f2f5c;
+  --sea: #1b5aa8;
+  --panel: #3a78cc;
+  --panel-edge: #24599f;
+  --panel-inner: #2c62ad;
+  --card: #1b3c6c;
+  --text: #ffffff;
+  --muted: #d6e6ff;
+  --harder: #ff9e33;
+  --easier: #73ccff;
+  --error: #ff6b6b;
+  --green: #74d33c;
+  --green-edge: #3f8f17;
+  --orange: #ff8a1f;
+  --orange-edge: #b65400;
+  --blue: #2fb7f5;
+  --blue-edge: #12709c;
+  --outline: #0b1d38;
+  --radius: 18px;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 76px;
+}
+
+body {
+  margin: 0;
+  font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--text);
+  background: linear-gradient(180deg, var(--sky) 0%, var(--sea) 60%, #2a7cc9 100%) fixed;
+  line-height: 1.5;
+}
+
+a {
+  color: #ffd84d;
+}
+
+h1,
+h2,
+h3,
+h4,
+.brand,
+.button {
+  font-family: "Luckiest Guy", "Nunito", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-shadow:
+    0 2px 0 var(--outline),
+    0 0 3px var(--outline);
+}
+
+h1 {
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  line-height: 1.05;
+  margin: 0 0 0.4em;
+}
+
+h2 {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  margin: 0 0 0.3em;
+}
+
+h3 {
+  font-size: 1.25rem;
+  margin: 0 0 0.3em;
+}
+
+h4 {
+  font-size: 1.05rem;
+  margin: 0 0 0.5em;
+}
+
+code {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.1em 0.35em;
+  border-radius: 6px;
+  word-break: break-all;
+}
+
+/* Navigation */
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(11, 29, 56, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 3px solid var(--panel-edge);
+}
+
+.nav {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1.3rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.nav-links a:hover {
+  color: var(--text);
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+/* Hero */
+.hero {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  padding: 24px 0 36px;
+}
+
+.hero-logo {
+  flex: none;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45));
+}
+
+.lead {
+  font-size: 1.15rem;
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.hero-actions,
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+/* Buttons like the game's: bright, round, with a darker edge */
+.button {
+  display: inline-block;
+  border: 3px solid var(--outline);
+  border-radius: 14px;
+  padding: 0.55em 1.1em 0.45em;
+  font-size: 1.1rem;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  background: linear-gradient(180deg, #8de65a, var(--green));
+  box-shadow:
+    inset 0 -5px 0 var(--green-edge),
+    0 3px 0 var(--outline);
+  transition: transform 0.08s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 -2px 0 var(--green-edge),
+    0 1px 0 var(--outline);
+}
+
+.button:focus-visible,
+.code-input:focus-visible {
+  outline: 3px solid #ffd84d;
+  outline-offset: 2px;
+}
+
+.button.orange {
+  background: linear-gradient(180deg, #ffab52, var(--orange));
+  box-shadow:
+    inset 0 -5px 0 var(--orange-edge),
+    0 3px 0 var(--outline);
+}
+
+.button.blue {
+  background: linear-gradient(180deg, #6fd2ff, var(--blue));
+  box-shadow:
+    inset 0 -5px 0 var(--blue-edge),
+    0 3px 0 var(--outline);
+}
+
+.button.small {
+  font-size: 0.95rem;
+  padding: 0.45em 0.9em 0.35em;
+}
+
+/* Panels */
+.panel {
+  background: var(--panel);
+  border: 4px solid var(--panel-edge);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 28px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    0 6px 0 rgba(0, 0, 0, 0.25);
+}
+
+.panel > p {
+  color: var(--muted);
+  margin-top: 0;
+}
+
+/* Code viewer */
+.code-input {
+  width: 100%;
+  resize: vertical;
+  min-height: 80px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 3px solid var(--panel-edge);
+  background: var(--card);
+  color: var(--text);
+  font: 0.95rem ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+
+.code-input::placeholder {
+  color: #8fb0dd;
+}
+
+.result:not(:empty) {
+  margin-top: 18px;
+}
+
+.error,
+.warning {
+  margin: 0.5em 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.error {
+  background: rgba(255, 107, 107, 0.15);
+  border: 2px solid var(--error);
+}
+
+.warning {
+  background: rgba(255, 158, 51, 0.15);
+  border: 2px solid var(--harder);
+}
+
+/* A setup */
+.setup {
+  background: var(--panel-inner);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.setup-head {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.boss-badge {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font: 1.6rem "Luckiest Guy", sans-serif;
+  background: radial-gradient(circle at 35% 30%, #6c8fbf, #23395c);
+  border: 3px solid var(--outline);
+  text-shadow: 0 2px 0 var(--outline);
+}
+
+.boss-badge.elite {
+  background: radial-gradient(circle at 35% 30%, #ff7676, #8c1d1d);
+  box-shadow: 0 0 0 3px #ffd84d;
+}
+
+.setup-name {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.setup-sub {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.block {
+  margin-top: 16px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.note {
+  font-weight: 700;
+  margin: 8px 0 0;
+}
+
+.harder {
+  color: var(--harder);
+}
+
+.easier {
+  color: var(--easier);
+}
+
+/* Tier Preview cards */
+.tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 8px;
+}
+
+.tier {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 8px 4px;
+  font-weight: 800;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+}
+
+.tier-label {
+  font-family: "Luckiest Guy", sans-serif;
+  font-size: 1.1rem;
+}
+
+.tier-round {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Skull bar, like the boss's health bar */
+.skull-bar {
+  position: relative;
+  height: 22px;
+  margin: 34px 4px 40px;
+  border-radius: 11px;
+  background: #3b1d1d;
+  border: 3px solid var(--outline);
+}
+
+.skull-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #8fe25c, #4caf26);
+}
+
+.skull {
+  position: absolute;
+  top: -14px;
+  width: 0;
+  height: 44px;
+  border-left: 3px solid #fff;
+}
+
+.skull::before {
+  content: "💀";
+  position: absolute;
+  top: -22px;
+  left: -12px;
+  font-size: 18px;
+}
+
+.skull span {
+  position: absolute;
+  top: 46px;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.skull.low span {
+  top: 62px;
+}
+
+/* Rules */
+.rules {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 6px 18px;
+  margin: 0;
+}
+
+.rules dt {
+  display: none;
+}
+
+.rules dd {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  background: var(--card);
+  border-radius: 10px;
+  font-weight: 800;
+}
+
+.rules dd::before {
+  content: attr(data-label);
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.chip {
+  background: #ffd84d;
+  color: #3a2a00;
+  border-radius: 999px;
+  padding: 2px 12px;
+  font-weight: 800;
+}
+
+.towers {
+  margin-top: 10px;
+}
+
+.towers summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+/* Examples */
+.examples {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: 18px;
+}
+
+.example {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Lets the long code be cut off with … instead of making the card as wide as the code */
+  min-width: 0;
+}
+
+.example .setup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.example .block {
+  flex: 1;
+}
+
+.example-text {
+  margin: 0 0 4px;
+  color: var(--muted);
+}
+
+.example-code {
+  display: block;
+  margin-top: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: normal;
+  font-size: 0.8rem;
+}
+
+.example .actions {
+  margin-top: 0;
+}
+
+/* Features */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px;
+}
+
+.feature {
+  background: var(--panel-inner);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.feature p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.screenshot {
+  margin: 22px 0 0;
+}
+
+.screenshot img {
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 3px solid var(--outline);
+  display: block;
+}
+
+.screenshot figcaption {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+/* Install */
+.install {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.install > div {
+  background: var(--panel-inner);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.install ol {
+  margin: 0;
+  padding-left: 1.3em;
+}
+
+.footer {
+  text-align: center;
+  color: var(--muted);
+  padding: 10px 16px 40px;
+}
+
+.footer .small {
+  font-size: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-logo {
+    width: 120px;
+    height: 120px;
+  }
+
+  .nav-links {
+    gap: 12px;
+    font-size: 0.9rem;
+  }
+
+  .examples {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .button {
+    transition: none;
+  }
+}
