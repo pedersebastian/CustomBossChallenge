@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - The last tier always has 20 rounds to be beaten; a later end round set in the editor no longer gives it more.
+- The Boss Creator hides the editor's End Round field, since the game always ends 20 rounds after the last tier. The
+  normal Challenge Editor still shows it.
 
 ## [2.5.1] - 2026-10-24
 

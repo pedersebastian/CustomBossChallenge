@@ -631,13 +631,27 @@ public sealed class BossEditorSection
 
         editor.sliderSettings?.transform.parent?.Find(SectionName)?.gameObject.SetActive(false);
         editor.transform.Find(PlayName)?.gameObject.SetActive(false);
+        ShowEndRound(editor, true);
         FortifiedModifier.Remove(editor);
+    }
+
+    /// <summary>
+    /// The end round of a boss game always follows the last tier (see <see cref="ConfigApplier.Prepare"/>), so the
+    /// editor's own End Round field would only mislead
+    /// </summary>
+    private static void ShowEndRound(ChallengeEditor editor, bool show)
+    {
+        var input = editor.endRound;
+        if (input == null) return;
+        input.gameObject.SetActive(show);
+        input.transform.parent?.Find("EndRoundLbl")?.gameObject.SetActive(show);
     }
 
     private void SetVisible(bool show)
     {
         Section.SetActive(show);
         Play.SetActive(show);
+        ShowEndRound(Editor, !show);
         if (titleText != null)
         {
             var nkText = titleText.TryCast<Il2Cpp.NK_TextMeshProUGUI>();

@@ -77,6 +77,9 @@ public class BossCreatorTest : CustomBossTest
         Assert(playRight < resetLeft, $"Play (right edge {playRight}) overlaps Reset (left edge {resetLeft})");
         AssertEquals(section.BossButtons.Count, Enum.GetValues<BossType>().Length, "Boss buttons");
         AssertEquals(editor!.chalName.text, BossMode.DefaultName(BossType.Bloonarius), "Default challenge name");
+        // The end round always follows the last tier, so the editor's own field is hidden
+        Assert(!editor.endRound.gameObject.activeSelf, "The Boss Creator shows the End Round field");
+        Assert(!editor.endRound.transform.parent.Find("EndRoundLbl").gameObject.activeSelf, "The Boss Creator shows the End Round label");
 
         // Every boss option explains itself through an info button
         var infoButtons = 0;
@@ -535,6 +538,8 @@ public class BossCreatorTest : CustomBossTest
         Assert(title == null || title.text != BossEditorSection.Title, "The normal Challenge Editor is titled Boss Creator");
         AssertEquals(FortifiedModifier.Find(FortifiedModifier.Settings(editor)), null, "The normal Challenge Editor has the All Fortified modifier");
         AssertEquals(FortifiedModifier.ExtraHeight(FortifiedModifier.Settings(editor)!), 0f, "The normal editor's modifier panels must keep their size");
+        Assert(editor.endRound.gameObject.activeSelf, "The normal Challenge Editor hides the End Round field");
+        Assert(editor.endRound.transform.parent.Find("EndRoundLbl").gameObject.activeSelf, "The normal Challenge Editor hides the End Round label");
 
         MenuManager.instance.Back();
         yield return ToMainMenu();
