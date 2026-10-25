@@ -62,6 +62,12 @@ public class BossCreatorTest : CustomBossTest
         yield return WaitForEditor(e => editor = e);
         Assert(BossMode.Active, "Boss mode is not active");
 
+        // Esc (the menu's Back) in one of the editor's panels closes that panel, not the whole Boss Creator
+        yield return BackClosesPanel(editor!.TowerRestrictionClicked, () => editor.towerRestrictionMenu, "Tower Restrictions");
+        yield return BackClosesPanel(editor.TowerSelectClicked, () => editor.towerSelectObject, "Add towers");
+        yield return BackClosesPanel(editor.MapSelectClicked, () => editor.mapSelectPanel.gameObject, "Map select");
+        yield return BackClosesPanel(editor.modifierSettings.OpenEditPopup, () => editor.modifierSettings.gameObject, "Modifiers");
+
         var section = AssertNotNull(BossEditorSection.Current, "No boss section")!;
         Assert(section.Section.activeInHierarchy, "The boss section is hidden");
         Assert(section.Play.activeInHierarchy, "The Play button is hidden");
@@ -681,6 +687,19 @@ public class BossCreatorTest : CustomBossTest
         Assert(!editor.dcm.bloonModifiers.allFortified, "All fortified in the model after reset");
         AssertEquals(section.MaxParagons.Value, section.MaxParagons.Slider.maxValue, "Max paragons shown after reset");
         AssertEquals(editor.dcm.maxParagons, ParagonMath.NoLimit, "Max paragons in the model after reset");
+    }
+
+    private IEnumerator BackClosesPanel(Action open, Func<GameObject> panel, string name)
+    {
+        open();
+        yield return new WaitForSecondsRealtime(1);
+        Assert(panel().activeInHierarchy, $"{name} did not open");
+
+        MenuManager.instance.Back();
+        yield return new WaitForSecondsRealtime(1);
+        Assert(!panel().activeInHierarchy, $"Back did not close {name}");
+        Assert(BossMode.Active && MenuManager.instance.GetCurrentMenu()?.GetIl2CppType().Name == nameof(ChallengeEditor),
+            $"Back in {name} left the Boss Creator");
     }
 
     private IEnumerator WaitForEditor(Action<ChallengeEditor> found)

@@ -106,6 +106,13 @@ internal static class ChallengeEditor_OverrideClose
         // vanilla draft handling on the boss setup either
         if (!BossMode.Active && !BossEditorSection.IsBossEditor(__instance)) return true;
 
+        // Esc in one of the editor's own panels closes that panel, not the whole Boss Creator
+        if (BossMode.Active && ClosePanel(__instance))
+        {
+            __result = true;
+            return false;
+        }
+
         if (BossMode.Active)
         {
             __instance.ApplyUiSettingsToDCM();
@@ -115,6 +122,25 @@ internal static class ChallengeEditor_OverrideClose
         BossEditorSection.Hide(__instance);
         __result = false;
         return false;
+    }
+
+    /// <summary>
+    /// Closes the editor's open panel (tower restrictions, tower select, map select or modifiers), if any
+    /// </summary>
+    internal static bool ClosePanel(ChallengeEditor editor)
+    {
+        if (editor.towerRestrictionMenu != null && editor.towerRestrictionMenu.activeInHierarchy)
+            editor.TowerRestrictionBackClicked();
+        else if (editor.towerSelectObject != null && editor.towerSelectObject.activeInHierarchy)
+            editor.CloseTowerSelect();
+        else if (editor.mapSelectPanel != null && editor.mapSelectPanel.gameObject.activeInHierarchy)
+            editor.CloseMapSelect();
+        else if (editor.modifierSettings != null && editor.modifierSettings.gameObject.activeInHierarchy)
+            editor.modifierSettings.CloseEditPopup();
+        else
+            return false;
+
+        return true;
     }
 }
 
