@@ -557,6 +557,9 @@ public sealed class BossEditorSection
         if (template != null)
         {
             play = Object.Instantiate(template.gameObject, template.parent, false);
+            // Next to the game's own Play, not last: the editor's panels (modifiers, towers, maps) and their dark
+            // backgrounds come later and must cover it, like they cover Reset
+            play.transform.SetSiblingIndex(template.GetSiblingIndex() + 1);
             var button = play.GetComponentInChildren<Button>(true);
             button.onClick = new Button.ButtonClickedEvent();
             button.onClick.AddListener(new Action(OnPlay));

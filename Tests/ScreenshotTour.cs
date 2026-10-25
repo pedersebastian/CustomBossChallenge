@@ -17,13 +17,27 @@ namespace CustomBossChallenge.Tests;
 /// <summary>
 /// Saves screenshots of the Boss Creator button and editor for visual checks and the README. Does nothing unless the
 /// game is started (without -batchmode) with <c>--cbc.screenshots=&lt;folder&gt;</c> or the environment variable
-/// <c>CBC_SCREENSHOTS=&lt;folder&gt;</c>.
+/// <c>CBC_SCREENSHOTS=&lt;folder&gt;</c>. With <c>CBC_RESOLUTIONS=1280x800,1024x768</c> as well, the tour is taken once
+/// per screen size, each in a subfolder such as <c>1024x768</c>.
 /// </summary>
 public class ScreenshotTour : CustomBossTest
 {
     public const string Argument = "--cbc.screenshots=";
 
     public const string EnvironmentVariable = "CBC_SCREENSHOTS";
+
+    public const string ResolutionsVariable = "CBC_RESOLUTIONS";
+
+    /// <summary>
+    /// The screen sizes from <see cref="ResolutionsVariable"/>, e.g. "1280x800,1024x768"
+    /// </summary>
+    internal static (int Width, int Height)[] Resolutions =>
+        (System.Environment.GetEnvironmentVariable(ResolutionsVariable) ?? "")
+        .Split(',', System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries)
+        .Select(size => size.Split('x'))
+        .Where(parts => parts.Length == 2 && int.TryParse(parts[0], out _) && int.TryParse(parts[1], out _))
+        .Select(parts => (int.Parse(parts[0]), int.Parse(parts[1])))
+        .ToArray();
 
     internal static string? Folder => System.Environment.GetCommandLineArgs()
         .FirstOrDefault(arg => arg.StartsWith(Argument))?[Argument.Length..].Trim('"', '\'') ??
@@ -38,6 +52,33 @@ public class ScreenshotTour : CustomBossTest
             yield break;
         }
 
+        var resolutions = Resolutions;
+        if (resolutions.Length == 0)
+        {
+            yield return Tour(folder);
+            yield break;
+        }
+
+        var (width, height, mode) = (Screen.width, Screen.height, Screen.fullScreenMode);
+        try
+        {
+            foreach (var (w, h) in resolutions)
+            {
+                Screen.SetResolution(w, h, FullScreenMode.Windowed);
+                yield return new WaitForSecondsRealtime(2);
+                Log($"tour at {Screen.width}x{Screen.height}");
+                yield return Tour(Path.Combine(folder, $"{w}x{h}"));
+                yield return ToMainMenu();
+            }
+        }
+        finally
+        {
+            Screen.SetResolution(width, height, mode);
+        }
+    }
+
+    private IEnumerator Tour(string folder)
+    {
         Directory.CreateDirectory(folder);
         yield return new WaitForSecondsRealtime(3);
         yield return Capture(folder, "main-menu");

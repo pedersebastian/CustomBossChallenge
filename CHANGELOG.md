@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The editor's Undo button now also takes the boss options (boss, Elite, tiers, spawn rounds, skulls) back to how
   they were when the Boss Creator was opened, like the rest of the setup. They used to stay as they were.
 - The main menu no longer makes a little garbage every frame while placing the Boss Creator button.
+- The Boss Creator's Play button was drawn on top of the editor's own windows (modifiers, towers, tower restrictions
+  and maps) instead of behind their dark background, like Reset.
 - Esc in the Boss Creator's Tower Restrictions, Add towers, map and modifier panels closes that panel instead of
   leaving for the main menu.
 
@@ -36,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The last tier always has 20 rounds to be beaten; a later end round set in the editor no longer gives it more.
 - The Boss Creator hides the editor's End Round field, since the game always ends 20 rounds after the last tier. The
   normal Challenge Editor still shows it.
+- The Boss Creator button and editor are now tested on 16:9, 16:10 (Steam Deck), 4:3, 21:9 and 32:9 screens: nothing
+  overlaps the game's own buttons or sticks out.
 
 ## [2.5.1] - 2026-10-24
 

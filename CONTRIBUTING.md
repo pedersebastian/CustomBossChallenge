@@ -48,6 +48,9 @@ Everything else runs inside the game, with automated tests built on Mod Helper's
 - the main menu button, and the whole Boss Creator flow in the real Challenge Editor, from editing the boss options
   to copying and pasting share codes and pressing Play, including that the normal Challenge Editor and your own
   draft stay untouched and that Play refuses unsupported modes and missing bosses
+- the layout on 16:9, 16:10, 4:3, 21:9 and 32:9 (`LayoutTest`): the Boss Creator button and Play overlap nothing,
+  stay on the screen, Play stays behind the editor's own panels, and every control of the Boss section stays inside
+  it. The game can change its resolution even with `-batchmode`, so this runs with the other tests
 
 Run them from Visual Studio / Rider with the **BloonsTD6 (Tests)** launch profile, or from the game folder:
 
@@ -57,8 +60,10 @@ BloonsTD6.exe moddingDev -batchmode --modhelper.offline --modhelper.only='Custom
 
 The result is written to `MelonLoader/Latest.log`, e.g. `Ran 25 test(s), 25 succeeded, 0 failed`.
 
-The screenshots in the README come from the `ScreenshotTour` test. It only runs in a windowed game started with
-`--cbc.screenshots=<folder>` (and without `-batchmode`).
+The screenshots in the README come from the `ScreenshotTour` test. It only runs in a windowed game (without
+`-batchmode`) started with the environment variable `CBC_SCREENSHOTS=<folder>`. To look at other screen formats, also
+set `CBC_RESOLUTIONS`, e.g. `1280x800,1024x768,1680x720,1920x540`: the tour is then taken once per size, each in a
+subfolder of `<folder>` named after the size.
 
 ## Checks on GitHub
 

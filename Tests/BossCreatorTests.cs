@@ -84,16 +84,11 @@ public class BossCreatorTest : CustomBossTest
         var section = AssertNotNull(BossEditorSection.Current, "No boss section")!;
         Assert(section.Section.activeInHierarchy, "The boss section is hidden");
         Assert(section.Play.activeInHierarchy, "The Play button is hidden");
-        // GetWorldCorners can't fill a managed array through Il2Cpp, so the edges are worked out from the rects
-        float Edge(Component holder, bool right)
-        {
-            var rect = holder.GetComponentInChildren<Button>().GetComponent<RectTransform>();
-            return rect.TransformPoint(new Vector3(right ? rect.rect.xMax : rect.rect.xMin, 0, 0)).x;
-        }
-
-        var playRight = Edge(section.Play.transform, true);
-        var resetLeft = Edge(editor!.transform.Find("Reset")!, false);
-        Assert(playRight < resetLeft, $"Play (right edge {playRight}) overlaps Reset (left edge {resetLeft})");
+        // LayoutTest checks this on other screen formats too
+        var play = LayoutChecks.ScreenRect(section.Play.GetComponentInChildren<Button>());
+        var reset = LayoutChecks.ScreenRect(editor!.transform.Find("Reset")!.GetComponentInChildren<Button>());
+        Assert(!LayoutChecks.Overlap(play, reset),
+            $"Play ({LayoutChecks.Describe(play)}) overlaps Reset ({LayoutChecks.Describe(reset)})");
         AssertEquals(section.BossButtons.Count, Enum.GetValues<BossType>().Length, "Boss buttons");
         AssertEquals(editor!.chalName.text, BossMode.DefaultName(BossType.Bloonarius), "Default challenge name");
         // The end round always follows the last tier, so the editor's own field is hidden
