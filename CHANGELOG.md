@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Running out of time on a tier now says how many rounds that tier really had, instead of always 20.
+- Custom games no longer count towards achievements, in the game or on Steam/Epic. XP and Monkey Money are still
+  earned.
 - Esc in the Boss Creator's Tower Restrictions, Add towers, map and modifier panels closes that panel instead of
   leaving for the main menu.
 

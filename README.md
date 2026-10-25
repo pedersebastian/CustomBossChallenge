@@ -139,7 +139,7 @@ Game modes without boss support (Deflation and Apopalypse) can't be played as a 
 - Only games started from the Boss Creator are changed. Normal Boss Challenges, the weekly **Boss Event**, co-op and
   every other mode are left untouched.
 - Custom games are **always unranked**, are **never saved** (your Boss Challenge save is never overwritten) and never
-  update Boss Challenge records, boss tier progress or badges.
+  update Boss Challenge records, boss tier progress, badges or achievements. XP and Monkey Money are still earned.
 - Your own Challenge Editor draft is never replaced by the boss setup.
 
 ## Upgrading from 1.x

@@ -1,13 +1,18 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using CustomBossChallenge.Config;
+using CustomBossChallenge.Patches;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Models.Bloons;
 using Il2CppAssets.Scripts.Models.Towers;
 using Il2CppAssets.Scripts.Models.Towers.Filters;
 using Il2CppAssets.Scripts.Unity;
+using Il2CppAssets.Scripts.Unity.Achievements;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using static CustomBossChallenge.Tests.TestUtils;
 
 namespace CustomBossChallenge.Tests;
@@ -74,12 +79,31 @@ public class ExtraTierGameTest : CustomBossTest
 
     protected override IEnumerator Run()
     {
+        var achievements = Achievements();
         yield return PlayToVictory(new BossOptions {Tiers = 6, SpeedPerTier = 20, HealthPerTier = 30, SpawnRounds = "40,41,42,43,44,45"});
+
+        // Winning a custom game counts towards no achievement, not even when progress is set directly
+        Assert(AchievementPatches.Blocked, "Achievements must be blocked in a custom game");
+        var manager = AssertNotNull(Object.FindObjectOfType<AchievementManager>(), "No achievement manager")!;
+        var open = manager.GetAchievements().ToArray().First(achievement => !achievement.WasAchieved);
+        manager.IncreaseAchievementProgress(open.Id, 1);
+        yield return new WaitForSecondsRealtime(3);
+        var changed = Achievements().Where(pair => achievements.TryGetValue(pair.Key, out var before) && before != pair.Value)
+            .Select(pair => $"{pair.Key} {achievements[pair.Key]} -> {pair.Value}").ToList();
+
         yield return ToMainMenu();
+        Assert(!AchievementPatches.Blocked, "Achievements must count again after leaving the custom game");
+        // Undo a leaked increase on the player's profile before failing
+        if (changed.Count > 0) manager.SetAchievementProgress(open.Id, achievements[open.Id].Progress);
+        AssertEquals(string.Join(", ", changed), "", "Achievements changed in a custom game");
         // On easy a normal game ends at round 40, which used to end boss games after the first tier
         yield return PlayToVictory(new BossOptions {Tiers = 2, SpawnRounds = "40,45"}, "Easy");
         yield return ToMainMenu();
     }
+
+    private static Dictionary<int, (float Progress, bool Achieved)> Achievements() =>
+        Object.FindObjectOfType<AchievementManager>().GetAchievements().ToArray()
+            .ToDictionary(achievement => achievement.Id, achievement => (achievement.CurrentProgress, achievement.WasAchieved));
 
     private IEnumerator PlayToVictory(BossOptions options, string difficulty = "Medium")
     {
