@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Running out of time on a tier now says how many rounds that tier really had, instead of always 20.
+- All Fortified stays first among the editor's modifiers after Undo, Random or loading a setup, instead of moving to
+  the end of its list.
 - Custom games no longer count towards achievements, in the game or on Steam/Epic. XP and Monkey Money are still
   earned.
 - The mod checks that all its changes to the game are in place. If a BTD6 update renamed or removed a part it needs,
