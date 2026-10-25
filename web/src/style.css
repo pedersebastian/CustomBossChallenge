@@ -1,12 +1,14 @@
 :root {
-  --sky: #0f2f5c;
-  --sea: #1b5aa8;
-  --panel: #3a78cc;
-  --panel-edge: #24599f;
-  --panel-inner: #2c62ad;
-  --card: #1b3c6c;
+  /* A dark sea behind bright panels, so the boxes stand out like the game's menus */
+  --sky: #06152b;
+  --sea: #0c2a52;
+  --sea-end: #12396b;
+  --panel: #4a8ee6;
+  --panel-edge: #1d4f94;
+  --panel-inner: #3170c4;
+  --card: #1a3a68;
   --text: #ffffff;
-  --muted: #d6e6ff;
+  --muted: #eaf3ff;
   --harder: #ff9e33;
   --easier: #73ccff;
   --error: #ff6b6b;
@@ -34,7 +36,7 @@ body {
   margin: 0;
   font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--text);
-  background: linear-gradient(180deg, var(--sky) 0%, var(--sea) 60%, #2a7cc9 100%) fixed;
+  background: linear-gradient(180deg, var(--sky) 0%, var(--sea) 60%, var(--sea-end) 100%) fixed;
   line-height: 1.5;
 }
 
@@ -225,12 +227,14 @@ main {
   padding: 22px;
   margin-bottom: 28px;
   box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.2),
-    0 6px 0 rgba(0, 0, 0, 0.25);
+    inset 0 3px 0 rgba(255, 255, 255, 0.3),
+    0 0 0 3px var(--outline),
+    0 8px 0 3px rgba(0, 0, 0, 0.45);
 }
 
 .panel > p {
-  color: var(--muted);
+  color: var(--text);
+  text-shadow: 0 1px 0 rgba(11, 29, 56, 0.6);
   margin-top: 0;
 }
 
