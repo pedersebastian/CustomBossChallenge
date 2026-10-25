@@ -123,6 +123,14 @@ public class BossCreatorTest : CustomBossTest
         var fortified = AssertNotNull(FortifiedModifier.Find(modifiers), "No All Fortified modifier")!;
         AssertEquals(fortified.transform.parent.Pointer, modifiers.excludedContainer.Pointer, "All Fortified starts excluded");
         AssertEquals(fortified.transform.GetSiblingIndex(), 0, "All Fortified comes first");
+        // Also after the editor shows a model that turns it on and off again (Undo, Randomize, loading a setup)
+        editor.dcm.bloonModifiers.allFortified = true;
+        editor.ApplyDcmSettingsToUI();
+        AssertEquals(fortified.transform.parent.Pointer, modifiers.includedContainer.Pointer, "All Fortified shown as included");
+        editor.dcm.bloonModifiers.allFortified = false;
+        editor.ApplyDcmSettingsToUI();
+        AssertEquals(fortified.transform.parent.Pointer, modifiers.excludedContainer.Pointer, "All Fortified shown as excluded");
+        AssertEquals(fortified.transform.GetSiblingIndex(), 0, "All Fortified comes first after showing a model");
         foreach (var label in fortified.GetComponentsInChildren<TMP_Text>(true))
         {
             AssertEquals(label.text, Texts.AllFortified.T(), "All Fortified label");
