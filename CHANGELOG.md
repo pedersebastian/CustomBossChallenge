@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   things look, like the boss on the map picker, are just logged.
 - The editor's Undo button now also takes the boss options (boss, Elite, tiers, spawn rounds, skulls) back to how
   they were when the Boss Creator was opened, like the rest of the setup. They used to stay as they were.
+- The main menu no longer makes a little garbage every frame while placing the Boss Creator button.
 - Esc in the Boss Creator's Tower Restrictions, Add towers, map and modifier panels closes that panel instead of
   leaving for the main menu.
 

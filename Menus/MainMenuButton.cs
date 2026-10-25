@@ -53,6 +53,11 @@ public static class MainMenuButton
     private static MainMenuEventPanel? column;
 
     /// <summary>
+    /// Reused by <see cref="UpdatePosition"/>, which runs every frame, so it doesn't make garbage each time
+    /// </summary>
+    private static Il2CppStructArray<Vector3>? corners;
+
+    /// <summary>
     /// Keeps the button just below the lowest event button. The game fills the event column asynchronously and the
     /// number of events changes, so this runs every frame while the main menu is shown.
     /// </summary>
@@ -60,7 +65,7 @@ public static class MainMenuButton
     {
         if (current == null || column == null || !current.gameObject.activeInHierarchy) return;
 
-        var corners = new Il2CppStructArray<Vector3>(4);
+        var corners = MainMenuButton.corners ??= new Il2CppStructArray<Vector3>(4);
         column.GetComponent<RectTransform>().GetWorldCorners(corners);
         var centerX = (corners[0].x + corners[2].x) / 2;
         var top = corners[1].y;
