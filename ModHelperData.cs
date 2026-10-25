@@ -2,7 +2,7 @@ namespace CustomBossChallenge;
 
 public static class ModHelperData
 {
-    public const string WorksOnVersion = "57.3";
+    public const string WorksOnVersion = "57.4";
     public const string Version = "2.5.1";
     public const string Name = "CustomBossChallenge";
 
