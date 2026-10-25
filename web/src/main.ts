@@ -1,0 +1,23 @@
+// The fonts are part of the site, so it loads nothing from other servers. The site is in English: Latin is enough.
+import "@fontsource/luckiest-guy/latin-400.css";
+import "@fontsource/nunito/latin-400.css";
+import "@fontsource/nunito/latin-700.css";
+import "@fontsource/nunito/latin-800.css";
+import { GAME } from "./data/types";
+import { codeFromHash, setUpCodeViewer } from "./sections/codeViewer";
+import { setUpExamples } from "./sections/examples";
+
+const input = document.getElementById("code-input") as HTMLTextAreaElement;
+const result = document.getElementById("code-result") as HTMLElement;
+const open = setUpCodeViewer(input, result);
+
+const fromLink = codeFromHash();
+if (fromLink) {
+  open(fromLink);
+  document.getElementById("codes")?.scrollIntoView();
+}
+
+void setUpExamples(document.getElementById("example-list") as HTMLElement, open);
+
+const version = document.getElementById("game-version");
+if (version) version.textContent = `Boss data from BTD6 ${GAME.gameVersion}`;

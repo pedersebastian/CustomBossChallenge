@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Boss Challenge</title>
+    <meta
+      name="description"
+      content="A BTD6 mod that adds a Boss Creator: any boss or Elite, custom speed, health, skulls and 1-10 tiers. Read and share Boss Creator codes here."
+    />
+    <link rel="icon" type="image/png" href="./icon.png" />
+    <link rel="apple-touch-icon" href="./icon.png" />
+    <link rel="canonical" href="%VITE_SITE_URL%" />
+    <meta name="theme-color" content="#0c2a52" />
+
+    <!-- The card a link shows on Discord, Reddit, X... A #code=... in the link never reaches the server, so every link
+         shows this same card. The image is made from scripts/og-card.html. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Custom Boss Challenge" />
+    <meta property="og:title" content="Custom Boss Challenge: build your own BTD6 boss fight" />
+    <meta
+      property="og:description"
+      content="A BTD6 mod with a Boss Creator: any boss or Elite, custom speed, health, skulls and 1-10 tiers. Read and share Boss Creator codes here."
+    />
+    <meta property="og:url" content="%VITE_SITE_URL%" />
+    <meta property="og:image" content="%VITE_SITE_URL%og-card.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Custom Boss Challenge logo with the words: build your own BTD6 boss fight" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Custom Boss Challenge: build your own BTD6 boss fight" />
+    <meta
+      name="twitter:description"
+      content="Any boss or Elite, custom speed, health, skulls and 1-10 tiers. Read and share Boss Creator codes."
+    />
+    <meta name="twitter:image" content="%VITE_SITE_URL%og-card.png" />
+    <meta name="twitter:image:alt" content="Custom Boss Challenge logo with the words: build your own BTD6 boss fight" />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#top">Skip to content</a>
+    <header class="top">
+      <nav class="nav" aria-label="Main">
+        <a class="brand" href="#top"><img src="./icon.png" alt="" width="40" height="40" /> Custom Boss Challenge</a>
+        <div class="nav-links">
+          <a href="#codes">Read a code</a>
+          <a href="#examples">Try these</a>
+          <a href="#features">Features</a>
+          <a href="#install">Install</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top" tabindex="-1">
+      <section class="hero">
+        <img class="hero-logo" src="./icon.png" alt="Custom Boss Challenge logo" width="160" height="160" />
+        <div>
+          <h1>Build your own boss fight</h1>
+          <p class="lead">
+            A BTD6 mod that adds a <strong>Boss Creator</strong> to the main menu: pick any boss or Elite, change its speed,
+            health and skulls, and play 1 to 10 tiers on the rounds you choose, with every Challenge Editor rule.
+          </p>
+          <div class="hero-actions">
+            <a class="button green" href="#codes">Read a share code</a>
+            <a class="button orange" href="#install">Install the mod</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="codes" class="panel">
+        <h2>Read a share code</h2>
+        <p>
+          Paste a Boss Creator code (it starts with <code>CBC1:</code> or <code>CBC2:</code>) to see the whole setup without
+          opening the game. Nothing is sent anywhere: the code is read right here in your browser.
+        </p>
+        <textarea id="code-input" class="code-input" rows="3" spellcheck="false" placeholder="CBC2:…" aria-label="Share code"></textarea>
+        <div id="code-result" class="result" aria-live="polite"></div>
+      </section>
+
+      <section id="examples" class="panel">
+        <h2>Try these</h2>
+        <p>Copy a code, then press <strong>Paste</strong> in the Boss section of the Boss Creator.</p>
+        <div id="example-list" class="examples"></div>
+      </section>
+
+      <section id="features" class="panel">
+        <h2>Features</h2>
+        <div class="features">
+          <article class="feature">
+            <h3>Any boss, any Elite</h3>
+            <p>Bloonarius, Lych, Vortex, Dreadbloon, Phayze, Blastapopoulos and Diamondback, normal or Elite.</p>
+          </article>
+          <article class="feature">
+            <h3>1 to 10 tiers</h3>
+            <p>Tiers above 5 are stronger copies of tier 5. Beat the last tier you chose and you win.</p>
+          </article>
+          <article class="feature">
+            <h3>Speed and health per tier</h3>
+            <p>Make every tier faster and tougher than the one before, on top of Boss Speed and Boss Health.</p>
+          </article>
+          <article class="feature">
+            <h3>Your rounds</h3>
+            <p>Choose the round each tier arrives on. The last tier always gets 20 rounds, like the weekly events.</p>
+          </article>
+          <article class="feature">
+            <h3>Skulls your way</h3>
+            <p>Keep the boss's own skulls, space any number evenly, or put them at exact health percentages.</p>
+          </article>
+          <article class="feature">
+            <h3>Every editor rule</h3>
+            <p>Map, difficulty, mode, cash, lives, towers, Max Paragons, All Fortified and the rest of the Challenge Editor.</p>
+          </article>
+          <article class="feature">
+            <h3>Free retries</h3>
+            <p>Lost? Retry the last round or go back to when the current tier arrived, without Monkey Money.</p>
+          </article>
+          <article class="feature">
+            <h3>Share codes and saved setups</h3>
+            <p>Keep up to 50 favourite setups and share any of them as a short code.</p>
+          </article>
+          <article class="feature">
+            <h3>Safe for your profile</h3>
+            <p>Custom games are always unranked and never touch your records, saves, badges or achievements.</p>
+          </article>
+        </div>
+        <figure class="screenshot">
+          <img
+            src="./screens/boss-options-1280.webp"
+            srcset="./screens/boss-options-640.webp 640w, ./screens/boss-options-1280.webp 1280w"
+            sizes="(max-width: 1100px) 100vw, 1060px"
+            width="1280"
+            height="720"
+            alt="The Boss section in the Challenge Editor"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>The Boss section, added to the game's own Challenge Editor.</figcaption>
+        </figure>
+      </section>
+
+      <section id="install" class="panel">
+        <h2>Install</h2>
+        <div class="install">
+          <div>
+            <h3>Mod Browser (recommended)</h3>
+            <ol>
+              <li>Install <a href="https://melonwiki.xyz/">MelonLoader</a> and <a href="https://github.com/gurrenm3/BTD-Mod-Helper#readme">BTD6 Mod Helper</a>.</li>
+              <li>Open the <strong>Mod Browser</strong> from the Mod Helper menu and search for <strong>Custom Boss Challenge</strong>.</li>
+              <li>Download it and restart the game.</li>
+            </ol>
+          </div>
+          <div>
+            <h3>Manual</h3>
+            <ol>
+              <li>Install MelonLoader and BTD6 Mod Helper.</li>
+              <li>Download <code>CustomBossChallenge.dll</code> from the <a href="https://github.com/pedersebastian/CustomBossChallenge/releases">releases page</a>.</li>
+              <li>Put it in the <code>Mods</code> folder of your BTD6 installation.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <a href="https://github.com/pedersebastian/CustomBossChallenge">Custom Boss Challenge on GitHub</a> ·
+        <span id="game-version"></span>
+      </p>
+      <p class="small">A fan-made mod. Not affiliated with or endorsed by Ninja Kiwi. Bloons TD 6 is a trademark of Ninja Kiwi.</p>
+    </footer>
+
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

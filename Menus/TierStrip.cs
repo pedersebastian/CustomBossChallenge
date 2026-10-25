@@ -4,6 +4,7 @@ using System.Globalization;
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
 using CustomBossChallenge.Config;
+using Il2CppAssets.Scripts.Models;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity;
 using Il2CppTMPro;
@@ -149,44 +150,65 @@ public sealed class TierStrip
     {
         var height = Row.GetComponent<RectTransform>().sizeDelta.y;
         var tiers = TierMath.ClampTiers(options.Tiers);
-        var rounds = options.EffectiveSpawnRounds;
-        var bossSpeed = dcm?.bloonModifiers?.bossSpeedMultiplier ?? 1;
         var bossHealth = dcm?.bloonModifiers?.healthMultipliers?.boss ?? 1;
         var portrait = BossEditorSection.Portrait(options.Boss, options.Elite);
-        var game = Game.instance?.model;
-        var cap = TierMath.MaxModelHealth(bossHealth);
-        var capped = false;
+        var values = Values(options, dcm, Game.instance?.model);
 
         for (var i = 0; i < Cards.Count; i++)
         {
-            var tier = i + 1;
             var card = Cards[i];
-            card.Panel.gameObject.SetActive(tier <= tiers);
-            if (tier > tiers) continue;
+            card.Panel.gameObject.SetActive(i < tiers);
+            if (i >= tiers) continue;
 
+            var value = values[i];
             card.Portrait.Image.SetSprite(portrait);
-            card.Round.SetText($"R{rounds[i]}");
+            card.Round.SetText($"R{value.Round}");
+            Paint(card.Speed, $"×{value.Speed.ToString("0.##", CultureInfo.InvariantCulture)}", value.Speed);
+            Paint(card.Health, value.Shown, value.HealthFactor);
+        }
 
+        // The cap is on the boss model and leaves room for Boss Health, which is applied on top of it like in the game
+        EditorRows.SetText(Note.Text, Texts.HealthCap.T(FormatHealth(TierMath.MaxModelHealth(bossHealth) * bossHealth)));
+        LayOut(tiers, values.Exists(value => value.Capped));
+        return !Mathf.Approximately(height, Row.GetComponent<RectTransform>().sizeDelta.y);
+    }
+
+    /// <summary>
+    /// What a tier's card shows: the round it arrives on, its speed and health compared with the normal game (above 1
+    /// is harder), and its health shortened like the game does, or "?" without the boss's model
+    /// </summary>
+    public readonly record struct CardValues(int Tier, int Round, double Speed, double HealthFactor, string Shown, bool Capped);
+
+    /// <summary>
+    /// The cards for <paramref name="options"/> with the boss multipliers from <paramref name="dcm"/>. The website
+    /// shows the same numbers, see WebDataTest.
+    /// </summary>
+    public static List<CardValues> Values(BossOptions options, DailyChallengeModel? dcm, GameModel? game)
+    {
+        var rounds = options.EffectiveSpawnRounds;
+        var bossSpeed = dcm?.bloonModifiers?.bossSpeedMultiplier ?? 1;
+        var bossHealth = dcm?.bloonModifiers?.healthMultipliers?.boss ?? 1;
+        var cap = TierMath.MaxModelHealth(bossHealth);
+        var values = new List<CardValues>();
+        for (var tier = 1; tier <= TierMath.ClampTiers(options.Tiers); tier++)
+        {
             var speed = TierMath.SpeedFactor(tier, options.SpeedPerTier) * bossSpeed;
-            Paint(card.Speed, $"×{speed.ToString("0.##", CultureInfo.InvariantCulture)}", speed);
-
-            var source = options.BossId(Math.Min(tier, TierMath.VanillaTiers));
             var health = TierMath.HealthFactor(tier, options.HealthPerTier) * bossHealth;
+            var source = options.BossId(Math.Min(tier, TierMath.VanillaTiers));
             var shown = "?";
+            var capped = false;
             if (game != null && game.DoesBloonExist(source))
             {
                 var model = game.GetBloon(source).maxHealth * TierMath.ExtraTierFactor(tier) *
                             TierMath.HealthFactor(tier, options.HealthPerTier);
-                capped |= model > cap;
+                capped = model > cap;
                 shown = FormatHealth(Math.Min(model, cap) * bossHealth);
             }
-            Paint(card.Health, shown, health);
+
+            values.Add(new CardValues(tier, rounds[tier - 1], speed, health, shown, capped));
         }
 
-        // The cap is on the boss model and leaves room for Boss Health, which is applied on top of it like in the game
-        EditorRows.SetText(Note.Text, Texts.HealthCap.T(FormatHealth(cap * bossHealth)));
-        LayOut(tiers, capped);
-        return !Mathf.Approximately(height, Row.GetComponent<RectTransform>().sizeDelta.y);
+        return values;
     }
 
     private static void Paint(ModHelperText text, string value, double factor)

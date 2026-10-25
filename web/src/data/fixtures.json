@@ -1,0 +1,1148 @@
+{
+  "valid": [
+    {
+      "code": "CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null
+      },
+      "challenge": {
+        "name": "",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        40,
+        60,
+        80,
+        100,
+        120
+      ],
+      "endRound": 140,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "20k",
+          "capped": false
+        },
+        {
+          "round": 60,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "75k",
+          "capped": false
+        },
+        {
+          "round": 80,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "350k",
+          "capped": false
+        },
+        {
+          "round": 100,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "750k",
+          "capped": false
+        },
+        {
+          "round": 120,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "3M",
+          "capped": false
+        }
+      ],
+      "skulls": [
+        "75%",
+        "50%",
+        "25%"
+      ],
+      "playProblem": null
+    },
+    {
+      "code": "CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJSsjAx0lDxSE3NKMuBCpga1OkrJQBNrawE",
+      "options": {
+        "Boss": "Vortex",
+        "Elite": true,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 7,
+        "SpeedPerTier": 20,
+        "HealthPerTier": 50,
+        "SpawnRounds": null
+      },
+      "challenge": {
+        "name": "",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        40,
+        60,
+        80,
+        100,
+        120,
+        140,
+        160
+      ],
+      "endRound": 180,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "42k",
+          "capped": false
+        },
+        {
+          "round": 60,
+          "speed": 1.2,
+          "healthFactor": 1.5,
+          "health": "377k",
+          "capped": false
+        },
+        {
+          "round": 80,
+          "speed": 1.4,
+          "healthFactor": 2.0,
+          "health": "3.4M",
+          "capped": false
+        },
+        {
+          "round": 100,
+          "speed": 1.6,
+          "healthFactor": 2.5,
+          "health": "17M",
+          "capped": false
+        },
+        {
+          "round": 120,
+          "speed": 1.8,
+          "healthFactor": 3.0,
+          "health": "101M",
+          "capped": false
+        },
+        {
+          "round": 140,
+          "speed": 2.0,
+          "healthFactor": 3.5,
+          "health": "176M",
+          "capped": false
+        },
+        {
+          "round": 160,
+          "speed": 2.2,
+          "healthFactor": 4.0,
+          "health": "302M",
+          "capped": false
+        }
+      ],
+      "skulls": [
+        "87.5%",
+        "75%",
+        "62.5%",
+        "50%",
+        "37.5%",
+        "25%",
+        "12.5%"
+      ],
+      "playProblem": null
+    },
+    {
+      "code": "CBC2:q1bKV7KqVnLKLy5WslLyqUzOUNJRcs3JLElVsiopKk3VUQrJTC0Cyhka6Ch5pCbmlGQEpBaBxJSsjA1qdZSSQdrzEnOB6pV8E4sSSzLy8xSg5hSnpqYoWRkZGJnV1gIA",
+      "options": {
+        "Boss": "Lych",
+        "Elite": true,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 10,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 30,
+        "SpawnRounds": null
+      },
+      "challenge": {
+        "name": "Marathon Lych",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        40,
+        60,
+        80,
+        100,
+        120,
+        140,
+        160,
+        180,
+        200,
+        220
+      ],
+      "endRound": 240,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "30k",
+          "capped": false
+        },
+        {
+          "round": 60,
+          "speed": 1.0,
+          "healthFactor": 1.3,
+          "health": "234k",
+          "capped": false
+        },
+        {
+          "round": 80,
+          "speed": 1.0,
+          "healthFactor": 1.6,
+          "health": "1.8M",
+          "capped": false
+        },
+        {
+          "round": 100,
+          "speed": 1.0,
+          "healthFactor": 1.9,
+          "health": "9.1M",
+          "capped": false
+        },
+        {
+          "round": 120,
+          "speed": 1.0,
+          "healthFactor": 2.2,
+          "health": "53M",
+          "capped": false
+        },
+        {
+          "round": 140,
+          "speed": 1.0,
+          "healthFactor": 2.5,
+          "health": "90M",
+          "capped": false
+        },
+        {
+          "round": 160,
+          "speed": 1.0,
+          "healthFactor": 2.8,
+          "health": "151M",
+          "capped": false
+        },
+        {
+          "round": 180,
+          "speed": 1.0,
+          "healthFactor": 3.1,
+          "health": "251M",
+          "capped": false
+        },
+        {
+          "round": 200,
+          "speed": 1.0,
+          "healthFactor": 3.4,
+          "health": "413M",
+          "capped": false
+        },
+        {
+          "round": 220,
+          "speed": 1.0,
+          "healthFactor": 3.7,
+          "health": "674M",
+          "capped": false
+        }
+      ],
+      "skulls": [
+        "83.33%",
+        "66.66%",
+        "50%",
+        "33.33%",
+        "16.66%"
+      ],
+      "playProblem": null
+    },
+    {
+      "code": "CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lEKzi7NyfHNT0kFCrqWpeblVAYXJCanpoCkClJTUwJSi0IyU4uUrEwManWUkkFG5CXmglSDpRVcUnPz8xTgxhUDxZSsjAyMzGprAQ",
+      "options": {
+        "Boss": "Vortex",
+        "Elite": false,
+        "SkullMode": "EvenlySpaced",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 40,
+        "HealthPerTier": 0,
+        "SpawnRounds": null
+      },
+      "challenge": {
+        "name": "Speed Demon Vortex",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        40,
+        60,
+        80,
+        100,
+        120
+      ],
+      "endRound": 140,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "20k",
+          "capped": false
+        },
+        {
+          "round": 60,
+          "speed": 1.4,
+          "healthFactor": 1.0,
+          "health": "63k",
+          "capped": false
+        },
+        {
+          "round": 80,
+          "speed": 1.8,
+          "healthFactor": 1.0,
+          "health": "294k",
+          "capped": false
+        },
+        {
+          "round": 100,
+          "speed": 2.2,
+          "healthFactor": 1.0,
+          "health": "628k",
+          "capped": false
+        },
+        {
+          "round": 120,
+          "speed": 2.6,
+          "healthFactor": 1.0,
+          "health": "2.5M",
+          "capped": false
+        }
+      ],
+      "skulls": [
+        "75%",
+        "50%",
+        "25%"
+      ],
+      "playProblem": null
+    },
+    {
+      "code": "CBC1:RYwxCsJAEEWvIr9ewiaCxbQpUqXSC6xmJAuTmeDEKuzd3SBo-d9_vB0G2nHL_HJQWwIex76LmY425ef3qMTcryvzNL5ly6tUDjo3MWDmJNv8xz8dFJu21KSmhUEYJLmf-qRqigCvMVAXu0spHw",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 1,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null
+      },
+      "challenge": {
+        "name": "Glass Cannon",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 3.0,
+        "bossHealth": 0.1,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        40
+      ],
+      "endRound": 60,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 3.0,
+          "healthFactor": 0.1,
+          "health": "2k",
+          "capped": false
+        }
+      ],
+      "skulls": [
+        "75%",
+        "50%",
+        "25%"
+      ],
+      "playProblem": null
+    },
+    {
+      "code": "CBC1:NY0xDsIwDEWvUnnOUHVgyAgqWxFST5AmBiJMjJK0Uqlyd5wiNuv7_fc3YNAbHDkl0HB9mPWDoKAnnxF0jjMqGJ8z0cBOAugXDLSOb2PRCbe_TjyHDLotCmyVTcQchPc3j1G0GxiiM8dcA_ezCut8MhPhiEQ-3P9jwbzqzoWb3Z1UI-eA0a4yl7D2u7Y7lPIF",
+      "options": {
+        "Boss": "Phayze",
+        "Elite": true,
+        "SkullMode": "EvenlySpaced",
+        "SkullCount": 0,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null
+      },
+      "challenge": {
+        "name": "No Skulls, No Mercy",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": true,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": true,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        40,
+        60,
+        80,
+        100,
+        120
+      ],
+      "endRound": 140,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "19k",
+          "capped": false
+        },
+        {
+          "round": 60,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "110k",
+          "capped": false
+        },
+        {
+          "round": 80,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "770k",
+          "capped": false
+        },
+        {
+          "round": 100,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "3.1M",
+          "capped": false
+        },
+        {
+          "round": 120,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "16M",
+          "capped": false
+        }
+      ],
+      "skulls": [],
+      "playProblem": null
+    },
+    {
+      "code": "CBC1:q1bKV7KqVnLKLy5WslJyKUpNTEnKyc_PU9JRCi5ILM8Lyi_NSwFJGRnoKBiZ6igYA2ljIG1ioFSro5QM0pyXmJsKVBFckJqaUlSap4BiSjFQUMnKyMDIrLYWAA",
+      "options": {
+        "Boss": "Dreadbloon",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": "20, 25, 30, 35, 40"
+      },
+      "challenge": {
+        "name": "Speedrun Dreadbloon",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        20,
+        25,
+        30,
+        35,
+        40
+      ],
+      "endRound": 60,
+      "tiers": [
+        {
+          "round": 20,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "7.5k",
+          "capped": false
+        },
+        {
+          "round": 25,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "25k",
+          "capped": false
+        },
+        {
+          "round": 30,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "120k",
+          "capped": false
+        },
+        {
+          "round": 35,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "260k",
+          "capped": false
+        },
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "1M",
+          "capped": false
+        }
+      ],
+      "skulls": [
+        "75%",
+        "50%",
+        "25%"
+      ],
+      "playProblem": null
+    },
+    {
+      "code": "CBC1:LY2xCgMhEER_JUxtcVyRwlI4uHT5heXUIHiuuAoJh_-eDaR982bmAsNecCwCC5dJOlWuPDILDLaceoDtbYRpcPzUk6qajxJDK5TV8SnGdIzcP8p3al5ZoVNreFKjF5ebo6JQQvCw67Leja68_6H-LnN-AQ",
+      "options": {
+        "Boss": "Blastapopoulos",
+        "Elite": true,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null
+      },
+      "challenge": {
+        "name": "Paragon Ban",
+        "map": "Infernal",
+        "difficulty": "Hard",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": 0,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        40,
+        60,
+        80,
+        100,
+        120
+      ],
+      "endRound": 140,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "43k",
+          "capped": false
+        },
+        {
+          "round": 60,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "270k",
+          "capped": false
+        },
+        {
+          "round": 80,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "1.7M",
+          "capped": false
+        },
+        {
+          "round": 100,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "7M",
+          "capped": false
+        },
+        {
+          "round": 120,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "35M",
+          "capped": false
+        }
+      ],
+      "skulls": [
+        "87.5%",
+        "75%",
+        "62.5%",
+        "50%",
+        "37.5%",
+        "25%",
+        "12.5%"
+      ],
+      "playProblem": null
+    },
+    {
+      "code": "CBC1:Lc1NC4MwDAbgv1LecwbZmIz16tkx0OMuooGNWSNqQZD-96XbIId8PEl2KPyO5iXzAl8woX7HYSg1jiv84Wz1JNLfZc4E_spGyrisGr7QllCQsziemNyG_4FKe7HRTyIRuvwmtJM1b1rH7llZThjbkJ17RGa-OKT0AQ",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Custom",
+        "SkullCount": 0,
+        "CustomSkulls": "5",
+        "Tiers": 10,
+        "SpeedPerTier": 50,
+        "HealthPerTier": 0,
+        "SpawnRounds": null
+      },
+      "challenge": {
+        "name": "Custom Bloonarius",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        40,
+        60,
+        80,
+        100,
+        120,
+        140,
+        160,
+        180,
+        200,
+        220
+      ],
+      "endRound": 240,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "20k",
+          "capped": false
+        },
+        {
+          "round": 60,
+          "speed": 1.5,
+          "healthFactor": 1.0,
+          "health": "75k",
+          "capped": false
+        },
+        {
+          "round": 80,
+          "speed": 2.0,
+          "healthFactor": 1.0,
+          "health": "350k",
+          "capped": false
+        },
+        {
+          "round": 100,
+          "speed": 2.5,
+          "healthFactor": 1.0,
+          "health": "750k",
+          "capped": false
+        },
+        {
+          "round": 120,
+          "speed": 3.0,
+          "healthFactor": 1.0,
+          "health": "3M",
+          "capped": false
+        },
+        {
+          "round": 140,
+          "speed": 3.5,
+          "healthFactor": 1.0,
+          "health": "4.5M",
+          "capped": false
+        },
+        {
+          "round": 160,
+          "speed": 4.0,
+          "healthFactor": 1.0,
+          "health": "6.8M",
+          "capped": false
+        },
+        {
+          "round": 180,
+          "speed": 4.5,
+          "healthFactor": 1.0,
+          "health": "10M",
+          "capped": false
+        },
+        {
+          "round": 200,
+          "speed": 5.0,
+          "healthFactor": 1.0,
+          "health": "15M",
+          "capped": false
+        },
+        {
+          "round": 220,
+          "speed": 5.0,
+          "healthFactor": 1.0,
+          "health": "23M",
+          "capped": false
+        }
+      ],
+      "skulls": [
+        "5%"
+      ],
+      "playProblem": null
+    },
+    {
+      "code": "CBC1:q1bKV7KqVgrJTC0qVrIy11FyrSgpSgRxPVITc0oylKyMjExrdZSSgapqawE",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 7,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 10,
+        "SpawnRounds": null
+      },
+      "challenge": {
+        "name": "",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        40,
+        60,
+        80,
+        100,
+        120,
+        140,
+        160
+      ],
+      "endRound": 180,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "20k",
+          "capped": false
+        },
+        {
+          "round": 60,
+          "speed": 1.0,
+          "healthFactor": 1.1,
+          "health": "83k",
+          "capped": false
+        },
+        {
+          "round": 80,
+          "speed": 1.0,
+          "healthFactor": 1.2,
+          "health": "420k",
+          "capped": false
+        },
+        {
+          "round": 100,
+          "speed": 1.0,
+          "healthFactor": 1.3,
+          "health": "975k",
+          "capped": false
+        },
+        {
+          "round": 120,
+          "speed": 1.0,
+          "healthFactor": 1.4,
+          "health": "4.2M",
+          "capped": false
+        },
+        {
+          "round": 140,
+          "speed": 1.0,
+          "healthFactor": 1.5,
+          "health": "6.8M",
+          "capped": false
+        },
+        {
+          "round": 160,
+          "speed": 1.0,
+          "healthFactor": 1.6,
+          "health": "11M",
+          "capped": false
+        }
+      ],
+      "skulls": [
+        "75%",
+        "50%",
+        "25%"
+      ],
+      "playProblem": null
+    },
+    {
+      "code": "CBC1:q1bKV7KqVgouSCzPC8ovzUspVrJSsrQ01VGwtDTTUTA0NTBQ0lEKyUwtAkqY1eooJQOV19YCAA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 6,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": "995, 996, 1500"
+      },
+      "challenge": {
+        "name": "",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        995,
+        996,
+        997,
+        998,
+        999,
+        1000
+      ],
+      "endRound": 1020,
+      "tiers": [
+        {
+          "round": 995,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "20k",
+          "capped": false
+        },
+        {
+          "round": 996,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "75k",
+          "capped": false
+        },
+        {
+          "round": 997,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "350k",
+          "capped": false
+        },
+        {
+          "round": 998,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "750k",
+          "capped": false
+        },
+        {
+          "round": 999,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "3M",
+          "capped": false
+        },
+        {
+          "round": 1000,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "4.5M",
+          "capped": false
+        }
+      ],
+      "skulls": [
+        "75%",
+        "50%",
+        "25%"
+      ],
+      "playProblem": null
+    }
+  ],
+  "invalid": [
+    {
+      "code": "",
+      "why": "empty",
+      "loads": false,
+      "problem": "Invalid"
+    },
+    {
+      "code": "hello",
+      "why": "not a code",
+      "loads": false,
+      "problem": "Invalid"
+    },
+    {
+      "code": "CBC9:abc",
+      "why": "too new",
+      "loads": false,
+      "problem": "TooNew"
+    },
+    {
+      "code": "CBC1:",
+      "why": "no data",
+      "loads": false,
+      "problem": "Invalid"
+    },
+    {
+      "code": "CBC1:!!!!",
+      "why": "not base64",
+      "loads": false,
+      "problem": "Invalid"
+    },
+    {
+      "code": "CBC1:aGVsbG8",
+      "why": "not deflate",
+      "loads": false,
+      "problem": "Invalid"
+    },
+    {
+      "code": "CBC1:q1bKV7KqrtVRSgZSSs",
+      "why": "cut short",
+      "loads": false,
+      "problem": "Invalid"
+    },
+    {
+      "code": "CBC1:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "why": "too long",
+      "loads": false,
+      "problem": "Invalid"
+    },
+    {
+      "code": "CBC1:izbUUTCKBQA",
+      "why": "not an object",
+      "loads": false,
+      "problem": "Invalid"
+    },
+    {
+      "code": "CBC1:q1bKV7JSMKwFAA",
+      "why": "options aren't an object",
+      "loads": true,
+      "problem": "None"
+    }
+  ]
+}
