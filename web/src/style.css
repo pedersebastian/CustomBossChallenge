@@ -370,7 +370,7 @@ main {
 .skull-bar {
   position: relative;
   height: 22px;
-  margin: 34px 4px 40px;
+  margin: 50px 4px 52px;
   border-radius: 11px;
   background: #3b1d1d;
   border: 3px solid var(--outline);
@@ -394,22 +394,22 @@ main {
 .skull::before {
   content: "💀";
   position: absolute;
-  top: -22px;
-  left: -12px;
-  font-size: 18px;
+  top: -36px;
+  left: -1.5px;
+  transform: translateX(-50%);
+  font-size: 28px;
+  line-height: 1;
 }
 
 .skull span {
   position: absolute;
-  top: 46px;
+  top: 48px;
+  left: -1.5px;
   transform: translateX(-50%);
-  font-size: 0.8rem;
+  font-size: 1.05rem;
   font-weight: 800;
   white-space: nowrap;
-}
-
-.skull.low span {
-  top: 62px;
+  text-shadow: 0 1px 0 var(--outline);
 }
 
 /* Rules */
@@ -596,6 +596,11 @@ main {
 
   .examples {
     grid-template-columns: 1fr;
+  }
+
+  .skull::before {
+    font-size: 22px;
+    top: -30px;
   }
 }
 

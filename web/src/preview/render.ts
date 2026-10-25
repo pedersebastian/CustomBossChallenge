@@ -83,11 +83,13 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
 function renderSkulls(options: BossOptions): HTMLElement {
   const { percents, tier } = skulls(options);
   const bar = h("div", { class: "skull-bar" }, h("div", { class: "skull-fill" }));
-  percents.forEach((value, i) => {
-    const marker = h("div", { class: "skull" + (i % 2 === 1 && percents.length > 6 ? " low" : "") }, h("span", {}, formatPercent(value)));
+  for (const value of percents) {
+    const marker = h("div", { class: "skull" }, h("span", {}, formatPercent(value)));
     marker.style.left = `${(1 - value) * 100}%`;
     bar.append(marker);
-  });
+  }
+  // Whether labels fit side by side depends on the bar's width, so they are laid out again when it changes
+  new ResizeObserver(() => layOutSkullLabels(bar)).observe(bar);
 
   const mode =
     options.SkullMode === "Vanilla" ? "the boss's own skulls" : options.SkullMode === "EvenlySpaced" ? "evenly spaced" : "custom";
@@ -97,6 +99,29 @@ function renderSkulls(options: BossOptions): HTMLElement {
     h("h4", {}, `Skulls (${mode}${tier ? `, tier ${tier}` : ""})`),
     percents.length === 0 ? h("p", { class: "muted" }, "No skulls: the boss never triggers its skull effect.") : bar,
   );
+}
+
+const LABEL_TOP = 48;
+const LABEL_LINE = 24;
+const LABEL_GAP = 6;
+const BAR_MARGIN_BOTTOM = 52;
+
+/**
+ * Like the game's Skull Preview: a percentage too close to the one before it on a line goes on the next line down, so
+ * no two labels overlap however narrow the bar is
+ */
+function layOutSkullLabels(bar: HTMLElement): void {
+  const labels = [...bar.querySelectorAll<HTMLElement>(".skull span")];
+  const lineEnds: number[] = [];
+  for (const label of labels) {
+    label.style.top = `${LABEL_TOP}px`;
+    const { left, right } = label.getBoundingClientRect();
+    let line = lineEnds.findIndex((end) => left >= end + LABEL_GAP);
+    if (line < 0) line = lineEnds.length;
+    lineEnds[line] = right;
+    label.style.top = `${LABEL_TOP + line * LABEL_LINE}px`;
+  }
+  bar.style.marginBottom = `${BAR_MARGIN_BOTTOM + Math.max(lineEnds.length - 1, 0) * LABEL_LINE}px`;
 }
 
 function renderRules(options: BossOptions, challenge: Challenge, rounds: number[]): HTMLElement {
