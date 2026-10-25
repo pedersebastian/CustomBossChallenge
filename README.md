@@ -11,6 +11,9 @@ boss options. Make the boss faster or tankier, move or remove its skulls, play a
 rounds you choose, and combine it with every rule the Challenge Editor already has. Ranked play, the weekly Boss
 Event and your Boss Challenge records and saves are never affected.
 
+**Website:** [pedersebastian.github.io/CustomBossChallenge](https://pedersebastian.github.io/CustomBossChallenge/),
+where you can read a share code and see the whole setup without the game.
+
 ![Boss Creator](docs/boss-creator.jpg)
 
 ## Features
@@ -85,6 +88,9 @@ rule, into a short text code:
 - **Copy** puts the code on the clipboard. Paste it into Discord, Reddit or a message.
 - **Paste** reads a code from the clipboard, shows the challenge name, boss, tiers, map and difficulty, and asks
   before it replaces your current setup.
+
+To look at a code without the game, paste it on the [website](https://pedersebastian.github.io/CustomBossChallenge/).
+It shows the Tier Preview, skulls and rules like the Boss Creator does.
 
 A code is only data: it can't run anything, and custom games are always unranked and never touch your records.
 Codes are checked before they load, so values outside what the game can play are brought back into range.
