@@ -57,13 +57,12 @@ public static class FortifiedModifier
                 EditorRows.SetText(text, Texts.AllFortified.T());
             }
 
-            // Like the game's own buttons, it starts excluded; first in the list, next to the camo and regrow ones
-            button.transform.SetSiblingIndex(0);
-            button.SetValue(false);
+            // Like the game's own buttons, it starts excluded
+            SetValue(button, false);
         }
 
         Enlarge(settings, true);
-        if (dcm?.bloonModifiers != null) button.SetValue(dcm.bloonModifiers.allFortified);
+        if (dcm?.bloonModifiers != null) SetValue(button, dcm.bloonModifiers.allFortified);
         settings.FillMsbLists();
         settings.SetDisplayIcons();
     }
@@ -91,7 +90,17 @@ public static class FortifiedModifier
     public static void Show(ChallengeEditorModifierSettings settings, DailyChallengeModel dcm)
     {
         var button = Find(settings);
-        if (button != null && dcm.bloonModifiers != null) button.SetValue(dcm.bloonModifiers.allFortified);
+        if (button != null && dcm.bloonModifiers != null) SetValue(button, dcm.bloonModifiers.allFortified);
+    }
+
+    /// <summary>
+    /// Clicking the button keeps it in its place, but setting its value moves it to the end of its list (e.g. after
+    /// Undo or Randomize when All Fortified changes), so it is put back first, next to the camo and regrow ones
+    /// </summary>
+    private static void SetValue(ModifierSettingsButton button, bool value)
+    {
+        button.SetValue(value);
+        button.transform.SetSiblingIndex(0);
     }
 
     /// <summary>
