@@ -123,6 +123,12 @@ the mod and run the tests again:
 $env:CBC_WEB_DATA = "<repo>\web\src\data"
 ```
 
+A shared link to the website shows a card with `web/public/og-card.png` (1200 × 630), the tags in `web/index.html`
+and the address in `web/.env` (`VITE_SITE_URL`, which link previews need in full; change it if the site moves). A
+`#code=…` never reaches the server, so every link shows the same card. The picture is made from
+`web/scripts/og-card.html` with Chrome; the command is at the top of that file. Keep it under ~100 KB, e.g. by saving it
+as a palette PNG.
+
 ## Translations
 
 The mod's texts are in `Localization/`, one file per language that BTD6 supports, e.g. `Localization/German.json`.
