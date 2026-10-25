@@ -72,7 +72,7 @@
         <h2>Read a share code</h2>
         <p>
           Paste a Boss Creator code (it starts with <code>CBC1:</code> or <code>CBC2:</code>) to see the whole setup without
-          opening the game. Nothing is sent anywhere: the code is read right here in your browser.
+          opening the game. The code is never sent anywhere: it is read right here in your browser.
         </p>
         <textarea id="code-input" class="code-input" rows="3" spellcheck="false" placeholder="CBC2:…" aria-label="Share code"></textarea>
         <div id="code-result" class="result" aria-live="polite"></div>
@@ -168,8 +168,15 @@
         <span id="game-version"></span>
       </p>
       <p class="small">A fan-made mod. Not affiliated with or endorsed by Ninja Kiwi. Bloons TD 6 is a trademark of Ninja Kiwi.</p>
+      <p class="small">
+        Visits are counted anonymously with <a href="https://www.goatcounter.com/">GoatCounter</a>, without cookies.
+        Share codes are never sent.
+      </p>
     </footer>
 
     <script type="module" src="./src/main.ts"></script>
+    <!-- Counts visits with GoatCounter: no cookies, and only the path is sent, never a #code=... GoatCounter skips
+         localhost, so npm run dev isn't counted -->
+    <script data-goatcounter="https://pedersebastian.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
   </body>
 </html>

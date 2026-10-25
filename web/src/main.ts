@@ -1,4 +1,5 @@
-// The fonts are part of the site, so it loads nothing from other servers. The site is in English: Latin is enough.
+// The fonts are part of the site, so they load nothing from other servers (only the visit counter in index.html does).
+// The site is in English: Latin is enough.
 import "@fontsource/luckiest-guy/latin-400.css";
 import "@fontsource/nunito/latin-400.css";
 import "@fontsource/nunito/latin-700.css";
