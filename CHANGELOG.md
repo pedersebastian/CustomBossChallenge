@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Running out of time on a tier now says how many rounds that tier really had, instead of always 20.
 - Custom games no longer count towards achievements, in the game or on Steam/Epic. XP and Monkey Money are still
   earned.
+- The editor's Undo button now also takes the boss options (boss, Elite, tiers, spawn rounds, skulls) back to how
+  they were when the Boss Creator was opened, like the rest of the setup. They used to stay as they were.
 - Esc in the Boss Creator's Tower Restrictions, Add towers, map and modifier panels closes that panel instead of
   leaving for the main menu.
 

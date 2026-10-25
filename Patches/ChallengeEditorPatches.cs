@@ -21,8 +21,25 @@ internal static class ChallengeEditor_Open
     {
         // After a custom game the game returns to the editor it was started from: carry on in the Boss Creator
         if (!BossMode.Active && BossEditorSection.IsBossEditor(__instance)) BossMode.Resume();
+        if (BossMode.Active) BossMode.OnEditorOpened();
 
         BossEditorSection.Show(__instance, BossMode.Active);
+    }
+}
+
+/// <summary>
+/// The editor's Undo goes back to the model it was opened with; the boss options go back with it
+/// </summary>
+[HarmonyPatch(typeof(ChallengeEditor), nameof(ChallengeEditor.Undo))]
+internal static class ChallengeEditor_Undo
+{
+    [HarmonyPostfix]
+    internal static void Postfix(ChallengeEditor __instance)
+    {
+        if (!BossMode.Active || __instance.dcm == null) return;
+
+        BossMode.Options = BossMode.OpenedOptions;
+        BossEditorSection.Current?.Load(__instance.dcm, BossMode.Options);
     }
 }
 

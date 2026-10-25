@@ -26,6 +26,13 @@ public static class BossMode
     public static BossOptions Options { get; set; } = new();
 
     /// <summary>
+    /// The boss options when the editor was opened, which the editor's Undo goes back to along with its own model
+    /// </summary>
+    public static BossOptions OpenedOptions { get; private set; } = new();
+
+    public static void OnEditorOpened() => OpenedOptions = Options;
+
+    /// <summary>
     /// The challenge model being edited; the Challenge Editor works directly on this object
     /// </summary>
     public static DailyChallengeModel? Dcm { get; private set; }

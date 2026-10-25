@@ -62,6 +62,19 @@ public class BossCreatorTest : CustomBossTest
         yield return WaitForEditor(e => editor = e);
         Assert(BossMode.Active, "Boss mode is not active");
 
+        // Undo goes back to the setup the editor was opened with, boss options included
+        var opened = BossMode.Options;
+        var openedCash = editor!.dcm.startRules.cash;
+        editor.dcm.startRules.cash = 1234;
+        editor.ApplyDcmSettingsToUI();
+        editor.Randomize();
+        BossEditorSection.Current!.BossButtons[opened.Boss == BossType.Vortex ? BossType.Lych : BossType.Vortex].Button.onClick.Invoke();
+        Assert(BossMode.Options != opened, "The boss options must have changed before Undo");
+        editor.Undo();
+        yield return null;
+        AssertEquals(editor.dcm.startRules.cash, openedCash, "Undo must restore the editor's own values");
+        AssertEquals(BossMode.Options, opened, "Undo must restore the boss options");
+
         // Esc (the menu's Back) in one of the editor's panels closes that panel, not the whole Boss Creator
         yield return BackClosesPanel(editor!.TowerRestrictionClicked, () => editor.towerRestrictionMenu, "Tower Restrictions");
         yield return BackClosesPanel(editor.TowerSelectClicked, () => editor.towerSelectObject, "Add towers");
