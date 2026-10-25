@@ -73,5 +73,6 @@
   "CustomBossChallenge-HealthCap": "体力はティアごとに {0} が上限です（ゲームの制限）。一部のティアは設定より少なくなります。",
   "CustomBossChallenge-UnsupportedMode": "{0}ゲームモードはボスゲームでは使用できません。",
   "CustomBossChallenge-StartRoundAfterBoss": "ゲームはラウンド {0} から始まりますが、ボスの最初のティアはラウンド {1} に出現するため飛ばされます。もっと早い開始ラウンドか、もっと遅い出現ラウンドを選んでください。",
-  "CustomBossChallenge-BossUnavailable": "このボスはプレイできません：ゲームに{0}のブルーンがありません。ゲームのアップデートで変更された可能性があります。"
+  "CustomBossChallenge-BossUnavailable": "このボスはプレイできません：ゲームに{0}のブルーンがありません。ゲームのアップデートで変更された可能性があります。",
+  "CustomBossChallenge-BossCreatorOff": "このバージョンのBTD6では、カスタムゲームが記録・実績・モンキーマネーに影響しないようにする部分が変更されたため、Custom Boss Challengeが更新されるまでボスクリエイターは無効になっています。\n\n不足：{0}"
 }

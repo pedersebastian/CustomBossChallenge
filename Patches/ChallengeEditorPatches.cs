@@ -165,6 +165,7 @@ internal static class ChallengeEditor_OverrideClose
 /// The editor's map picker shows which maps the selected boss has been defeated on
 /// </summary>
 [HarmonyPatch(typeof(MapSelectPanel), nameof(MapSelectPanel.Open))]
+[OptionalPatch]
 internal static class MapSelectPanel_Open
 {
     [HarmonyPrefix]
@@ -182,6 +183,7 @@ internal static class MapSelectPanel_Open
 /// only knows its own modifiers
 /// </summary>
 [HarmonyPatch(typeof(ChallengeEditorModifierSettings), nameof(ChallengeEditorModifierSettings.ApplyDCMtoUI))]
+[OptionalPatch]
 internal static class ChallengeEditorModifierSettings_ApplyDCMtoUI
 {
     [HarmonyPostfix]
@@ -190,6 +192,7 @@ internal static class ChallengeEditorModifierSettings_ApplyDCMtoUI
 }
 
 [HarmonyPatch(typeof(ChallengeEditorModifierSettings), nameof(ChallengeEditorModifierSettings.ApplyUIToDCM))]
+[OptionalPatch]
 internal static class ChallengeEditorModifierSettings_ApplyUIToDCM
 {
     [HarmonyPostfix]

@@ -73,5 +73,6 @@
   "CustomBossChallenge-HealthCap": "체력은 단계당 {0}에서 멈춥니다(게임의 한계). 일부 단계는 설정보다 적은 체력을 받습니다.",
   "CustomBossChallenge-UnsupportedMode": "{0} 게임 모드는 보스 게임에 사용할 수 없습니다.",
   "CustomBossChallenge-StartRoundAfterBoss": "게임은 {0} 라운드에서 시작하지만 보스의 첫 단계는 {1} 라운드에 나오므로 건너뛰게 됩니다. 더 이른 시작 라운드나 더 늦은 등장 라운드를 선택하세요.",
-  "CustomBossChallenge-BossUnavailable": "이 보스는 플레이할 수 없습니다: 게임에 {0} 블룬이 없습니다. 게임 업데이트로 변경되었을 수 있습니다."
+  "CustomBossChallenge-BossUnavailable": "이 보스는 플레이할 수 없습니다: 게임에 {0} 블룬이 없습니다. 게임 업데이트로 변경되었을 수 있습니다.",
+  "CustomBossChallenge-BossCreatorOff": "이 버전의 BTD6에서 커스텀 게임이 기록, 업적, 몽키 머니에 영향을 주지 않도록 하는 부분이 바뀌어서, Custom Boss Challenge가 업데이트될 때까지 보스 크리에이터가 꺼져 있습니다.\n\n누락: {0}"
 }

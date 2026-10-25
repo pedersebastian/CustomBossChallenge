@@ -73,5 +73,6 @@
   "CustomBossChallenge-HealthCap": "Liv stopper ved {0} pr. niveau, spillets grænse: nogle niveauer får mindre end indstillingerne beder om.",
   "CustomBossChallenge-UnsupportedMode": "Spiltilstanden {0} kan ikke bruges til bossspil.",
   "CustomBossChallenge-StartRoundAfterBoss": "Spillet starter på runde {0}, men bossens første tier kommer på runde {1} og ville blive sprunget over. Vælg en tidligere startrunde eller senere spawn-runder.",
-  "CustomBossChallenge-BossUnavailable": "Denne boss kan ikke spilles: spillet har ingen {0}-bloon. En spilopdatering kan have ændret den."
+  "CustomBossChallenge-BossUnavailable": "Denne boss kan ikke spilles: spillet har ingen {0}-bloon. En spilopdatering kan have ændret den.",
+  "CustomBossChallenge-BossCreatorOff": "Denne version af BTD6 har ændret dele af spillet, der forhindrer egne spil i at røre dine rekorder, achievements og Monkey Money, så Boss-skaberen er slået fra, indtil Custom Boss Challenge er opdateret.\n\nMangler: {0}"
 }

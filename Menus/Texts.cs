@@ -145,6 +145,11 @@ public static class Texts
     public static readonly string BossUnavailable = Key(nameof(BossUnavailable),
         "This boss can't be played: the game has no {0} bloon. A game update may have changed it.");
 
+    public static readonly string BossCreatorOff = Key(nameof(BossCreatorOff),
+        "This version of BTD6 changed parts of the game that keep custom games from touching your records, " +
+        "achievements and Monkey Money, so the Boss Creator is turned off until Custom Boss Challenge is updated.\n\n" +
+        "Missing: {0}");
+
     /// <summary>
     /// The text for a key in the player's language
     /// </summary>

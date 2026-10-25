@@ -1,10 +1,12 @@
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
 using CustomBossChallenge.Creator;
+using CustomBossChallenge.Patches;
 using HarmonyLib;
 using Il2CppAssets.Scripts.Unity.Menu;
 using Il2CppAssets.Scripts.Unity.UI_New.Main;
 using Il2CppAssets.Scripts.Unity.UI_New.Main.EventPanel;
+using Il2CppAssets.Scripts.Unity.UI_New.Popups;
 using Il2CppTMPro;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
@@ -120,11 +122,20 @@ public static class MainMenuButton
     private static void OnClick()
     {
         MenuManager.instance.buttonClickSound?.Play("ClickSounds");
+
+        if (!PatchCheck.AllInPlace)
+        {
+            var missing = string.Join(", ", PatchCheck.Missing!);
+            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.BossCreatorOff.T(missing), null));
+            return;
+        }
+
         BossMode.Enter();
     }
 }
 
 [HarmonyPatch(typeof(MainMenu), nameof(MainMenu.Open))]
+[OptionalPatch]
 internal static class MainMenu_Open
 {
     [HarmonyPostfix]
@@ -136,6 +147,7 @@ internal static class MainMenu_Open
 }
 
 [HarmonyPatch(typeof(MainMenu), nameof(MainMenu.ReOpen))]
+[OptionalPatch]
 internal static class MainMenu_ReOpen
 {
     [HarmonyPostfix]

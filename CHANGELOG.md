@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Running out of time on a tier now says how many rounds that tier really had, instead of always 20.
 - Custom games no longer count towards achievements, in the game or on Steam/Epic. XP and Monkey Money are still
   earned.
+- The mod checks that all its changes to the game are in place. If a BTD6 update renamed or removed a part it needs,
+  the Boss Creator button explains what is missing and stays closed until the mod is updated, instead of starting
+  games without the guards for your records, achievements, saves and Monkey Money. Changes that only affect how
+  things look, like the boss on the map picker, are just logged.
 - The editor's Undo button now also takes the boss options (boss, Elite, tiers, spawn rounds, skulls) back to how
   they were when the Boss Creator was opened, like the rest of the setup. They used to stay as they were.
 - Esc in the Boss Creator's Tower Restrictions, Add towers, map and modifier panels closes that panel instead of

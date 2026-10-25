@@ -73,5 +73,6 @@
   "CustomBossChallenge-HealthCap": "Kestävyys pysähtyy {0}:aan tasoa kohden, pelin rajaan: jotkin tasot saavat vähemmän kuin asetukset pyytävät.",
   "CustomBossChallenge-UnsupportedMode": "Pelitilaa {0} ei voi käyttää pomopeleihin.",
   "CustomBossChallenge-StartRoundAfterBoss": "Peli alkaa kierrokselta {0}, mutta pomon ensimmäinen taso tulee kierroksella {1} ja jäisi väliin. Valitse aiempi aloituskierros tai myöhemmät ilmestymiskierrokset.",
-  "CustomBossChallenge-BossUnavailable": "Tätä pomoa ei voi pelata: pelissä ei ole {0}-bloonia. Pelipäivitys on ehkä muuttanut sen."
+  "CustomBossChallenge-BossUnavailable": "Tätä pomoa ei voi pelata: pelissä ei ole {0}-bloonia. Pelipäivitys on ehkä muuttanut sen.",
+  "CustomBossChallenge-BossCreatorOff": "Tämä BTD6:n versio muutti pelin osia, jotka estävät omia pelejä vaikuttamasta ennätyksiisi, saavutuksiisi ja Monkey Moneyyn, joten Pomoluoja on pois päältä, kunnes Custom Boss Challenge päivitetään.\n\nPuuttuu: {0}"
 }

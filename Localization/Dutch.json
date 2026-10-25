@@ -73,5 +73,6 @@
   "CustomBossChallenge-HealthCap": "Gezondheid stopt bij {0} per niveau, de grens van het spel: sommige niveaus krijgen minder dan de instellingen vragen.",
   "CustomBossChallenge-UnsupportedMode": "De spelmodus {0} kan niet worden gebruikt voor bossspellen.",
   "CustomBossChallenge-StartRoundAfterBoss": "Het spel begint in ronde {0}, maar de eerste baastier komt in ronde {1} en zou worden overgeslagen. Kies een eerdere startronde of latere spawnrondes.",
-  "CustomBossChallenge-BossUnavailable": "Deze boss kan niet worden gespeeld: het spel heeft geen {0}-bloon. Een game-update heeft deze mogelijk veranderd."
+  "CustomBossChallenge-BossUnavailable": "Deze boss kan niet worden gespeeld: het spel heeft geen {0}-bloon. Een game-update heeft deze mogelijk veranderd.",
+  "CustomBossChallenge-BossCreatorOff": "Deze versie van BTD6 heeft delen van het spel veranderd die voorkomen dat eigen spellen je records, prestaties en Monkey Money aanraken, dus de Bossmaker staat uit totdat Custom Boss Challenge is bijgewerkt.\n\nOntbreekt: {0}"
 }

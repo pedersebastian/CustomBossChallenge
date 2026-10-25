@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using BTD_Mod_Helper;
+using System.Linq;
 using HarmonyLib;
 using Il2CppAssets.Scripts.Unity.Achievements;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
@@ -34,23 +34,12 @@ internal static class AchievementPatches
     internal static bool Blocked => CustomBossState.IsActive && InGame.instance != null;
 
     /// <summary>
-    /// A method a game update renamed or removed is skipped with a warning, so the others are still guarded
+    /// A method a game update renamed or removed is skipped, so the others are still guarded; <see cref="PatchCheck"/>
+    /// then keeps the Boss Creator closed
     /// </summary>
     [HarmonyTargetMethods]
-    internal static IEnumerable<System.Reflection.MethodBase> TargetMethods()
-    {
-        foreach (var (type, name) in Methods)
-        {
-            var method = AccessTools.DeclaredMethod(type, name);
-            if (method == null)
-            {
-                ModHelper.Warning<CustomBossChallenge>($"{type.Name}.{name} not found, custom games can't guard it");
-                continue;
-            }
-
-            yield return method;
-        }
-    }
+    internal static IEnumerable<System.Reflection.MethodBase> TargetMethods() =>
+        Methods.Select(method => PatchCheck.Target(method.Type, method.Name)).Where(method => method != null)!;
 
     [HarmonyPrefix]
     internal static bool Prefix() => !Blocked;

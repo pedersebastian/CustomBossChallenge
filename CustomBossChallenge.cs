@@ -21,6 +21,11 @@ public class CustomBossChallenge : BloonsTD6Mod
         ModHelper.Msg<CustomBossChallenge>("CustomBossChallenge loaded!");
     }
 
+    /// <summary>
+    /// All patches are applied by now; a missing one is logged right away, not only when the Boss Creator is clicked
+    /// </summary>
+    public override void OnMainMenu() => _ = Patches.PatchCheck.AllInPlace;
+
     public override void OnUpdate()
     {
         Menus.MainMenuButton.UpdatePosition();

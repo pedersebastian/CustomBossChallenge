@@ -73,5 +73,6 @@
   "CustomBossChallenge-HealthCap": "Health stops at {0} per tier, the game's limit: some tiers get less than the settings ask for.",
   "CustomBossChallenge-UnsupportedMode": "The {0} game mode can't be used for boss games.",
   "CustomBossChallenge-StartRoundAfterBoss": "The game starts on round {0}, but the first boss tier comes on round {1} and would be skipped. Choose an earlier start round or later spawn rounds.",
-  "CustomBossChallenge-BossUnavailable": "This boss can't be played: the game has no {0} bloon. A game update may have changed it."
+  "CustomBossChallenge-BossUnavailable": "This boss can't be played: the game has no {0} bloon. A game update may have changed it.",
+  "CustomBossChallenge-BossCreatorOff": "This version of BTD6 changed parts of the game that keep custom games from touching your records, achievements and Monkey Money, so the Boss Creator is turned off until Custom Boss Challenge is updated.\n\nMissing: {0}"
 }

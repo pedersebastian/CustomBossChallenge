@@ -141,6 +141,8 @@ Game modes without boss support (Deflation and Apopalypse) can't be played as a 
 - Custom games are **always unranked**, are **never saved** (your Boss Challenge save is never overwritten) and never
   update Boss Challenge records, boss tier progress, badges or achievements. XP and Monkey Money are still earned.
 - Your own Challenge Editor draft is never replaced by the boss setup.
+- If a BTD6 update changes a part of the game these guards rely on, the Boss Creator stays closed and says what is
+  missing, instead of starting games that could touch your records, achievements or Monkey Money. Update the mod.
 
 ## Upgrading from 1.x
 

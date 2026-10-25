@@ -111,6 +111,31 @@ public abstract class CustomBossTest : ModTest
         InGame.instance == null && MenuManager.instance != null &&
         MenuManager.instance.GetCurrentMenu()?.Is<MainMenu>() == true;
 
+    protected IEnumerator WaitForPopup(Action<Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup> found)
+    {
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
+        yield return WaitFor(() => (popup = Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()) != null,
+            "Showing a popup");
+        found(popup!);
+    }
+
+    protected static IEnumerator ClosePopup(Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup popup, bool ok)
+    {
+        if (ok) popup.OKClicked();
+        else popup.CancelClicked();
+        yield return new WaitForSecondsRealtime(1);
+    }
+
+    protected IEnumerator WaitFor(Func<bool> condition, string what, float seconds = 20)
+    {
+        var start = Time.realtimeSinceStartup;
+        while (!condition())
+        {
+            if (Time.realtimeSinceStartup - start > seconds) Fail($"{what} took more than {seconds}s");
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+    }
+
     /// <summary>
     /// Goes to the main menu. Mod Helper's EnsureOnMainMenuWithNoPopUps can wait forever when it is called again
     /// right after reaching the main menu, so it is only used when actually needed.

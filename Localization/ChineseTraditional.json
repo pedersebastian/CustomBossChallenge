@@ -73,5 +73,6 @@
   "CustomBossChallenge-HealthCap": "每階生命值最高為 {0}，這是遊戲的上限：部分階段的生命值會低於設定的數值。",
   "CustomBossChallenge-UnsupportedMode": "{0}遊戲模式不能用於Boss遊戲。",
   "CustomBossChallenge-StartRoundAfterBoss": "遊戲從第 {0} 回合開始，但首領的第一階段在第 {1} 回合出現，會被跳過。請選擇更早的起始回合或更晚的出現回合。",
-  "CustomBossChallenge-BossUnavailable": "無法挑戰此Boss：遊戲中沒有{0}氣球。可能是遊戲更新更改了它。"
+  "CustomBossChallenge-BossUnavailable": "無法挑戰此Boss：遊戲中沒有{0}氣球。可能是遊戲更新更改了它。",
+  "CustomBossChallenge-BossCreatorOff": "此版本的BTD6更改了遊戲中防止自訂遊戲影響你的紀錄、成就和猴子幣的部分，因此Boss建立器已關閉，直到Custom Boss Challenge更新。\n\n缺少：{0}"
 }

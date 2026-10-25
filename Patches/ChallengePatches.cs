@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Menus;
@@ -194,23 +195,12 @@ internal static class Btd6Player_BossProgress
     };
 
     /// <summary>
-    /// A method a game update renamed or removed is skipped with a warning, so the others are still guarded
+    /// A method a game update renamed or removed is skipped, so the others are still guarded; <see cref="PatchCheck"/>
+    /// then keeps the Boss Creator closed
     /// </summary>
     [HarmonyTargetMethods]
-    internal static System.Collections.Generic.IEnumerable<System.Reflection.MethodBase> TargetMethods()
-    {
-        foreach (var name in MethodNames)
-        {
-            var method = AccessTools.Method(typeof(Btd6Player), name);
-            if (method == null)
-            {
-                ModHelper.Warning<CustomBossChallenge>($"Btd6Player.{name} not found, custom games can't guard it");
-                continue;
-            }
-
-            yield return method;
-        }
-    }
+    internal static System.Collections.Generic.IEnumerable<System.Reflection.MethodBase> TargetMethods() =>
+        MethodNames.Select(name => PatchCheck.Target(typeof(Btd6Player), name)).Where(method => method != null)!;
 
     [HarmonyPrefix]
     internal static bool Prefix() => !CustomBossState.IsActive;

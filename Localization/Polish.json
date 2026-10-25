@@ -73,5 +73,6 @@
   "CustomBossChallenge-HealthCap": "Zdrowie kończy się na {0} na poziom, limicie gry: niektóre poziomy dostają mniej, niż wynika z ustawień.",
   "CustomBossChallenge-UnsupportedMode": "Tryb gry {0} nie może być używany w grach z bossem.",
   "CustomBossChallenge-StartRoundAfterBoss": "Gra zaczyna się od rundy {0}, ale pierwszy poziom bossa pojawia się w rundzie {1} i zostałby pominięty. Wybierz wcześniejszą rundę startową lub późniejsze rundy pojawienia się.",
-  "CustomBossChallenge-BossUnavailable": "Nie można zagrać z tym bossem: gra nie ma balonu {0}. Mogła go zmienić aktualizacja gry."
+  "CustomBossChallenge-BossUnavailable": "Nie można zagrać z tym bossem: gra nie ma balonu {0}. Mogła go zmienić aktualizacja gry.",
+  "CustomBossChallenge-BossCreatorOff": "Ta wersja BTD6 zmieniła części gry, które chronią Twoje rekordy, osiągnięcia i Monkey Money przed własnymi grami, więc Kreator Bossów jest wyłączony do czasu aktualizacji Custom Boss Challenge.\n\nBrakuje: {0}"
 }

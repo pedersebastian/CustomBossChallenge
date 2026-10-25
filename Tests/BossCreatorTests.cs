@@ -526,21 +526,6 @@ public class BossCreatorTest : CustomBossTest
         yield return ToMainMenu();
     }
 
-    private IEnumerator WaitForPopup(Action<Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup> found)
-    {
-        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
-        yield return WaitFor(() => (popup = Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()) != null,
-            "Showing a popup");
-        found(popup!);
-    }
-
-    private static IEnumerator ClosePopup(Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup popup, bool ok)
-    {
-        if (ok) popup.OKClicked();
-        else popup.CancelClicked();
-        yield return new WaitForSecondsRealtime(1);
-    }
-
     private IEnumerator NormalEditorHasNoBossSection()
     {
         var model = Game.Player.Data.challengeEditorModel ??
@@ -723,16 +708,6 @@ public class BossCreatorTest : CustomBossTest
             "Opening the Challenge Editor");
         yield return new WaitForSecondsRealtime(1);
         found(editor!);
-    }
-
-    private IEnumerator WaitFor(Func<bool> condition, string what, float seconds = 20)
-    {
-        var start = Time.realtimeSinceStartup;
-        while (!condition())
-        {
-            if (Time.realtimeSinceStartup - start > seconds) Fail($"{what} took more than {seconds}s");
-            yield return new WaitForSecondsRealtime(0.25f);
-        }
     }
 
     private static bool Approximately(float a, float b) => Math.Abs(a - b) < 0.0001f;
