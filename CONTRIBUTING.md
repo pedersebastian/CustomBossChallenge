@@ -102,6 +102,8 @@ npm run dev
 ```
 
 Then open http://localhost:5173. `npm test` runs its tests and `npm run build` puts the finished site in `web/dist`.
+`.github/workflows/pages.yml` does the same on GitHub and publishes the site to
+https://pedersebastian.github.io/CustomBossChallenge/ whenever `web/` changes on master (or when run by hand).
 
 The website must read codes exactly like the mod, so parts of the mod are ported to TypeScript: `SetupCode` reading
 (`web/src/code/decode.ts`), `BossOptions.Sanitized` (`options.ts`), `TierMath` and `SkullMath` (`web/src/math/`) and
