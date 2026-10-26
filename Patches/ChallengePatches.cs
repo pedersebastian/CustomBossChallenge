@@ -164,6 +164,16 @@ internal static class InGame_RoundStart
     }
 }
 
+[HarmonyPatch(typeof(InGame), nameof(InGame.RunRestart))]
+internal static class InGame_RunRestart
+{
+    [HarmonyPrefix]
+    internal static void Prefix()
+    {
+        if (CustomBossState.IsActive) CustomBossState.OnRestart();
+    }
+}
+
 /// <summary>
 /// Custom games must never count towards the player's Boss Challenge records
 /// </summary>

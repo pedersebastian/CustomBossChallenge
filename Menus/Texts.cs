@@ -72,6 +72,13 @@ public static class Texts
     public static readonly string Free = Key(nameof(Free), "Free");
     public static readonly string RetryFromRound = Key(nameof(RetryFromRound), "Retry From Round {0}");
 
+    public static readonly string UnfinishedGame = Key(nameof(UnfinishedGame), "Unfinished Game");
+    public static readonly string UnfinishedGameQuestion = Key(nameof(UnfinishedGameQuestion),
+        "Your custom game {0} ({2} tiers) was left on round {1}. Continue it, or make a new boss? The unfinished " +
+        "game is replaced once you play a new one.");
+    public static readonly string ContinueGame = Key(nameof(ContinueGame), "Continue");
+    public static readonly string NewGame = Key(nameof(NewGame), "New Boss");
+
     public static readonly string Skulls = Key(nameof(Skulls), "Skulls");
     public static readonly string SkullsInfo = Key(nameof(SkullsInfo),
         "Skulls are points on the boss's health bar where it uses its special ability. Vanilla keeps the normal " +
@@ -158,4 +165,7 @@ public static class Texts
     public static string T(this string key, object arg) => string.Format(key.T(), arg);
 
     public static string T(this string key, object arg0, object arg1) => string.Format(key.T(), arg0, arg1);
+
+    public static string T(this string key, object arg0, object arg1, object arg2) =>
+        string.Format(key.T(), arg0, arg1, arg2);
 }

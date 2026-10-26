@@ -109,7 +109,7 @@ public class BossNotDefeatedTest : CustomBossTest
 /// </summary>
 public class RetryTest : CustomBossTest
 {
-    private static string SavedMaps()
+    internal static string SavedMaps()
     {
         var maps = new List<string>();
         foreach (var entry in Game.instance.playerService.Player.Data.savedMaps) maps.Add($"{entry.Key}@{entry.Value.round}");
@@ -164,46 +164,5 @@ public class RetryTest : CustomBossTest
         Assert(ExtraTiers.HasAllTiers(InGame.instance.GetGameModel(), options), "Tier models after a retry");
         AssertEquals(Game.instance.playerService.Player.Data.monkeyMoney.Value, monkeyMoney, "Monkey Money after a retry");
         AssertEquals(SavedMaps(), savedMaps, "The player's map saves after a retry");
-    }
-
-    private IEnumerator LoseAndOpenDefeatScreen(System.Action<BossDefeatScreen> found)
-    {
-        var bridge = InGame.instance.bridge;
-        bridge.SetFastForward(true);
-        var start = Time.realtimeSinceStartup;
-        while (!bridge.Simulation.GameOver)
-        {
-            if (Time.realtimeSinceStartup - start > BossNotDefeatedTest.TimeoutSeconds) Fail("The game didn't end");
-            if (!bridge.AreRoundsActive()) bridge.StartRound();
-            yield return new WaitForSecondsRealtime(0.25f);
-        }
-        Log($"lost on round {bridge.GetCurrentRound() + 1}");
-
-        BossDefeatScreen? screen;
-        start = Time.realtimeSinceStartup;
-        while ((screen = Object.FindObjectOfType<BossDefeatScreen>()) == null)
-        {
-            if (Time.realtimeSinceStartup - start > 30) Fail("The defeat screen did not open");
-            yield return new WaitForSecondsRealtime(0.25f);
-        }
-        yield return new WaitForSecondsRealtime(1);
-        found(screen);
-    }
-
-    private IEnumerator WaitForResume()
-    {
-        var start = Time.realtimeSinceStartup;
-        while (InGame.instance?.bridge?.Simulation == null || InGame.instance.bridge.Simulation.GameOver ||
-               Object.FindObjectOfType<BossDefeatScreen>() != null)
-        {
-            if (Time.realtimeSinceStartup - start > 30)
-            {
-                var screen = Object.FindObjectOfType<BossDefeatScreen>();
-                Fail($"The game did not resume after the retry: game over {InGame.instance?.bridge?.Simulation?.GameOver}, " +
-                     $"defeat screen {(screen == null ? "closed" : $"open, active {screen.gameObject.activeInHierarchy}")}");
-            }
-            yield return new WaitForSecondsRealtime(0.25f);
-        }
-        yield return new WaitForSecondsRealtime(1);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CustomBossChallenge.Config;
 using Xunit;
@@ -61,6 +62,33 @@ public class TierMathTests
     [InlineData("40, 51, 80", 12, 40)]
     public void CheckpointRound_is_where_the_current_tier_arrived(string rounds, int round, int expected) =>
         Assert.Equal(expected, TierMath.CheckpointRound(TierMath.ParseRounds(rounds).ToArray(), round));
+
+    [Theory]
+    [InlineData("40, 60, 80", 45, 45, true)]
+    [InlineData("40, 60, 80", 45, 44, false)]
+    [InlineData("40, 60, 80", 45, 40, true)]
+    [InlineData("40, 60, 80", 45, 60, true)]
+    [InlineData("40, 60, 80", 81, 39, false)]
+    [InlineData("40, 41, 42", 42, 41, true)]
+    public void KeepSnapshot_keeps_the_latest_round_and_the_tiers_rounds(string rounds, int latest, int round, bool expected) =>
+        Assert.Equal(expected, TierMath.KeepSnapshot(TierMath.ParseRounds(rounds).ToArray(), latest, round));
+
+    [Fact]
+    public void Every_round_a_retry_or_continue_can_go_back_to_is_kept()
+    {
+        var spawnRounds = TierMath.ParseRounds("40, 47, 60").ToArray();
+        var kept = new SortedSet<int>();
+        for (var latest = 38; latest <= 80; latest++)
+        {
+            kept.Add(latest);
+            kept.RemoveWhere(round => !TierMath.KeepSnapshot(spawnRounds, latest, round));
+
+            Assert.Contains(latest, kept);
+            var checkpoint = TierMath.CheckpointRound(spawnRounds, latest);
+            if (checkpoint <= latest) Assert.Contains(checkpoint, kept);
+            Assert.True(kept.Count <= spawnRounds.Length + 1, $"{kept.Count} snapshots kept on round {latest}");
+        }
+    }
 
     [Theory]
     [InlineData("40, 60, 80, 100, 120", 140)]

@@ -1,4 +1,6 @@
+using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
+using CustomBossChallenge.Persistence;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity.UI_New;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
@@ -34,5 +36,21 @@ public static class BossGameLauncher
         BossMode.Exit();
         BuildInGameData(editorDcm, options);
         UI.instance.LoadGame(null, null, null, false, false);
+    }
+
+    /// <summary>
+    /// Loads a custom game saved by <see cref="CustomBossRetries"/> where it was left, with its retries
+    /// </summary>
+    public static void Continue(ContinueGame game)
+    {
+        BossMode.Exit();
+        BuildInGameData(game.Dcm, game.Options);
+
+        // Setting up the game forgets the retries and defeated tiers, so they come back after it
+        var (latest, save) = game.Latest;
+        CustomBossRetries.Restore(game);
+        CustomBossState.ResumeWith(latest.DefeatedTiers);
+        ModHelper.Msg<CustomBossChallenge>($"Continuing the custom game on round {latest.Round}");
+        UI.instance.LoadGame(null, null, save, false, false);
     }
 }

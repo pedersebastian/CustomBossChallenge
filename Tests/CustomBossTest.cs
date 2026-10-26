@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using BTD_Mod_Helper;
 using BTD_Mod_Helper.Api.Testing;
 using Il2CppAssets.Scripts.Unity.Menu;
@@ -20,11 +21,32 @@ public abstract class CustomBossTest : ModTest
 
     public sealed override IEnumerator Test()
     {
+        // CBC_TESTS=RetryTest,ContinueTest runs only those tests, the others pass right away
+        var only = System.Environment.GetEnvironmentVariable("CBC_TESTS");
+        if (!string.IsNullOrWhiteSpace(only) && !only.Split(',').Select(name => name.Trim()).Contains(GetType().Name))
+        {
+            yield break;
+        }
+
+        // Tests play custom games, which must never replace or delete the player's unfinished one. A failing test
+        // leaves the temporary store in place, which is fine: every test gets its own.
+        var store = CustomBossRetries.Store;
+        TempFolder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "CustomBossChallengeTest-" + Guid.NewGuid().ToString("N"));
+        CustomBossRetries.Store = new Persistence.ContinueStore(System.IO.Path.Combine(TempFolder, "Continue.json"));
+
         Log("starting");
         yield return RunSafely(ToMainMenu());
         yield return RunSafely(Run());
         Log("done");
+
+        CustomBossRetries.Store = store;
+        if (System.IO.Directory.Exists(TempFolder)) System.IO.Directory.Delete(TempFolder, true);
     }
+
+    /// <summary>
+    /// A folder of this test's own, deleted when it is done; <see cref="CustomBossRetries.Store"/> writes into it
+    /// </summary>
+    protected string TempFolder { get; private set; } = "";
 
     protected abstract IEnumerator Run();
 
@@ -61,6 +83,53 @@ public abstract class CustomBossTest : ModTest
             Assert(Math.Abs(ratio - Config.TierMath.SpeedFactor(tier, options.SpeedPerTier)) < 0.001,
                 $"Tier {tier} is x{ratio} as fast as the game makes it, compared with tier 1");
         }
+    }
+
+    /// <summary>
+    /// Plays rounds until the game is lost, then waits for the defeat screen
+    /// </summary>
+    protected IEnumerator LoseAndOpenDefeatScreen(Action<Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen> found)
+    {
+        var bridge = InGame.instance.bridge;
+        bridge.SetFastForward(true);
+        var start = Time.realtimeSinceStartup;
+        while (!bridge.Simulation.GameOver)
+        {
+            if (Time.realtimeSinceStartup - start > BossNotDefeatedTest.TimeoutSeconds) Fail("The game didn't end");
+            if (!bridge.AreRoundsActive()) bridge.StartRound();
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+        Log($"lost on round {bridge.GetCurrentRound() + 1}");
+
+        Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen? screen;
+        start = Time.realtimeSinceStartup;
+        while ((screen = UnityEngine.Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen>()) == null)
+        {
+            if (Time.realtimeSinceStartup - start > 30) Fail("The defeat screen did not open");
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+        yield return new WaitForSecondsRealtime(1);
+        found(screen);
+    }
+
+    /// <summary>
+    /// Waits for the game to go on after a retry from the defeat screen
+    /// </summary>
+    protected IEnumerator WaitForResume()
+    {
+        var start = Time.realtimeSinceStartup;
+        while (InGame.instance?.bridge?.Simulation == null || InGame.instance.bridge.Simulation.GameOver ||
+               UnityEngine.Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen>() != null)
+        {
+            if (Time.realtimeSinceStartup - start > 30)
+            {
+                var screen = UnityEngine.Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen>();
+                Fail($"The game did not resume after the retry: game over {InGame.instance?.bridge?.Simulation?.GameOver}, " +
+                     $"defeat screen {(screen == null ? "closed" : $"open, active {screen.gameObject.activeInHierarchy}")}");
+            }
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+        yield return new WaitForSecondsRealtime(1);
     }
 
     /// <summary>
