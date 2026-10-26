@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Continue after closing the game**: a custom game is kept after every round in the mod's own file
+  (`UserData/CustomBossChallenge/Continue.json`), so closing the game or a crash no longer loses a long run. Boss
+  Creator on the main menu offers to continue it on the round it was left, with its defeated tiers and free retries.
+  It is replaced when the game is won or restarted or a new custom game is played; the player's own saves stay untouched.
+
 ## [2.6.0] - 2026-10-25
 
 ### Added

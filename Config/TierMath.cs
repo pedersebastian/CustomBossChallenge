@@ -140,6 +140,13 @@ public static class TierMath
         rounds.Length == 0 ? FirstSpawnRound : rounds[TimeLimit(rounds, round).Tier - 1];
 
     /// <summary>
+    /// Whether the snapshot taken for <paramref name="round"/> is still needed once <paramref name="latest"/> was
+    /// taken: only the latest round and the rounds tiers arrive on can ever be retried or continued
+    /// </summary>
+    public static bool KeepSnapshot(int[] spawnRounds, int latest, int round) =>
+        round == latest || spawnRounds.Contains(round);
+
+    /// <summary>
     /// Whether every tier, the last one included, has the same number of rounds before time runs out
     /// </summary>
     public static bool EvenlySpaced(int[] rounds)

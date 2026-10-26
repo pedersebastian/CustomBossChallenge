@@ -161,6 +161,15 @@ public class ExtraTierGameTest : CustomBossTest
     /// </summary>
     internal static void PlaceStrongTower(TowerModel towerModel)
     {
+        MakeStrong(towerModel);
+        CreateTowerAt(InGame.instance.bridge, Vector2.zero, towerModel, costOverride: 0);
+    }
+
+    /// <summary>
+    /// Changes the match's tower model so its towers pop everything on screen, including bosses
+    /// </summary>
+    internal static void MakeStrong(TowerModel towerModel)
+    {
         foreach (var attack in towerModel.GetAttackModels())
         {
             attack.range = 2000;
@@ -177,7 +186,6 @@ public class ExtraTierGameTest : CustomBossTest
 
         towerModel.range = 2000;
         towerModel.GetDescendants<FilterInvisibleModel>().ForEach(filter => filter.isActive = false);
-        CreateTowerAt(InGame.instance.bridge, Vector2.zero, towerModel, costOverride: 0);
     }
 }
 

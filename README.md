@@ -41,6 +41,10 @@ where you can read a share code and see the whole setup without the game.
     percentages. Works for every boss and Elite tier (Lych uses its ethereal thresholds).
 - **Free retries**: after losing, retry the last round or go back to the round the current tier arrived on, as often
   as you like and without Monkey Money. Your own Boss Challenge saves are never touched.
+- **Continue after closing the game**: a custom game is kept after every round, so closing the game or a crash never
+  loses a long run. Press **Boss Creator** on the main menu and choose **Continue** to pick it up on the round you left,
+  free retries included. It is kept in `BloonsTD6/UserData/CustomBossChallenge/Continue.json`, separate from the
+  game's own saves, and replaced when you win, restart or play a new custom game.
 - **Translated** into every language BTD6 supports (English, Arabic, Chinese Simplified and Traditional, Danish,
   Dutch, Finnish, French, German, Italian, Japanese, Korean, Norwegian, Polish, Brazilian Portuguese, Russian,
   Spanish, Latin American Spanish, Swedish, Thai and Turkish), following the game's language setting.
@@ -144,7 +148,8 @@ Game modes without boss support (Deflation and Apopalypse) can't be played as a 
 
 - Only games started from the Boss Creator are changed. Normal Boss Challenges, the weekly **Boss Event**, co-op and
   every other mode are left untouched.
-- Custom games are **always unranked**, are **never saved** (your Boss Challenge save is never overwritten) and never
+- Custom games are **always unranked**, are **never saved by the game** (your Boss Challenge save is never
+  overwritten; the mod keeps them in its own file to continue them) and never
   update Boss Challenge records, boss tier progress, badges or achievements. XP and Monkey Money are still earned.
 - Your own Challenge Editor draft is never replaced by the boss setup.
 - If a BTD6 update changes a part of the game these guards rely on, the Boss Creator stays closed and says what is

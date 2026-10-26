@@ -1,6 +1,8 @@
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
+using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
+using CustomBossChallenge.Persistence;
 using CustomBossChallenge.Patches;
 using HarmonyLib;
 using Il2CppAssets.Scripts.Unity.Menu;
@@ -135,7 +137,29 @@ public static class MainMenuButton
             return;
         }
 
-        BossMode.Enter();
+        var game = CustomBossRetries.Store.TryLoad();
+        if (game == null)
+        {
+            BossMode.Enter();
+            return;
+        }
+
+        // New Game keeps the unfinished game until a new one is actually played
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
+            Texts.UnfinishedGame.T(), UnfinishedGameText(game),
+            new System.Action(() => BossGameLauncher.Continue(game)), Texts.ContinueGame.T(),
+            new System.Action(BossMode.Enter), Texts.NewGame.T(), Popup.TransitionAnim.Scale));
+    }
+
+    /// <summary>
+    /// The name of the unfinished game's challenge, the round it continues on and its tiers
+    /// </summary>
+    public static string UnfinishedGameText(ContinueGame game)
+    {
+        var name = game.Dcm.name ?? "";
+        if (ConfigApplier.IsMarked(game.Dcm)) name = name[..^ConfigApplier.Marker.Length];
+        return Texts.UnfinishedGameQuestion.T($"<b>{BossEditorSection.PlainText(name)}</b>", game.Latest.Snapshot.Round,
+            game.Options.Tiers);
     }
 }
 

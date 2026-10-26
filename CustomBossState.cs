@@ -74,6 +74,9 @@ public static class CustomBossState
     public static void OnBossDefeated(int tier)
     {
         if (tier > HighestDefeatedTier) HighestDefeatedTier = tier;
+
+        // The last tier wins the game, which leaves nothing to continue
+        if (AllTiersDefeated) CustomBossRetries.Forget();
     }
 
     /// <summary>
@@ -93,16 +96,18 @@ public static class CustomBossState
     /// </summary>
     public static void OnMatchStart()
     {
-        // A retry loads a snapshot into a match that already defeated some tiers; anything else starts over
-        if (resumeTiers == null) CustomBossRetries.Clear();
+        // A retry or a continued game loads a snapshot into a match that already defeated some tiers; anything else
+        // starts over, and replaces the game that could be continued. Loading a game starts the match twice (new game
+        // model, then the boss manager), so the resume is kept until a round starts or the game restarts.
+        if (resumeTiers == null) CustomBossRetries.Forget();
         HighestDefeatedTier = resumeTiers ?? 0;
-        resumeTiers = null;
     }
 
     private static int? resumeTiers;
 
     /// <summary>
-    /// Called right before a retry loads a snapshot, with the tiers that were defeated when it was taken
+    /// Called right before a retry or a continued game loads a snapshot, with the tiers that were defeated when it
+    /// was taken
     /// </summary>
     public static void ResumeWith(int defeatedTiers)
     {
@@ -114,6 +119,11 @@ public static class CustomBossState
     /// The first round after a retry has started, so a later restart starts over
     /// </summary>
     public static void OnRoundStart() => resumeTiers = null;
+
+    /// <summary>
+    /// A restart always starts over, even right after a retry
+    /// </summary>
+    public static void OnRestart() => resumeTiers = null;
 
     public static void Clear()
     {
