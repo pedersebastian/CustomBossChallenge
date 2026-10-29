@@ -25,6 +25,7 @@ namespace CustomBossChallenge.Menus;
 public sealed class BossEditorSection
 {
     public const string SectionName = "CustomBossSection";
+    public const string RowsName = "Rows";
     public const string PlayName = "CustomBossPlay";
     public static string Title => Texts.BossCreator.T();
     public const string SelectedMarker = "Selected";
@@ -136,7 +137,7 @@ public sealed class BossEditorSection
             EditorRows.SetText(heading.GetComponent<TMP_Text>(), Texts.Boss.T());
         }
 
-        var rowsObject = new GameObject("Rows", Il2CppInterop.Runtime.Il2CppType.Of<RectTransform>());
+        var rowsObject = new GameObject(RowsName, Il2CppInterop.Runtime.Il2CppType.Of<RectTransform>());
         rowsObject.transform.SetParent(Section.transform, false);
         var rowsRect = rowsObject.GetComponent<RectTransform>();
         rowsRect.anchorMin = new Vector2(0.5f, 1);

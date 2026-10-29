@@ -104,32 +104,82 @@ public static class FocusFrame
         var target = Current?.transform.parent?.GetComponent<RectTransform>();
         if (target == null) return;
 
+        var (min, max) = Bounds(target, target) ?? (target.rect.min, target.rect.max);
+        var top = max.y + Margin;
+        var bottom = min.y - Margin;
+
+        // A slider's value stands in the gap above its row, so the room around the frame goes at most halfway to the
+        // rows above and below, and frames of neighbouring rows meet in the middle instead of covering each other
+        var row = RowOf(target);
+        if (row != null)
+        {
+            if (Bounds(Neighbour(row, -1), target) is var (_, above)) top = Math.Min(top, (max.y + above.y) / 2);
+            if (Bounds(Neighbour(row, 1), target) is var (below, _)) bottom = Math.Max(bottom, (min.y + below.y) / 2);
+        }
+
+        var frameRect = frame!.GetComponent<RectTransform>();
+        frameRect.anchorMin = frameRect.anchorMax = target.pivot;
+        frameRect.offsetMin = new Vector2(min.x - Margin, bottom);
+        frameRect.offsetMax = new Vector2(max.x + Margin, top);
+    }
+
+    /// <summary>
+    /// The box around everything <paramref name="root"/> shows, in <paramref name="space"/>'s coordinates, or null
+    /// when it shows nothing. The frame itself doesn't count.
+    /// </summary>
+    private static (Vector2 Min, Vector2 Max)? Bounds(Transform? root, RectTransform space)
+    {
+        if (root == null) return null;
+
         var min = new Vector2(float.MaxValue, float.MaxValue);
         var max = new Vector2(float.MinValue, float.MinValue);
-        foreach (var graphic in target.GetComponentsInChildren<Graphic>())
+        foreach (var graphic in root.GetComponentsInChildren<Graphic>())
         {
-            if (!graphic.enabled || graphic.color.a < 0.01f || graphic.transform.IsChildOf(frame!.transform)) continue;
+            if (!graphic.enabled || graphic.color.a < 0.01f || frame != null && graphic.transform.IsChildOf(frame.transform)) continue;
 
+            // A text's box is much taller than its letters, so its letters count instead
             var rect = graphic.rectTransform;
-            var box = rect.rect;
+            var text = graphic.TryCast<TMP_Text>();
+            var box = text != null && text.textBounds.size.x > 0
+                ? new Rect(text.textBounds.min, text.textBounds.size)
+                : rect.rect;
             foreach (var corner in new[] {box.min, box.max, new Vector2(box.xMin, box.yMax), new Vector2(box.xMax, box.yMin)})
             {
-                Vector2 local = target.InverseTransformPoint(rect.TransformPoint(corner));
+                Vector2 local = space.InverseTransformPoint(rect.TransformPoint(corner));
                 min = Vector2.Min(min, local);
                 max = Vector2.Max(max, local);
             }
         }
 
-        if (min.x > max.x)
+        return min.x > max.x ? null : (min, max);
+    }
+
+    /// <summary>
+    /// The row of the Boss section that <paramref name="target"/> is in or is, or null outside the rows (Play)
+    /// </summary>
+    private static Transform? RowOf(Transform target)
+    {
+        for (var current = target; current.parent != null; current = current.parent)
         {
-            min = target.rect.min;
-            max = target.rect.max;
+            if (current.parent.name == BossEditorSection.RowsName) return current;
         }
 
-        var frameRect = frame!.GetComponent<RectTransform>();
-        frameRect.anchorMin = frameRect.anchorMax = target.pivot;
-        frameRect.offsetMin = min - new Vector2(Margin, Margin);
-        frameRect.offsetMax = max + new Vector2(Margin, Margin);
+        return null;
+    }
+
+    /// <summary>
+    /// The shown row before (-1) or after (1) <paramref name="row"/>
+    /// </summary>
+    private static Transform? Neighbour(Transform row, int direction)
+    {
+        var parent = row.parent;
+        for (var i = row.GetSiblingIndex() + direction; i >= 0 && i < parent.childCount; i += direction)
+        {
+            var sibling = parent.GetChild(i);
+            if (sibling.gameObject.activeSelf) return sibling;
+        }
+
+        return null;
     }
 
     private static GameObject Build()

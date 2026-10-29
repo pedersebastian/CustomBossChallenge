@@ -219,6 +219,19 @@ public class KeyboardTest : CustomBossTest
         section.BossSpeed.Step(speed > changed ? 1 : -1);
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Down));
         AssertEquals(BossCreatorKeys.Current?.Name, "BossHealth", "Down after Boss Speed");
+
+        // The frame stays clear of the next row, whose value stands in the gap above it
+        yield return null;
+        var healthFrame = FocusFrame.Current!.GetComponent<RectTransform>();
+        foreach (var graphic in section.MaxParagons.Row.GetComponentsInChildren<UnityEngine.UI.Graphic>())
+        {
+            var rect = graphic.rectTransform;
+            var text = graphic.TryCast<TMP_Text>();
+            var middle = text != null && text.textBounds.size.x > 0 ? (Vector2) text.textBounds.center : rect.rect.center;
+            Vector2 center = healthFrame.InverseTransformPoint(rect.TransformPoint(middle));
+            Assert(!healthFrame.rect.Contains(center), $"The Boss Health frame covers {graphic.name} of the next row");
+        }
+
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Up));
         AssertEquals(BossCreatorKeys.Current?.Name, "BossSpeed", "Up after Boss Health");
 
