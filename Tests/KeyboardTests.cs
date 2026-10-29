@@ -166,31 +166,32 @@ public class KeyboardTest : CustomBossTest
         var section = BossEditorSection.Current!;
         yield return Unfocus();
 
-        // Tab starts at the boss picker, Shift+Tab at Play
+        // Tab starts at the first boss, Shift+Tab at Play
+        var bosses = Enum.GetValues<BossType>();
+        var first = $"Boss{bosses[0]}";
         AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab)), KeyAction.NextField, "Tab without a control");
-        AssertEquals(BossCreatorKeys.Current?.Name, "Boss", "First control");
+        AssertEquals(BossCreatorKeys.Current?.Name, first, "First control");
         var frame = AssertNotNull(FocusFrame.Current, "No keyboard frame")!;
-        AssertEquals(frame.transform.parent.gameObject.name, section.BossButtons[BossMode.Options.Boss].gameObject.name,
-            "The frame must be around the chosen boss");
+        AssertEquals(frame.transform.parent.gameObject.name, section.BossButtons[bosses[0]].gameObject.name,
+            "The frame must be around the first boss");
         yield return Unfocus();
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab, Shift: true));
         AssertEquals(BossCreatorKeys.Current?.Name, "Play", "Shift+Tab without a control");
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
-        AssertEquals(BossCreatorKeys.Current?.Name, "Boss", "Tab after Play wraps to the start");
+        AssertEquals(BossCreatorKeys.Current?.Name, first, "Tab after Play wraps to the start");
 
-        // The arrows pick the next and previous boss
-        var bosses = Enum.GetValues<BossType>();
+        // Every boss is a control of its own, picked with Enter or Space
         var boss = BossMode.Options.Boss;
-        var step = Array.IndexOf(bosses, boss) < bosses.Length - 1 ? 1 : -1;
-        AssertEquals(BossCreatorKeys.Handle(new KeyPress(step > 0 ? ShortcutKey.Right : ShortcutKey.Left)),
-            step > 0 ? KeyAction.Increase : KeyAction.Decrease, "Arrow on the boss picker");
-        AssertEquals(BossMode.Options.Boss, bosses[Array.IndexOf(bosses, boss) + step], "An arrow must pick the next boss");
-        BossCreatorKeys.Handle(new KeyPress(step > 0 ? ShortcutKey.Left : ShortcutKey.Right));
-        AssertEquals(BossMode.Options.Boss, boss, "The other arrow must pick the boss back");
+        var other = bosses.First(b => b != boss);
+        yield return TabTo($"Boss{other}");
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Enter)), KeyAction.Activate, "Enter on a boss");
+        AssertEquals(BossMode.Options.Boss, other, "Enter must pick the boss with the frame");
+        yield return TabTo($"Boss{boss}");
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Space));
+        AssertEquals(BossMode.Options.Boss, boss, "Space must pick the boss with the frame");
 
         // Space and Enter toggle Elite
-        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Down));
-        AssertEquals(BossCreatorKeys.Current?.Name, "Elite", "Down after the boss picker");
+        yield return TabTo("Elite");
         var elite = BossMode.Options.Elite;
         AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Space)), KeyAction.Activate, "Space on Elite");
         AssertEquals(BossMode.Options.Elite, !elite, "Space must toggle Elite");
@@ -200,6 +201,14 @@ public class KeyboardTest : CustomBossTest
         // The arrows move a slider by its step, Up and Down move between controls
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
         AssertEquals(BossCreatorKeys.Current?.Name, "BossSpeed", "Tab after Elite");
+
+        // The frame goes around everything the row shows, its info button too
+        yield return null;
+        var frameRect = FocusFrame.Current!.GetComponent<RectTransform>();
+        var info = section.BossSpeed.Row.GetComponentsInChildren<RectTransform>().First(r => r.name == EditorRows.InfoName);
+        Vector2 infoCenter = frameRect.InverseTransformPoint(info.TransformPoint(info.rect.center));
+        Assert(frameRect.rect.Contains(infoCenter), "The frame must go around the row's info button");
+
         var speed = section.BossSpeed.Value;
         BossCreatorKeys.Handle(new KeyPress(speed < section.BossSpeed.Slider.maxValue ? ShortcutKey.Right : ShortcutKey.Left));
         var changed = section.BossSpeed.Value;

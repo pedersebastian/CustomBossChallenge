@@ -356,15 +356,8 @@ public sealed class BossEditorSection
 
     private void BuildFocusStops()
     {
-        var bosses = Enum.GetValues<BossType>();
-        focusStops.Add(new FocusStop("Boss", () => BossButtons[BossMode.Options.Boss].gameObject)
-        {
-            Step = direction =>
-            {
-                var index = Array.IndexOf(bosses, BossMode.Options.Boss) + direction;
-                if (index >= 0 && index < bosses.Length) SelectBoss(bosses[index]);
-            }
-        });
+        // Every boss is a stop of its own, picked with Enter or Space like a click
+        foreach (var (boss, button) in BossButtons) focusStops.Add(FocusStop.ForButton($"Boss{boss}", button.Button));
         focusStops.Add(new FocusStop("Elite", () => Elite.gameObject) {Activate = () => Elite.Toggle.isOn = !Elite.Toggle.isOn});
         focusStops.Add(FocusStop.ForSlider("BossSpeed", BossSpeed));
         focusStops.Add(FocusStop.ForSlider("BossHealth", BossHealth));

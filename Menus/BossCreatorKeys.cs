@@ -62,6 +62,7 @@ public static class BossCreatorKeys
             if (pendingFocus == null) ClearFocus();
         }
 
+        FocusFrame.Fit();
         var press = ReadKeys();
 
         // Enter in a text field already moved on to the next control; it must not press that one too

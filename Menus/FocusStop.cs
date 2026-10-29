@@ -68,13 +68,14 @@ public sealed class FocusStop
 
 /// <summary>
 /// The frame around the control that has the keyboard. It is made of four bars so it needs no sprite, and it is put
-/// inside the control so it moves and hides with it.
+/// inside the control so it moves and hides with it. It goes around everything the control shows, such as a slider
+/// row's value above it and its info button, not just the control's own box.
 /// </summary>
 public static class FocusFrame
 {
     public const string Name = "CustomBossKeyboardFocus";
     private const float Thickness = 10;
-    private const float Margin = 12;
+    private const float Margin = 24;
     private static readonly Color Color = new(1f, 0.82f, 0.15f);
 
     private static GameObject? frame;
@@ -87,6 +88,7 @@ public static class FocusFrame
         frame.transform.SetParent(target.transform, false);
         frame.transform.SetAsLastSibling();
         frame.SetActive(true);
+        Fit();
     }
 
     public static void Hide()
@@ -94,11 +96,46 @@ public static class FocusFrame
         if (frame != null) frame.SetActive(false);
     }
 
+    /// <summary>
+    /// Sizes the frame to what its control shows now; values and texts change width while it is shown
+    /// </summary>
+    public static void Fit()
+    {
+        var target = Current?.transform.parent?.GetComponent<RectTransform>();
+        if (target == null) return;
+
+        var min = new Vector2(float.MaxValue, float.MaxValue);
+        var max = new Vector2(float.MinValue, float.MinValue);
+        foreach (var graphic in target.GetComponentsInChildren<Graphic>())
+        {
+            if (!graphic.enabled || graphic.color.a < 0.01f || graphic.transform.IsChildOf(frame!.transform)) continue;
+
+            var rect = graphic.rectTransform;
+            var box = rect.rect;
+            foreach (var corner in new[] {box.min, box.max, new Vector2(box.xMin, box.yMax), new Vector2(box.xMax, box.yMin)})
+            {
+                Vector2 local = target.InverseTransformPoint(rect.TransformPoint(corner));
+                min = Vector2.Min(min, local);
+                max = Vector2.Max(max, local);
+            }
+        }
+
+        if (min.x > max.x)
+        {
+            min = target.rect.min;
+            max = target.rect.max;
+        }
+
+        var frameRect = frame!.GetComponent<RectTransform>();
+        frameRect.anchorMin = frameRect.anchorMax = target.pivot;
+        frameRect.offsetMin = min - new Vector2(Margin, Margin);
+        frameRect.offsetMax = max + new Vector2(Margin, Margin);
+    }
+
     private static GameObject Build()
     {
         var root = new GameObject(Name, Il2CppInterop.Runtime.Il2CppType.Of<RectTransform>());
         root.AddComponent<LayoutElement>().ignoreLayout = true;
-        Stretch(root.GetComponent<RectTransform>(), Vector2.zero, Vector2.one, new Vector2(-Margin, -Margin), new Vector2(Margin, Margin));
 
         Bar(root, "Top", new Vector2(0, 1), Vector2.one, new Vector2(0, -Thickness), Vector2.zero);
         Bar(root, "Bottom", Vector2.zero, new Vector2(1, 0), Vector2.zero, new Vector2(0, Thickness));
