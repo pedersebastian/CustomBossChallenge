@@ -31,10 +31,10 @@
                           Condition="'$(Configuration)' == 'Debug'" />
     </ItemGroup>
 
-    <!-- The unit tests are their own project -->
+    <!-- The unit and property tests, and the game-free files they share, are their own projects -->
     <ItemGroup>
-        <Compile Remove="UnitTests\**" />
-        <EmbeddedResource Remove="UnitTests\**" />
-        <None Remove="UnitTests\**" />
+        <Compile Remove="UnitTests\**;PropertyTests\**;Shared\**" />
+        <EmbeddedResource Remove="UnitTests\**;PropertyTests\**;Shared\**" />
+        <None Remove="UnitTests\**;PropertyTests\**;Shared\**" />
     </ItemGroup>
 </Project>
