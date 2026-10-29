@@ -25,6 +25,7 @@ namespace CustomBossChallenge.Menus;
 public sealed class BossEditorSection
 {
     public const string SectionName = "CustomBossSection";
+    public const string RowsName = "Rows";
     public const string PlayName = "CustomBossPlay";
     public static string Title => Texts.BossCreator.T();
     public const string SelectedMarker = "Selected";
@@ -89,6 +90,8 @@ public sealed class BossEditorSection
     public Dictionary<BossType, ModHelperButton> BossButtons { get; } = new();
 
     private readonly Transform rows;
+    private ModHelperButton resetRounds = null!;
+    private readonly List<FocusStop> focusStops = new();
     private GameObject customSkullsRow = null!;
     private RectTransform? everything;
     private float appliedHeight;
@@ -134,7 +137,7 @@ public sealed class BossEditorSection
             EditorRows.SetText(heading.GetComponent<TMP_Text>(), Texts.Boss.T());
         }
 
-        var rowsObject = new GameObject("Rows", Il2CppInterop.Runtime.Il2CppType.Of<RectTransform>());
+        var rowsObject = new GameObject(RowsName, Il2CppInterop.Runtime.Il2CppType.Of<RectTransform>());
         rowsObject.transform.SetParent(Section.transform, false);
         var rowsRect = rowsObject.GetComponent<RectTransform>();
         rowsRect.anchorMin = new Vector2(0.5f, 1);
@@ -153,6 +156,7 @@ public sealed class BossEditorSection
 
         BuildRows(sliders.moabSpeedPanel);
         Play = BuildPlayButton();
+        BuildFocusStops();
 
         var topInfo = editor.transform.Find("TopInfo/Title");
         titleText = topInfo != null ? topInfo.GetComponent<TMP_Text>() : null;
@@ -230,12 +234,13 @@ public sealed class BossEditorSection
             TierMath.FormatRounds(TierMath.DefaultSpawnRounds(TierMath.VanillaTiers)), VanillaSprites.BlueInsertPanelRound,
             null, 70, TMP_InputField.CharacterValidation.None, TextAlignmentOptions.Center, "40, 60, 80, ...", 10);
         SpawnRounds.transform.SetParent(roundsRow.transform, false);
+        FollowKeyboard(SpawnRounds);
         SpawnRounds.InputField.onEndEdit.AddListener(new Action<string>(text =>
         {
             UpdateOptions(o => o with {SpawnRounds = text});
             ShowSpawnRounds();
         }));
-        var resetRounds = ModHelperButton.Create(new Info("ResetRounds", -132, 0, 180, 180)
+        resetRounds = ModHelperButton.Create(new Info("ResetRounds", -132, 0, 180, 180)
             {
                 Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
             },
@@ -267,6 +272,7 @@ public sealed class BossEditorSection
             VanillaSprites.BlueInsertPanelRound, null, 70, TMP_InputField.CharacterValidation.None,
             TextAlignmentOptions.Center, "75, 50, 25", 10);
         CustomSkulls.transform.SetParent(customSkullsRow.transform, false);
+        FollowKeyboard(CustomSkulls);
         CustomSkulls.InputField.onEndEdit.AddListener(new Action<string>(text =>
         {
             // Show what was understood; a list without any valid percentage keeps the previous skulls
@@ -334,6 +340,57 @@ public sealed class BossEditorSection
         button.transform.SetParent(row.transform, false);
         button.AddText(new Info("Label", InfoPreset.FillParent), label, 70);
         return button;
+    }
+
+    /// <summary>
+    /// The controls the keyboard moves through with Tab, in the order they are on the screen, without the hidden and
+    /// disabled ones
+    /// </summary>
+    public IReadOnlyList<FocusStop> FocusStops => focusStops.Where(stop => stop.Available).ToList();
+
+    /// <summary>
+    /// The text fields among <see cref="FocusStops"/>
+    /// </summary>
+    public IReadOnlyList<TMP_InputField> InputFields => FocusStops.Where(stop => stop.Field != null).Select(stop => stop.Field!).ToList();
+
+    public Button PlayButton => Play.GetComponentInChildren<Button>(true);
+
+    private void BuildFocusStops()
+    {
+        // Every boss is a stop of its own, picked with Enter or Space like a click
+        foreach (var (boss, button) in BossButtons) focusStops.Add(FocusStop.ForButton($"Boss{boss}", button.Button));
+        focusStops.Add(new FocusStop("Elite", () => Elite.gameObject) {Activate = () => Elite.Toggle.isOn = !Elite.Toggle.isOn});
+        focusStops.Add(FocusStop.ForSlider("BossSpeed", BossSpeed));
+        focusStops.Add(FocusStop.ForSlider("BossHealth", BossHealth));
+        focusStops.Add(FocusStop.ForSlider("MaxParagons", MaxParagons));
+        focusStops.Add(FocusStop.ForSlider("Tiers", Tiers));
+        focusStops.Add(FocusStop.ForSlider("SpeedPerTier", SpeedPerTier));
+        focusStops.Add(FocusStop.ForSlider("HealthPerTier", HealthPerTier));
+        focusStops.Add(FocusStop.ForSlider("FirstSpawnRound", FirstSpawnRound));
+        focusStops.Add(FocusStop.ForSlider("RoundsBetween", RoundsBetween));
+        focusStops.Add(FocusStop.ForField("SpawnRounds", SpawnRounds.InputField));
+        focusStops.Add(FocusStop.ForButton("ResetRounds", resetRounds.Button));
+        focusStops.Add(FocusStop.ForDropdown("SkullMode", SkullMode.Dropdown));
+        focusStops.Add(FocusStop.ForSlider("SkullCount", SkullCount));
+        focusStops.Add(FocusStop.ForField("CustomSkulls", CustomSkulls.InputField));
+        focusStops.Add(FocusStop.ForDropdown("SavedList", SavedList.Dropdown));
+        focusStops.Add(FocusStop.ForButton("SaveSetup", SaveSetup.Button));
+        focusStops.Add(FocusStop.ForButton("LoadSetup", LoadSetup.Button));
+        focusStops.Add(FocusStop.ForButton("DeleteSetup", DeleteSetup.Button));
+        focusStops.Add(FocusStop.ForButton("CopyCode", CopyCode.Button));
+        focusStops.Add(FocusStop.ForButton("PasteCode", PasteCode.Button));
+        focusStops.Add(FocusStop.ForButton("Play", PlayButton));
+    }
+
+    /// <summary>
+    /// Tab moves to the next field instead of typing a tab, and Enter applies the value and moves on as well
+    /// </summary>
+    private void FollowKeyboard(ModHelperInputField field)
+    {
+        field.InputField.onValidateInput = new Func<string, int, char, char>((_, _, added) => added == '\t' ? '\0' : added);
+        field.InputField.onSubmit.AddListener(new Action<string>(_ => BossCreatorKeys.Submitted(this, field.InputField)));
+        // onEndEdit applies the value; Esc restores the text from before the edit first, so it is applied unchanged
+        field.InputField.restoreOriginalTextOnEscape = true;
     }
 
     private void OnCopyCode()

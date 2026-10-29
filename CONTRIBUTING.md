@@ -18,7 +18,8 @@ Technical notes for building and testing Custom Boss Challenge. For what the mod
 
 ### Unit tests
 
-The logic that doesn't need the game (tier, spawn round and skull math, and writing the mod's files) has xUnit tests
+The logic that doesn't need the game (tier, spawn round and skull math, the keyboard shortcut rules, and writing the
+mod's files) has xUnit tests
 in `UnitTests/`. That project compiles those few source files straight in, so it builds and runs in seconds without
 BTD6:
 
@@ -48,6 +49,10 @@ Everything else runs inside the game, with automated tests built on Mod Helper's
 - the main menu button, and the whole Boss Creator flow in the real Challenge Editor, from editing the boss options
   to copying and pasting share codes and pressing Play, including that the normal Challenge Editor and your own
   draft stay untouched and that Play refuses unsupported modes and missing bosses
+- the keyboard (`KeyboardTest`): the Ctrl shortcuts, Tab, the arrows, Enter and Space through the Boss section's
+  controls (`BossEditorSection.FocusStops`, which controller support can use too), Esc in a field cancelling only the
+  edit, and nothing of it in the normal Challenge Editor. Real key presses can't be faked, so the test hands the key
+  press to `BossCreatorKeys.Handle`
 - the layout on 16:9, 16:10, 4:3, 21:9 and 32:9 (`LayoutTest`): the Boss Creator button and Play overlap nothing,
   stay on the screen, Play stays behind the editor's own panels, and every control of the Boss section stays inside
   it. The game can change its resolution even with `-batchmode`, so this runs with the other tests

@@ -29,6 +29,7 @@ public class CustomBossChallenge : BloonsTD6Mod
     public override void OnUpdate()
     {
         Menus.MainMenuButton.UpdatePosition();
+        Menus.BossCreatorKeys.Update();
     }
 
     public override void OnNewGameModel(GameModel result)

@@ -12,6 +12,7 @@
 
     <!-- The mod's files that don't use the game, compiled straight into the tests -->
     <ItemGroup>
+        <Compile Include="..\Config\KeyboardShortcuts.cs" Link="Mod\KeyboardShortcuts.cs" />
         <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />
         <Compile Include="..\Config\TierMath.cs" Link="Mod\TierMath.cs" />
         <Compile Include="..\Persistence\SafeFile.cs" Link="Mod\SafeFile.cs" />
