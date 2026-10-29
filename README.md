@@ -53,9 +53,11 @@ where you can read a share code and see the whole setup without the game.
 - **Share Code**: copy a whole setup as a short text code and paste codes others share.
 - Your **last setup is remembered** between sessions.
 - **Keyboard**: Ctrl+C and Ctrl+V copy and paste a share code, Ctrl+S saves the setup and Ctrl+Enter plays (Cmd on
-  a Mac). In the Spawn Rounds and Skull Health % fields, Tab and Shift+Tab move between them, Enter applies the value
-  and moves on, and Esc cancels the edit instead of leaving the Boss Creator. While you type in a field, Ctrl+C and
-  Ctrl+V copy and paste text as usual.
+  a Mac). Tab and Shift+Tab (or the up and down arrows) move a yellow frame through the Boss section: the boss, Elite,
+  every slider, the text fields, the lists and the buttons, up to Play. Left and right change what has the frame
+  (a slider step, the next boss or the next option in a list), and Enter or Space press it. In a text field, Enter
+  applies the value and moves on, and Esc cancels the edit instead of leaving the Boss Creator; while you type,
+  Ctrl+C and Ctrl+V copy and paste text as usual.
 
 ![Boss options](docs/boss-options.jpg)
 

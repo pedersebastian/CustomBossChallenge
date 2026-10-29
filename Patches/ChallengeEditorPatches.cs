@@ -123,9 +123,9 @@ internal static class ChallengeEditor_OverrideClose
         // vanilla draft handling on the boss setup either
         if (!BossMode.Active && !BossEditorSection.IsBossEditor(__instance)) return true;
 
-        // Esc in a text field only cancels its edit, and Esc in one of the editor's own panels closes that panel, not
-        // the whole Boss Creator
-        if (BossMode.Active && (BossCreatorKeys.EscapeCancelsEdit() || ClosePanel(__instance)))
+        // Esc in a text field only cancels its edit, with the keyboard frame shown it only takes the frame away, and in
+        // one of the editor's own panels it closes that panel, not the whole Boss Creator
+        if (BossMode.Active && (BossCreatorKeys.EscapeEndsFocus() || ClosePanel(__instance)))
         {
             __result = true;
             return false;

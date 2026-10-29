@@ -14,8 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Keyboard shortcuts** in the Boss Creator: Ctrl+C and Ctrl+V copy and paste a share code, Ctrl+S saves the setup
   and Ctrl+Enter plays (Cmd on a Mac). They do nothing while a text field, a popup or one of the editor's panels is
   open, so copy and paste in the fields work as before.
-- **Tab and Enter** in the Spawn Rounds and Skull Health % fields: Tab and Shift+Tab move between them, Enter applies
-  the value and moves on to the next field. Esc while typing cancels the edit instead of leaving the Boss Creator.
+- **Keyboard navigation** in the Boss section: Tab and Shift+Tab (or the up and down arrows) move a yellow frame
+  through the boss, Elite, the sliders, the text fields, the lists and the buttons, up to Play, and scroll it into
+  view. Left and right change what has the frame, and Enter or Space press it. In a text field, Enter applies the value
+  and moves on, and Esc cancels the edit instead of leaving the Boss Creator. A mouse click or Esc takes the frame
+  away.
 
 ## [2.7.0] - 2026-10-29
 

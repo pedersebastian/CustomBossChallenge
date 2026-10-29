@@ -21,8 +21,9 @@ using Object = UnityEngine.Object;
 namespace CustomBossChallenge.Tests;
 
 /// <summary>
-/// The Boss Creator's keyboard: Ctrl shortcuts for share codes, saving and Play, Tab and Enter between the Boss
-/// section's text fields, Esc in a field only cancelling the edit, and nothing of it in the normal Challenge Editor.
+/// The Boss Creator's keyboard: Ctrl shortcuts for share codes, saving and Play, Tab, the arrows, Enter and Space
+/// through the Boss section's controls, Esc in a field only cancelling the edit, and nothing of it in the normal
+/// Challenge Editor.
 /// Key presses can't be faked, so the tests hand <see cref="BossCreatorKeys.Handle"/> the key press it would read.
 /// </summary>
 public class KeyboardTest : CustomBossTest
@@ -41,6 +42,7 @@ public class KeyboardTest : CustomBossTest
         {
             yield return Shortcuts();
             yield return TabAndEnter();
+            yield return Controls();
             yield return EscapeCancelsTheEdit();
             yield return NormalEditorIgnoresKeys();
         }
@@ -122,11 +124,12 @@ public class KeyboardTest : CustomBossTest
         yield return null;
         AssertEquals(section.InputFields.Count, 2, "Text fields with Custom skulls");
 
-        // Tab applies the typed value and moves on; Shift+Tab goes back
+        // Tab applies the typed value and moves on to the next control; Shift+Tab goes back
         yield return Focus(rounds);
         rounds.text = "30, 50";
         AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab)), KeyAction.NextField, "Tab");
-        yield return WaitFor(() => skulls.isFocused, "Tab focusing the skull field");
+        yield return WaitFor(() => !rounds.isFocused, "Tab leaving the spawn rounds");
+        AssertEquals(BossCreatorKeys.Current?.Name, "ResetRounds", "Tab after the spawn rounds");
         AssertEquals(BossMode.Options.SpawnRounds, "30, 50", "Tab must apply the spawn rounds");
         AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab, Shift: true)), KeyAction.PreviousField, "Shift+Tab");
         yield return WaitFor(() => rounds.isFocused, "Shift+Tab focusing the spawn rounds");
@@ -135,27 +138,125 @@ public class KeyboardTest : CustomBossTest
         AssertEquals(rounds.onValidateInput.Invoke(rounds.text, 0, '\t'), '\0', "Tab character");
         AssertEquals(rounds.onValidateInput.Invoke(rounds.text, 0, '7'), '7', "Other characters");
 
-        // Enter applies the value and moves on, and ends the edit on the last field
-        rounds.text = "35, 55";
-        rounds.onSubmit.Invoke(rounds.text);
-        yield return WaitFor(() => skulls.isFocused, "Enter focusing the skull field");
+        // Tab goes from the skull mode on to the skull field, which takes the keyboard
+        yield return TabTo("SkullMode");
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab)), KeyAction.NextField, "Tab after the skull mode");
+        yield return WaitFor(() => skulls.isFocused, "Tab focusing the skull field");
+
+        // Enter applies the value and moves on to the next control
         skulls.text = "80, 20";
         skulls.onSubmit.Invoke(skulls.text);
-        yield return WaitFor(() => !skulls.isFocused, "Enter on the last field ending its edit");
+        yield return WaitFor(() => !skulls.isFocused, "Enter ending the skull field's edit");
         AssertEquals(BossMode.Options.CustomSkulls, "80, 20", "Enter must apply the skulls");
-        yield return new WaitForSecondsRealtime(0.2f);
-        Assert(!rounds.isFocused, "Enter on the last field must not go back to the first");
-
-        // With the skull field hidden, Tab stays on the only field
-        section.SkullMode.Dropdown.value = (int) SkullMode.Vanilla;
-        yield return null;
-        AssertEquals(section.InputFields.Count, 1, "Text fields with vanilla skulls");
-        yield return Focus(rounds);
-        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab)), KeyAction.NextField, "Tab on the only field");
-        yield return WaitFor(() => rounds.isFocused, "Tab wrapping to the spawn rounds");
+        Assert(BossCreatorKeys.Current != null && BossCreatorKeys.Current.Name != "CustomSkulls",
+            $"Enter must move on, not stay on {BossCreatorKeys.Current?.Name}");
         yield return Unfocus();
 
         yield return Leave();
+    }
+
+    /// <summary>
+    /// Tab through all the controls, with a frame around the one that has the keyboard, the arrows changing it and
+    /// Enter or Space pressing it
+    /// </summary>
+    private IEnumerator Controls()
+    {
+        BossMode.Enter();
+        yield return WaitForEditor();
+        var section = BossEditorSection.Current!;
+        yield return Unfocus();
+
+        // Tab starts at the boss picker, Shift+Tab at Play
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab)), KeyAction.NextField, "Tab without a control");
+        AssertEquals(BossCreatorKeys.Current?.Name, "Boss", "First control");
+        var frame = AssertNotNull(FocusFrame.Current, "No keyboard frame")!;
+        AssertEquals(frame.transform.parent.gameObject.name, section.BossButtons[BossMode.Options.Boss].gameObject.name,
+            "The frame must be around the chosen boss");
+        yield return Unfocus();
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab, Shift: true));
+        AssertEquals(BossCreatorKeys.Current?.Name, "Play", "Shift+Tab without a control");
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
+        AssertEquals(BossCreatorKeys.Current?.Name, "Boss", "Tab after Play wraps to the start");
+
+        // The arrows pick the next and previous boss
+        var bosses = Enum.GetValues<BossType>();
+        var boss = BossMode.Options.Boss;
+        var step = Array.IndexOf(bosses, boss) < bosses.Length - 1 ? 1 : -1;
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(step > 0 ? ShortcutKey.Right : ShortcutKey.Left)),
+            step > 0 ? KeyAction.Increase : KeyAction.Decrease, "Arrow on the boss picker");
+        AssertEquals(BossMode.Options.Boss, bosses[Array.IndexOf(bosses, boss) + step], "An arrow must pick the next boss");
+        BossCreatorKeys.Handle(new KeyPress(step > 0 ? ShortcutKey.Left : ShortcutKey.Right));
+        AssertEquals(BossMode.Options.Boss, boss, "The other arrow must pick the boss back");
+
+        // Space and Enter toggle Elite
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Down));
+        AssertEquals(BossCreatorKeys.Current?.Name, "Elite", "Down after the boss picker");
+        var elite = BossMode.Options.Elite;
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Space)), KeyAction.Activate, "Space on Elite");
+        AssertEquals(BossMode.Options.Elite, !elite, "Space must toggle Elite");
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Enter));
+        AssertEquals(BossMode.Options.Elite, elite, "Enter must toggle Elite back");
+
+        // The arrows move a slider by its step, Up and Down move between controls
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
+        AssertEquals(BossCreatorKeys.Current?.Name, "BossSpeed", "Tab after Elite");
+        var speed = section.BossSpeed.Value;
+        BossCreatorKeys.Handle(new KeyPress(speed < section.BossSpeed.Slider.maxValue ? ShortcutKey.Right : ShortcutKey.Left));
+        var changed = section.BossSpeed.Value;
+        AssertEquals(Math.Abs(changed - speed), 10f, "An arrow must move Boss Speed by one step");
+        section.Editor.ApplyUiSettingsToDCM();
+        Assert(Math.Abs(section.Editor.dcm.bloonModifiers.bossSpeedMultiplier - changed / 100f) < 0.0001f,
+            "Boss Speed in the challenge");
+        section.BossSpeed.Step(speed > changed ? 1 : -1);
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Down));
+        AssertEquals(BossCreatorKeys.Current?.Name, "BossHealth", "Down after Boss Speed");
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Up));
+        AssertEquals(BossCreatorKeys.Current?.Name, "BossSpeed", "Up after Boss Health");
+
+        // The arrows pick the next skull mode, which shows its own rows
+        yield return TabTo("SkullMode");
+        var mode = BossMode.Options.SkullMode;
+        BossCreatorKeys.Handle(new KeyPress(mode == SkullMode.Custom ? ShortcutKey.Left : ShortcutKey.Right));
+        yield return null;
+        Assert(BossMode.Options.SkullMode != mode, "An arrow must change the skull mode");
+        AssertEquals(section.FocusStops.Any(stop => stop.Name == "SkullCount"),
+            BossMode.Options.SkullMode == SkullMode.EvenlySpaced, "Skull Count is a control only while it is shown");
+        section.SkullMode.Dropdown.value = (int) mode;
+        yield return null;
+
+        // Enter presses a button
+        yield return TabTo("CopyCode");
+        clipboard = "";
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Enter)), KeyAction.Activate, "Enter on Copy");
+        Popup popup = null!;
+        yield return WaitForPopup(p => popup = p);
+        yield return ClosePopup(popup, true);
+        Assert(clipboard.StartsWith("CBC"), $"Enter on Copy must copy a code: {clipboard}");
+
+        // Esc takes the frame away instead of leaving the Boss Creator
+        BossCreatorKeys.EscapePressed = () => true;
+        MenuManager.instance.Back();
+        yield return new WaitForSecondsRealtime(1);
+        BossCreatorKeys.EscapePressed = () => Input.GetKeyDown(KeyCode.Escape);
+        Assert(BossMode.Active, "Esc with the keyboard frame left the Boss Creator");
+        AssertEquals(BossCreatorKeys.Current, null, "Esc must take the keyboard frame away");
+        AssertEquals(FocusFrame.Current, null, "Esc must hide the keyboard frame");
+
+        yield return Leave();
+    }
+
+    /// <summary>
+    /// Presses Tab until <paramref name="name"/> has the keyboard
+    /// </summary>
+    private IEnumerator TabTo(string name)
+    {
+        for (var i = 0; i < 40 && BossCreatorKeys.Current?.Name != name; i++)
+        {
+            BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
+            yield return null;
+        }
+
+        AssertEquals(BossCreatorKeys.Current?.Name, name, $"Tabbing to {name}");
     }
 
     private IEnumerator EscapeCancelsTheEdit()
@@ -209,6 +310,7 @@ public class KeyboardTest : CustomBossTest
     private static IEnumerator Unfocus()
     {
         EventSystem.current.SetSelectedGameObject(null);
+        BossCreatorKeys.ClearFocus();
         yield return new WaitForSecondsRealtime(0.2f);
     }
 

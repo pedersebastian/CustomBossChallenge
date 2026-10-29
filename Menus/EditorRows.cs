@@ -49,6 +49,11 @@ public sealed class SliderRow
         valueText.text = format(Slider.value);
     }
 
+    /// <summary>
+    /// Moves one step left or right, like the row's arrow buttons
+    /// </summary>
+    public void Step(int direction) => Set(Value + direction * step);
+
     private void Set(float value)
     {
         Show(value);

@@ -89,6 +89,8 @@ public sealed class BossEditorSection
     public Dictionary<BossType, ModHelperButton> BossButtons { get; } = new();
 
     private readonly Transform rows;
+    private ModHelperButton resetRounds = null!;
+    private readonly List<FocusStop> focusStops = new();
     private GameObject customSkullsRow = null!;
     private RectTransform? everything;
     private float appliedHeight;
@@ -153,6 +155,7 @@ public sealed class BossEditorSection
 
         BuildRows(sliders.moabSpeedPanel);
         Play = BuildPlayButton();
+        BuildFocusStops();
 
         var topInfo = editor.transform.Find("TopInfo/Title");
         titleText = topInfo != null ? topInfo.GetComponent<TMP_Text>() : null;
@@ -236,7 +239,7 @@ public sealed class BossEditorSection
             UpdateOptions(o => o with {SpawnRounds = text});
             ShowSpawnRounds();
         }));
-        var resetRounds = ModHelperButton.Create(new Info("ResetRounds", -132, 0, 180, 180)
+        resetRounds = ModHelperButton.Create(new Info("ResetRounds", -132, 0, 180, 180)
             {
                 Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
             },
@@ -339,13 +342,51 @@ public sealed class BossEditorSection
     }
 
     /// <summary>
-    /// The section's text fields that are shown, in the order they are on the screen. Tab and Enter move through them.
+    /// The controls the keyboard moves through with Tab, in the order they are on the screen, without the hidden and
+    /// disabled ones
     /// </summary>
-    public IReadOnlyList<TMP_InputField> InputFields =>
-        new[] {SpawnRounds, CustomSkulls}.Where(input => input.gameObject.activeInHierarchy)
-            .Select(input => input.InputField).ToList();
+    public IReadOnlyList<FocusStop> FocusStops => focusStops.Where(stop => stop.Available).ToList();
+
+    /// <summary>
+    /// The text fields among <see cref="FocusStops"/>
+    /// </summary>
+    public IReadOnlyList<TMP_InputField> InputFields => FocusStops.Where(stop => stop.Field != null).Select(stop => stop.Field!).ToList();
 
     public Button PlayButton => Play.GetComponentInChildren<Button>(true);
+
+    private void BuildFocusStops()
+    {
+        var bosses = Enum.GetValues<BossType>();
+        focusStops.Add(new FocusStop("Boss", () => BossButtons[BossMode.Options.Boss].gameObject)
+        {
+            Step = direction =>
+            {
+                var index = Array.IndexOf(bosses, BossMode.Options.Boss) + direction;
+                if (index >= 0 && index < bosses.Length) SelectBoss(bosses[index]);
+            }
+        });
+        focusStops.Add(new FocusStop("Elite", () => Elite.gameObject) {Activate = () => Elite.Toggle.isOn = !Elite.Toggle.isOn});
+        focusStops.Add(FocusStop.ForSlider("BossSpeed", BossSpeed));
+        focusStops.Add(FocusStop.ForSlider("BossHealth", BossHealth));
+        focusStops.Add(FocusStop.ForSlider("MaxParagons", MaxParagons));
+        focusStops.Add(FocusStop.ForSlider("Tiers", Tiers));
+        focusStops.Add(FocusStop.ForSlider("SpeedPerTier", SpeedPerTier));
+        focusStops.Add(FocusStop.ForSlider("HealthPerTier", HealthPerTier));
+        focusStops.Add(FocusStop.ForSlider("FirstSpawnRound", FirstSpawnRound));
+        focusStops.Add(FocusStop.ForSlider("RoundsBetween", RoundsBetween));
+        focusStops.Add(FocusStop.ForField("SpawnRounds", SpawnRounds.InputField));
+        focusStops.Add(FocusStop.ForButton("ResetRounds", resetRounds.Button));
+        focusStops.Add(FocusStop.ForDropdown("SkullMode", SkullMode.Dropdown));
+        focusStops.Add(FocusStop.ForSlider("SkullCount", SkullCount));
+        focusStops.Add(FocusStop.ForField("CustomSkulls", CustomSkulls.InputField));
+        focusStops.Add(FocusStop.ForDropdown("SavedList", SavedList.Dropdown));
+        focusStops.Add(FocusStop.ForButton("SaveSetup", SaveSetup.Button));
+        focusStops.Add(FocusStop.ForButton("LoadSetup", LoadSetup.Button));
+        focusStops.Add(FocusStop.ForButton("DeleteSetup", DeleteSetup.Button));
+        focusStops.Add(FocusStop.ForButton("CopyCode", CopyCode.Button));
+        focusStops.Add(FocusStop.ForButton("PasteCode", PasteCode.Button));
+        focusStops.Add(FocusStop.ForButton("Play", PlayButton));
+    }
 
     /// <summary>
     /// Tab moves to the next field instead of typing a tab, and Enter applies the value and moves on as well
@@ -353,7 +394,7 @@ public sealed class BossEditorSection
     private void FollowKeyboard(ModHelperInputField field)
     {
         field.InputField.onValidateInput = new Func<string, int, char, char>((_, _, added) => added == '\t' ? '\0' : added);
-        field.InputField.onSubmit.AddListener(new Action<string>(_ => BossCreatorKeys.MoveFocus(this, field.InputField, 1)));
+        field.InputField.onSubmit.AddListener(new Action<string>(_ => BossCreatorKeys.Submitted(this, field.InputField)));
         // onEndEdit applies the value; Esc restores the text from before the edit first, so it is applied unchanged
         field.InputField.restoreOriginalTextOnEscape = true;
     }
