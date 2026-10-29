@@ -230,6 +230,7 @@ public sealed class BossEditorSection
             TierMath.FormatRounds(TierMath.DefaultSpawnRounds(TierMath.VanillaTiers)), VanillaSprites.BlueInsertPanelRound,
             null, 70, TMP_InputField.CharacterValidation.None, TextAlignmentOptions.Center, "40, 60, 80, ...", 10);
         SpawnRounds.transform.SetParent(roundsRow.transform, false);
+        FollowKeyboard(SpawnRounds);
         SpawnRounds.InputField.onEndEdit.AddListener(new Action<string>(text =>
         {
             UpdateOptions(o => o with {SpawnRounds = text});
@@ -267,6 +268,7 @@ public sealed class BossEditorSection
             VanillaSprites.BlueInsertPanelRound, null, 70, TMP_InputField.CharacterValidation.None,
             TextAlignmentOptions.Center, "75, 50, 25", 10);
         CustomSkulls.transform.SetParent(customSkullsRow.transform, false);
+        FollowKeyboard(CustomSkulls);
         CustomSkulls.InputField.onEndEdit.AddListener(new Action<string>(text =>
         {
             // Show what was understood; a list without any valid percentage keeps the previous skulls
@@ -334,6 +336,26 @@ public sealed class BossEditorSection
         button.transform.SetParent(row.transform, false);
         button.AddText(new Info("Label", InfoPreset.FillParent), label, 70);
         return button;
+    }
+
+    /// <summary>
+    /// The section's text fields that are shown, in the order they are on the screen. Tab and Enter move through them.
+    /// </summary>
+    public IReadOnlyList<TMP_InputField> InputFields =>
+        new[] {SpawnRounds, CustomSkulls}.Where(input => input.gameObject.activeInHierarchy)
+            .Select(input => input.InputField).ToList();
+
+    public Button PlayButton => Play.GetComponentInChildren<Button>(true);
+
+    /// <summary>
+    /// Tab moves to the next field instead of typing a tab, and Enter applies the value and moves on as well
+    /// </summary>
+    private void FollowKeyboard(ModHelperInputField field)
+    {
+        field.InputField.onValidateInput = new Func<string, int, char, char>((_, _, added) => added == '\t' ? '\0' : added);
+        field.InputField.onSubmit.AddListener(new Action<string>(_ => BossCreatorKeys.MoveFocus(this, field.InputField, 1)));
+        // onEndEdit applies the value; Esc restores the text from before the edit first, so it is applied unchanged
+        field.InputField.restoreOriginalTextOnEscape = true;
     }
 
     private void OnCopyCode()

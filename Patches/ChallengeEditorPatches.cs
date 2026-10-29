@@ -123,8 +123,9 @@ internal static class ChallengeEditor_OverrideClose
         // vanilla draft handling on the boss setup either
         if (!BossMode.Active && !BossEditorSection.IsBossEditor(__instance)) return true;
 
-        // Esc in one of the editor's own panels closes that panel, not the whole Boss Creator
-        if (BossMode.Active && ClosePanel(__instance))
+        // Esc in a text field only cancels its edit, and Esc in one of the editor's own panels closes that panel, not
+        // the whole Boss Creator
+        if (BossMode.Active && (BossCreatorKeys.EscapeCancelsEdit() || ClosePanel(__instance)))
         {
             __result = true;
             return false;
@@ -159,6 +160,15 @@ internal static class ChallengeEditor_OverrideClose
 
         return true;
     }
+
+    /// <summary>
+    /// Whether one of the editor's panels that <see cref="ClosePanel"/> closes is open
+    /// </summary>
+    internal static bool OpenPanel(ChallengeEditor editor) =>
+        editor.towerRestrictionMenu != null && editor.towerRestrictionMenu.activeInHierarchy ||
+        editor.towerSelectObject != null && editor.towerSelectObject.activeInHierarchy ||
+        editor.mapSelectPanel != null && editor.mapSelectPanel.gameObject.activeInHierarchy ||
+        editor.modifierSettings != null && editor.modifierSettings.gameObject.activeInHierarchy;
 }
 
 /// <summary>
