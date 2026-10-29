@@ -1,0 +1,25 @@
+<!-- Property-based tests for share codes: FsCheck makes thousands of random setups and broken codes and checks that
+     CodeFormat (in Shared/) always reads them back right and never throws.
+     Run with: dotnet test, project PropertyTests (see CONTRIBUTING.md) -->
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <RootNamespace>CustomBossChallenge.PropertyTests</RootNamespace>
+        <IsPackable>false</IsPackable>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Game.fs" />
+        <Compile Include="Generators.fs" />
+        <Compile Include="CodeProperties.fs" />
+        <Compile Include="GeneratedFixtures.fs" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Shared\CustomBossChallenge.Shared.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="FsCheck" Version="3.6.0" />
+        <PackageReference Include="xunit.v3" Version="4.0.2" />
+    </ItemGroup>
+</Project>
