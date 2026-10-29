@@ -1,0 +1,28 @@
+<!-- The mod's files that don't use the game, built on their own so the unit tests (UnitTests/) and property tests
+     (PropertyTests/) can use them without the game. Keep these files free of the game's types (Il2Cpp..., BTD_Mod_Helper),
+     or this project won't build. -->
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <RootNamespace>CustomBossChallenge</RootNamespace>
+        <Nullable>enable</Nullable>
+        <LangVersion>preview</LangVersion>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="..\Config\KeyboardShortcuts.cs" Link="Mod\KeyboardShortcuts.cs" />
+        <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />
+        <Compile Include="..\Config\TierMath.cs" Link="Mod\TierMath.cs" />
+        <Compile Include="..\Persistence\CodeFormat.cs" Link="Mod\CodeFormat.cs" />
+        <Compile Include="..\Persistence\SafeFile.cs" Link="Mod\SafeFile.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <!-- The game has its own copy; this only has to be the same major version -->
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="CustomBossChallenge.UnitTests" />
+        <InternalsVisibleTo Include="CustomBossChallenge.PropertyTests" />
+    </ItemGroup>
+</Project>

@@ -1,4 +1,4 @@
-<!-- Tests for the mod's pure logic, which runs without the game. Everything that needs the game is tested in-game,
+<!-- Tests for the mod's pure logic, which runs without the game, from Shared/. Everything that needs the game is tested in-game,
      see Tests/ and CONTRIBUTING.md. Run with: dotnet test UnitTests -->
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
@@ -10,12 +10,9 @@
         <OutputType>Exe</OutputType>
     </PropertyGroup>
 
-    <!-- The mod's files that don't use the game, compiled straight into the tests -->
+    <!-- The mod's files that don't use the game -->
     <ItemGroup>
-        <Compile Include="..\Config\KeyboardShortcuts.cs" Link="Mod\KeyboardShortcuts.cs" />
-        <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />
-        <Compile Include="..\Config\TierMath.cs" Link="Mod\TierMath.cs" />
-        <Compile Include="..\Persistence\SafeFile.cs" Link="Mod\SafeFile.cs" />
+        <ProjectReference Include="..\Shared\CustomBossChallenge.Shared.csproj" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="xunit.v3" Version="4.0.2" />
