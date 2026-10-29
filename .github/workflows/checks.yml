@@ -38,6 +38,19 @@ jobs:
       - name: Test the logic that runs without the game
         run: dotnet test --project UnitTests
 
+  property-tests:
+    name: Property tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Test share codes with random setups and broken codes
+        run: dotnet test --project PropertyTests
+
   website:
     name: Website
     runs-on: ubuntu-latest

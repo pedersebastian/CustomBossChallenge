@@ -18,16 +18,39 @@ Technical notes for building and testing Custom Boss Challenge. For what the mod
 
 ### Unit tests
 
-The logic that doesn't need the game (tier, spawn round and skull math, the keyboard shortcut rules, and writing the
-mod's files) has xUnit tests
-in `UnitTests/`. That project compiles those few source files straight in, so it builds and runs in seconds without
-BTD6:
+The logic that doesn't need the game (tier, spawn round and skull math, the keyboard shortcut rules, the share code
+format and writing the mod's files) has xUnit tests in `UnitTests/`. Those source files are built on their own in
+`Shared/`, so the tests build and run in seconds without BTD6:
 
 ```
 dotnet test --project UnitTests
 ```
 
-Keep files tested there free of the game's types (`Il2Cpp...`, `BTD_Mod_Helper`), or the project won't build.
+Keep the files in `Shared/` free of the game's types (`Il2Cpp...`, `BTD_Mod_Helper`), or the project won't build.
+
+### Property tests
+
+Share codes are also tested with random data, in F# with [FsCheck](https://fscheck.github.io/FsCheck/), in
+`PropertyTests/`. Thousands of random setups the Boss Creator can make, and broken codes, check that:
+
+- a code reads back as exactly the setup it was made from, and encoding that setup again gives the same code;
+- codes use `CBC2:` only when they need it, and only characters chat apps leave alone;
+- broken codes (cut short, changed, junk, too big once unpacked) are refused as `Invalid` or `TooNew` and never throw.
+
+```
+dotnet test --project PropertyTests
+```
+
+The tests run `Persistence/CodeFormat.cs` (the text format, without the game), against the defaults in
+`web/src/data/game.json`. When a property fails, FsCheck shrinks it to the few values that matter and prints them as
+the JSON the code holds; add that case to `SetupCodeTest` or `WebDataTest`'s fixtures, then fix it.
+
+They also check `web/test/generated-codes.json`: 200 random codes and 50 or so broken ones from a fixed seed, which
+the website's tests must read exactly like the mod. After changing the generators or the code format, write it again:
+
+```
+$env:CBC_GENERATED_CODES = "1"; dotnet test --project PropertyTests; Remove-Item env:CBC_GENERATED_CODES
+```
 
 ### In-game tests
 
@@ -82,6 +105,7 @@ subfolder of `<folder>` named after the size.
   it marks a bad release instead of stopping it: run it before tagging.
 - **Unit tests**: `dotnet test --project UnitTests`, see above. The in-game tests can't run on GitHub and still have
   to be run locally.
+- **Property tests**: `dotnet test --project PropertyTests`, see above.
 - **Website**: `npm test` and `npm run build` in `web/`, see below.
 
 The first two are PowerShell scripts that also run locally in Windows PowerShell:
@@ -114,7 +138,8 @@ Visits are counted with [GoatCounter](https://pedersebastian.goatcounter.com/) (
 
 The website must read codes exactly like the mod, so parts of the mod are ported to TypeScript: `SetupCode` reading
 (`web/src/code/decode.ts`), `BossOptions.Sanitized` (`options.ts`), `TierMath` and `SkullMath` (`web/src/math/`) and
-the Tier Preview numbers (`web/src/preview/compute.ts`). Change them together with the C#.
+the Tier Preview numbers (`web/src/preview/compute.ts`). Change them together with the C#. Besides the fixtures below,
+`web/test/generated.test.ts` reads the random codes from the property tests (see *Property tests*).
 
 What only the game knows (the default challenge codes are made against, boss health, speed and skulls, map and tower
 names) comes from the game, through the in-game test `WebDataTest`, into `web/src/data/`:
