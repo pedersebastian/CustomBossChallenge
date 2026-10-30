@@ -5,6 +5,7 @@ using CustomBossChallenge.Creator;
 using CustomBossChallenge.Persistence;
 using CustomBossChallenge.Patches;
 using HarmonyLib;
+using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity.Menu;
 using Il2CppAssets.Scripts.Unity.UI_New.Main;
 using Il2CppAssets.Scripts.Unity.UI_New.Main.EventPanel;
@@ -137,7 +138,13 @@ public static class MainMenuButton
             return;
         }
 
-        var game = CustomBossRetries.Store.TryLoad();
+        var load = CustomBossRetries.Store.Load();
+        var game = load.Game;
+        if (load.Problem == ContinueProblem.Unusable)
+        {
+            ShowUnusableGame(load.Lost);
+            return;
+        }
         if (game == null)
         {
             BossMode.Enter();
@@ -152,14 +159,42 @@ public static class MainMenuButton
     }
 
     /// <summary>
+    /// Tells the player, once, that the unfinished game can't be continued: the file has already been moved aside.
+    /// When its setup could still be read, it can be loaded to play the game again from the start.
+    /// </summary>
+    private static void ShowUnusableGame(LostGame? lost)
+    {
+        if (lost == null)
+        {
+            var file = System.IO.Path.GetFileName(CustomBossRetries.Store.BrokenPath);
+            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.UnfinishedGameBroken.T(file),
+                new System.Action(BossMode.Enter)));
+            return;
+        }
+
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
+            Texts.UnfinishedGame.T(), UnusableGameText(lost),
+            new System.Action(() => BossMode.Enter(lost.Options, ConfigApplier.Unprepare(lost.Dcm))), Texts.LoadGameSetup.T(),
+            new System.Action(BossMode.Enter), Texts.NewGame.T(), Popup.TransitionAnim.Scale));
+    }
+
+    /// <summary>
     /// The name of the unfinished game's challenge, the round it continues on and its tiers
     /// </summary>
-    public static string UnfinishedGameText(ContinueGame game)
+    public static string UnfinishedGameText(ContinueGame game) =>
+        Texts.UnfinishedGameQuestion.T(GameName(game.Dcm), game.Latest.Snapshot.Round, game.Options.Tiers);
+
+    public static string UnusableGameText(LostGame lost) =>
+        Texts.UnfinishedGameLost.T(GameName(lost.Dcm), lost.Round, lost.Options.Tiers);
+
+    /// <summary>
+    /// The challenge's name as the player gave it, in bold
+    /// </summary>
+    private static string GameName(DailyChallengeModel dcm)
     {
-        var name = game.Dcm.name ?? "";
-        if (ConfigApplier.IsMarked(game.Dcm)) name = name[..^ConfigApplier.Marker.Length];
-        return Texts.UnfinishedGameQuestion.T($"<b>{BossEditorSection.PlainText(name)}</b>", game.Latest.Snapshot.Round,
-            game.Options.Tiers);
+        var name = dcm.name ?? "";
+        if (ConfigApplier.IsMarked(dcm)) name = name[..^ConfigApplier.Marker.Length];
+        return $"<b>{BossEditorSection.PlainText(name)}</b>";
     }
 }
 

@@ -50,17 +50,25 @@ public static class BossMode
     private static DailyChallengeModel? userDraft;
 
     /// <summary>
-    /// Loads the last setup (or defaults) and opens the Challenge Editor as the Boss Creator
+    /// Opens the Challenge Editor as the Boss Creator, with the last setup (or defaults)
     /// </summary>
     public static void Enter()
     {
-        if (Active) Exit();
-
         if (!Store.TryLoad(out var options, out var dcm) || dcm == null)
         {
             options = new BossOptions();
             dcm = DefaultDcm(options);
         }
+
+        Enter(options, dcm);
+    }
+
+    /// <summary>
+    /// Opens the Challenge Editor as the Boss Creator with this setup
+    /// </summary>
+    public static void Enter(BossOptions options, DailyChallengeModel dcm)
+    {
+        if (Active) Exit();
 
         Options = options;
         Dcm = dcm;
