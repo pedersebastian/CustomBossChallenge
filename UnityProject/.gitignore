@@ -1,0 +1,25 @@
+# Only the shader, the build script, the packages and the Unity version are kept; Unity makes everything else when
+# the project is opened or built (see CONTRIBUTING.md)
+/Library/
+/Temp/
+/Logs/
+/UserSettings/
+/Build/
+/obj/
+/ProjectSettings/*
+!/ProjectSettings/ProjectVersion.txt
+/Packages/packages-lock.json
+/Assets/*.asset
+/Assets/*.asset.meta
+/Assets/Resources/
+/Assets/Resources.meta
+*.csproj
+*.sln
+*.slnx
+.vsconfig
+/Assets/Pipeline/
+/Assets/Pipeline.meta
+
+# Unity needs the manifest to know which packages (URP) the shader project uses
+!/Packages/
+!/Packages/manifest.json

@@ -29,12 +29,14 @@ public class CustomBossChallenge : BloonsTD6Mod
     {
         _ = Patches.PatchCheck.AllInPlace;
         Patches.ConflictReport.LogOnce();
+        Visuals.TierLookApplier.Prepare();
     }
 
     public override void OnUpdate()
     {
         Menus.MainMenuButton.UpdatePosition();
         Menus.BossCreatorKeys.Update();
+        Visuals.TierLookApplier.Update();
     }
 
     public override void OnNewGameModel(GameModel result)

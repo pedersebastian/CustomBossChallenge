@@ -101,6 +101,9 @@ public static class CustomBossState
         // model, then the boss manager), so the resume is kept until a round starts or the game restarts.
         if (resumeTiers == null) CustomBossRetries.Forget();
         HighestDefeatedTier = resumeTiers ?? 0;
+
+        // The bosses of the last match are gone; their displays may be reused
+        Visuals.TierLookApplier.Clear();
     }
 
     private static int? resumeTiers;

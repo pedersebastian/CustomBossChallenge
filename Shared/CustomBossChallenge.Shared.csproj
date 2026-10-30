@@ -13,6 +13,7 @@
     <ItemGroup>
         <Compile Include="..\Config\KeyboardShortcuts.cs" Link="Mod\KeyboardShortcuts.cs" />
         <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />
+        <Compile Include="..\Config\TierLook.cs" Link="Mod\TierLook.cs" />
         <Compile Include="..\Config\TierMath.cs" Link="Mod\TierMath.cs" />
         <Compile Include="..\Persistence\CodeFormat.cs" Link="Mod\CodeFormat.cs" />
         <Compile Include="..\Persistence\SafeFile.cs" Link="Mod\SafeFile.cs" />
