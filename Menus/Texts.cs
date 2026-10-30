@@ -107,14 +107,18 @@ public static class Texts
     public static readonly string SavedSetupsInfo = Key(nameof(SavedSetupsInfo),
         "Keeps your favorite setups in the game. Save stores this whole setup under the challenge's name; a saved " +
         "setup with the same name is replaced. Pick one in the list and press Load to play it again, or Delete to " +
-        "remove it.");
+        "remove it. The list also has a few examples to try: load one, change it and save it as your own. Examples " +
+        "can't be deleted.");
     public static readonly string SaveSetup = Key(nameof(SaveSetup), "Save");
     public static readonly string DeleteSetup = Key(nameof(DeleteSetup), "Delete");
-    public static readonly string NoSavedSetups = Key(nameof(NoSavedSetups), "No saved setups");
     public static readonly string OverwriteSetupQuestion = Key(nameof(OverwriteSetupQuestion), "Replace the saved setup {0}?");
     public static readonly string DeleteSetupQuestion = Key(nameof(DeleteSetupQuestion), "Delete the saved setup {0}?");
     public static readonly string LoadSetupQuestion = Key(nameof(LoadSetupQuestion),
         "Load this saved setup? Your current setup will be replaced.");
+    public static readonly string ExampleSetups = Key(nameof(ExampleSetups), "Example Setups");
+    public static readonly string ExampleLabel = Key(nameof(ExampleLabel), "Example: {0}");
+    public static readonly string LoadExampleQuestion = Key(nameof(LoadExampleQuestion),
+        "Load this example? Your current setup will be replaced.");
     public static readonly string SetupSaved = Key(nameof(SetupSaved), "Saved as {0}.");
     public static readonly string TooManySetups = Key(nameof(TooManySetups),
         "You can keep up to {0} saved setups. Delete one to save a new one.");

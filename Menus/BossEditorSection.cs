@@ -76,12 +76,17 @@ public sealed class BossEditorSection
     public ModHelperButton DeleteSetup { get; private set; } = null!;
 
     /// <summary>
-    /// The saved setup picked in the list, or null when there are none
+    /// The saved setup picked in the list, or null when an example is picked
     /// </summary>
     public string? SelectedSetup { get; private set; }
 
     /// <summary>
-    /// The names shown in the saved setups list, in its order
+    /// The example picked in the list, or null when a saved setup is picked
+    /// </summary>
+    public ExampleSetup? SelectedExample { get; private set; }
+
+    /// <summary>
+    /// The names of the saved setups, in the list's order
     /// </summary>
     private List<string> savedNames = new();
 
@@ -290,9 +295,19 @@ public sealed class BossEditorSection
         SavedList = ModHelperDropdown.Create(EditorRows.ControlInfo("SavedList", SavedListWidth, 150),
             new Il2CppSystem.Collections.Generic.List<string>(), SavedListHeight, new Action<int>(index =>
             {
-                if (index >= 0 && index < savedNames.Count) SelectedSetup = savedNames[index];
+                if (index >= 0 && index < savedNames.Count + Examples.Count) Select(index);
             }), VanillaSprites.BlueInsertPanelRound, 60);
         SavedList.transform.SetParent(savedRow.transform, false);
+        // Long names, and "Example:" in front of the examples, shrink a little and then end in "…" instead of
+        // running past the list
+        foreach (var text in new[] {SavedList.Dropdown.captionText, SavedList.Dropdown.itemText})
+        {
+            text.enableAutoSizing = true;
+            text.fontSizeMax = text.fontSize;
+            text.fontSizeMin = SavedListMinFontSize;
+            text.enableWordWrapping = false;
+            text.overflowMode = TextOverflowModes.Ellipsis;
+        }
         var savedX = EditorRows.ControlX - EditorRows.ControlWidth / 2 + SavedListWidth + SetupButtonGap + SetupButtonWidth / 2;
         SaveSetup = ShareButton(savedRow, "SaveSetup", savedX, Texts.SaveSetup.T(), OnSaveSetup, SetupButtonWidth);
         LoadSetup = ShareButton(savedRow, "LoadSetup", savedX + SetupButtonWidth + SetupButtonGap, Texts.Load.T(),
@@ -327,6 +342,7 @@ public sealed class BossEditorSection
 
     public const float SavedListWidth = 760;
     public const float SavedListHeight = 750;
+    public const float SavedListMinFontSize = 42;
     public const float SetupButtonWidth = 380;
     public const float SetupButtonGap = 30;
 
@@ -425,25 +441,42 @@ public sealed class BossEditorSection
             null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
     }
 
+    private static IReadOnlyList<ExampleSetup> Examples => Creator.ExampleSetups.All;
+
     /// <summary>
-    /// Fills the saved setups list, keeping <see cref="SelectedSetup"/> picked when it is still there. Without saved
-    /// setups the list says so, and Load and Delete can't be pressed.
+    /// Golden "Example:" in front of an example's name, so it can't be taken for one of the player's own setups
+    /// </summary>
+    public static string ExampleLine(ExampleSetup example)
+    {
+        // The label's text in gold, wherever the language puts the name in it
+        var parts = Texts.ExampleLabel.T("\u0001").Split('\u0001');
+        string Gold(string text) => text.Length == 0 ? "" : $"<color={ExampleColor}>{PlainText(text)}</color>";
+        return Gold(parts[0]) + PlainText(example.Name) + Gold(parts.Length > 1 ? parts[1] : "");
+    }
+
+    public const string ExampleColor = "#FFD24A";
+
+    /// <summary>
+    /// Fills the list with the saved setups, then the examples, keeping the picked one when it is still there.
+    /// Without saved setups the first example is picked. Examples can be loaded but not deleted.
     /// </summary>
     public void ShowSavedSetups()
     {
         var names = savedNames = BossMode.Saved.All.Select(entry => entry.Name).ToList();
-        if (SelectedSetup == null || !names.Contains(SelectedSetup)) SelectedSetup = names.FirstOrDefault();
+        var index = SelectedSetup != null && names.Contains(SelectedSetup) ? names.IndexOf(SelectedSetup)
+            : SelectedExample != null && SelectedSetup == null ? names.Count + Examples.ToList().IndexOf(SelectedExample)
+            : 0;
 
         var shown = new Il2CppSystem.Collections.Generic.List<string>();
         foreach (var name in names) shown.Add(PlainText(name));
-        if (names.Count == 0) shown.Add(Texts.NoSavedSetups.T());
+        foreach (var example in Examples) shown.Add(ExampleLine(example));
 
         var dropdown = SavedList.Dropdown;
         dropdown.ClearOptions();
         dropdown.AddOptions(shown);
-        dropdown.SetValueWithoutNotify(SelectedSetup == null ? 0 : names.IndexOf(SelectedSetup));
+        dropdown.SetValueWithoutNotify(index);
         dropdown.RefreshShownValue();
-        dropdown.interactable = names.Count > 0;
+        Select(index);
 
         // Mod Helper sizes the opened list for the options it was created with, so size it for the current ones
         var template = SavedList.TemplatePanel.RectTransform;
@@ -451,8 +484,16 @@ public sealed class BossEditorSection
         var listHeight = Math.Min(SavedListHeight, Math.Max(shown.Count, 1) * itemHeight);
         template.sizeDelta = new Vector2(template.sizeDelta.x, listHeight);
         template.anchoredPosition = new Vector2(template.anchoredPosition.x, -itemHeight / 2 - listHeight / 2);
-        LoadSetup.Button.interactable = names.Count > 0;
-        DeleteSetup.Button.interactable = names.Count > 0;
+    }
+
+    /// <summary>
+    /// Picks the saved setup or example at this place in the list
+    /// </summary>
+    private void Select(int index)
+    {
+        SelectedSetup = index < savedNames.Count ? savedNames[index] : null;
+        SelectedExample = SelectedSetup == null ? Examples[index - savedNames.Count] : null;
+        DeleteSetup.Button.interactable = SelectedSetup != null;
     }
 
     private void OnSaveSetup()
@@ -508,6 +549,12 @@ public sealed class BossEditorSection
 
     private void OnLoadSetup()
     {
+        if (SelectedExample != null)
+        {
+            LoadExample(SelectedExample);
+            return;
+        }
+
         var name = SelectedSetup;
         if (name == null) return;
 
@@ -525,6 +572,20 @@ public sealed class BossEditorSection
             {
                 BossMode.Replace(Editor, options, dcm);
                 ModHelper.Msg<CustomBossChallenge>($"Loaded a saved setup: {Describe(options, dcm)}");
+            }), Texts.Load.T(),
+            null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
+    }
+
+    private void LoadExample(ExampleSetup example)
+    {
+        var (options, dcm) = Creator.ExampleSetups.Build(example);
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
+            Texts.ExampleSetups.T(),
+            $"{Texts.LoadExampleQuestion.T()}\n\n<i>{PlainText(example.Description)}</i>\n\n{Summary(options, dcm)}",
+            new Action(() =>
+            {
+                BossMode.Replace(Editor, options, dcm);
+                ModHelper.Msg<CustomBossChallenge>($"Loaded an example setup: {Describe(options, dcm)}");
             }), Texts.Load.T(),
             null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
     }

@@ -422,11 +422,12 @@ public class BossCreatorTest : CustomBossTest
         editor!.ApplyUiSettingsToDCM();
         var before = SetupCode.Encode(BossMode.Options, editor.dcm);
 
-        // Without saved setups the list says so, and only Save can be pressed
-        AssertEquals(section.SavedList.Dropdown.options.Count, 1, "One line in an empty list");
-        Assert(section.SavedList.Dropdown.captionText.text.Contains(Texts.NoSavedSetups.T()), "The empty list says so");
-        Assert(!section.LoadSetup.Button.interactable && !section.DeleteSetup.Button.interactable, "Nothing to load or delete");
-        AssertEquals(section.SelectedSetup, null, "Nothing picked");
+        // Without saved setups the list has only the examples, and the first one is picked: it can be loaded, not deleted
+        var examples = ExampleSetups.All.Count;
+        AssertEquals(section.SavedList.Dropdown.options.Count, examples, "Only the examples in the list");
+        AssertEquals(section.SelectedExample, ExampleSetups.All[0], "The first example is picked");
+        AssertEquals(section.SelectedSetup, null, "No saved setup picked");
+        Assert(section.LoadSetup.Button.interactable && !section.DeleteSetup.Button.interactable, "Load, but no Delete");
 
         // Save stores the setup under the challenge's name
         section.BossButtons[BossType.Lych].Button.onClick.Invoke();
@@ -457,15 +458,16 @@ public class BossCreatorTest : CustomBossTest
         yield return WaitForPopup(p => popup = p);
         yield return ClosePopup(popup, true);
         AssertEquals(string.Join(", ", BossMode.Saved.All.Select(entry => entry.Name)), "My Lych, Speedy Vortex", "Saved setups");
-        AssertEquals(section.SavedList.Dropdown.options.Count, 2, "Both setups in the list");
-        AssertEquals(section.SavedList.TemplatePanel.RectTransform.sizeDelta.y, 2 * section.SavedList.RectTransform.sizeDelta.y,
-            "The opened list must have room for both setups");
+        AssertEquals(section.SavedList.Dropdown.options.Count, 2 + examples, "Both setups and the examples in the list");
+        AssertEquals(section.SavedList.TemplatePanel.RectTransform.sizeDelta.y,
+            Math.Min(BossEditorSection.SavedListHeight, (2 + examples) * section.SavedList.RectTransform.sizeDelta.y),
+            "The opened list must be sized for its lines");
 
         // Opening the list shows both setups, and clicking one picks it
         section.SavedList.Dropdown.Show();
         yield return new WaitForSecondsRealtime(0.5f);
         var items = section.SavedList.GetComponentsInChildren<Toggle>().Where(toggle => toggle.gameObject.activeInHierarchy).ToList();
-        AssertEquals(items.Count, 2, "Setups in the opened list");
+        AssertEquals(items.Count, 2 + examples, "Setups and examples in the opened list");
         Assert(items[0].GetComponent<RectTransform>().rect.height > 0, "The setups in the opened list must be visible");
         items[0].isOn = true;
         yield return new WaitForSecondsRealtime(0.5f);
@@ -495,7 +497,7 @@ public class BossCreatorTest : CustomBossTest
         Assert(popup.body.text.Contains("My Lych"), $"Delete popup: {popup.body.text}");
         yield return ClosePopup(popup, true);
         Assert(!BossMode.Saved.Contains("My Lych"), "The setup was not deleted");
-        AssertEquals(section.SavedList.Dropdown.options.Count, 1, "One setup left in the list");
+        AssertEquals(section.SavedList.Dropdown.options.Count, 1 + examples, "One setup left in the list");
         AssertEquals(section.SelectedSetup, "Speedy Vortex", "The setup left is picked");
 
         // A damaged saved setup says so when loaded, instead of talking about the clipboard

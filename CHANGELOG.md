@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   view. Left and right change what has the frame, and Enter or Space press it. In a text field, Enter applies the value
   and moves on, and Esc cancels the edit instead of leaving the Boss Creator. A mouse click or Esc takes the frame
   away.
+- **Example setups** in the Boss Creator: the Saved Setups list now ends with the examples from the website (Marathon
+  Lych, Glass Cannon and more), marked in gold as examples and translated. Load one, change it and save it as your
+  own. Examples can't be deleted and don't count towards the 50 saved setups.
+
+### Changed
+
+- With no saved setups, the Saved Setups list starts on the first example instead of saying "No saved setups".
 
 ## [2.7.0] - 2026-10-29
 
