@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Tiers above 5 look different** (#11): every boss has a colour theme of its own for tiers 6-10 (Elite shares it),
+  and the effect gets stronger with each tier: a glowing rim with a light sweeping over the body, the outline in the
+  tier's colour, a pulsing aura and a slightly bigger model. Vortex's lightning takes the colour too. The boss panel
+  colours the first stars in the tier's colour and shows the tier's number. Tiers 1-5 and other games keep the game's
+  look.
+
 - **Links to a setup:** after Copy, **Copy link** gives a link like
   `https://pedersebastian.github.io/CustomBossChallenge/#code=CBC2:…` that opens the setup on the website. Paste
   reads such a link too, also as Discord shows it in `<…>`. On the website, a link opens the setup straight away, the

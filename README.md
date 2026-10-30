@@ -28,8 +28,8 @@ where you can read a share code and see the whole setup without the game.
   - **Boss Speed** and **Boss Health** sliders, using the game's own boss multipliers (the same ones Ninja Kiwi uses
     for weekly events such as "Vortex at 150% speed").
   - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
-  - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with +50 % health per tier. With fewer than 5
-    tiers, beating the last one wins the game.
+  - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with +50 % health per tier, each with a look of
+    its own (see [Tiers above 5](#tiers-above-5)). With fewer than 5 tiers, beating the last one wins the game.
   - **Speed per Tier** and **Health per Tier**: make every tier faster and tougher than the one before it, on top of
     the game's own steps (or easier, below 0). The steps add up evenly: +100 % health makes tiers 2-5 ×2, ×3, ×4
     and ×5.
@@ -155,6 +155,17 @@ difficulty's normal last round (e.g. 60 on medium) would end the game before the
 
 Game modes without boss support (Deflation and Apopalypse) can't be played as a boss game.
 
+### Tiers above 5
+
+The game only has tiers 1-5, so tiers 6-10 are made from tier 5. To tell them apart, every boss has a colour theme
+of its own (Elite shares it with the normal boss), and the effect gets stronger with each tier: a glowing rim and a
+light sweeping over the body, the outline in the tier's colour, a pulsing aura behind the boss and a slightly bigger
+model (+3 % per tier; towers still hit the same area). Vortex's lightning takes the colour too. In the boss panel, the
+first stars take the tier's colour (tier 7: two coloured stars and three white ones) and the tier's number stands
+next to them. Tiers 1-5 and games outside the Boss Creator keep the game's look.
+
+![Tiers 5 to 10 of every boss](docs/tier-look.jpg)
+
 ## Safety guarantees
 
 - Only games started from the Boss Creator are changed. Normal Boss Challenges, the weekly **Boss Event**, co-op and
@@ -179,7 +190,10 @@ The Boss Creator setup is stored in `BloonsTD6/UserData/CustomBossChallenge/Last
   on their own PC, so everyone would need the mod and the same setup, or the games would get out of sync. A co-op
   Boss Challenge is always a normal one, with the game's own bosses, even if you were in the Boss Creator before.
   This is not a bug.
-- Tiers above 5 reuse the tier 5 look and abilities; the in-game tier display shows them like tier 5.
+- Tiers above 5 use tier 5's model and abilities; only their look and their health differ (see
+  [Tiers above 5](#tiers-above-5)). The glow uses a shader built for the game's Unity version; if a BTD6 update moves
+  to a Unity version it doesn't work with, the glow falls back to a simpler one made from the game's own shaders until
+  the mod is updated.
 
 ## Installation
 
