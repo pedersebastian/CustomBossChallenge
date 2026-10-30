@@ -219,14 +219,17 @@ What only the game knows (the default challenge codes are made against, boss hea
 names) comes from the game, through the in-game test `WebDataTest`, into `web/src/data/`:
 
 - `game.json`: the game data. The player's name and the random seed of the default challenge are left out.
+- `tierlook.json`: the colours of tiers 6-10 per boss and how strong and fast their glow pulses, from
+  `Config/TierLook.cs`, so the tier cards on the website glow like the boss does in the game
+  (`web/src/preview/tierLook.ts`).
 - `examples.json`: the example codes on the website, made with `SetupCode.Encode` from `Creator/ExampleSetups.cs`,
   the same list the Boss Creator shows, so they always load in the game.
 - `fixtures.json`: codes with what the mod reads from them; the website's tests must read them the same way.
 
 `WebDataTest` checks that these files still match the game and the mod. After a game update or a change to the code
-format, Tier Preview or the examples, write them again by running the in-game tests with the environment variable
-`CBC_WEB_DATA` set to the folder (start the game with PowerShell `Start-Process` so it gets the variable), then rebuild
-the mod and run the tests again:
+format, Tier Preview, the tier look or the examples, write them again by running the in-game tests with the
+environment variable `CBC_WEB_DATA` set to the folder (start the game with PowerShell `Start-Process` so it gets the
+variable), then rebuild the mod and run the tests again:
 
 ```
 $env:CBC_WEB_DATA = "<repo>\web\src\data"

@@ -420,6 +420,71 @@ main {
   font-size: 0.85rem;
 }
 
+/*
+ * Tiers above 5 and the boss badge of a setup with more than 5 tiers, like in the game: an aura around and a glow over
+ * them in the tier's colour, both pulsing. The colours and strengths come from preview/tierLook.ts. Only opacity is
+ * animated, so the browser doesn't have to paint the shadows again on every frame.
+ */
+.tier-look {
+  position: relative;
+  isolation: isolate;
+  border-color: var(--tier-color);
+}
+
+.tier-look::before,
+.tier-look::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  /* Half a pulse up and half down, starting halfway up like the game's sine */
+  animation: calc(var(--pulse-period) / 2) ease-in-out calc(var(--pulse-period) / -4) infinite alternate;
+}
+
+/* The aura around it */
+.tier-look::before {
+  inset: -3px;
+  box-shadow: 0 0 var(--aura-reach) calc(var(--aura-reach) / 3) var(--tier-color);
+  opacity: calc((var(--aura-low) + var(--aura-high)) / 2);
+  animation-name: tier-aura;
+}
+
+/* The glow over it, brightest at the rim like the game's TierGlow shader */
+.tier-look::after {
+  inset: 0;
+  box-shadow: inset 0 0 14px 3px var(--tier-color);
+  opacity: calc((var(--glow-low) + var(--glow-high)) / 2);
+  animation-name: tier-glow;
+}
+
+.boss-badge.elite.tier-look::before {
+  inset: -6px;
+}
+
+.tier-look .tier-label {
+  color: var(--tier-color);
+  text-shadow: 0 1px 0 var(--outline);
+}
+
+@keyframes tier-aura {
+  from {
+    opacity: var(--aura-low);
+  }
+  to {
+    opacity: var(--aura-high);
+  }
+}
+
+@keyframes tier-glow {
+  from {
+    opacity: var(--glow-low);
+  }
+  to {
+    opacity: var(--glow-high);
+  }
+}
+
 /* Skull bar, like the boss's health bar */
 .skull-bar {
   position: relative;
@@ -664,5 +729,11 @@ main {
 
   .button {
     transition: none;
+  }
+
+  /* The tier look stays, without the pulse */
+  .tier-look::before,
+  .tier-look::after {
+    animation: none;
   }
 }
