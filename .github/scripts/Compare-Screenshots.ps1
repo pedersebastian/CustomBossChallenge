@@ -109,7 +109,8 @@ $baselineRoot = (Resolve-Path $Baseline).Path
 $rows = @()
 $noise = @{}
 $first = $true
-foreach ($candidate in $Candidates) {
+# powershell -File passes "a,b" as one string
+foreach ($candidate in $Candidates -split ",") {
     $candidateRoot = (Resolve-Path $candidate).Path
     $label = Split-Path $candidateRoot -Leaf
     foreach ($png in Get-ChildItem $baselineRoot -Recurse -Filter *.png) {
@@ -121,8 +122,8 @@ foreach ($candidate in $Candidates) {
         }
 
         # Our UI, where it is in the baseline; a region that moved is reported on its own
-        $regions = Read-Regions $png.FullName
-        $otherRegions = Read-Regions $other
+        $regions = @(Read-Regions $png.FullName)
+        $otherRegions = @(Read-Regions $other)
         $moved = @($regions | Where-Object {
             $r = $_; $o = $otherRegions | Where-Object name -eq $r.name | Select-Object -First 1
             -not $o -or [math]::Abs($o.x - $r.x) -gt 2 -or [math]::Abs($o.y - $r.y) -gt 2 -or [math]::Abs($o.width - $r.width) -gt 2

@@ -50,13 +50,14 @@ function Find-Mod([string] $name) {
 }
 
 # Which runs: every entry is a list of mods to load together
-# powershell -File passes "a,b" as one string
-$runs = foreach ($entry in $Mods -split ",") {
+# powershell -File passes "a,b" as one string. Built with Add, since PowerShell unrolls nested arrays it outputs.
+$runs = New-Object System.Collections.Generic.List[object]
+foreach ($entry in $Mods -split ",") {
     switch ($entry) {
-        "none" { , @() }
-        "all" { foreach ($m in $catalog) { , @($m) } }
-        { $_ -in "A", "B" } { foreach ($m in $catalog | Where-Object group -eq $entry) { , @($m) } }
-        default { , @($entry -split "\+" | ForEach-Object { Find-Mod $_ }) }
+        "none" { $runs.Add(@()) }
+        "all" { foreach ($m in $catalog) { $runs.Add(@($m)) } }
+        { $_ -in "A", "B" } { foreach ($m in $catalog | Where-Object group -eq $entry) { $runs.Add(@($m)) } }
+        default { $runs.Add(@($entry -split "\+" | ForEach-Object { Find-Mod $_ })) }
     }
 }
 
@@ -66,7 +67,11 @@ function Get-Snapshot([string] $folder) {
 
 function Get-RunName($set) {
     if ($set.Count -eq 0) { return "none" }
-    ($set | ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_.dll) }) -join "+"
+    $names = @($set | ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_.dll) })
+    $name = $names -join "+"
+    # Names become log file names, which Windows limits in length
+    if ($name.Length -gt 60) { $name = "{0}+{1}-more" -f $names[0], ($names.Count - 1) }
+    $name
 }
 
 function Start-Game([string] $only, [string] $testFilter, [bool] $windowed) {
