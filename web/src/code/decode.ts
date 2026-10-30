@@ -103,9 +103,33 @@ async function inflate(data: Uint8Array): Promise<string> {
   return text + decoder.decode();
 }
 
-/** Reads a code. Never throws: anything that isn't a usable code gives a problem and a reason. */
+/** What comes before the code in a link: #code=CBC2:… */
+export const LINK_KEY = "code=";
+
+/**
+ * The code in pasted text: the text itself, or the part after # in a link to the website (#code=CBC2:… or #CBC2:…,
+ * also %-encoded or wrapped in &lt;…&gt; as Discord does). Text without a code in a link comes back trimmed, so decode
+ * still says what's wrong with it. Same rules as CodeFormat.ExtractCode in the mod.
+ */
+export function extractCode(text: string | null | undefined): string {
+  let trimmed = (text ?? "").trim();
+  if (trimmed.startsWith("<") && trimmed.endsWith(">")) trimmed = trimmed.slice(1, -1).trim();
+  const hash = trimmed.lastIndexOf("#");
+  if (hash < 0) return trimmed;
+
+  let fragment = trimmed.slice(hash + 1);
+  if (fragment.startsWith(LINK_KEY)) fragment = fragment.slice(LINK_KEY.length);
+  try {
+    fragment = decodeURIComponent(fragment).trim();
+  } catch {
+    return trimmed;
+  }
+  return fragment.startsWith("CBC") ? fragment : trimmed;
+}
+
+/** Reads a code, or a link to one. Never throws: anything that isn't a usable code gives a problem and a reason. */
 export async function decode(code: string | null | undefined): Promise<DecodeResult> {
-  const trimmed = (code ?? "").trim();
+  const trimmed = extractCode(code);
   if (trimmed === "") return fail("Invalid", "The code is empty.");
   if (trimmed.length > GAME.limits.maxCodeLength) return fail("Invalid", "The code is too long.");
   if (!trimmed.startsWith(PREFIX) && !trimmed.startsWith(VERSION2_PREFIX)) {

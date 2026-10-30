@@ -100,8 +100,9 @@ The **Share Code** row at the bottom of the Boss section turns the whole setup, 
 rule, into a short text code:
 
 - **Copy** puts the code on the clipboard. Paste it into Discord, Reddit or a message.
-- **Paste** reads a code from the clipboard, shows the challenge name, boss, tiers, map and difficulty, and asks
-  before it replaces your current setup.
+  **Copy link** in the popup gives a link that opens the setup on the website instead.
+- **Paste** reads a code (or a link to one) from the clipboard, shows the challenge name, boss, tiers, map and
+  difficulty, and asks before it replaces your current setup.
 
 To look at a code without the game, paste it on the [website](https://pedersebastian.github.io/CustomBossChallenge/).
 It shows the Tier Preview, skulls and rules like the Boss Creator does.

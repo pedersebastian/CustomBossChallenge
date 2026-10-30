@@ -416,7 +416,20 @@ public sealed class BossEditorSection
         Clipboard.Write(code);
         ModHelper.Msg<CustomBossChallenge>(
             $"Copied a share code ({code.Length} characters): {Describe(BossMode.Options, Editor.dcm)}");
-        PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.CodeCopied.T(code.Length), null));
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.ShareCode.T(),
+            Texts.CodeCopied.T(code.Length), null, Texts.Ok.T(), new Action(CopyLink), Texts.CopyLink.T(),
+            Popup.TransitionAnim.Scale));
+    }
+
+    /// <summary>
+    /// Replaces the copied code with a link that opens it on the website
+    /// </summary>
+    internal void CopyLink()
+    {
+        var link = CodeFormat.Link(SetupCode.Encode(BossMode.Options, Editor.dcm));
+        Clipboard.Write(link);
+        ModHelper.Msg<CustomBossChallenge>($"Copied a link to the setup ({link.Length} characters)");
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.LinkCopied.T(), null));
     }
 
     private void OnPasteCode()

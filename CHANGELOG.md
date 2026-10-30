@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Links to a setup:** after Copy, **Copy link** gives a link like
+  `https://pedersebastian.github.io/CustomBossChallenge/#code=CBC2:…` that opens the setup on the website. Paste
+  reads such a link too, also as Discord shows it in `<…>`. On the website, a link opens the setup straight away, the
+  address bar always links to the setup shown, and a link pasted into an open tab or Back works as well.
 - **Keyboard shortcuts** in the Boss Creator: Ctrl+C and Ctrl+V copy and paste a share code, Ctrl+S saves the setup
   and Ctrl+Enter plays (Cmd on a Mac). They do nothing while a text field, a popup or one of the editor's panels is
   open, so copy and paste in the fields work as before.

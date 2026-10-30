@@ -38,6 +38,37 @@ public static class CodeFormat
     public const int PrefixLength = 5;
 
     /// <summary>
+    /// The website that shows a code's setup. A link to a code is this, "#code=" and the code.
+    /// </summary>
+    public const string WebsiteUrl = "https://pedersebastian.github.io/CustomBossChallenge/";
+
+    public const string LinkKey = "code=";
+
+    /// <summary>
+    /// A link that opens the code's setup on the website. The code goes after the #, so it never reaches the server.
+    /// Codes only use letters, digits, - and _ after "CBCn:", so they go in as they are.
+    /// </summary>
+    public static string Link(string code) => WebsiteUrl + "#" + LinkKey + code;
+
+    /// <summary>
+    /// The code in pasted text: the text itself, or the part after # in a link to the website ("#code=CBC2:…" or
+    /// "#CBC2:…", also %-encoded or wrapped in &lt;…&gt; as Discord does). Text without a code in a link comes back
+    /// trimmed. Same rules as extractCode on the website (web/src/code/decode.ts).
+    /// </summary>
+    public static string ExtractCode(string? text)
+    {
+        var trimmed = (text ?? "").Trim();
+        if (trimmed.StartsWith('<') && trimmed.EndsWith('>')) trimmed = trimmed[1..^1].Trim();
+        var hash = trimmed.LastIndexOf('#');
+        if (hash < 0) return trimmed;
+
+        var fragment = trimmed[(hash + 1)..];
+        if (fragment.StartsWith(LinkKey)) fragment = fragment[LinkKey.Length..];
+        fragment = Uri.UnescapeDataString(fragment).Trim();
+        return fragment.StartsWith(AnyVersionPrefix) ? fragment : trimmed;
+    }
+
+    /// <summary>
     /// Longer codes are refused without being read
     /// </summary>
     public const int MaxLength = 20000;
@@ -77,8 +108,8 @@ public static class CodeFormat
         problem = CodeProblem.Invalid;
         error = null;
 
-        code = code?.Trim();
-        if (string.IsNullOrEmpty(code) || code.Length > MaxLength) return false;
+        code = ExtractCode(code);
+        if (code.Length == 0 || code.Length > MaxLength) return false;
         if (!code.StartsWith(Prefix) && !code.StartsWith(Version2Prefix))
         {
             if (code.StartsWith(AnyVersionPrefix) && code.Length > 4 && char.IsDigit(code[3])) problem = CodeProblem.TooNew;
