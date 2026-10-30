@@ -77,7 +77,7 @@
     </main>
     <script>
       // On GitHub Pages the site lives under /<repository>/, so home is the first folder of the address
-      if (location.hostname.endsWith("github.io")) {
+      if (location.hostname.endsWith(".github.io")) {
         var folder = location.pathname.split("/")[1];
         if (folder) document.getElementById("home").href = "/" + folder + "/";
       }
