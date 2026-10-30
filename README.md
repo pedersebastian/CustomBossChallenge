@@ -158,8 +158,9 @@ Game modes without boss support (Deflation and Apopalypse) can't be played as a 
   overwritten; the mod keeps them in its own file to continue them) and never
   update Boss Challenge records, boss tier progress, badges or achievements. XP and Monkey Money are still earned.
 - Your own Challenge Editor draft is never replaced by the boss setup.
-- If a BTD6 update changes a part of the game these guards rely on, the Boss Creator stays closed and says what is
-  missing, instead of starting games that could touch your records, achievements or Monkey Money. Update the mod.
+- If a BTD6 update renames or removes a game method these guards hook into, the Boss Creator stays closed and says
+  which ones, instead of starting games without them. It can't notice an update that keeps a method but changes what
+  it does, so after a big BTD6 update it's safest to wait for a mod update.
 
 ## Upgrading from 1.x
 
