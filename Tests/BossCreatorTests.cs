@@ -325,6 +325,16 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(copied, mine, "Copied options");
         AssertEquals(copiedDcm!.maxParagons, 1, "Copied max paragons");
 
+        // The popup's other button swaps the code for a link to it on the website
+        section.CopyCode.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        yield return ClosePopup(popup, false);
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains(Texts.LinkCopied.T()), $"Link popup: {popup.body.text}");
+        yield return ClosePopup(popup, true);
+        AssertEquals(clipboard, CodeFormat.Link(myCode), "Copied link");
+        Assert(SetupCode.TryDecode(clipboard, out var linked, out _, out _) && linked == mine, $"Copied link: {clipboard}");
+
         // A setup from someone else
         var theirs = new BossOptions {Boss = BossType.Lych, Tiers = 3};
         var theirDcm = Il2CppAssets.Scripts.Models.ServerEvents.DailyChallengeModel.CreateDefaultEditorModel();
@@ -353,6 +363,15 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(section.Tiers.Value, 3f, "Loaded tiers shown");
         AssertEquals(section.MaxParagons.Value, section.MaxParagons.Slider.maxValue, "Loaded max paragons shown");
         Assert(BossMode.Store.TryLoad(out var saved, out _) && saved == theirs, "The loaded setup was not saved");
+
+        // A link to a setup, as Discord shows it, loads like the code itself
+        var linkedSetup = theirs with {Tiers = 4};
+        clipboard = $"<{CodeFormat.Link(SetupCode.Encode(linkedSetup, theirDcm))}>";
+        section.PasteCode.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        yield return ClosePopup(popup, true);
+        AssertEquals(BossMode.Options, linkedSetup, "Loaded from a link");
+        theirs = linkedSetup;
 
         // A broken code and one from a newer version explain themselves
         clipboard = "not a code";

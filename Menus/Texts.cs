@@ -141,6 +141,9 @@ public static class Texts
     public static readonly string PasteCode = Key(nameof(PasteCode), "Paste");
     public static readonly string CodeCopied = Key(nameof(CodeCopied),
         "Code copied to the clipboard ({0} characters). Paste it anywhere to share this boss.");
+    public static readonly string CopyLink = Key(nameof(CopyLink), "Copy link");
+    public static readonly string LinkCopied = Key(nameof(LinkCopied),
+        "Link copied. It opens this setup on the Custom Boss Challenge website, and Paste reads it too.");
     public static readonly string LoadCodeQuestion = Key(nameof(LoadCodeQuestion),
         "Load this setup? Your current setup will be replaced.");
     public static readonly string CodeInvalid = Key(nameof(CodeInvalid),
@@ -148,6 +151,7 @@ public static class Texts
     public static readonly string CodeTooNew = Key(nameof(CodeTooNew),
         "This code comes from a newer version of Custom Boss Challenge. Update the mod to load it.");
     public static readonly string Load = Key(nameof(Load), "Load");
+    public static readonly string Ok = Key(nameof(Ok), "OK");
     public static readonly string Cancel = Key(nameof(Cancel), "Cancel");
     public static readonly string TierCount = Key(nameof(TierCount), "{0} tiers");
     public static readonly string HealthCap = Key(nameof(HealthCap),

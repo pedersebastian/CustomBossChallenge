@@ -1,0 +1,20 @@
+{
+  "comment": "Text people paste or open, and the code found in it. Read by web/test/link.test.ts and UnitTests/CodeFormatTests.cs, so the website and the mod's Paste agree.",
+  "cases": [
+    { "text": "CBC2:q1bKV7Kq", "code": "CBC2:q1bKV7Kq" },
+    { "text": "  CBC1:abc-_123\n", "code": "CBC1:abc-_123" },
+    { "text": "https://pedersebastian.github.io/CustomBossChallenge/#code=CBC2:q1bKV7Kq", "code": "CBC2:q1bKV7Kq" },
+    { "text": "https://pedersebastian.github.io/CustomBossChallenge/#code=CBC2%3Aq1bKV7Kq", "code": "CBC2:q1bKV7Kq" },
+    { "text": "https://pedersebastian.github.io/CustomBossChallenge/#CBC2:q1bKV7Kq", "code": "CBC2:q1bKV7Kq" },
+    { "text": "<https://pedersebastian.github.io/CustomBossChallenge/#code=CBC2:q1bKV7Kq>", "code": "CBC2:q1bKV7Kq" },
+    { "text": "http://localhost:5173/#code=CBC2:q1bKV7Kq ", "code": "CBC2:q1bKV7Kq" },
+    { "text": "#code=CBC2:q1bKV7Kq", "code": "CBC2:q1bKV7Kq" },
+    { "text": "#CBC9:q1bKV7Kq", "code": "CBC9:q1bKV7Kq" },
+    { "text": "https://pedersebastian.github.io/CustomBossChallenge/#codes", "code": "https://pedersebastian.github.io/CustomBossChallenge/#codes" },
+    { "text": "#codes", "code": "#codes" },
+    { "text": "https://example.com/", "code": "https://example.com/" },
+    { "text": "#code=%E0%A4%A", "code": "#code=%E0%A4%A" },
+    { "text": "", "code": "" },
+    { "text": "   ", "code": "" }
+  ]
+}
