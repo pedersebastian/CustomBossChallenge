@@ -85,6 +85,9 @@ The **Saved Setups** row keeps your favorite setups in the game, so you can swit
 - Pick a setup in the list and press **Load** to play it again. Like Paste, it shows the setup and asks before it
   replaces your current one.
 - **Delete** removes the picked setup, after asking.
+- After your own setups, the list has a few **examples** to try, marked in gold with "Example:", such as Marathon
+  Lych and Glass Cannon. Load one, change it and save it as your own; the examples themselves can't be deleted. The
+  [website](https://pedersebastian.github.io/CustomBossChallenge/) has the same ones as share codes.
 
 Up to 50 setups are kept, in `BloonsTD6/UserData/CustomBossChallenge/SavedSetups.json`.
 

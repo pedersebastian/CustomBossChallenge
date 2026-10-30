@@ -145,7 +145,8 @@ What only the game knows (the default challenge codes are made against, boss hea
 names) comes from the game, through the in-game test `WebDataTest`, into `web/src/data/`:
 
 - `game.json`: the game data. The player's name and the random seed of the default challenge are left out.
-- `examples.json`: the example codes on the website, made with `SetupCode.Encode`, so they always load in the game.
+- `examples.json`: the example codes on the website, made with `SetupCode.Encode` from `Creator/ExampleSetups.cs`,
+  the same list the Boss Creator shows, so they always load in the game.
 - `fixtures.json`: codes with what the mod reads from them; the website's tests must read them the same way.
 
 `WebDataTest` checks that these files still match the game and the mod. After a game update or a change to the code
