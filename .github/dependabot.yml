@@ -1,0 +1,34 @@
+# Weekly update PRs for what the repo depends on. Minor and patch updates come grouped, one PR per ecosystem; major
+# updates get a PR of their own. checks.yml runs on them, so a breaking update shows before it is merged.
+# The mod itself references the game and MelonLoader, not NuGet packages, so only the test projects are listed.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+    groups:
+      website:
+        update-types: [minor, patch]
+
+  - package-ecosystem: nuget
+    directories:
+      - /Shared
+      - /UnitTests
+      - /PropertyTests
+    schedule:
+      interval: weekly
+    groups:
+      tests:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    # Mod Helper writes build.yml again whenever the mod is built, so changes to it wouldn't last
+    exclude-paths:
+      - .github/workflows/build.yml
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        update-types: [minor, patch]
