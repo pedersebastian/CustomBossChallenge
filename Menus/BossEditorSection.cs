@@ -298,6 +298,16 @@ public sealed class BossEditorSection
                 if (index >= 0 && index < savedNames.Count + Examples.Count) Select(index);
             }), VanillaSprites.BlueInsertPanelRound, 60);
         SavedList.transform.SetParent(savedRow.transform, false);
+        // Long names, and "Example:" in front of the examples, shrink a little and then end in "…" instead of
+        // running past the list
+        foreach (var text in new[] {SavedList.Dropdown.captionText, SavedList.Dropdown.itemText})
+        {
+            text.enableAutoSizing = true;
+            text.fontSizeMax = text.fontSize;
+            text.fontSizeMin = SavedListMinFontSize;
+            text.enableWordWrapping = false;
+            text.overflowMode = TextOverflowModes.Ellipsis;
+        }
         var savedX = EditorRows.ControlX - EditorRows.ControlWidth / 2 + SavedListWidth + SetupButtonGap + SetupButtonWidth / 2;
         SaveSetup = ShareButton(savedRow, "SaveSetup", savedX, Texts.SaveSetup.T(), OnSaveSetup, SetupButtonWidth);
         LoadSetup = ShareButton(savedRow, "LoadSetup", savedX + SetupButtonWidth + SetupButtonGap, Texts.Load.T(),
@@ -332,6 +342,7 @@ public sealed class BossEditorSection
 
     public const float SavedListWidth = 760;
     public const float SavedListHeight = 750;
+    public const float SavedListMinFontSize = 42;
     public const float SetupButtonWidth = 380;
     public const float SetupButtonGap = 30;
 

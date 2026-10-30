@@ -74,6 +74,11 @@ public class ExampleSetupsTest : CustomBossTest
             var example = ExampleSetups.All[i];
             dropdown.value = i;
             AssertEquals(section.SelectedExample, example, $"Picked {example.EnglishName}");
+            var caption = dropdown.captionText;
+            caption.ForceMeshUpdate();
+            Assert(caption.textBounds.size.x <= caption.rectTransform.rect.width + 1,
+                $"{example.EnglishName} runs past the list: {caption.textBounds.size.x} > {caption.rectTransform.rect.width}");
+            Assert(caption.fontSize >= BossEditorSection.SavedListMinFontSize, $"{example.EnglishName} is too small");
             Assert(section.LoadSetup.Button.interactable && !section.DeleteSetup.Button.interactable,
                 $"{example.EnglishName} can be loaded but not deleted");
             section.LoadSetup.Button.onClick.Invoke();
