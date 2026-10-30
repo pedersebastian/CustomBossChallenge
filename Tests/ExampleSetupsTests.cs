@@ -4,6 +4,7 @@ using System.Linq;
 using CustomBossChallenge.Creator;
 using CustomBossChallenge.Menus;
 using CustomBossChallenge.Persistence;
+using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity.Menu;
 using Il2CppAssets.Scripts.Unity.UI_New;
@@ -101,6 +102,20 @@ public class ExampleSetupsTest : CustomBossTest
         AssertEquals(section.SelectedSetup, last.Name, "The saved setup is picked");
         Assert(section.DeleteSetup.Button.interactable, "The player's own setup can be deleted");
         Assert(!dropdown.options[0].text.Contains(BossEditorSection.ExampleColor), "The saved setup isn't marked as an example");
+
+        // An example's name follows the boss like a default name, through Random as well as a boss button
+        foreach (var randomly in new[] {false, true})
+        {
+            dropdown.value = 1;
+            section.LoadSetup.Button.onClick.Invoke();
+            yield return WaitForPopup(p => popup = p);
+            yield return ClosePopup(popup, true);
+            AssertEquals(editor!.chalName.text, ExampleSetups.All[0].Name, "The example's name is loaded");
+            if (randomly) editor.Randomize();
+            else section.BossButtons[BossType.Vortex].Button.onClick.Invoke();
+            AssertEquals(editor.chalName.text, BossMode.DefaultName(BossMode.Options.Boss, BossMode.Options.Elite),
+                $"The name must follow the boss after {(randomly ? "Random" : "picking a boss")}");
+        }
 
         Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
         yield return WaitFor(() => !BossMode.Active, "Leaving the Boss Creator");

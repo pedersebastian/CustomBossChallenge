@@ -81,6 +81,14 @@ internal static class ChallengeEditor_Randomize
 
         __instance.ApplyUiSettingsToDCM();
         BossMode.Options = BossRandomizer.Randomize(__instance.dcm, BossEditorSection.UnsupportedModes);
+
+        // A random setup is no longer the example it may have started from
+        if (ExampleSetups.Named(__instance.dcm.name) != null)
+        {
+            __instance.dcm.name = BossMode.DefaultName(BossMode.Options.Boss, BossMode.Options.Elite);
+            if (__instance.chalName != null) __instance.chalName.text = __instance.dcm.name;
+        }
+
         __instance.ApplyDcmSettingsToUI();
     }
 }

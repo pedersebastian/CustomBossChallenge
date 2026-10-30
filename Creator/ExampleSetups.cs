@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BTD_Mod_Helper.Api;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Menus;
@@ -62,6 +63,12 @@ public static class ExampleSetups
                 dcm.map = "Infernal";
             })
     };
+
+    /// <summary>
+    /// The example with this name, in the player's language or in English, or null
+    /// </summary>
+    public static ExampleSetup? Named(string? name) =>
+        All.FirstOrDefault(example => name == example.Name || name == example.EnglishName);
 
     /// <summary>
     /// The example's setup, named in the player's language, or in English for the website

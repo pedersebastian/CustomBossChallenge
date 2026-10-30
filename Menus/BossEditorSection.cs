@@ -866,12 +866,18 @@ public sealed class BossEditorSection
     }
 
     /// <summary>
-    /// Follows the boss and Elite in the challenge name as long as the player hasn't named it themselves
+    /// Follows the boss and Elite in the challenge name as long as the player hasn't named it themselves. An example's
+    /// name stays while the boss is still the example's own.
     /// </summary>
     private void FollowBossName(BossType boss, bool elite)
     {
         var name = Editor.chalName;
-        if (name == null || !BossMode.IsDefaultName(name.text)) return;
+        if (name == null) return;
+        var example = ExampleSetups.Named(name.text);
+        if (example != null ? example.Options.Boss == boss && example.Options.Elite == elite : !BossMode.IsDefaultName(name.text))
+        {
+            return;
+        }
 
         name.text = BossMode.DefaultName(boss, elite);
         if (Editor.dcm != null) Editor.dcm.name = name.text;
