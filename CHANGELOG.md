@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Example setups** in the Boss Creator: the Saved Setups list now ends with the examples from the website (Marathon
   Lych, Glass Cannon and more), marked in gold as examples and translated. Load one, change it and save it as your
   own. Examples can't be deleted and don't count towards the 50 saved setups.
+- A warning in the log when another mod patches one of the methods that keep custom games away from records,
+  achievements, saves or Monkey Money, so a bug report shows it.
 
 ### Changed
 
@@ -35,6 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with a warning in the log, on every click on Boss Creator.
 - After loading an example setup, its name now gives way to the default name ("Custom Vortex") once Random or a
   boss button changes the boss, like Reset already did.
+- With a mod that changes every Boss Challenge before it starts, such as Custom Boss Modifiers, a Boss Creator game
+  is now played with the Boss Creator's rules instead of that mod's settings. The game's own Boss Challenges still
+  get the other mod's settings.
 
 ## [2.7.0] - 2026-10-29
 

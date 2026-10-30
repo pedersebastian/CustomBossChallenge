@@ -23,11 +23,24 @@ namespace CustomBossChallenge.Patches;
 [GuardPatch]
 internal static class InGameData_SetupBossChallenge
 {
+    /// <summary>
+    /// Runs after other mods' prefixes, which may change every boss challenge before it starts (e.g. Custom Boss
+    /// Modifiers sets speed, health, lives, cash and rounds from its own settings). A Boss Creator game is played
+    /// with the Boss Creator's rules, so the challenge is put back the way it arrived.
+    /// </summary>
     [HarmonyPrefix]
-    internal static void Prefix(InGameData __instance, ref bool isRanked, DailyChallengeModel dcm)
+    [HarmonyPriority(Priority.Last)]
+    internal static void Prefix(InGameData __instance, ref bool isRanked, ref DailyChallengeModel dcm)
     {
+        var arrived = InGameData_SetupBossChallenge_Arrived.Take();
         var coop = __instance.selectedCoopMode || __instance.selectedCouchMode;
         if (!CustomBossState.OnSetupBossChallenge(dcm, coop)) return;
+
+        if (arrived != null && arrived.Json != Persistence.DcmJson.Serialize(dcm))
+        {
+            ModHelper.Msg<CustomBossChallenge>("Another mod changed the custom challenge before it started, playing it with the Boss Creator's rules");
+            dcm = arrived.Dcm;
+        }
 
         if (isRanked)
         {
@@ -48,6 +61,33 @@ internal static class InGameData_SetupBossChallenge
             __instance.bossData.spawnRounds =
                 new Il2CppStructArray<int>(CustomBossState.ActiveOptions.GameSpawnRounds);
         }
+    }
+}
+
+/// <summary>
+/// A copy of a custom challenge as it arrives at the setup, before other mods' prefixes can change it, for
+/// <see cref="InGameData_SetupBossChallenge"/> to put back. Without it, those mods' changes stay.
+/// </summary>
+[OptionalPatch]
+[HarmonyPatch(typeof(InGameData), nameof(InGameData.SetupBossChallenge))]
+internal static class InGameData_SetupBossChallenge_Arrived
+{
+    internal sealed record Copy(DailyChallengeModel Dcm, string Json);
+
+    private static Copy? arrived;
+
+    internal static Copy? Take()
+    {
+        var copy = arrived;
+        arrived = null;
+        return copy;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPriority(Priority.First)]
+    internal static void Prefix(DailyChallengeModel dcm)
+    {
+        arrived = ConfigApplier.IsMarked(dcm) ? new Copy(dcm.Clone(), Persistence.DcmJson.Serialize(dcm)) : null;
     }
 }
 

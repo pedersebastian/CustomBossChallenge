@@ -38,7 +38,8 @@ $gameMods = Join-Path $Game "Mods"
 $log = Join-Path $Game "MelonLoader\Latest.log"
 $settings = Join-Path $Game "Btd6ModHelper\Mod Settings"
 New-Item -ItemType Directory -Force $Results, (Join-Path $Results "logs") | Out-Null
-$catalog = @(Get-Content (Join-Path $ModsFolder "mods.json") -Raw | ConvertFrom-Json)
+# Windows PowerShell's ConvertFrom-Json passes an array on as one object; ForEach-Object unrolls it
+$catalog = @(Get-Content (Join-Path $ModsFolder "mods.json") -Raw | ConvertFrom-Json | ForEach-Object { $_ })
 
 function Find-Mod([string] $name) {
     $found = @($catalog | Where-Object {

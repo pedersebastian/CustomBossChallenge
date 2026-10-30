@@ -1,6 +1,10 @@
 using System.Collections;
 using System.Linq;
+using CustomBossChallenge.Config;
 using CustomBossChallenge.Menus;
+using Il2CppAssets.Scripts.Data.Boss;
+using Il2CppAssets.Scripts.Models.ServerEvents;
+using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using CustomBossChallenge.Patches;
 using HarmonyLib;
 using Il2CppAssets.Scripts.Unity.Player;
@@ -99,5 +103,62 @@ public class ModConflictTest : CustomBossTest
         }
 
         yield return null;
+    }
+}
+
+/// <summary>
+/// Another mod that changes every boss challenge before it is set up, like Custom Boss Modifiers does with its own
+/// settings, leaves a Boss Creator game alone, and still changes the game's own boss challenges
+/// </summary>
+public class OtherModChallengeTest : CustomBossTest
+{
+    private const string ProbeId = "cbc.challenge-probe";
+
+    protected override IEnumerator Run()
+    {
+        var setup = AccessTools.Method(typeof(InGameData), nameof(InGameData.SetupBossChallenge));
+        var harmony = new HarmonyLib.Harmony(ProbeId);
+        try
+        {
+            // Other mods' prefixes have the normal priority, or ask to run first; ours runs last
+            foreach (var priority in new[] {Priority.First, Priority.Normal})
+            {
+                harmony.Patch(setup, new HarmonyMethod(typeof(OtherModChallengeTest), nameof(Overwrite)) {priority = priority});
+                var options = new BossOptions {Boss = BossType.Vortex, Elite = true, Tiers = 6};
+                var expected = ConfigApplier.Prepare(TestUtils.CustomEditorDcm(), options);
+                var data = Creator.BossGameLauncher.BuildInGameData(TestUtils.CustomEditorDcm(), options);
+                var played = data.dcModel;
+                AssertEquals(played.bloonModifiers.bossSpeedMultiplier, expected.bloonModifiers.bossSpeedMultiplier, $"Priority {priority}: boss speed");
+                AssertEquals(played.bloonModifiers.healthMultipliers.boss, expected.bloonModifiers.healthMultipliers.boss, $"Priority {priority}: boss health");
+                AssertEquals(played.startRules.cash, expected.startRules.cash, $"Priority {priority}: cash");
+                AssertEquals(played.startRules.endRound, expected.startRules.endRound, $"Priority {priority}: end round");
+                AssertEquals(played.maxTowers, expected.maxTowers, $"Priority {priority}: max towers");
+                Assert(ConfigApplier.IsMarked(played), "The custom game must stay marked");
+                AssertEquals(CustomBossState.ActiveOptions, options, "The custom game must be active");
+
+                // The game's own boss challenges get the other mod's rules, as they would without this mod
+                var vanilla = TestUtils.SetupBossChallenge(TestUtils.BaseDcm(), BossType.Vortex).dcModel;
+                AssertEquals(vanilla.startRules.cash, OtherCash, $"Priority {priority}: the other mod's cash in a vanilla challenge");
+                harmony.UnpatchSelf();
+            }
+        }
+        finally
+        {
+            harmony.UnpatchSelf();
+            CustomBossState.Clear();
+        }
+
+        yield break;
+    }
+
+    private const int OtherCash = 12345;
+
+    private static void Overwrite(ref DailyChallengeModel dcm)
+    {
+        dcm.bloonModifiers.bossSpeedMultiplier = 0.25f;
+        dcm.bloonModifiers.healthMultipliers.boss = 9;
+        dcm.startRules.cash = OtherCash;
+        dcm.startRules.endRound = 41;
+        dcm.maxTowers = 3;
     }
 }
