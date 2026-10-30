@@ -11,6 +11,7 @@ namespace CustomBossChallenge.Patches;
 /// and on Steam/Epic. XP, Monkey Money and the like are still awarded.
 /// </summary>
 [HarmonyPatch]
+[GuardPatch]
 internal static class AchievementPatches
 {
     /// <summary>

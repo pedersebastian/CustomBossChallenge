@@ -16,6 +16,15 @@ internal sealed class OptionalPatchAttribute : Attribute
 }
 
 /// <summary>
+/// Marks a patch that keeps custom games away from the player's records, achievements, saves or Monkey Money, so
+/// <see cref="ConflictReport"/> warns when another mod patches the same method
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class GuardPatchAttribute : Attribute
+{
+}
+
+/// <summary>
 /// Checks that every patch of the mod is in place. A game update that renames or removes a patched method leaves that
 /// patch out without any error in the game, and some of them keep custom games from touching the player's records,
 /// achievements, saves and Monkey Money. If one is missing, the Boss Creator stays closed until the mod is updated.
@@ -108,7 +117,7 @@ internal static class PatchCheck
         return problems;
     }
 
-    private static IEnumerable<(MethodBase? Target, string Name)> Targets(Type patch, HarmonyMethod? info)
+    internal static IEnumerable<(MethodBase? Target, string Name)> Targets(Type patch, HarmonyMethod? info = null)
     {
         var targetMethods = patch.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
             .FirstOrDefault(method => method.GetCustomAttribute<HarmonyTargetMethods>() != null);

@@ -20,13 +20,27 @@ namespace CustomBossChallenge.Patches;
 /// Backstop for every Boss Challenge setup: custom games are forced unranked and never saved
 /// </summary>
 [HarmonyPatch(typeof(InGameData), nameof(InGameData.SetupBossChallenge))]
+[GuardPatch]
 internal static class InGameData_SetupBossChallenge
 {
+    /// <summary>
+    /// Runs after other mods' prefixes, which may change every boss challenge before it starts (e.g. Custom Boss
+    /// Modifiers sets speed, health, lives, cash and rounds from its own settings). A Boss Creator game is played
+    /// with the Boss Creator's rules, so the challenge is put back the way it arrived.
+    /// </summary>
     [HarmonyPrefix]
-    internal static void Prefix(InGameData __instance, ref bool isRanked, DailyChallengeModel dcm)
+    [HarmonyPriority(Priority.Last)]
+    internal static void Prefix(InGameData __instance, ref bool isRanked, ref DailyChallengeModel dcm)
     {
+        var arrived = InGameData_SetupBossChallenge_Arrived.Take();
         var coop = __instance.selectedCoopMode || __instance.selectedCouchMode;
         if (!CustomBossState.OnSetupBossChallenge(dcm, coop)) return;
+
+        if (arrived != null && arrived.Json != Persistence.DcmJson.Serialize(dcm))
+        {
+            ModHelper.Msg<CustomBossChallenge>("Another mod changed the custom challenge before it started, playing it with the Boss Creator's rules");
+            dcm = arrived.Dcm;
+        }
 
         if (isRanked)
         {
@@ -47,6 +61,33 @@ internal static class InGameData_SetupBossChallenge
             __instance.bossData.spawnRounds =
                 new Il2CppStructArray<int>(CustomBossState.ActiveOptions.GameSpawnRounds);
         }
+    }
+}
+
+/// <summary>
+/// A copy of a custom challenge as it arrives at the setup, before other mods' prefixes can change it, for
+/// <see cref="InGameData_SetupBossChallenge"/> to put back. Without it, those mods' changes stay.
+/// </summary>
+[OptionalPatch]
+[HarmonyPatch(typeof(InGameData), nameof(InGameData.SetupBossChallenge))]
+internal static class InGameData_SetupBossChallenge_Arrived
+{
+    internal sealed record Copy(DailyChallengeModel Dcm, string Json);
+
+    private static Copy? arrived;
+
+    internal static Copy? Take()
+    {
+        var copy = arrived;
+        arrived = null;
+        return copy;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPriority(Priority.First)]
+    internal static void Prefix(DailyChallengeModel dcm)
+    {
+        arrived = ConfigApplier.IsMarked(dcm) ? new Copy(dcm.Clone(), Persistence.DcmJson.Serialize(dcm)) : null;
     }
 }
 
@@ -122,6 +163,7 @@ internal static class BossDefeatScreen_Open
 /// Custom games retry for free; backstops for anything else that asks what a retry costs
 /// </summary>
 [HarmonyPatch(typeof(BossDefeatScreen), nameof(BossDefeatScreen.GetRetryMmCost), new System.Type[0])]
+[GuardPatch]
 internal static class BossDefeatScreen_GetRetryMmCost
 {
     [HarmonyPostfix]
@@ -132,6 +174,7 @@ internal static class BossDefeatScreen_GetRetryMmCost
 }
 
 [HarmonyPatch(typeof(CheckpointDefeatScreen), nameof(CheckpointDefeatScreen.GetContinueMmCost))]
+[GuardPatch]
 internal static class CheckpointDefeatScreen_GetContinueMmCost
 {
     [HarmonyPostfix]
@@ -178,6 +221,7 @@ internal static class InGame_RunRestart
 /// Custom games must never count towards the player's Boss Challenge records
 /// </summary>
 [HarmonyPatch(typeof(Btd6Player), nameof(Btd6Player.SetBossChallengeRecord))]
+[GuardPatch]
 internal static class Btd6Player_SetBossChallengeRecord
 {
     [HarmonyPrefix]
@@ -194,6 +238,7 @@ internal static class Btd6Player_SetBossChallengeRecord
 /// Custom games must not award boss tier progress, badges or event completion either
 /// </summary>
 [HarmonyPatch]
+[GuardPatch]
 internal static class Btd6Player_BossProgress
 {
     internal static readonly string[] MethodNames =
