@@ -27,6 +27,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - With no saved setups, the Saved Setups list starts on the first example instead of saying "No saved setups".
 
+### Fixed
+
+- An unfinished game that can't be continued, usually after a BTD6 update, no longer disappears without a word:
+  Boss Creator says so once and offers **Load Setup** to play its setup again from the start.
+- An unusable `Continue.json` is moved to `Continue.broken.json` after the first try, instead of being read again,
+  with a warning in the log, on every click on Boss Creator.
+
 ## [2.7.0] - 2026-10-29
 
 ### Added

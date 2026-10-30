@@ -230,12 +230,94 @@ public class ContinueStoreTest : ContinueTestBase
                  })
         {
             File.WriteAllText(store.FilePath, broken);
-            AssertEquals(store.TryLoad(), null, $"A file with {what} must not load");
+            var load = store.Load();
+            AssertEquals(load.Game, null, $"A file with {what} must not load");
+            if (what == "newer version")
+            {
+                // Not broken: the newer mod can still continue it, so it stays where it is
+                AssertEquals(load.Problem, ContinueProblem.TooNew, $"Problem with {what}");
+                Assert(store.Exists, "A file from a newer version must be kept");
+                store.Delete();
+                continue;
+            }
+
+            // Read once, then moved aside, so the next click on Boss Creator doesn't read it again
+            AssertEquals(load.Problem, ContinueProblem.Unusable, $"Problem with {what}");
+            Assert(!store.Exists, $"A file with {what} must be moved aside");
+            AssertEquals(File.ReadAllText(store.BrokenPath), broken, $"A file with {what} must be kept as {store.BrokenPath}");
+            AssertEquals(store.Load().Problem, ContinueProblem.Missing, $"A file with {what} must be read only once");
+
+            // Only when the snapshots alone can't be used is the setup still there to play again
+            AssertEquals(load.Lost != null, what == "unusable map save", $"Setup of a file with {what}");
         }
 
+        File.WriteAllText(store.FilePath, JsonConvert.SerializeObject(new
+        {
+            Version = ContinueStore.Version, Options = options, Challenge = DcmJson.Serialize(dcm),
+            Snapshots = new[] {new RoundSnapshot(30, 0, "not json"), new RoundSnapshot(35, 1, "not json")}
+        }));
+        var lost = AssertNotNull(store.Load().Lost, "The setup of a game that can't be continued");
+        AssertEquals(lost.Options, options, "Options of the lost game");
+        AssertEquals(lost.Dcm.name, dcm.name, "Challenge of the lost game");
+        AssertEquals(lost.Round, 35, "Round the lost game was left on");
+
+        store.Save(options, dcm, new[] {new RoundSnapshot(35, 2, json)});
         store.Delete();
         Assert(!store.Exists, "The file was not deleted");
         store.Delete();
+    }
+}
+
+/// <summary>
+/// An unfinished game that can't be continued says so once, on the next click on Boss Creator. When only its map
+/// saves are unusable, as after a BTD6 update, its setup can be loaded to play it again from the start.
+/// </summary>
+public class UnusableContinueTest : ContinueTestBase
+{
+    protected override IEnumerator Run()
+    {
+        var options = new BossOptions {Boss = BossType.Vortex, Tiers = 6, HealthPerTier = 20, SpawnRounds = "30, 40"};
+        var dcm = CustomBossState.Prepare(Challenge(20).Build(), options);
+        var name = dcm.name[..^ConfigApplier.Marker.Length];
+        var store = CustomBossRetries.Store;
+        var lastSetup = BossMode.Store;
+        BossMode.Store = new LastSetupStore(Path.Combine(TempFolder, "LastSetup.json"));
+        try
+        {
+            // Map saves this version can't use: the player is told, and Load Setup opens the game's setup
+            store.Save(options, dcm, new[] {new RoundSnapshot(42, 1, "not json")});
+            ClickBossCreator();
+            Popup? popup = null;
+            yield return WaitForPopup(found => popup = found);
+            Assert(popup!.body.text.Contains(name) && popup.body.text.Contains("42"), $"Popup for a lost game: {popup.body.text}");
+            Assert(!store.Exists && File.Exists(store.BrokenPath), "The unusable game must be moved aside");
+            yield return ClosePopup(popup, true);
+            yield return WaitForBossCreator();
+            AssertEquals(BossMode.Options, options, "Load Setup must load the lost game's options");
+            var editor = Object.FindObjectOfType<ChallengeEditor>();
+            AssertEquals(editor.dcm.name, name, "The setup is named without the custom game marker");
+            Assert(!editor.dcm.disableSaves && !ConfigApplier.IsMarked(editor.dcm), "The setup is the Boss Creator's, not the game's");
+            yield return ToMainMenu();
+
+            // Told only once: the next click opens the Boss Creator straight away
+            ClickBossCreator();
+            yield return WaitForBossCreator();
+            yield return ToMainMenu();
+
+            // A file that can't be read at all says where it was kept, and OK opens the Boss Creator
+            File.WriteAllText(store.FilePath, "{ not json");
+            ClickBossCreator();
+            yield return WaitForPopup(found => popup = found);
+            Assert(popup!.body.text.Contains(Path.GetFileName(store.BrokenPath)), $"Popup for a broken file: {popup.body.text}");
+            yield return ClosePopup(popup, true);
+            yield return WaitForBossCreator();
+            yield return ToMainMenu();
+        }
+        finally
+        {
+            BossMode.Store = lastSetup;
+            store.Delete();
+        }
     }
 }
 

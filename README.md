@@ -44,7 +44,8 @@ where you can read a share code and see the whole setup without the game.
 - **Continue after closing the game**: a custom game is kept after every round, so closing the game or a crash never
   loses a long run. Press **Boss Creator** on the main menu and choose **Continue** to pick it up on the round you left,
   free retries included. It is kept in `BloonsTD6/UserData/CustomBossChallenge/Continue.json`, separate from the
-  game's own saves, and replaced when you win, restart or play a new custom game.
+  game's own saves, and replaced when you win, restart or play a new custom game. If a BTD6 update means it can't be
+  continued, Boss Creator says so once and offers **Load Setup** to play the same setup again from the start.
 - **Translated** into every language BTD6 supports (English, Arabic, Chinese Simplified and Traditional, Danish,
   Dutch, Finnish, French, German, Italian, Japanese, Korean, Norwegian, Polish, Brazilian Portuguese, Russian,
   Spanish, Latin American Spanish, Swedish, Thai and Turkish), following the game's language setting.

@@ -76,6 +76,12 @@ public static class Texts
     public static readonly string UnfinishedGameQuestion = Key(nameof(UnfinishedGameQuestion),
         "Your custom game {0} ({2} tiers) was left on round {1}. Continue it, or make a new boss? The unfinished " +
         "game is replaced once you play a new one.");
+    public static readonly string UnfinishedGameLost = Key(nameof(UnfinishedGameLost),
+        "Your custom game {0} ({2} tiers) was left on round {1}, but it can't be continued with this version of BTD6. " +
+        "Load its setup to play it again from the start, or make a new boss.");
+    public static readonly string UnfinishedGameBroken = Key(nameof(UnfinishedGameBroken),
+        "Your unfinished custom game couldn't be read and can't be continued. The file was kept as {0}.");
+    public static readonly string LoadGameSetup = Key(nameof(LoadGameSetup), "Load Setup");
     public static readonly string ContinueGame = Key(nameof(ContinueGame), "Continue");
     public static readonly string NewGame = Key(nameof(NewGame), "New Boss");
 

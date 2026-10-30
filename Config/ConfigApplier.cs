@@ -57,6 +57,21 @@ public static class ConfigApplier
     }
 
     /// <summary>
+    /// Turns a model <see cref="Prepare"/> made back into a setup for the Boss Creator: without the marker and the
+    /// game-only values, so saving or sharing it gives the same setup the game was started with
+    /// </summary>
+    public static DailyChallengeModel Unprepare(DailyChallengeModel prepared)
+    {
+        var dcm = prepared.Clone();
+        var defaults = DailyChallengeModel.CreateDefaultEditorModel();
+        if (IsMarked(dcm)) dcm.name = dcm.name[..^Marker.Length];
+        dcm.chalType = defaults.chalType;
+        dcm.disableSaves = defaults.disableSaves;
+        if (dcm.startRules != null) dcm.startRules.endRound = defaults.startRules.endRound;
+        return dcm;
+    }
+
+    /// <summary>
     /// Converts a whole percentage into a multiplier, never going below <see cref="MinMultiplier"/>
     /// </summary>
     public static float Multiplier(int percent) => Math.Max(percent / 100f, MinMultiplier);
