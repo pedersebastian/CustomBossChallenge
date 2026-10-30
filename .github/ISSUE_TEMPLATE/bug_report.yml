@@ -52,9 +52,8 @@ body:
     attributes:
       label: Other mods
       description: >-
-        Other mods you have enabled, if any. Bugs sometimes come from two mods changing the same thing. The README
-        lists mods that were tested together with this one, and Latest.log says at startup when another mod hooks into
-        the same methods ("... also patches ...").
+        Other mods you have enabled, if any. Bugs sometimes come from two mods changing the same thing. Latest.log
+        says at startup when another mod hooks into the same methods ("... also patches ...").
       placeholder: Faster Forward, Useful Utilities
 
   - type: textarea

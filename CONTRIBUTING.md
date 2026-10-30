@@ -97,8 +97,8 @@ subfolder of `<folder>` named after the size.
 
 Players run this mod next to others, so it is tested with the most downloaded mods and the ones that touch bosses,
 the Challenge Editor, rounds, the main menu or saves (listed in `.github/scripts/compat-candidates.json`). The results
-are in the README under *Known conflicts with other mods*. Run this again after a BTD6 update or when a mod in the list
-changes a lot. The other mods are third-party code: they are downloaded into a folder outside the repo and only run
+are in [issue #24](https://github.com/pedersebastian/CustomBossChallenge/issues/24). Run this again after a BTD6 update
+or when a mod in the list changes a lot. The other mods are third-party code: they are downloaded into a folder outside the repo and only run
 inside the game.
 
 ```

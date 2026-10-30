@@ -180,26 +180,6 @@ The Boss Creator setup is stored in `BloonsTD6/UserData/CustomBossChallenge/Last
   This is not a bug.
 - Tiers above 5 reuse the tier 5 look and abilities; the in-game tier display shows them like tier 5.
 
-### Known conflicts with other mods
-
-Tested on BTD6 57.4 with the most downloaded mods and the ones that touch bosses, the Challenge Editor, rounds, the
-main menu or saves, one at a time and together, on 30 October 2026. Each run checked that the Boss Creator opens and
-fits on the screen, that custom games are set up, played and restarted with the Boss Creator's rules, and that they
-still stay away from records, achievements and saves.
-
-| Mod | Result |
-|---|---|
-| **Custom Boss Modifiers** | Works since this version. It sets every Boss Challenge to its own settings, which used to replace the Boss Creator's speed, health, lives, cash and rounds. Boss Creator games now keep their own rules; the game's own Boss Challenges still get Custom Boss Modifiers' settings. |
-| **Boss Rush Recharged** | Don't combine. It changes every game (rounds, lives, cash) by its own mode, Boss Creator games too. It also needs Paths++ and doesn't work on BTD6 57 by itself. |
-| Retry Anywhere, Time Machine | Work. Both also hook into the defeat screen and retries; retrying and continuing a custom game work as usual. |
-| Training Monkey (Dummy Boss), Boss UI in Sandbox, Moab Bosses, Auto-Escape, Custom Map Challenges, RoundSelector | Work. |
-| Ultimate Crosspathing, Faster Forward, Unlimited 5th Tiers, Paths++, Ascended Upgrades, Powers in Shop, Mega Knowledge, Sacrifice Helper, Copy/Paste Towers, Useful Utilities, Ability Choice, Auto Nudge, In-Game Hero Switch, Buffs in Shop, Tactical Tweaks | Work, one at a time and all of them together. |
-| Quick Game, AscendedBosses, MultiCash, OmegaCrosspathing | Work with this mod, but log errors of their own on BTD6 57.4: they were made for older versions. |
-
-If another mod changes something on one of the methods that keep custom games away from your records, achievements,
-saves or Monkey Money, the log says so at startup (`... also patches ...`). Mention that, and your other mods, in a bug
-report. Tests can't reach everything: a mod that only changes things online, in co-op or on some maps can still clash.
-
 ## Installation
 
 ### Mod Helper / Mod Browser (recommended)
