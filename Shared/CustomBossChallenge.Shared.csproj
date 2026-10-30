@@ -19,7 +19,7 @@
     </ItemGroup>
     <ItemGroup>
         <!-- The game has its own copy; this only has to be the same major version -->
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     </ItemGroup>
     <ItemGroup>
         <InternalsVisibleTo Include="CustomBossChallenge.UnitTests" />
