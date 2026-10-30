@@ -87,14 +87,14 @@ public static class TierLook
     /// <summary>
     /// How strongly the glow over the boss shows, before pulsing
     /// </summary>
-    public static float GlowAlpha(int tier) => HasLook(tier) ? 0.12f + 0.08f * Step(tier) : 0;
+    public static float GlowAlpha(int tier) => HasLook(tier) ? 0.2f + 0.08f * Step(tier) : 0;
 
     /// <summary>
     /// The size of the aura behind the boss compared with the boss
     /// </summary>
-    public static float AuraSize(int tier) => HasLook(tier) ? 0.9f + 0.12f * Step(tier) : 0;
+    public static float AuraSize(int tier) => HasLook(tier) ? 1.0f + 0.1f * Step(tier) : 0;
 
-    public static float AuraAlpha(int tier) => HasLook(tier) ? 0.3f + 0.08f * Step(tier) : 0;
+    public static float AuraAlpha(int tier) => HasLook(tier) ? 0.2f + 0.06f * Step(tier) : 0;
 
     /// <summary>
     /// How much bigger the boss is drawn than tier 5; only the look, not what towers can hit
@@ -110,6 +110,21 @@ public static class TierLook
     /// Seconds per pulse: later tiers pulse faster
     /// </summary>
     public static float PulsePeriod(int tier) => 2.6f - 0.3f * Step(tier);
+
+    /// <summary>
+    /// How bright the rim of the mod's own glow shader is
+    /// </summary>
+    public static float RimStrength(int tier) => HasLook(tier) ? 0.9f + 0.25f * Step(tier) : 0;
+
+    /// <summary>
+    /// How much of the body's own texture the mod's glow shader lights up
+    /// </summary>
+    public static float FillStrength(int tier) => HasLook(tier) ? 0.1f + 0.06f * Step(tier) : 0;
+
+    /// <summary>
+    /// How bright the band is that sweeps over the boss in the mod's glow shader; tier 6 has none
+    /// </summary>
+    public static float ShimmerStrength(int tier) => 0.15f * Math.Max(Step(tier) - 1, 0);
 
     /// <summary>
     /// The factor the glow and aura are multiplied with at <paramref name="seconds"/>, around 1
