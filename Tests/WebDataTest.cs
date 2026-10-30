@@ -151,58 +151,20 @@ public class WebDataTest : CustomBossTest
         return challenge;
     }
 
-    /// <summary>
-    /// The examples' seed, so their codes stay the same every time they are made
-    /// </summary>
-    public const int ExampleSeed = 2026;
-
     private static string PlayerDefaultName => DailyChallengeModel.CreateDefaultEditorModel().name;
 
     /// <summary>
-    /// Setups worth trying, as codes the website lets players copy
+    /// The mod's example setups (<see cref="ExampleSetups"/>), in English, as codes the website lets players copy
     /// </summary>
-    private JArray Examples()
+    private static JArray Examples() => new(ExampleSetups.All.Select(example =>
     {
-        var examples = new JArray();
-
-        void Add(string name, string description, BossOptions options, Action<DailyChallengeModel> rules)
+        var (options, dcm) = ExampleSetups.Build(example, english: true);
+        return new JObject
         {
-            var dcm = BossMode.DefaultDcm(options);
-            dcm.name = name;
-            dcm.seed = ExampleSeed;
-            rules(dcm);
-            AssertEquals(BossEditorSection.PlayProblem(dcm, options), null, $"Example {name} can't be played");
-            examples.Add(new JObject {["name"] = name, ["description"] = description, ["code"] = SetupCode.Encode(options, dcm)});
-        }
-
-        Add("Marathon Lych", "Ten tiers of Elite Lych, each 30 % tougher than the last. Bring snacks.",
-            new BossOptions {Boss = BossType.Lych, Elite = true, Tiers = 10, HealthPerTier = 30}, _ => { });
-        Add("Speed Demon Vortex", "Vortex gets 40 % faster every tier, with three evenly spaced skulls.",
-            new BossOptions {Boss = BossType.Vortex, SpeedPerTier = 40, SkullMode = SkullMode.EvenlySpaced, SkullCount = 3},
-            _ => { });
-        Add("Glass Cannon", "One Bloonarius at three times the speed and a tenth of the health. Blink and it's gone.",
-            new BossOptions {Boss = BossType.Bloonarius, Tiers = 1}, dcm =>
-            {
-                dcm.bloonModifiers.bossSpeedMultiplier = 3;
-                dcm.bloonModifiers.healthMultipliers.boss = 0.1f;
-            });
-        Add("No Skulls, No Mercy", "Elite Phayze without a single skull, every bloon fortified and no selling.",
-            new BossOptions {Boss = BossType.Phayze, Elite = true, SkullMode = SkullMode.EvenlySpaced, SkullCount = 0}, dcm =>
-            {
-                dcm.bloonModifiers.allFortified = true;
-                dcm.disableSelling = true;
-            });
-        Add("Speedrun Dreadbloon", "All five tiers by round 40: a new Dreadbloon every five rounds from round 20.",
-            new BossOptions {Boss = BossType.Dreadbloon, SpawnRounds = "20, 25, 30, 35, 40"}, _ => { });
-        Add("Paragon Ban", "Elite Blastapopoulos on Infernal, Hard, and not a single paragon allowed.",
-            new BossOptions {Boss = BossType.Blastapopoulos, Elite = true}, dcm =>
-            {
-                dcm.maxParagons = 0;
-                dcm.difficulty = "Hard";
-                dcm.map = "Infernal";
-            });
-        return examples;
-    }
+            ["name"] = example.EnglishName, ["description"] = example.EnglishDescription,
+            ["code"] = SetupCode.Encode(options, dcm)
+        };
+    }));
 
     /// <summary>
     /// Codes with what the mod reads from them, for the website's tests
