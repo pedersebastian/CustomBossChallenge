@@ -104,13 +104,10 @@ public class LayoutTest : CustomBossTest
                 $"{format}: the Boss Creator button overlaps event button {icon.name}");
         }
 
-        // The other round buttons on the main menu; full screen click blockers are left out
-        foreach (var other in mainMenu.GetComponentsInChildren<Button>())
+        // The other buttons on the screen, the main menu's and any another mod adds on a canvas of its own
+        foreach (var (name, otherRect) in OtherControls(button))
         {
-            if (other.transform.IsChildOf(button)) continue;
-            var otherRect = ScreenRect(other);
-            if (otherRect.width * otherRect.height > LayoutChecks.Screen.width * LayoutChecks.Screen.height / 4) continue;
-            Expect(!Overlap(rect, otherRect), $"{format}: the Boss Creator button overlaps {other.name} ({Describe(otherRect)})");
+            Expect(!Overlap(rect, otherRect), $"{format}: the Boss Creator button overlaps {name} ({Describe(otherRect)})");
         }
     }
 

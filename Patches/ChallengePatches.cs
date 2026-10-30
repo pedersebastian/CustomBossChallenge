@@ -20,6 +20,7 @@ namespace CustomBossChallenge.Patches;
 /// Backstop for every Boss Challenge setup: custom games are forced unranked and never saved
 /// </summary>
 [HarmonyPatch(typeof(InGameData), nameof(InGameData.SetupBossChallenge))]
+[GuardPatch]
 internal static class InGameData_SetupBossChallenge
 {
     [HarmonyPrefix]
@@ -122,6 +123,7 @@ internal static class BossDefeatScreen_Open
 /// Custom games retry for free; backstops for anything else that asks what a retry costs
 /// </summary>
 [HarmonyPatch(typeof(BossDefeatScreen), nameof(BossDefeatScreen.GetRetryMmCost), new System.Type[0])]
+[GuardPatch]
 internal static class BossDefeatScreen_GetRetryMmCost
 {
     [HarmonyPostfix]
@@ -132,6 +134,7 @@ internal static class BossDefeatScreen_GetRetryMmCost
 }
 
 [HarmonyPatch(typeof(CheckpointDefeatScreen), nameof(CheckpointDefeatScreen.GetContinueMmCost))]
+[GuardPatch]
 internal static class CheckpointDefeatScreen_GetContinueMmCost
 {
     [HarmonyPostfix]
@@ -178,6 +181,7 @@ internal static class InGame_RunRestart
 /// Custom games must never count towards the player's Boss Challenge records
 /// </summary>
 [HarmonyPatch(typeof(Btd6Player), nameof(Btd6Player.SetBossChallengeRecord))]
+[GuardPatch]
 internal static class Btd6Player_SetBossChallengeRecord
 {
     [HarmonyPrefix]
@@ -194,6 +198,7 @@ internal static class Btd6Player_SetBossChallengeRecord
 /// Custom games must not award boss tier progress, badges or event completion either
 /// </summary>
 [HarmonyPatch]
+[GuardPatch]
 internal static class Btd6Player_BossProgress
 {
     internal static readonly string[] MethodNames =

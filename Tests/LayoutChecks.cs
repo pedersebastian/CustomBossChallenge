@@ -1,5 +1,7 @@
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace CustomBossChallenge.Tests;
 
@@ -44,4 +46,24 @@ internal static class LayoutChecks
         inner.xMin >= outer.xMin - Tolerance && inner.xMax <= outer.xMax + Tolerance;
 
     public static string Describe(Rect rect) => $"x {rect.xMin:0}-{rect.xMax:0}, y {rect.yMin:0}-{rect.yMax:0}";
+
+    /// <summary>
+    /// Every visible control on the screen that isn't part of <paramref name="ours"/>, on any screen space canvas, so
+    /// buttons other mods add on their own canvases count too. Full screen click blockers are left out.
+    /// </summary>
+    public static IEnumerable<(string Name, Rect Rect)> OtherControls(Transform ours)
+    {
+        foreach (var control in Object.FindObjectsOfType<UnityEngine.UI.Selectable>())
+        {
+            if (!control.isActiveAndEnabled || control.transform.IsChildOf(ours)) continue;
+
+            var canvas = control.GetComponentInParent<Canvas>()?.rootCanvas;
+            if (canvas == null || canvas.renderMode == RenderMode.WorldSpace) continue;
+
+            var rect = ScreenRect(control);
+            if (rect.width * rect.height > Screen.width * Screen.height / 4) continue;
+
+            yield return ($"{canvas.name}/{control.name}", rect);
+        }
+    }
 }

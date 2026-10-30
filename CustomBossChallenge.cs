@@ -22,9 +22,14 @@ public class CustomBossChallenge : BloonsTD6Mod
     }
 
     /// <summary>
-    /// All patches are applied by now; a missing one is logged right away, not only when the Boss Creator is clicked
+    /// All patches are applied by now; a missing one is logged right away, not only when the Boss Creator is clicked,
+    /// and so are other mods' patches on the guards
     /// </summary>
-    public override void OnMainMenu() => _ = Patches.PatchCheck.AllInPlace;
+    public override void OnMainMenu()
+    {
+        _ = Patches.PatchCheck.AllInPlace;
+        Patches.ConflictReport.LogOnce();
+    }
 
     public override void OnUpdate()
     {

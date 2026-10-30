@@ -93,6 +93,40 @@ The screenshots in the README come from the `ScreenshotTour` test. It only runs 
 set `CBC_RESOLUTIONS`, e.g. `1280x800,1024x768,1680x720,1920x540`: the tour is then taken once per size, each in a
 subfolder of `<folder>` named after the size.
 
+### Compatibility with other mods
+
+Players run this mod next to others, so it is tested with the most downloaded mods and the ones that touch bosses,
+the Challenge Editor, rounds, the main menu or saves (listed in `.github/scripts/compat-candidates.json`). The results
+are in the README under *Known conflicts with other mods*. Run this again after a BTD6 update or when a mod in the list
+changes a lot. The other mods are third-party code: they are downloaded into a folder outside the repo and only run
+inside the game.
+
+```
+# 1. Download the latest release of every listed mod (prints name, size and SHA-256)
+powershell -ExecutionPolicy Bypass -File .github/scripts/Get-CompatMods.ps1 -Out C:\cbc-compat\mods
+
+# 2. Which methods both mods patch, without the game
+dotnet fsi .github/scripts/Scan-Patches.fsx "<game>\Mods\CustomBossChallenge.dll" C:\cbc-compat\mods C:\cbc-compat\scan.md
+
+# 3. All in-game tests with this mod alone, then with each other mod (A, B, all, a name, or names joined by +)
+powershell -ExecutionPolicy Bypass -File .github/scripts/Test-ModCompatibility.ps1 -ModsFolder C:\cbc-compat\mods -Results C:\cbc-compat\runs -Mods none,A,B
+
+# 4. Screenshots with each mod, compared with two runs of this mod alone (the second one measures animation noise)
+powershell -ExecutionPolicy Bypass -File .github/scripts/Test-ModCompatibility.ps1 -ModsFolder C:\cbc-compat\mods -Results C:\cbc-compat\runs -Mods none,none -Screenshots
+powershell -ExecutionPolicy Bypass -File .github/scripts/Compare-Screenshots.ps1 -Baseline C:\cbc-compat\runs\screenshots\none -Candidates <second baseline>,<mod folders> -FirstIsNoise -Out C:\cbc-compat\report
+```
+
+`Test-ModCompatibility.ps1` copies each mod into the game's `Mods` folder for one run and removes it afterwards,
+stops if the folder isn't as it was, copies the game profile to `<Results>\profile-backup` before the first run, and
+reruns failing tests once so that a flaky test isn't blamed on another mod. Each run adds a line to
+`<Results>\results.jsonl`, and its `Latest.log` is kept in `<Results>\logs`.
+
+`ModConflictTest` writes every other mod's patch on a method this mod patches to the log as a `CBC-CONFLICT|` line.
+`HarmonyBehaviourTest` checks what another mod's prefix can do to ours: in MelonLoader's Harmony every prefix and
+postfix still runs when one of them skips the method, so another mod can't switch a guard off that way, only change a
+value before or after us. Outside of tests, the mod logs a warning at startup when another mod patches one of the
+guards (`[GuardPatch]`), so a bug report's `Latest.log` shows it.
+
 ## Checks on GitHub
 
 `.github/workflows/checks.yml` runs on every push and pull request, without the game:

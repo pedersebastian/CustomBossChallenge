@@ -199,6 +199,34 @@ public class ScreenshotTour : CustomBossTest
         var texture = ScreenCapture.CaptureScreenshotAsTexture();
         File.WriteAllBytes(path, ImageConversion.EncodeToPNG(texture));
         Object.Destroy(texture);
+        File.WriteAllText(Path.Combine(folder, name + ".regions.json"), Regions());
         BTD_Mod_Helper.ModHelper.Msg<CustomBossChallenge>($"{nameof(ScreenshotTour)}: saved {path}");
+    }
+
+    /// <summary>
+    /// Where this mod's own UI is in the screenshot, in pixels from the top left, so .github/scripts/Compare-Screenshots.ps1
+    /// can tell changes to it from changes elsewhere (e.g. another mod's own button)
+    /// </summary>
+    private static string Regions()
+    {
+        var regions = new System.Collections.Generic.List<string>();
+        void Add(string name, Component? component)
+        {
+            if (component == null || !component.gameObject.activeInHierarchy) return;
+            var rect = LayoutChecks.ScreenRect(component.GetComponent<RectTransform>());
+            rect = Rect.MinMaxRect(Mathf.Max(rect.xMin, 0), Mathf.Max(rect.yMin, 0), Mathf.Min(rect.xMax, Screen.width), Mathf.Min(rect.yMax, Screen.height));
+            if (rect.width <= 0 || rect.height <= 0) return;
+            regions.Add($"{{\"name\":\"{name}\",\"x\":{rect.xMin:0},\"y\":{Screen.height - rect.yMax:0},\"width\":{rect.width:0},\"height\":{rect.height:0}}}");
+        }
+
+        Add("boss-creator-button", Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.Main.MainMenu>()?.transform.Find(MainMenuButton.Name));
+        var section = BossEditorSection.Current;
+        if (section != null)
+        {
+            Add("boss-section", section.Section.transform);
+            Add("play", section.Play.transform);
+        }
+
+        return $"{{\"width\":{Screen.width},\"height\":{Screen.height},\"regions\":[{string.Join(",", regions)}]}}";
     }
 }
