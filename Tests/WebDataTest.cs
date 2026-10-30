@@ -20,7 +20,7 @@ namespace CustomBossChallenge.Tests;
 /// <summary>
 /// The website (web/) reads share codes without the game, so it needs what only the game knows: the default
 /// challenge codes are made against, the bosses' health, speed and skulls, and the names of maps and towers. It also
-/// gets example codes and fixtures: codes with what the mod reads from them, which the website's tests must match.
+/// gets the look of tiers above 5 (<see cref="TierLook"/>), so the website's effect matches the game's, and example codes and fixtures: codes with what the mod reads from them, which the website's tests must match.
 /// <br/>
 /// Started with the environment variable <c>CBC_WEB_DATA=&lt;repo&gt;/web/src/data</c>, this writes those files.
 /// Otherwise it checks that the files in the repo still match the game and the mod, so a game update or a change to
@@ -30,13 +30,14 @@ public class WebDataTest : CustomBossTest
 {
     public const string EnvironmentVariable = "CBC_WEB_DATA";
 
-    public static readonly string[] Files = {"game.json", "examples.json", "fixtures.json"};
+    public static readonly string[] Files = {"game.json", "tierlook.json", "examples.json", "fixtures.json"};
 
     protected override IEnumerator Run()
     {
         var data = new Dictionary<string, JToken>
         {
             ["game.json"] = GameInfo(),
+            ["tierlook.json"] = TierLookInfo(),
             ["examples.json"] = Examples(),
             ["fixtures.json"] = Fixtures()
         };
@@ -136,6 +137,33 @@ public class WebDataTest : CustomBossTest
                 ["maxRevives"] = ChallengeLimits.MaxRevives,
                 ["maxTowerCount"] = ChallengeLimits.MaxTowerCount
             }
+        };
+    }
+
+    /// <summary>
+    /// The colours of tiers 6 to 10 for every boss in the game, and how strong and fast their glow pulses, from
+    /// <see cref="TierLook"/>
+    /// </summary>
+    private static JObject TierLookInfo()
+    {
+        static JArray Theme(string boss) => new(TierLook.Theme(boss).Select(color => (object) color.Hex));
+        static double Round(float value) => Math.Round(value, 6);
+
+        return new JObject
+        {
+            ["themes"] = new JObject(Enum.GetValues<BossType>().Select(boss => new JProperty(boss.ToString(), Theme(boss.ToString())))),
+            // A name no boss has, for bosses the game adds later
+            ["defaultTheme"] = Theme(""),
+            ["tiers"] = new JArray(Enumerable.Range(TierMath.VanillaTiers + 1, TierLook.Steps).Select(tier => new JObject
+            {
+                ["tier"] = tier,
+                ["glowAlpha"] = Round(TierLook.GlowAlpha(tier)),
+                ["auraSize"] = Round(TierLook.AuraSize(tier)),
+                ["auraAlpha"] = Round(TierLook.AuraAlpha(tier)),
+                ["scale"] = Round(TierLook.Scale(tier)),
+                ["pulseAmplitude"] = Round(TierLook.PulseAmplitude(tier)),
+                ["pulsePeriod"] = Round(TierLook.PulsePeriod(tier))
+            }))
         };
     }
 

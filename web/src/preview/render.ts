@@ -6,8 +6,9 @@ import { playProblem, type Challenge } from "../code/decode";
 import { effectiveSpawnRounds, type BossOptions } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
-import { endRound, formatHealth, maxModelHealth } from "../math/tiers";
+import { clampTiers, endRound, formatHealth, maxModelHealth } from "../math/tiers";
 import { skulls, tierCards } from "./compute";
+import { tierGlow, tierGlowStyle } from "./tierLook";
 
 /** Orange where a tier is harder than the normal game, blue where it is easier, like the in-game preview */
 const tone = (factor: number): string => (factor > 1.0001 ? "harder" : factor < 0.9999 ? "easier" : "same");
@@ -36,7 +37,7 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
     h(
       "div",
       { class: "setup-head" },
-      h("div", { class: "boss-badge" + (options.Elite ? " elite" : ""), "aria-hidden": "true" }, options.Boss.slice(0, 1)),
+      renderBadge(options),
       h(
         "div",
         {},
@@ -61,6 +62,20 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
   return root;
 }
 
+/** The boss's first letter; with more than 5 tiers it glows like the last tier */
+function renderBadge(options: BossOptions): HTMLElement {
+  const glow = tierGlow(options.Boss, clampTiers(options.Tiers));
+  return h(
+    "div",
+    {
+      class: "boss-badge" + (options.Elite ? " elite" : "") + (glow ? " tier-look" : ""),
+      style: glow ? tierGlowStyle(glow) : undefined,
+      "aria-hidden": "true",
+    },
+    options.Boss.slice(0, 1),
+  );
+}
+
 function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
   const cards = tierCards(options, challenge);
   const strip = h("div", { class: "tiers", role: "list" });
@@ -68,10 +83,11 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
     const speed = `×${formatDecimals(card.speed, 2)}`;
     const speedTone = tone(card.speed);
     const healthTone = tone(card.healthFactor);
+    const glow = tierGlow(options.Boss, card.tier);
     strip.append(
       h(
         "div",
-        { class: "tier", role: "listitem" },
+        { class: glow ? "tier tier-look" : "tier", style: glow ? tierGlowStyle(glow) : undefined, role: "listitem" },
         spoken(
           `Tier ${card.tier}, round ${card.round}, speed ${speed}, ${SPOKEN[speedTone][0]}, ` +
             `health ${card.health}, ${SPOKEN[healthTone][1]}`,

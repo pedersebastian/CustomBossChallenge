@@ -1,0 +1,107 @@
+{
+  "themes": {
+    "Bloonarius": [
+      "#9BFF2E",
+      "#E8FF1A",
+      "#FFAA00",
+      "#FF3B1F",
+      "#E0119D"
+    ],
+    "Lych": [
+      "#5CFFA8",
+      "#2EE6FF",
+      "#3D7BFF",
+      "#A64DFF",
+      "#FF2ED1"
+    ],
+    "Vortex": [
+      "#8CF2FF",
+      "#3FA9FF",
+      "#6A5CFF",
+      "#C04DFF",
+      "#FFE45C"
+    ],
+    "Dreadbloon": [
+      "#FFD27A",
+      "#FF9A3C",
+      "#FF5A1F",
+      "#E8162B",
+      "#FF006E"
+    ],
+    "Phayze": [
+      "#FF7AF0",
+      "#B85CFF",
+      "#5C6BFF",
+      "#1FD8FF",
+      "#2BFFB0"
+    ],
+    "Blastapopoulos": [
+      "#FFE45C",
+      "#FFA21C",
+      "#FF5500",
+      "#FF1744",
+      "#B8F4FF"
+    ],
+    "Diamondback": [
+      "#3DFFD8",
+      "#2E8BFF",
+      "#9A4DFF",
+      "#FF3DAE",
+      "#FFD21F"
+    ]
+  },
+  "defaultTheme": [
+    "#FFE45C",
+    "#FFA21C",
+    "#FF5500",
+    "#FF1744",
+    "#D41CFF"
+  ],
+  "tiers": [
+    {
+      "tier": 6,
+      "glowAlpha": 0.28,
+      "auraSize": 1.1,
+      "auraAlpha": 0.26,
+      "scale": 1.03,
+      "pulseAmplitude": 0.08,
+      "pulsePeriod": 2.3
+    },
+    {
+      "tier": 7,
+      "glowAlpha": 0.36,
+      "auraSize": 1.2,
+      "auraAlpha": 0.32,
+      "scale": 1.06,
+      "pulseAmplitude": 0.16,
+      "pulsePeriod": 2.0
+    },
+    {
+      "tier": 8,
+      "glowAlpha": 0.44,
+      "auraSize": 1.3,
+      "auraAlpha": 0.38,
+      "scale": 1.09,
+      "pulseAmplitude": 0.24,
+      "pulsePeriod": 1.7
+    },
+    {
+      "tier": 9,
+      "glowAlpha": 0.52,
+      "auraSize": 1.4,
+      "auraAlpha": 0.44,
+      "scale": 1.12,
+      "pulseAmplitude": 0.32,
+      "pulsePeriod": 1.4
+    },
+    {
+      "tier": 10,
+      "glowAlpha": 0.6,
+      "auraSize": 1.5,
+      "auraAlpha": 0.5,
+      "scale": 1.15,
+      "pulseAmplitude": 0.4,
+      "pulsePeriod": 1.1
+    }
+  ]
+}
