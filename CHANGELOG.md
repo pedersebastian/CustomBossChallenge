@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Boss Creator says so once and offers **Load Setup** to play its setup again from the start.
 - An unusable `Continue.json` is moved to `Continue.broken.json` after the first try, instead of being read again,
   with a warning in the log, on every click on Boss Creator.
+- After loading an example setup, its name now gives way to the default name ("Custom Vortex") once Random or a
+  boss button changes the boss, like Reset already did.
 
 ## [2.7.0] - 2026-10-29
 
