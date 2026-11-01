@@ -121,11 +121,15 @@ function compareValue(a: number, b: number, words: { more: string; less: string;
 }
 
 /**
- * Short sentences about B compared with A, only for what can be measured: the number of tiers, and the boss's health
- * and speed at the last tier both have. It doesn't rate how hard a setup is overall (issue #26).
+ * Short sentences about B compared with A, only for what can be measured: the boss, the number of tiers, and the
+ * boss's health and speed at the last tier both have. It doesn't rate how hard a setup is overall (issue #26).
  */
 export function verdict(a: Setup, b: Setup): string[] {
   const lines: string[] = [];
+  // First, since the health and speed below then compare two different bosses
+  const boss = (setup: Setup): string => `${setup.options.Elite ? "Elite " : ""}${setup.options.Boss}`;
+  if (boss(a) !== boss(b)) lines.push(`Different bosses: A is ${boss(a)}, B is ${boss(b)}.`);
+
   const tiersA = a.options.Tiers;
   const tiersB = b.options.Tiers;
   if (tiersA !== tiersB) lines.push(`B has ${tiersB} ${tiersB === 1 ? "tier" : "tiers"}, A has ${tiersA}.`);

@@ -35,6 +35,7 @@ describe("differences", () => {
     const a = await setup(await encode({ o: { Boss: "Lych", Tiers: 5 } }));
     const b = await setup(await encode({ o: { Boss: "Lych", Tiers: 5, HealthPerTier: 20 } }));
     expect(differences(a, b)).toEqual([{ group: "Tiers", label: "Health per Tier", a: "Off", b: "+20 %", same: false }]);
+    expect(verdict(a, b).some((line) => line.startsWith("Different bosses"))).toBe(false);
   });
 
   it("finds a changed Challenge Editor rule", async () => {
@@ -58,6 +59,7 @@ describe("differences", () => {
     const b = await setup(await encode({ o: { Boss: "Lych", Elite: true } }));
     expect(labels(a, b)).toEqual(expect.arrayContaining(["Boss", "Elite"]));
     expect(labels(a, b)).not.toContain("Tiers");
+    expect(verdict(a, b)[0]).toBe("Different bosses: A is Bloonarius, B is Elite Lych.");
     // Different bosses have different health, so the verdict says how much
     expect(verdict(a, b).some((line) => line.includes("boss health at tier"))).toBe(true);
   });
