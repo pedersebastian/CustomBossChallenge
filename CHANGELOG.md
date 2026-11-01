@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Reset and undo for the boss options** (#36): the boss, the skulls and the custom skulls get a reset button like
+  the sliders have, and Delete or Backspace resets the option in the yellow keyboard frame. **Reset Boss Options** at
+  the top of the Boss section puts every boss option back to its default after asking, and leaves the Challenge Editor
+  rules alone. Ctrl+Z undoes the last change (up to 20 steps; a slider drag is one step) and Ctrl+Y or Ctrl+Shift+Z
+  redoes it, Cmd on a Mac: a boss option, a Challenge Editor rule (map, difficulty, cash, lives, towers, modifiers,
+  ...; a visit to one of the editor's panels is one step), or a pasted, loaded or random setup, a reset or the
+  editor's own Undo as one step each, so an accidental Paste can be undone. The challenge name isn't undone. Not while
+  a text field, a popup or one of the editor's panels has the keyboard.
+
 ## [2.8.0] - 2026-11-01
 
 ### Added

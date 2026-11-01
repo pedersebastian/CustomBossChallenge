@@ -107,7 +107,16 @@ public class KeyboardTest : CustomBossTest
         clipboard = "untouched";
         AssertEquals(BossCreatorKeys.Handle(Ctrl(ShortcutKey.C)), KeyAction.None, "Ctrl+C in a text field");
         AssertEquals(clipboard, "untouched", "Ctrl+C in a text field must not copy a share code");
+        var unchanged = BossMode.Options;
+        section.Tiers.Step(section.Tiers.Value < section.Tiers.Slider.maxValue ? 1 : -1);
+        var changed = BossMode.Options;
+        AssertEquals(BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z)), KeyAction.None, "Ctrl+Z in a text field");
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Delete)), KeyAction.None, "Delete in a text field");
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Backspace)), KeyAction.None, "Backspace in a text field");
+        AssertEquals(BossMode.Options, changed, "Ctrl+Z and Delete in a text field must leave the boss options alone");
         yield return Unfocus();
+        AssertEquals(BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z)), KeyAction.Undo, "Ctrl+Z outside a text field");
+        AssertEquals(BossMode.Options, unchanged, "Ctrl+Z outside a text field undoes");
 
         yield return Leave();
     }
@@ -138,9 +147,11 @@ public class KeyboardTest : CustomBossTest
         AssertEquals(rounds.onValidateInput.Invoke(rounds.text, 0, '\t'), '\0', "Tab character");
         AssertEquals(rounds.onValidateInput.Invoke(rounds.text, 0, '7'), '7', "Other characters");
 
-        // Tab goes from the skull mode on to the skull field, which takes the keyboard
+        // Tab goes from the skull mode, past its reset button, on to the skull field, which takes the keyboard
         yield return TabTo("SkullMode");
         AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab)), KeyAction.NextField, "Tab after the skull mode");
+        AssertEquals(BossCreatorKeys.Current?.Name, "ResetSkulls", "Tab after the skull mode");
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab)), KeyAction.NextField, "Tab after the skulls' reset");
         yield return WaitFor(() => skulls.isFocused, "Tab focusing the skull field");
 
         // Enter applies the value and moves on to the next control
@@ -166,11 +177,13 @@ public class KeyboardTest : CustomBossTest
         var section = BossEditorSection.Current!;
         yield return Unfocus();
 
-        // Tab starts at the first boss, Shift+Tab at Play
+        // Tab starts at Reset Boss Options on the section's title line, then the first boss; Shift+Tab starts at Play
         var bosses = Enum.GetValues<BossType>();
-        var first = $"Boss{bosses[0]}";
+        const string first = "ResetBossOptions";
         AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab)), KeyAction.NextField, "Tab without a control");
         AssertEquals(BossCreatorKeys.Current?.Name, first, "First control");
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
+        AssertEquals(BossCreatorKeys.Current?.Name, $"Boss{bosses[0]}", "Tab after Reset Boss Options");
         var frame = AssertNotNull(FocusFrame.Current, "No keyboard frame")!;
         AssertEquals(frame.transform.parent.gameObject.name, section.BossButtons[bosses[0]].gameObject.name,
             "The frame must be around the first boss");
@@ -198,9 +211,18 @@ public class KeyboardTest : CustomBossTest
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Enter));
         AssertEquals(BossMode.Options.Elite, elite, "Enter must toggle Elite back");
 
+        // Delete puts the boss with the frame back to the default, Elite included
+        section.Elite.SetChecked(true, true);
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Delete)), KeyAction.ResetOption, "Delete on Elite");
+        AssertEquals((BossMode.Options.Boss, BossMode.Options.Elite), (new BossOptions().Boss, false), "Delete resets the boss");
+        AssertEquals(BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z)), KeyAction.Undo, "Ctrl+Z after Delete");
+        Assert(BossMode.Options.Elite, "Ctrl+Z undoes the reset");
+
         // The arrows move a slider by its step, Up and Down move between controls
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
-        AssertEquals(BossCreatorKeys.Current?.Name, "BossSpeed", "Tab after Elite");
+        AssertEquals(BossCreatorKeys.Current?.Name, "ResetBoss", "Tab after Elite");
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
+        AssertEquals(BossCreatorKeys.Current?.Name, "BossSpeed", "Tab after the boss's reset");
 
         // The frame goes around everything the row shows, its info button too
         yield return null;
@@ -216,7 +238,9 @@ public class KeyboardTest : CustomBossTest
         section.Editor.ApplyUiSettingsToDCM();
         Assert(Math.Abs(section.Editor.dcm.bloonModifiers.bossSpeedMultiplier - changed / 100f) < 0.0001f,
             "Boss Speed in the challenge");
-        section.BossSpeed.Step(speed > changed ? 1 : -1);
+        // Backspace puts the slider back to its default, like its reset button
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Backspace)), KeyAction.ResetOption, "Backspace on Boss Speed");
+        AssertEquals(section.BossSpeed.Value, section.BossSpeed.Default, "Backspace resets Boss Speed");
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Down));
         AssertEquals(BossCreatorKeys.Current?.Name, "BossHealth", "Down after Boss Speed");
 
@@ -243,6 +267,8 @@ public class KeyboardTest : CustomBossTest
         Assert(BossMode.Options.SkullMode != mode, "An arrow must change the skull mode");
         AssertEquals(section.FocusStops.Any(stop => stop.Name == "SkullCount"),
             BossMode.Options.SkullMode == SkullMode.EvenlySpaced, "Skull Count is a control only while it is shown");
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Delete)), KeyAction.ResetOption, "Delete on the skull mode");
+        AssertEquals(BossMode.Options.SkullMode, new BossOptions().SkullMode, "Delete resets the skulls");
         section.SkullMode.Dropdown.value = (int) mode;
         yield return null;
 

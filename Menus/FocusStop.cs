@@ -23,6 +23,11 @@ public sealed class FocusStop
     public Action? Activate { get; init; }
 
     /// <summary>
+    /// Puts the option back to its default (Delete or Backspace)
+    /// </summary>
+    public Action? Reset { get; set; }
+
+    /// <summary>
     /// Whether the stop can be used, e.g. Load without saved setups can't
     /// </summary>
     public Func<bool> Enabled { get; init; } = () => true;
@@ -43,7 +48,7 @@ public sealed class FocusStop
     }
 
     public static FocusStop ForSlider(string name, SliderRow row) =>
-        new(name, () => row.Row) {Step = row.Step};
+        new(name, () => row.Row) {Step = row.Step, Reset = row.Reset};
 
     public static FocusStop ForButton(string name, Button button) =>
         new(name, () => button.gameObject)

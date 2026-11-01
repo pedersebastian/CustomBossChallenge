@@ -63,6 +63,10 @@ public static class BossCreatorKeys
         }
 
         FocusFrame.Fit();
+
+        // A change to the editor's own rules becomes an Undo step once nothing has the keyboard any more
+        if (focused == null && !BlockingUiOpen(section)) BossHistory.WatchRules(section.Editor);
+
         var press = ReadKeys();
 
         // Enter in a text field already moved on to the next control; it must not press that one too
@@ -112,6 +116,15 @@ public static class BossCreatorKeys
                 break;
             case KeyAction.Activate:
                 stop!.Activate?.Invoke();
+                break;
+            case KeyAction.Undo:
+                BossHistory.Undo(section!.Editor);
+                break;
+            case KeyAction.Redo:
+                BossHistory.Redo(section!.Editor);
+                break;
+            case KeyAction.ResetOption:
+                stop!.Reset?.Invoke();
                 break;
         }
 
@@ -255,6 +268,10 @@ public static class BossCreatorKeys
             : Input.GetKeyDown(KeyCode.RightArrow) ? ShortcutKey.Right
             : Input.GetKeyDown(KeyCode.UpArrow) ? ShortcutKey.Up
             : Input.GetKeyDown(KeyCode.DownArrow) ? ShortcutKey.Down
+            : Input.GetKeyDown(KeyCode.Z) ? ShortcutKey.Z
+            : Input.GetKeyDown(KeyCode.Y) ? ShortcutKey.Y
+            : Input.GetKeyDown(KeyCode.Delete) ? ShortcutKey.Delete
+            : Input.GetKeyDown(KeyCode.Backspace) ? ShortcutKey.Backspace
             : ShortcutKey.Other;
         var ctrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) ||
                    Input.GetKey(KeyCode.LeftCommand) || Input.GetKey(KeyCode.RightCommand);

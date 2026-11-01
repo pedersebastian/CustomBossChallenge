@@ -15,7 +15,11 @@ public enum ShortcutKey
     Left,
     Right,
     Up,
-    Down
+    Down,
+    Z,
+    Y,
+    Delete,
+    Backspace
 }
 
 /// <summary>
@@ -32,7 +36,14 @@ public enum KeyAction
     PreviousField,
     Decrease,
     Increase,
-    Activate
+    Activate,
+    Undo,
+    Redo,
+
+    /// <summary>
+    /// The focused option back to its default
+    /// </summary>
+    ResetOption
 }
 
 /// <summary>
@@ -52,7 +63,8 @@ public readonly record struct KeyContext(bool BossCreatorOpen, bool FieldFocused
 /// <summary>
 /// Pure rules for the Boss Creator's keyboard. Shortcuts only work while no text field has the keyboard, so copy and
 /// paste in the fields stay normal. Tab moves through the Boss section's controls, and once one of them has the
-/// keyboard, the arrows change it or move on, and Enter or Space press it.
+/// keyboard, the arrows change it or move on, Enter or Space press it, and Delete or Backspace reset it. Ctrl+Z undoes
+/// a change to the boss options, and Ctrl+Y or Ctrl+Shift+Z redoes it.
 /// </summary>
 public static class KeyboardShortcuts
 {
@@ -70,13 +82,15 @@ public static class KeyboardShortcuts
 
         if (press.Ctrl)
         {
-            if (press.Shift) return KeyAction.None;
+            if (press.Shift) return press.Key == ShortcutKey.Z ? KeyAction.Redo : KeyAction.None;
             return press.Key switch
             {
                 ShortcutKey.C => KeyAction.Copy,
                 ShortcutKey.V => KeyAction.Paste,
                 ShortcutKey.S => KeyAction.Save,
                 ShortcutKey.Enter => KeyAction.Play,
+                ShortcutKey.Z => KeyAction.Undo,
+                ShortcutKey.Y => KeyAction.Redo,
                 _ => KeyAction.None
             };
         }
@@ -90,6 +104,7 @@ public static class KeyboardShortcuts
             ShortcutKey.Up => KeyAction.PreviousField,
             ShortcutKey.Down => KeyAction.NextField,
             ShortcutKey.Enter or ShortcutKey.Space => KeyAction.Activate,
+            ShortcutKey.Delete or ShortcutKey.Backspace when !press.Shift => KeyAction.ResetOption,
             _ => KeyAction.None
         };
     }

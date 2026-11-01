@@ -30,7 +30,11 @@ public static class BossMode
     /// </summary>
     public static BossOptions OpenedOptions { get; private set; } = new();
 
-    public static void OnEditorOpened() => OpenedOptions = Options;
+    public static void OnEditorOpened()
+    {
+        OpenedOptions = Options;
+        BossHistory.Clear();
+    }
 
     /// <summary>
     /// The challenge model being edited; the Challenge Editor works directly on this object
@@ -98,6 +102,7 @@ public static class BossMode
 
         Save();
         RestoreUserDraft();
+        BossHistory.Clear();
         Active = false;
     }
 
@@ -109,6 +114,8 @@ public static class BossMode
     {
         if (!Active) return;
 
+        // Paste, Load and Undo replace the whole setup in one step
+        BossHistory.RecordSetup(editor);
         Options = options;
         Dcm = dcm;
         editor.dcm = dcm;
