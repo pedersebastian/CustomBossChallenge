@@ -143,7 +143,9 @@ export function verdict(a: Setup, b: Setup): string[] {
     if (health) lines.push(`${health} ${at} (A ${last.a.health}, B ${last.b.health}).`);
   }
 
-  const speed = compareValue(last.a.speed, last.b.speed, {
+  // The boss's real speed, not the one compared with the normal game: different bosses move at different speeds
+  if (last.a.speedValue === null || last.b.speedValue === null) return lines;
+  const speed = compareValue(last.a.speedValue, last.b.speedValue, {
     more: "'s boss is # % faster",
     less: "'s boss is # % slower",
     times: "'s boss is # times as fast",

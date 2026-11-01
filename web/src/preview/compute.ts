@@ -11,6 +11,8 @@ export interface TierCard {
   round: number;
   /** Speed compared with the normal game; above 1 is faster */
   speed: number;
+  /** How fast the boss really moves, so bosses can be compared with each other, or null for one the website doesn't know */
+  speedValue: number | null;
   /** Health compared with the normal game; above 1 is tougher */
   healthFactor: number;
   /** Health shortened like the game does, e.g. 1.2M, or "?" for a boss the website doesn't know */
@@ -39,10 +41,12 @@ export function tierCards(options: BossOptions, challenge: Challenge): TierCard[
       capped = model > cap;
       healthValue = Math.min(model, cap) * bossHealth;
     }
+    const speed = speedFactor(tier, options.SpeedPerTier) * bossSpeed;
     return {
       tier,
       round: rounds[i],
-      speed: speedFactor(tier, options.SpeedPerTier) * bossSpeed,
+      speed,
+      speedValue: source ? source.speed * speed : null,
       healthFactor: healthFactor(tier, options.HealthPerTier) * bossHealth,
       health: healthValue === null ? "?" : formatHealth(healthValue),
       healthValue,

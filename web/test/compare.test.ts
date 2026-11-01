@@ -106,6 +106,18 @@ describe("verdict", () => {
     // Tier 5 of B has 4 × 10 % more speed: 40 % faster
     expect(lines).toContain("B's boss is 40 % faster at tier 5.");
   });
+
+  it("compares how fast different bosses really move", async () => {
+    // Boss Speed ×3 on Bloonarius (1.25) against Lych (2.0) at normal speed: 3.75 against 2, not ×3 against ×1
+    const a = await setup(await encode({ o: { Boss: "Lych", Tiers: 1 } }));
+    const b = await setup(await encode({ o: { Boss: "Bloonarius", Tiers: 1 }, c: { bloonModifiers: { bossSpeedMultiplier: 3 } } }));
+    expect(verdict(a, b)).toContain("B's boss is 88 % faster at tier 1.");
+
+    // Same speed compared with the normal game, but Vortex is faster than Phayze
+    const vortex = await setup(await encode({ o: { Boss: "Vortex", Tiers: 1 } }));
+    const phayze = await setup(await encode({ o: { Boss: "Phayze", Tiers: 1 } }));
+    expect(verdict(vortex, phayze)).toContain("A's boss is 4.5 times as fast at tier 1.");
+  });
 });
 
 describe("comparison links", () => {
