@@ -101,5 +101,7 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun de Dreadbloon",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Os cinco níveis até a rodada 40: um novo Dreadbloon a cada cinco rodadas a partir da rodada 20.",
   "CustomBossChallenge-ExampleParagonBan": "Paragons proibidos",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos Elite em Infernal, Difícil, e nenhum paragon permitido."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos Elite em Infernal, Difícil, e nenhum paragon permitido.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Desafio dos Chefes",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Sete níveis, sete chefes: todos os chefes do jogo, um depois do outro."
 }

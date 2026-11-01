@@ -101,5 +101,7 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "ドレッドブルーンのスピードラン",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "ラウンド40までに全5ティア：ラウンド20から5ラウンドごとに新しいドレッドブルーン。",
   "CustomBossChallenge-ExampleParagonBan": "パラゴン禁止",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Infernal、難易度Hardでエリートブラスタポポラス。パラゴンは一切禁止です。"
+  "CustomBossChallenge-ExampleParagonBanInfo": "Infernal、難易度Hardでエリートブラスタポポラス。パラゴンは一切禁止です。",
+  "CustomBossChallenge-ExampleBossGauntlet": "ボス連戦",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "7段階、7体のボス：ゲームのすべてのボスが次々に登場します。"
 }

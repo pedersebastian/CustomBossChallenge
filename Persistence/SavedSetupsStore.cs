@@ -60,7 +60,7 @@ public sealed class SavedSetupsStore
     /// The name a setup is saved under: the challenge's name, cleaned like a shared one
     /// </summary>
     public static string NameOf(BossOptions options, DailyChallengeModel dcm) =>
-        ChallengeLimits.CleanName(dcm.name, BossMode.DefaultName(options.Boss, options.Elite));
+        ChallengeLimits.CleanName(dcm.name, BossMode.DefaultName(options));
 
     public bool Contains(string name) => Read().Any(entry => Same(entry.Name, name));
 

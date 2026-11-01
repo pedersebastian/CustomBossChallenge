@@ -38,6 +38,16 @@ public class CodeFormatTests
         Assert.Equal(CodeProblem.None, problem);
     }
 
+    [Theory]
+    [InlineData(CodeFormat.Prefix)]
+    [InlineData(CodeFormat.Version2Prefix)]
+    [InlineData(CodeFormat.Version3Prefix)]
+    public void Every_known_version_is_read(string prefix)
+    {
+        Assert.True(CodeFormat.TryUnpack(CodeFormat.Pack("{\"o\":{},\"c\":{}}", prefix), out _, out var problem, out _));
+        Assert.Equal(CodeProblem.None, problem);
+    }
+
     [Fact]
     public void A_link_to_a_newer_code_still_says_it_is_too_new()
     {

@@ -101,5 +101,7 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun-Dreadbloon",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Alle fünf Stufen bis Runde 40: ab Runde 20 alle fünf Runden ein neuer Dreadbloon.",
   "CustomBossChallenge-ExampleParagonBan": "Paragon-Verbot",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Elite-Blastapopoulos auf Infernal, Schwer, und kein einziger Paragon erlaubt."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Elite-Blastapopoulos auf Infernal, Schwer, und kein einziger Paragon erlaubt.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Boss-Spießrutenlauf",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Sieben Stufen, sieben Bosse: jeder Boss des Spiels, einer nach dem anderen."
 }

@@ -101,5 +101,7 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun Dreadbloon",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Les cinq paliers avant la manche 40 : un nouveau Dreadbloon toutes les cinq manches à partir de la manche 20.",
   "CustomBossChallenge-ExampleParagonBan": "Paragons interdits",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos Élite sur Infernal, en Difficile, et pas un seul paragon autorisé."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos Élite sur Infernal, en Difficile, et pas un seul paragon autorisé.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Le défilé des boss",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Sept niveaux, sept boss : tous les boss du jeu, l'un après l'autre."
 }

@@ -101,5 +101,7 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun Dreadbloona",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Wszystkie pięć poziomów do rundy 40: nowy Dreadbloon co pięć rund od rundy 20.",
   "CustomBossChallenge-ExampleParagonBan": "Zakaz paragonów",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Elitarny Blastapopoulos na Infernal, Trudny, i ani jednego paragona."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Elitarny Blastapopoulos na Infernal, Trudny, i ani jednego paragona.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Maraton bossów",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Siedem poziomów, siedmiu bossów: każdy boss z gry, jeden po drugim."
 }

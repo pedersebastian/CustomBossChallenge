@@ -60,6 +60,22 @@ let customSkulls: Gen<string> =
         return SkullMath.NormalizeCustom(String.concat ", " typed, "75, 50, 25")
     }
 
+/// A boss per tier, or None for a single boss: bosses, Random and tiers that follow the setup's boss, Elite or not
+let tierBosses: Gen<string option> =
+    let token =
+        gen {
+            let! boss = Gen.frequency [ 1, Gen.constant None; 4, Gen.elements TierBossMath.Choices |> Gen.map Some ]
+            let! elite = Gen.elements [ false; true ]
+            return TierBoss(Option.toObj boss, elite)
+        }
+    Gen.frequency
+        [ 3, Gen.constant None
+          1, gen {
+                 let! count = Gen.choose (0, TierMath.MaxTiers)
+                 let! tokens = Gen.listOfLength count token
+                 return Some(TierBossMath.Format tokens)
+             } ]
+
 let options: Gen<JObject> =
     gen {
         let! boss = Gen.elements Game.bosses
@@ -71,7 +87,8 @@ let options: Gen<JObject> =
         let! speed = Gen.frequency [ 2, Gen.constant 0; 1, Gen.choose (TierMath.MinSpeedPerTier, TierMath.MaxSpeedPerTier) ]
         let! health = Gen.frequency [ 2, Gen.constant 0; 1, Gen.choose (TierMath.MinHealthPerTier, TierMath.MaxHealthPerTier) ]
         let! rounds = spawnRounds
-        return
+        let! perTier = tierBosses
+        let json =
             JObject(
                 JProperty("Boss", boss),
                 JProperty("Elite", elite),
@@ -83,6 +100,8 @@ let options: Gen<JObject> =
                 JProperty("HealthPerTier", health),
                 JProperty("SpawnRounds", rounds)
             )
+        perTier |> Option.iter (fun list -> json["TierBosses"] <- JValue list)
+        return json
     }
 
 // ---- The challenge ----
@@ -176,7 +195,8 @@ let setups = Arb.fromGenShrink (setup, shrink)
 // ---- Encoding and reading, like SetupCode without the game ----
 
 let prefix (options: JObject) =
-    if options.Value<int>("SpeedPerTier") <> 0 || options.Value<int>("HealthPerTier") <> 0
+    if not (isNull options["TierBosses"]) && options["TierBosses"].Type <> JTokenType.Null then CodeFormat.Version3Prefix
+    elif options.Value<int>("SpeedPerTier") <> 0 || options.Value<int>("HealthPerTier") <> 0
     then CodeFormat.Version2Prefix
     else CodeFormat.Prefix
 
@@ -214,7 +234,7 @@ let junk: Gen<string> =
               return $"CBC{digit}{rest}"
           }
           gen {
-              let! version = Gen.elements [ CodeFormat.Prefix; CodeFormat.Version2Prefix ]
+              let! version = Gen.elements (List.ofArray CodeFormat.KnownPrefixes)
               let! body = Gen.arrayOf base64Url
               return version + System.String body
           }

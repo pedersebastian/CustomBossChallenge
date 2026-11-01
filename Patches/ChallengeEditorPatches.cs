@@ -92,7 +92,7 @@ internal static class ChallengeEditor_Randomize
         // A random setup is no longer the example it may have started from
         if (ExampleSetups.Named(__instance.dcm.name) != null)
         {
-            __instance.dcm.name = BossMode.DefaultName(BossMode.Options.Boss, BossMode.Options.Elite);
+            __instance.dcm.name = BossMode.DefaultName(BossMode.Options);
             if (__instance.chalName != null) __instance.chalName.text = __instance.dcm.name;
         }
 
@@ -193,7 +193,7 @@ internal static class MapSelectPanel_Open
     {
         if (!BossMode.Active || __instance.GetComponentInParent<ChallengeEditor>() == null) return;
 
-        bossType = BossMode.Options.Boss;
+        bossType = BossMode.Options.BossOf(1).Boss;
         showBossVisuals = true;
     }
 }

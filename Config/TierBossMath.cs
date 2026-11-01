@@ -1,0 +1,138 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace CustomBossChallenge.Config;
+
+/// <summary>
+/// The boss of one tier in a setup with a different boss per tier
+/// </summary>
+/// <param name="Boss">A boss name from <see cref="TierBossMath.Bosses"/>, <see cref="TierBossMath.Random"/>, or null
+/// when the tier follows the setup's own boss and Elite</param>
+/// <param name="Elite">Whether the tier is Elite; ignored when the tier follows the setup's boss</param>
+public readonly record struct TierBoss(string? Boss, bool Elite)
+{
+    public static readonly TierBoss Follows = new(null, false);
+
+    public bool FollowsSetup => Boss == null;
+    public bool IsRandom => Boss == TierBossMath.Random;
+
+    /// <summary>
+    /// The token this tier has in <see cref="BossOptions.TierBosses"/>: "", "Lych", "LychElite", "RandomElite", ...
+    /// </summary>
+    public override string ToString() => Boss == null ? "" : Boss + (Elite ? TierBossMath.EliteSuffix : "");
+}
+
+/// <summary>
+/// Pure helpers for the boss of each tier (<see cref="BossOptions.TierBosses"/>): a comma separated list with a token
+/// per tier, like "Lych,,RandomElite,VortexElite". An empty token follows the setup's own boss and Elite. Kept free of
+/// the game's types, so the unit and property tests can run it; BossNamesTest checks <see cref="Bosses"/> against
+/// the game's BossType.
+/// </summary>
+public static class TierBossMath
+{
+    public const string Random = "Random";
+    public const string EliteSuffix = "Elite";
+
+    /// <summary>
+    /// The bosses in the order the Boss Creator shows them, which is the order of the game's BossType
+    /// </summary>
+    public static readonly string[] Bosses =
+        ["Bloonarius", "Lych", "Vortex", "Dreadbloon", "Phayze", "Blastapopoulos", "Diamondback"];
+
+    /// <summary>
+    /// What a tier can be stepped through: every boss, then Random
+    /// </summary>
+    public static readonly string[] Choices = [..Bosses, Random];
+
+    /// <summary>
+    /// The tiers' bosses in <paramref name="list"/>, at most <see cref="TierMath.MaxTiers"/>. Unknown tokens follow
+    /// the setup's boss. Case doesn't matter.
+    /// </summary>
+    public static TierBoss[] Parse(string? list)
+    {
+        if (string.IsNullOrWhiteSpace(list)) return [];
+        return list.Split(',').Take(TierMath.MaxTiers).Select(ParseToken).ToArray();
+    }
+
+    private static TierBoss ParseToken(string token)
+    {
+        token = token.Trim();
+        var elite = token.EndsWith(EliteSuffix, StringComparison.OrdinalIgnoreCase);
+        var name = elite ? token[..^EliteSuffix.Length] : token;
+        var known = Choices.FirstOrDefault(choice => string.Equals(choice, name, StringComparison.OrdinalIgnoreCase));
+        return known == null ? TierBoss.Follows : new TierBoss(known, elite);
+    }
+
+    /// <summary>
+    /// The list for <paramref name="tiers"/>, without the tiers at the end that follow the setup's boss
+    /// </summary>
+    public static string Format(IEnumerable<TierBoss> tiers)
+    {
+        var tokens = tiers.Take(TierMath.MaxTiers).Select(tier => tier.ToString()).ToList();
+        while (tokens.Count > 0 && tokens[^1] == "") tokens.RemoveAt(tokens.Count - 1);
+        return string.Join(",", tokens);
+    }
+
+    /// <summary>
+    /// The list in its canonical form. Null (a single boss for every tier) stays null.
+    /// </summary>
+    public static string? Normalize(string? list) => list == null ? null : Format(Parse(list));
+
+    /// <summary>
+    /// The boss of a 1-based tier in <paramref name="list"/>
+    /// </summary>
+    public static TierBoss Entry(string? list, int tier)
+    {
+        var tiers = Parse(list);
+        return tier >= 1 && tier <= tiers.Length ? tiers[tier - 1] : TierBoss.Follows;
+    }
+
+    /// <summary>
+    /// <paramref name="list"/> with the boss of a 1-based tier replaced
+    /// </summary>
+    public static string With(string? list, int tier, TierBoss boss)
+    {
+        if (tier < 1 || tier > TierMath.MaxTiers) return Normalize(list) ?? "";
+        var tiers = Parse(list).ToList();
+        while (tiers.Count < tier) tiers.Add(TierBoss.Follows);
+        tiers[tier - 1] = boss;
+        return Format(tiers);
+    }
+
+    /// <summary>
+    /// The next (<paramref name="direction"/> 1) or previous (-1) of <see cref="Choices"/>, wrapping around. A tier
+    /// that follows the setup's boss steps from that boss, and keeps the setup's Elite.
+    /// </summary>
+    public static TierBoss Step(TierBoss current, string setupBoss, bool setupElite, int direction)
+    {
+        var from = current.Boss ?? setupBoss;
+        var index = Array.IndexOf(Choices, from);
+        if (index < 0) index = 0;
+        var next = ((index + Math.Sign(direction)) % Choices.Length + Choices.Length) % Choices.Length;
+        return new TierBoss(Choices[next], current.FollowsSetup ? setupElite : current.Elite);
+    }
+
+    /// <summary>
+    /// The concrete boss of every tier from 1 to <paramref name="tiers"/>: tiers that follow the setup get its boss and
+    /// Elite, and Random tiers get a boss picked with <paramref name="pick"/> (given the number of bosses, it returns
+    /// an index), keeping their own Elite
+    /// </summary>
+    public static string Resolve(string? list, string setupBoss, bool setupElite, int tiers, Func<int, int> pick)
+    {
+        var parsed = Parse(list);
+        var resolved = Enumerable.Range(1, TierMath.ClampTiers(tiers)).Select(tier =>
+        {
+            var entry = tier <= parsed.Length ? parsed[tier - 1] : TierBoss.Follows;
+            if (entry.FollowsSetup) return new TierBoss(setupBoss, setupElite);
+            if (!entry.IsRandom) return entry;
+            return new TierBoss(Bosses[Math.Clamp(pick(Bosses.Length), 0, Bosses.Length - 1)], entry.Elite);
+        });
+        return string.Join(",", resolved.Select(tier => tier.ToString()));
+    }
+
+    /// <summary>
+    /// Whether any of the first <paramref name="tiers"/> tiers is Random
+    /// </summary>
+    public static bool HasRandom(string? list, int tiers) => Parse(list).Take(tiers).Any(tier => tier.IsRandom);
+}

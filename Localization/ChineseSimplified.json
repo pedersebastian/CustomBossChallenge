@@ -101,5 +101,7 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "恐怖气球速通",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "第 40 回合前打完全部五个阶段：从第 20 回合起每五回合出现一个新的恐怖气球。",
   "CustomBossChallenge-ExampleParagonBan": "禁用模范",
-  "CustomBossChallenge-ExampleParagonBanInfo": "在 Infernal 地图、困难难度下的精英布拉斯塔波普勒斯，不允许任何模范。"
+  "CustomBossChallenge-ExampleParagonBanInfo": "在 Infernal 地图、困难难度下的精英布拉斯塔波普勒斯，不允许任何模范。",
+  "CustomBossChallenge-ExampleBossGauntlet": "首领车轮战",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "七个等级，七个首领：游戏中的每个首领依次登场。"
 }

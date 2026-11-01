@@ -219,7 +219,7 @@ public class ContinueStoreTest : ContinueTestBase
                  {
                      ("broken JSON", "{ not json"),
                      ("empty file", ""),
-                     ("newer version", file.Replace($"\"Version\": {ContinueStore.Version}", "\"Version\": 99")),
+                     ("newer version", file.Replace($"\"Version\": {ContinueStore.VersionFor(options)}", "\"Version\": 99")),
                      ("no snapshots", file[..file.IndexOf("\"Snapshots\"", StringComparison.Ordinal)] + "\"Snapshots\": []}"),
                      ("no challenge", file.Replace("\"Challenge\":", "\"Ignored\":")),
                      ("unusable map save", JsonConvert.SerializeObject(new

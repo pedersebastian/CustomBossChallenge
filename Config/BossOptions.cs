@@ -54,6 +54,17 @@ public sealed record BossOptions
     public string? SpawnRounds { get; init; }
 
     /// <summary>
+    /// The boss of each tier when "Different boss per tier" is on, or null when every tier has <see cref="Boss"/>.
+    /// A comma separated token per tier, like "Lych,,RandomElite"; see <see cref="TierBossMath"/>.
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string? TierBosses { get; init; }
+
+    /// <summary>Whether the tiers can have different bosses</summary>
+    [JsonIgnore]
+    public bool Mixed => TierBosses != null;
+
+    /// <summary>
     /// The skull thresholds (0-1, descending) these options ask for, or null to keep the vanilla skulls
     /// </summary>
     [JsonIgnore]
@@ -93,12 +104,54 @@ public sealed record BossOptions
             HealthPerTier = TierMath.ClampHealthPerTier(ExtraTierHealth is { } legacy && HealthPerTier == 0
                 ? TierMath.HealthPerTierFromExtraTierHealth(legacy)
                 : HealthPerTier),
-            ExtraTierHealth = null
+            ExtraTierHealth = null,
+            TierBosses = TierBossMath.Normalize(TierBosses)
         };
     }
 
     /// <summary>
-    /// The bloon id of this boss at the given tier, e.g. "VortexElite3"
+    /// What the given tier was set to: the setup's boss, a boss of its own, or Random
     /// </summary>
-    public string BossId(int tier) => $"{Boss}{(Elite ? "Elite" : "")}{tier}";
+    public TierBoss EntryOf(int tier) => Mixed ? TierBossMath.Entry(TierBosses, tier) : TierBoss.Follows;
+
+    /// <summary>
+    /// The boss and Elite of the given tier. A Random tier has the setup's boss here; games always start with
+    /// <see cref="ResolveRandom"/>'s options, which have no Random tiers left.
+    /// </summary>
+    public (BossType Boss, bool Elite) BossOf(int tier)
+    {
+        var entry = EntryOf(tier);
+        if (entry.FollowsSetup || entry.IsRandom || !System.Enum.TryParse<BossType>(entry.Boss, out var boss))
+        {
+            return (Boss, Elite);
+        }
+
+        return (boss, entry.Elite);
+    }
+
+    /// <summary>Whether a tier will get a random boss when the game starts</summary>
+    [JsonIgnore]
+    public bool HasRandom => Mixed && TierBossMath.HasRandom(TierBosses, Tiers);
+
+    /// <summary>
+    /// These options with a concrete boss for every tier: Random tiers get a boss picked by <paramref name="random"/>.
+    /// Options without different bosses per tier come back as they are.
+    /// </summary>
+    public BossOptions ResolveRandom(System.Random random) => Mixed
+        ? this with {TierBosses = TierBossMath.Resolve(TierBosses, Boss.ToString(), Elite, Tiers, random.Next)}
+        : this;
+
+    /// <summary>
+    /// The bloon id of the boss at the given tier, e.g. "VortexElite3"
+    /// </summary>
+    public string BossId(int tier)
+    {
+        var (boss, elite) = BossOf(tier);
+        return BossIdOf(boss, elite, tier);
+    }
+
+    /// <summary>
+    /// The bloon id of a boss at the given tier, e.g. "VortexElite3"
+    /// </summary>
+    public static string BossIdOf(BossType boss, bool elite, int tier) => $"{boss}{(elite ? "Elite" : "")}{tier}";
 }

@@ -101,5 +101,7 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "سباق Dreadbloon السريع",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "المستويات الخمسة كلها بحلول الجولة 40: Dreadbloon جديد كل خمس جولات بدءًا من الجولة 20.",
   "CustomBossChallenge-ExampleParagonBan": "حظر البراغون",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos النخبة على خريطة Infernal بصعوبة Hard، ولا يُسمح بأي براغون."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos النخبة على خريطة Infernal بصعوبة Hard، ولا يُسمح بأي براغون.",
+  "CustomBossChallenge-ExampleBossGauntlet": "تحدي الزعماء",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "سبعة مستويات وسبعة زعماء: كل زعيم في اللعبة، واحدًا تلو الآخر."
 }

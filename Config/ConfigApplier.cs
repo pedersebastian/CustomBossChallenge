@@ -49,7 +49,7 @@ public static class ConfigApplier
 
         if (!IsMarked(dcm))
         {
-            var name = string.IsNullOrWhiteSpace(dcm.name) ? Creator.BossMode.DefaultName(options.Boss, options.Elite) : dcm.name;
+            var name = string.IsNullOrWhiteSpace(dcm.name) ? Creator.BossMode.DefaultName(options) : dcm.name;
             dcm.name = name + Marker;
         }
 

@@ -101,5 +101,7 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun Dreadbloon",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Beş kademenin hepsi 40. tura kadar: 20. turdan itibaren her beş turda yeni bir Dreadbloon.",
   "CustomBossChallenge-ExampleParagonBan": "Paragon Yasağı",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Infernal haritasında, Zor zorlukta Elit Blastapopoulos ve tek bir paragona bile izin yok."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Infernal haritasında, Zor zorlukta Elit Blastapopoulos ve tek bir paragona bile izin yok.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Boss Maratonu",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Yedi seviye, yedi boss: oyundaki her boss, birbiri ardına."
 }

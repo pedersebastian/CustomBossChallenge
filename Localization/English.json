@@ -101,5 +101,7 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun Dreadbloon",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "All five tiers by round 40: a new Dreadbloon every five rounds from round 20.",
   "CustomBossChallenge-ExampleParagonBan": "Paragon Ban",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos on Infernal, Hard, and not a single paragon allowed."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos on Infernal, Hard, and not a single paragon allowed.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Boss Gauntlet",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Seven tiers, seven bosses: every boss in the game, one after the other."
 }

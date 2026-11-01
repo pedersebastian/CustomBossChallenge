@@ -101,5 +101,7 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "드레드블룬 스피드런",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "40라운드까지 다섯 단계 모두: 20라운드부터 다섯 라운드마다 새 드레드블룬.",
   "CustomBossChallenge-ExampleParagonBan": "패러곤 금지",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Infernal 맵, Hard 난이도의 엘리트 블라스타포풀로스, 패러곤은 하나도 허용되지 않습니다."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Infernal 맵, Hard 난이도의 엘리트 블라스타포풀로스, 패러곤은 하나도 허용되지 않습니다.",
+  "CustomBossChallenge-ExampleBossGauntlet": "보스 연전",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "7단계, 7명의 보스: 게임의 모든 보스가 차례로 등장합니다."
 }

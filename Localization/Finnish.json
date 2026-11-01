@@ -101,5 +101,7 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun-Dreadbloon",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Kaikki viisi tasoa kierrokseen 40 mennessä: uusi Dreadbloon joka viides kierros kierroksesta 20 alkaen.",
   "CustomBossChallenge-ExampleParagonBan": "Paragonikielto",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos kartalla Infernal, Hard, eikä yhtäkään paragonia sallita."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos kartalla Infernal, Hard, eikä yhtäkään paragonia sallita.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Pomojen kujanjuoksu",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Seitsemän tasoa, seitsemän pomoa: pelin jokainen pomo, yksi toisensa jälkeen."
 }
