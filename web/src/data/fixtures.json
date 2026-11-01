@@ -201,6 +201,113 @@
       "playProblem": null
     },
     {
+      "code": "CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg2iiTKoSreNzfjS3LhD46ZyU_d4WOm7ctoI2mhVVapURTHQIskP5F7Q0Nw_SLRwj15tE83qqlELoCgzB7McB4urf0A",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 7,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "TierBosses": "Bloonarius,Lych,Vortex,Dreadbloon,Phayze,Blastapopoulos,Diamondback"
+      },
+      "challenge": {
+        "name": "Boss Gauntlet",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "towers": {}
+      },
+      "spawnRounds": [
+        40,
+        60,
+        80,
+        100,
+        120,
+        140,
+        160
+      ],
+      "endRound": 180,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "20k",
+          "capped": false
+        },
+        {
+          "round": 60,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "53k",
+          "capped": false
+        },
+        {
+          "round": 80,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "294k",
+          "capped": false
+        },
+        {
+          "round": 100,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "260k",
+          "capped": false
+        },
+        {
+          "round": 120,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "1.5M",
+          "capped": false
+        },
+        {
+          "round": 140,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "4.5M",
+          "capped": false
+        },
+        {
+          "round": 160,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "8.6M",
+          "capped": false
+        }
+      ],
+      "skulls": [
+        "75%",
+        "50%",
+        "25%"
+      ],
+      "playProblem": null
+    },
+    {
       "code": "CBC2:q1bKV7KqVnLKLy5WslLyqUzOUNJRcs3JLElVsiopKk3VUQrJTC0Cyhka6Ch5pCbmlGQEpBaBxJSsjA1qdZSSQdrzEnOB6pV8E4sSSzLy8xSg5hSnpqYoWRkZGJnV1gIA",
       "options": {
         "Boss": "Lych",
@@ -747,113 +854,6 @@
         "37.5%",
         "25%",
         "12.5%"
-      ],
-      "playProblem": null
-    },
-    {
-      "code": "CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg2iiTKoSreNzfjS3LhD46ZyU_d4WOm7ctoI2mhVVapURTHQIskP5F7Q0Nw_SLRwj15tE83qqlELoCgzB7McB4urf0A",
-      "options": {
-        "Boss": "Bloonarius",
-        "Elite": false,
-        "SkullMode": "Vanilla",
-        "SkullCount": 3,
-        "CustomSkulls": "75, 50, 25",
-        "Tiers": 7,
-        "SpeedPerTier": 0,
-        "HealthPerTier": 0,
-        "SpawnRounds": null,
-        "TierBosses": "Bloonarius,Lych,Vortex,Dreadbloon,Phayze,Blastapopoulos,Diamondback"
-      },
-      "challenge": {
-        "name": "Boss Gauntlet",
-        "map": "Tutorial",
-        "difficulty": "Medium",
-        "mode": "Standard",
-        "cash": -1,
-        "lives": -1,
-        "maxLives": -1,
-        "round": -1,
-        "bossSpeed": 1.0,
-        "bossHealth": 1.0,
-        "bloonSpeed": 1.0,
-        "moabSpeed": 1.0,
-        "bloonHealth": 1.0,
-        "moabHealth": 1.0,
-        "allCamo": false,
-        "allRegen": false,
-        "allFortified": false,
-        "maxParagons": -1,
-        "maxTowers": -1,
-        "disableMK": false,
-        "disableSelling": false,
-        "disablePowers": false,
-        "towers": {}
-      },
-      "spawnRounds": [
-        40,
-        60,
-        80,
-        100,
-        120,
-        140,
-        160
-      ],
-      "endRound": 180,
-      "tiers": [
-        {
-          "round": 40,
-          "speed": 1.0,
-          "healthFactor": 1.0,
-          "health": "20k",
-          "capped": false
-        },
-        {
-          "round": 60,
-          "speed": 1.0,
-          "healthFactor": 1.0,
-          "health": "53k",
-          "capped": false
-        },
-        {
-          "round": 80,
-          "speed": 1.0,
-          "healthFactor": 1.0,
-          "health": "294k",
-          "capped": false
-        },
-        {
-          "round": 100,
-          "speed": 1.0,
-          "healthFactor": 1.0,
-          "health": "260k",
-          "capped": false
-        },
-        {
-          "round": 120,
-          "speed": 1.0,
-          "healthFactor": 1.0,
-          "health": "1.5M",
-          "capped": false
-        },
-        {
-          "round": 140,
-          "speed": 1.0,
-          "healthFactor": 1.0,
-          "health": "4.5M",
-          "capped": false
-        },
-        {
-          "round": 160,
-          "speed": 1.0,
-          "healthFactor": 1.0,
-          "health": "8.6M",
-          "capped": false
-        }
-      ],
-      "skulls": [
-        "75%",
-        "50%",
-        "25%"
       ],
       "playProblem": null
     },

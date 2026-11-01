@@ -73,6 +73,18 @@ public class MixedBossCodeTest : CustomBossTest
 
         Assert(SetupCode.Encode(options with {TierBosses = null}, dcm).StartsWith(SetupCode.Version2Prefix),
             "Without bosses per tier the code stays version 2");
+
+        // A game with bosses per tier is continued with the same bosses, from a file older versions leave alone
+        var store = new ContinueStore(System.IO.Path.Combine(TempFolder, "Mixed", "Continue.json"));
+        var resolved = options.ResolveRandom(new System.Random(7));
+        store.Save(resolved, dcm, new[] {new RoundSnapshot(35, 1, "not json")});
+        Assert(System.IO.File.ReadAllText(store.FilePath).Contains($"\"Version\": {ContinueStore.Version}"),
+            "A game with bosses per tier is saved as version 2");
+        var load = store.Load();
+        AssertEquals(load.Lost?.Options ?? load.Game?.Options, resolved, "Bosses per tier after reading the file back");
+        store.Save(options with {TierBosses = null}, dcm, Array.Empty<RoundSnapshot>());
+        Assert(System.IO.File.ReadAllText(store.FilePath).Contains($"\"Version\": {ContinueStore.SingleBossVersion}"),
+            "A game with one boss stays version 1, which older versions can continue");
         yield break;
     }
 }
