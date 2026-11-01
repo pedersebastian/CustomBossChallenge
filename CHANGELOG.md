@@ -43,6 +43,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The website is easier to read:** darker blue panels so all text on them meets WCAG AA contrast, a full outline
+  around the button text, white underlined links on the panels, and screen readers hear one short line when a code is
+  read instead of the whole setup.
 - With no saved setups, the Saved Setups list starts on the first example instead of saying "No saved setups".
 
 ### Fixed

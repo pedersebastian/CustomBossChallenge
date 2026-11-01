@@ -89,6 +89,9 @@ function renderComparison(a: Setup, b: Setup, codes: { a: string; b: string }): 
 export function setUpCompare(inputA: HTMLTextAreaElement, inputB: HTMLTextAreaElement, result: HTMLElement, swap: HTMLButtonElement): (a: string, b: string) => void {
   let latest = 0;
   let typing: number | undefined;
+  // What screen readers hear when the result changes: one line, not the whole comparison
+  const status = h("p", { class: "sr-only", role: "status" });
+  result.before(status);
 
   const replace = (...nodes: Node[]): void => {
     releaseSetup(result);
@@ -109,9 +112,19 @@ export function setUpCompare(inputA: HTMLTextAreaElement, inputB: HTMLTextAreaEl
     const problems = ([["A", a], ["B", b]] as const).flatMap(([label, decoded]) =>
       decoded && !decoded.ok ? [h("p", { class: decoded.problem === "TooNew" ? "warning" : "error" }, `${label}: ${decoded.reason}`)] : [],
     );
-    if (problems.length) return replace(...problems);
-    if (!a?.ok || !b?.ok) return replace(...(a || b ? [h("p", { class: "muted" }, `Paste a code for ${a ? "B" : "A"} as well to compare the two.`)] : []));
+    if (problems.length) {
+      status.textContent = problems.map((problem) => problem.textContent).join(" ");
+      return replace(...problems);
+    }
+    if (!a?.ok || !b?.ok) {
+      const hint = a || b ? `Paste a code for ${a ? "B" : "A"} as well to compare the two.` : "";
+      status.textContent = hint;
+      return replace(...(hint ? [h("p", { class: "muted" }, hint)] : []));
+    }
 
+    const changed = compareRows(a, b).filter((row) => !row.same).length;
+    status.textContent =
+      changed === 0 ? "No differences: the two setups are the same." : `${changed} ${changed === 1 ? "difference" : "differences"} between A and B.`;
     replace(...renderComparison(a, b, codes));
   }
 

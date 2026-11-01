@@ -1,11 +1,12 @@
 :root {
-  /* A dark sea behind bright panels, so the boxes stand out like the game's menus */
+  /* A dark sea behind bright panels, so the boxes stand out like the game's menus. The panels are as light as they can
+     be with white text (and --muted) still readable on them: at least 4.5:1, WCAG AA. */
   --sky: #06152b;
   --sea: #0c2a52;
   --sea-end: #12396b;
-  --panel: #4a8ee6;
-  --panel-edge: #1d4f94;
-  --panel-inner: #3170c4;
+  --panel: #1c6ace;
+  --panel-edge: #12407d;
+  --panel-inner: #255493;
   --card: #1a3a68;
   --text: #ffffff;
   --muted: #eaf3ff;
@@ -230,6 +231,18 @@ main {
   box-shadow:
     inset 0 -5px 0 var(--green-edge),
     0 3px 0 var(--outline);
+  /* A solid outline all the way around the letters, like the game's buttons: the white text is read against the
+     outline, not the bright button (17:1 instead of under 2:1) */
+  text-shadow:
+    -2px -2px 0 var(--outline),
+    0 -2px 0 var(--outline),
+    2px -2px 0 var(--outline),
+    -2px 0 0 var(--outline),
+    2px 0 0 var(--outline),
+    -2px 2px 0 var(--outline),
+    0 2px 0 var(--outline),
+    2px 2px 0 var(--outline),
+    0 3px 0 var(--outline);
   transition: transform 0.08s ease;
 }
 
@@ -282,6 +295,13 @@ main {
     0 8px 0 3px rgba(0, 0, 0, 0.45);
 }
 
+/* Yellow is too light on the blue panels; underlined white is clear on them (yellow stays on the dark sea) */
+.panel a:not(.button) {
+  color: var(--text);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
 .panel > p {
   color: var(--text);
   text-shadow: 0 1px 0 rgba(11, 29, 56, 0.6);
@@ -295,7 +315,8 @@ main {
   min-height: 80px;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 3px solid var(--panel-edge);
+  /* At least 3:1 against the panel, so the box can be seen */
+  border: 3px solid var(--outline);
   background: var(--card);
   color: var(--text);
   font: 0.95rem ui-monospace, "Cascadia Code", Consolas, monospace;
