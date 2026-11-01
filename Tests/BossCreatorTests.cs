@@ -163,27 +163,49 @@ public class BossCreatorTest : CustomBossTest
         yield return null;
 
         AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex, BossMode.Options.Elite), "The name must follow the boss");
-        // The tier preview shows every tier with its round, speed and health, colored against the normal game
+        // The tier preview shows every tier with its round, speed and health, colored against the normal game and marked
+        // with ▲ or ▼, so it doesn't rely on colour (issue #18)
         var cards = section.Strip.Cards;
         AssertEquals(cards.Count(card => card.Panel.gameObject.activeSelf), 7, "Tier cards shown");
         AssertEquals(cards[0].Round.Text.text, "R30", "Round of tier 1");
-        AssertEquals(cards[0].Speed.Text.text, "×1.5", "Speed of tier 1 (Boss Speed 150 %)");
-        AssertEquals(cards[0].Health.Text.text, "125k", "Health of Vortex Elite tier 1 at 300 %");
-        AssertEquals(cards[2].Speed.Text.text, "×2.1", "Speed of tier 3 (+20 % per tier)");
-        AssertEquals(cards[6].Speed.Text.text, "×3.3", "Speed of tier 7");
+        AssertEquals(cards[0].Speed.Text.text, $"×1.5{TierStrip.HigherMark}", "Speed of tier 1 (Boss Speed 150 %)");
+        AssertEquals(cards[0].Health.Text.text, $"125k{TierStrip.HigherMark}", "Health of Vortex Elite tier 1 at 300 %");
+        AssertEquals(cards[2].Speed.Text.text, $"×2.1{TierStrip.HigherMark}", "Speed of tier 3 (+20 % per tier)");
+        AssertEquals(cards[6].Speed.Text.text, $"×3.3{TierStrip.HigherMark}", "Speed of tier 7");
         var tier7 = Game.instance.model.GetBloon("VortexElite5").maxHealth * TierMath.ExtraTierFactor(7) * TierMath.HealthFactor(7, 50);
-        AssertEquals(cards[6].Health.Text.text, TierStrip.FormatHealth(Math.Min(tier7, TierMath.MaxModelHealth(3)) * 3), "Health of tier 7");
+        AssertEquals(cards[6].Health.Text.text, TierStrip.FormatHealth(Math.Min(tier7, TierMath.MaxModelHealth(3)) * 3) + TierStrip.HigherMark,
+            "Health of tier 7");
+        // With 7 cards there is room for the values at full size; they only shrink on narrower cards
+        foreach (var text in new[] { cards[6].Speed, cards[6].Health })
+        {
+            text.Text.ForceMeshUpdate();
+            AssertEquals(text.Text.fontSize, text.Text.fontSizeMax, $"Size of '{text.Text.text}' on 7 cards");
+        }
+
+        // The game's font must have the mark, or it shows as a box (▼ is ▲ turned around)
+        Assert(cards[0].Speed.Text.font.HasCharacter(TierStrip.HigherMark[0], true, false), "The tier preview's font has ▲");
 
         // A tier above the game's limit is held to it, with a line under the cards saying so
         section.BossHealth.Slider.value = 2000;
         section.HealthPerTier.Slider.value = 200;
         section.Tiers.Slider.value = 10;
         // The game's text may put a space before the unit
-        AssertEquals(string.Concat(cards[9].Health.Text.text.Where(c => !char.IsWhiteSpace(c))), "2B",
+        AssertEquals(string.Concat(cards[9].Health.Text.text.Where(c => !char.IsWhiteSpace(c))), $"2B{TierStrip.HigherMark}",
             "Health of tier 10, capped like in the game");
         Assert(section.Strip.Note.Text.text.Contains("2B"), $"The cap line shows the game's limit: {section.Strip.Note.Text.text}");
         Assert(section.Strip.Note.gameObject.activeSelf, "The cap line shows while a tier reaches the cap");
         AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.CappedHeight, "The strip grows for the cap line");
+        // With 10 narrow cards, the values and their marks still fit inside each card
+        for (var i = 0; i < 10; i++)
+        {
+            var cardWidth = cards[i].Panel.RectTransform.rect.width;
+            foreach (var text in new[] { cards[i].Speed, cards[i].Health })
+            {
+                text.Text.ForceMeshUpdate();
+                var shown = text.Text.textBounds.size.x;
+                Assert(shown <= cardWidth, $"Tier {i + 1}: '{text.Text.text}' is {shown:0} wide on a card {cardWidth:0} wide");
+            }
+        }
         section.BossHealth.Slider.value = 300;
         section.HealthPerTier.Slider.value = 50;
         section.Tiers.Slider.value = 3;
@@ -192,11 +214,11 @@ public class BossCreatorTest : CustomBossTest
         section.Tiers.Slider.value = 7;
         AssertEquals(cards[0].Speed.Text.color, TierStrip.Higher, "Faster than the normal game is orange");
         section.BossSpeed.Slider.value = 50;
-        AssertEquals(cards[0].Speed.Text.text, "×0.5", "The preview follows Boss Speed");
+        AssertEquals(cards[0].Speed.Text.text, $"×0.5{TierStrip.LowerMark}", "The preview follows Boss Speed");
         AssertEquals(cards[0].Speed.Text.color, TierStrip.Lower, "Slower than the normal game is blue");
         section.BossSpeed.Slider.value = 150;
         section.Elite.SetChecked(false, true);
-        AssertEquals(cards[0].Health.Text.text, "60k", "The preview follows Elite");
+        AssertEquals(cards[0].Health.Text.text, $"60k{TierStrip.HigherMark}", "The preview follows Elite");
         section.Elite.SetChecked(true, true);
         Assert(section.SkullCount.Row.activeSelf, "Skull count must show for evenly spaced skulls");
 

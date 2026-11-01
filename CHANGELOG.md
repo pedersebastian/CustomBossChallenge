@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The Tier Preview no longer relies on colour** (#18): speed and health above the normal game get ▲ next to the
+  orange, below it ▼ next to the blue, like on the website. On narrow cards (many tiers) the values shrink to fit.
 - **The website is easier to read:** darker blue panels so all text on them meets WCAG AA contrast, a full outline
   around the button text, white underlined links on the panels, and screen readers hear one short line when a code is
   read instead of the whole setup.
