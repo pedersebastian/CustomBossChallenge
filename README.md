@@ -34,8 +34,8 @@ where you can read a share code and see the whole setup without the game, or
   - **Speed per Tier** and **Health per Tier**: make every tier faster and tougher than the one before it, on top of
     the game's own steps (or easier, below 0). The steps add up evenly: +100 % health makes tiers 2-5 ×2, ×3, ×4
     and ×5.
-  - **Tier Preview**: a card per tier with the round it arrives on, its speed and its health, orange where it is
-    harder than the normal game and blue where it is easier.
+  - **Tier Preview**: a card per tier with the round it arrives on, its speed and its health, orange with ▲ where
+    it is harder than the normal game and blue with ▼ where it is easier.
   - **Spawn Rounds** for every tier (default 40, 60, 80, 100, 120, then every 20 rounds), set evenly with the
     **First Boss Round** and **Rounds Between Tiers** sliders or typed one by one.
   - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health

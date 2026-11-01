@@ -14,8 +14,8 @@ namespace CustomBossChallenge.Menus;
 
 /// <summary>
 /// A row of small cards, one per boss tier, showing the round each tier arrives on and the speed and health it will
-/// have. Values above the normal game are orange, values below it blue, so the effect of every boss option shows at
-/// a glance.
+/// have. Values above the normal game are orange with ▲, values below it blue with ▼, so the effect of every boss
+/// option shows at a glance, also to players who can't tell the colours apart (issue #18).
 /// </summary>
 public sealed class TierStrip
 {
@@ -34,6 +34,13 @@ public sealed class TierStrip
     public static readonly Color Higher = new(1f, 0.62f, 0.2f);
     public static readonly Color Lower = new(0.45f, 0.8f, 1f);
     public static readonly Color Same = Color.white;
+
+    /// <summary>
+    /// After a value above or below the normal game, like the website's Tier Preview, so it doesn't rely on colour.
+    /// The game's font has ▲ but no ▼, so ▼ is the same triangle turned upside down.
+    /// </summary>
+    public const string HigherMark = "▲";
+    public const string LowerMark = "<rotate=180>▲</rotate>";
 
     public GameObject Row { get; }
 
@@ -101,8 +108,17 @@ public sealed class TierStrip
             // Later tiers get a slightly bigger portrait, so the strip reads as a climb
             var size = 84 + tier * 6;
             card.Portrait = card.Panel.AddImage(new Info("Portrait", 0, -3, size, size), VanillaSprites.BossTiersIconSmall);
-            card.Speed = card.Panel.AddText(new Info("Speed", 0, -87, 300, 64), "", 54);
-            card.Health = card.Panel.AddText(new Info("Health", 0, -137, 300, 64), "", 54);
+            // Taller than the font like the tier and round, so auto-sizing only shrinks them for width
+            card.Speed = card.Panel.AddText(new Info("Speed", 0, -87, 300, 80), "", 54);
+            card.Health = card.Panel.AddText(new Info("Health", 0, -137, 300, 80), "", 54);
+            foreach (var text in new[] { card.Speed, card.Health })
+            {
+                text.Text.enableAutoSizing = true;
+                text.Text.fontSizeMin = 30;
+                text.Text.fontSizeMax = text.Text.fontSize;
+                text.Text.textWrappingMode = TextWrappingModes.NoWrap;
+            }
+
             Cards.Add(card);
         }
 
@@ -134,8 +150,8 @@ public sealed class TierStrip
             cardRect.anchoredPosition = new Vector2(left + (i + 0.5f) * slot, y);
             cardRect.sizeDelta = new Vector2(slot - CardGap, CardHeight);
 
-            // The tier and round shrink to the card instead of running into the next one
-            foreach (var text in new[] { Cards[i].Tier, Cards[i].Round })
+            // The text shrinks to the card instead of running into the next one
+            foreach (var text in new[] { Cards[i].Tier, Cards[i].Round, Cards[i].Speed, Cards[i].Health })
             {
                 text.RectTransform.sizeDelta = new Vector2(slot - CardGap - 16, text.RectTransform.sizeDelta.y);
             }
@@ -213,9 +229,14 @@ public sealed class TierStrip
 
     private static void Paint(ModHelperText text, string value, double factor)
     {
-        text.SetText(value);
+        text.SetText(value + Mark(factor));
         text.Text.color = factor > 1.0001 ? Higher : factor < 0.9999 ? Lower : Same;
     }
+
+    /// <summary>
+    /// ▲ for a value above the normal game, ▼ below it, nothing for the same
+    /// </summary>
+    public static string Mark(double factor) => factor > 1.0001 ? HigherMark : factor < 0.9999 ? LowerMark : "";
 
     /// <summary>
     /// Health the way the game shortens big numbers, e.g. 950, 7.5k, 112k, 3.4M, 1.2B
