@@ -115,7 +115,7 @@ public class LayoutTest : CustomBossTest
     {
         var section = AssertNotNull(BossEditorSection.Current, $"{format}: no Boss section")!;
 
-        // With Boss per Tier on, so its hint and the cards' pencils are checked too
+        // In Advanced Mode, so its hint and the cards' pencils are checked too
         section.DifferentBosses.Toggle.isOn = true;
         var play = ScreenRect(section.Play.GetComponentInChildren<Button>(true));
         var reset = ScreenRect(editor.transform.Find("Reset").GetComponentInChildren<Button>(true));

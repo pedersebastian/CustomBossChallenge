@@ -104,12 +104,11 @@
   "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos Élite en Infernal, Difícil, y ni un solo paragón permitido.",
   "CustomBossChallenge-ExampleBossGauntlet": "Desfile de jefes",
   "CustomBossChallenge-ExampleBossGauntletInfo": "Siete niveles, siete jefes: todos los jefes del juego, uno tras otro.",
-  "CustomBossChallenge-DifferentBosses": "Jefe por nivel",
-  "CustomBossChallenge-DifferentBossesInfo": "Marca esta casilla para dar a cada nivel su propio jefe, por ejemplo Bloonarius en el nivel 1 y Lych en el nivel 2. Haz clic en un nivel de la vista previa de niveles para elegir su jefe, Élite o no, o Aleatorio para una sorpresa que se elige al empezar la partida. Los niveles que no cambies mantienen el tipo de jefe de arriba y cambian con él.",
-  "CustomBossChallenge-DifferentBossesHint": "Haz clic en un nivel de la vista previa para elegir su jefe",
+  "CustomBossChallenge-DifferentBosses": "Modo avanzado",
+  "CustomBossChallenge-DifferentBossesInfo": "Marca esta casilla para elegir tú mismo el jefe de cada nivel, por ejemplo Bloonarius en el nivel 1 y Lych en el nivel 2. Cada nivel empieza con el tipo de jefe, que mientras tanto queda oculto. Haz clic en un nivel de la vista previa de niveles de abajo para elegir su jefe, Élite o no, o Aleatorio para una sorpresa que se elige al empezar la partida.",
+  "CustomBossChallenge-DifferentBossesHint": "Haz clic en un nivel de abajo para elegir su jefe",
   "CustomBossChallenge-TierBossTitle": "Jefe del nivel {0}",
   "CustomBossChallenge-RandomBoss": "Aleatorio",
-  "CustomBossChallenge-FollowBossType": "Igual que el tipo de jefe",
   "CustomBossChallenge-BossLineup": "Jefes",
   "CustomBossChallenge-TierArrives": "Nivel {0}: {1}"
 }

@@ -58,9 +58,9 @@ export function compareRows(a: Setup, b: Setup): Row[] {
   add("Tiers", "Speed per Tier", (s) => perTier(s.options.SpeedPerTier));
   add("Tiers", "Health per Tier", (s) => perTier(s.options.HealthPerTier));
   add("Tiers", "Spawn rounds", (s) => effectiveSpawnRounds(s.options).join(", "));
-  // With "Boss per Tier" on either side, each tier's boss
+  // With Advanced Mode on either side, each tier's boss
   if (isMixed(a.options) || isMixed(b.options)) {
-    add("Tiers", "Boss per Tier", (s) => yesNo(isMixed(s.options)));
+    add("Tiers", "Advanced Mode", (s) => yesNo(isMixed(s.options)));
     for (let tier = 1; tier <= Math.max(a.options.Tiers, b.options.Tiers); tier++) {
       add("Tiers", `Tier ${tier} boss`, (s) => (tier <= s.options.Tiers ? tierBossName(s.options, tier) : "—"));
     }

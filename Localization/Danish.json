@@ -104,12 +104,11 @@
   "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos på Infernal, Hard, og ikke en eneste paragon tilladt.",
   "CustomBossChallenge-ExampleBossGauntlet": "Boss-maraton",
   "CustomBossChallenge-ExampleBossGauntletInfo": "Syv niveauer, syv bosser: alle spillets bosser, den ene efter den anden.",
-  "CustomBossChallenge-DifferentBosses": "Boss pr. niveau",
-  "CustomBossChallenge-DifferentBossesInfo": "Sæt flueben for at give hvert niveau sin egen boss, for eksempel Bloonarius på niveau 1 og Lych på niveau 2. Klik på et niveau i Niveauoversigten for at vælge dets boss, Elite eller ej, eller Tilfældig for en overraskelse, der vælges, når spillet starter. Niveauer, du ikke ændrer, beholder bosstypen ovenfor og skifter med den.",
-  "CustomBossChallenge-DifferentBossesHint": "Klik på et niveau i Niveauoversigten for at vælge dets boss",
+  "CustomBossChallenge-DifferentBosses": "Avanceret tilstand",
+  "CustomBossChallenge-DifferentBossesInfo": "Sæt flueben for selv at vælge bossen på hvert niveau, for eksempel Bloonarius på niveau 1 og Lych på niveau 2. Hvert niveau starter med bosstypen, som imens er skjult. Klik på et niveau i Niveauoversigten nedenfor for at vælge dets boss, Elite eller ej, eller Tilfældig for en overraskelse, der vælges, når spillet starter.",
+  "CustomBossChallenge-DifferentBossesHint": "Klik på et niveau nedenfor for at vælge dets boss",
   "CustomBossChallenge-TierBossTitle": "Boss for niveau {0}",
   "CustomBossChallenge-RandomBoss": "Tilfældig",
-  "CustomBossChallenge-FollowBossType": "Samme som Bosstype",
   "CustomBossChallenge-BossLineup": "Bosser",
   "CustomBossChallenge-TierArrives": "Niveau {0}: {1}"
 }

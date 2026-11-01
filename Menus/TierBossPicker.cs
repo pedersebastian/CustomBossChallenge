@@ -13,9 +13,8 @@ using Object = UnityEngine.Object;
 namespace CustomBossChallenge.Menus;
 
 /// <summary>
-/// The window that opens on a tier's card in the Tier Preview while "Boss per Tier" is on: every boss and Random to
-/// pick from, Elite for that tier, and a button that makes the tier follow the Boss Type again. A click outside it or
-/// Esc closes it. The keyboard moves through its buttons with the arrows (or Tab) and presses them with Enter or Space.
+/// The window that opens on a tier's card in the Tier Preview in Advanced Mode: every boss and Random to pick from, and
+/// Elite for that tier. A click outside it or Esc closes it. The keyboard moves through its buttons with the arrows (or Tab) and presses them with Enter or Space.
 /// </summary>
 public sealed class TierBossPicker
 {
@@ -43,11 +42,10 @@ public sealed class TierBossPicker
     public Dictionary<string, ModHelperButton> Choices { get; } = new();
 
     public ModHelperCheckbox Elite { get; }
-    public ModHelperButton Follow { get; }
     public ModHelperButton Close { get; }
 
     /// <summary>
-    /// What the keyboard moves through, in order: the bosses, Random, Elite, Same as Boss Type, Close
+    /// What the keyboard moves through, in order: the bosses, Random, Elite, Close
     /// </summary>
     public IReadOnlyList<GameObject> Stops { get; }
 
@@ -117,18 +115,12 @@ public sealed class TierBossPicker
         }
 
         var bottom = -Height / 2 + 120;
-        Elite = Panel.AddCheckbox(new Info("Elite", -760, bottom, 140, 140), false, VanillaSprites.BlueInsertPanelRound,
+        Elite = Panel.AddCheckbox(new Info("Elite", -110, bottom, 140, 140), false, VanillaSprites.BlueInsertPanelRound,
             new Action<bool>(SetElite), VanillaSprites.TickGreenIcon, 20);
-        Panel.AddText(new Info("EliteLabel", -540, bottom, 280, 140), Texts.Elite.T(), 70, TextAlignmentOptions.Left);
-        Follow = Panel.AddButton(new Info("Follow", 420, bottom, 1000, 150), VanillaSprites.BlueBtnLong,
-            new Action(FollowBossType));
-        var followLabel = Follow.AddText(new Info("Label", InfoPreset.FillParent), Texts.FollowBossType.T(), 56);
-        followLabel.Text.enableAutoSizing = true;
-        followLabel.Text.fontSizeMin = 32;
-        followLabel.Text.fontSizeMax = 56;
+        Panel.AddText(new Info("EliteLabel", 110, bottom, 280, 140), Texts.Elite.T(), 70, TextAlignmentOptions.Left);
 
         Stops = Choices.Values.Select(button => button.gameObject)
-            .Concat(new[] {Elite.gameObject, Follow.gameObject, Close.gameObject}).ToList();
+            .Concat(new[] {Elite.gameObject, Close.gameObject}).ToList();
         Show();
     }
 
@@ -158,19 +150,17 @@ public sealed class TierBossPicker
     public void Show()
     {
         var shown = Shown();
-        var follows = Creator.BossMode.Options.EntryOf(Tier).FollowsSetup;
         foreach (var (choice, button) in Choices)
         {
             button.Image.SetSprite(choice == TierBossMath.Random
                 ? VanillaSprites.RandomIcon
                 : BossEditorSection.Portrait(Enum.Parse<BossType>(choice), shown.Elite));
-            button.transform.Find(BossEditorSection.SelectedMarker)?.gameObject.SetActive(!follows && choice == shown.Boss);
+            button.transform.Find(BossEditorSection.SelectedMarker)?.gameObject.SetActive(choice == shown.Boss);
         }
 
         refreshing = true;
         Elite.SetChecked(shown.Elite, false);
         refreshing = false;
-        Follow.Button.interactable = !follows;
     }
 
     /// <summary>
@@ -179,15 +169,6 @@ public sealed class TierBossPicker
     public void Pick(string choice)
     {
         section.SetTierBoss(Tier, new TierBoss(choice, Elite.Toggle.isOn));
-        Hide();
-    }
-
-    /// <summary>
-    /// The tier follows the Boss Type and Elite again
-    /// </summary>
-    public void FollowBossType()
-    {
-        section.SetTierBoss(Tier, TierBoss.Follows);
         Hide();
     }
 
@@ -225,9 +206,6 @@ public sealed class TierBossPicker
                 break;
             case ShortcutKey.Enter or ShortcutKey.Space when Focused >= 0:
                 Press(Stops[Focused]);
-                break;
-            case ShortcutKey.Delete or ShortcutKey.Backspace:
-                FollowBossType();
                 break;
         }
     }

@@ -1,4 +1,4 @@
-// Port of Config/TierBossMath.cs: the boss of each tier with "Boss per Tier", a comma separated token per tier like
+// Port of Config/TierBossMath.cs: the boss of each tier in Advanced Mode, a comma separated token per tier like
 // "Lych,,RandomElite". An empty token follows the setup's own boss and Elite.
 
 export const RANDOM = "Random";

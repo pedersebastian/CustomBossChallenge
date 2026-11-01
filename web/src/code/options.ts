@@ -27,7 +27,7 @@ export interface BossOptions {
   SpeedPerTier: number;
   HealthPerTier: number;
   SpawnRounds: string | null;
-  /** The boss of each tier with "Boss per Tier" on, or null for the same boss on every tier (codes from 2.9, CBC3) */
+  /** The boss of each tier in Advanced Mode, or null for the same boss on every tier (codes from 2.9, CBC3) */
   TierBosses?: string | null;
   /** Codes from before 2.3; sanitize turns it into HealthPerTier */
   ExtraTierHealth?: number | null;
@@ -159,7 +159,7 @@ export function bossOf(options: BossOptions, tier: number): { boss: string; elit
     : { boss: entry.boss, elite: entry.elite };
 }
 
-/** The boss a tier has with "Boss per Tier" on, e.g. "Elite Lych" or "Random" */
+/** The boss a tier has in Advanced Mode, e.g. "Elite Lych" or "Random" */
 export function tierBossName(options: BossOptions, tier: number): string {
   const entry = entryOf(options, tier);
   if (entry.boss === "Random") return entry.elite ? "Random Elite" : "Random";

@@ -446,7 +446,7 @@ input:focus-visible {
   font-size: 0.85rem;
 }
 
-/* With "Boss per Tier": the tier's own boss, shrunk so Blastapopoulos fits a narrow card */
+/* In Advanced Mode: the tier's own boss, shrunk so Blastapopoulos fits a narrow card */
 .tier-boss {
   font-size: 0.72rem;
   max-width: 100%;

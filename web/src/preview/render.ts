@@ -27,7 +27,7 @@ const spoken = (text: string): HTMLElement => h("span", { class: "sr-only" }, te
 const percent = (multiplier: number): string => `${formatDecimals(multiplier * 100, 0)} %`;
 
 export const bossTitle = (options: BossOptions): string =>
-  isMixed(options) ? "Boss per Tier" : `${options.Elite ? "Elite " : ""}${options.Boss}`;
+  isMixed(options) ? "Advanced Mode" : `${options.Elite ? "Elite " : ""}${options.Boss}`;
 
 
 export function renderSetup(options: BossOptions, challenge: Challenge, compact = false): HTMLElement {

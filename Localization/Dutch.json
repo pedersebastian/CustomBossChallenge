@@ -104,12 +104,11 @@
   "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos op Infernal, Moeilijk, en geen enkele paragon toegestaan.",
   "CustomBossChallenge-ExampleBossGauntlet": "Bossmarathon",
   "CustomBossChallenge-ExampleBossGauntletInfo": "Zeven tiers, zeven bosses: elke boss uit het spel, de een na de ander.",
-  "CustomBossChallenge-DifferentBosses": "Boss per tier",
-  "CustomBossChallenge-DifferentBossesInfo": "Vink dit aan om elke tier een eigen boss te geven, bijvoorbeeld Bloonarius op tier 1 en Lych op tier 2. Klik op een tier in het Niveauoverzicht om de boss te kiezen, Elite of niet, of Willekeurig voor een verrassing die gekozen wordt als het spel begint. Tiers die je niet verandert, houden het Bosstype hierboven en veranderen mee.",
-  "CustomBossChallenge-DifferentBossesHint": "Klik op een tier in het Niveauoverzicht om de boss te kiezen",
+  "CustomBossChallenge-DifferentBosses": "Geavanceerde modus",
+  "CustomBossChallenge-DifferentBossesInfo": "Vink dit aan om zelf de boss van elke tier te kiezen, bijvoorbeeld Bloonarius op tier 1 en Lych op tier 2. Elke tier begint met het Bosstype, dat zolang verborgen is. Klik op een tier in het Niveauoverzicht hieronder om de boss te kiezen, Elite of niet, of Willekeurig voor een verrassing die gekozen wordt als het spel begint.",
+  "CustomBossChallenge-DifferentBossesHint": "Klik hieronder op een tier om de boss te kiezen",
   "CustomBossChallenge-TierBossTitle": "Boss voor tier {0}",
   "CustomBossChallenge-RandomBoss": "Willekeurig",
-  "CustomBossChallenge-FollowBossType": "Zelfde als Bosstype",
   "CustomBossChallenge-BossLineup": "Bosses",
   "CustomBossChallenge-TierArrives": "Tier {0}: {1}"
 }

@@ -141,14 +141,14 @@ public class ScreenshotTour : CustomBossTest
             yield return new WaitForSecondsRealtime(1);
             yield return Capture(folder, "skull-preview");
 
-            // Boss per Tier: the Tier Preview's cards with their own bosses, and a card's boss picker
+            // Advanced Mode: the Tier Preview's cards with their own bosses, and a card's boss picker
             BossMode.Options = BossMode.Options with
             {
                 SkullMode = SkullMode.Vanilla, TierBosses = "Bloonarius,Lych,RandomElite,,PhayzeElite,Diamondback"
             };
             BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
             editor.chalName.text = editor.dcm.name = "Boss Gauntlet";
-            scroll.verticalNormalizedPosition = 0.62f;
+            scroll.verticalNormalizedPosition = 1f;
             yield return new WaitForSecondsRealtime(1);
             yield return Capture(folder, "tier-bosses");
             BossEditorSection.Current!.OpenPicker(2);

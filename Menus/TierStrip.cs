@@ -18,8 +18,7 @@ namespace CustomBossChallenge.Menus;
 /// have. Values above the normal game are orange with ▲, values below it blue with ▼, so the effect of every boss
 /// option shows at a glance, also to players who can't tell the colours apart (issue #18).
 /// <br/>
-/// With "Boss per Tier" on, every card shows its tier's boss and is a button that opens the <see cref="TierBossPicker"/>.
-/// Tiers that follow the Boss Type show its portrait a little faded.
+/// In Advanced Mode, every card shows its tier's boss and is a button that opens the <see cref="TierBossPicker"/>.
 /// </summary>
 public sealed class TierStrip
 {
@@ -38,11 +37,6 @@ public sealed class TierStrip
     public static readonly Color Higher = new(1f, 0.62f, 0.2f);
     public static readonly Color Lower = new(0.45f, 0.8f, 1f);
     public static readonly Color Same = Color.white;
-
-    /// <summary>
-    /// The portrait of a tier that follows the Boss Type, while the tiers can have bosses of their own
-    /// </summary>
-    public static readonly Color Following = new(1, 1, 1, 0.5f);
 
     public const string EditMarker = "Edit";
 
@@ -215,7 +209,6 @@ public sealed class TierStrip
             var entry = options.EntryOf(i + 1);
             var (boss, elite) = options.BossOf(i + 1);
             card.Portrait.Image.SetSprite(entry.IsRandom ? VanillaSprites.RandomIcon : BossEditorSection.Portrait(boss, elite));
-            card.Portrait.Image.color = options.Mixed && entry.FollowsSetup ? Following : Color.white;
             card.Button.interactable = options.Mixed;
             card.Edit.gameObject.SetActive(options.Mixed);
             card.Round.SetText($"R{value.Round}");

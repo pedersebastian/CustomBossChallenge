@@ -104,12 +104,11 @@
   "CustomBossChallenge-ExampleParagonBanInfo": "Элитный Бластапопулос на карте Infernal, сложность Hard, и ни одного парагона.",
   "CustomBossChallenge-ExampleBossGauntlet": "Парад боссов",
   "CustomBossChallenge-ExampleBossGauntletInfo": "Семь уровней, семь боссов: все боссы игры, один за другим.",
-  "CustomBossChallenge-DifferentBosses": "Босс на уровень",
-  "CustomBossChallenge-DifferentBossesInfo": "Отметьте, чтобы у каждого уровня был свой босс, например Bloonarius на уровне 1 и Lych на уровне 2. Нажмите на уровень в обзоре уровней, чтобы выбрать его босса, элитного или нет, или Случайный — сюрприз, который выбирается в начале игры. Уровни, которые вы не меняете, используют тип босса выше и меняются вместе с ним.",
-  "CustomBossChallenge-DifferentBossesHint": "Нажмите на уровень в обзоре уровней, чтобы выбрать босса",
+  "CustomBossChallenge-DifferentBosses": "Расширенный режим",
+  "CustomBossChallenge-DifferentBossesInfo": "Отметьте, чтобы самому выбрать босса каждого уровня, например Bloonarius на уровне 1 и Lych на уровне 2. Каждый уровень начинается с типа босса, который в это время скрыт. Нажмите на уровень в обзоре уровней ниже, чтобы выбрать его босса, элитного или нет, или Случайный — сюрприз, который выбирается в начале игры.",
+  "CustomBossChallenge-DifferentBossesHint": "Нажмите на уровень ниже, чтобы выбрать босса",
   "CustomBossChallenge-TierBossTitle": "Босс уровня {0}",
   "CustomBossChallenge-RandomBoss": "Случайный",
-  "CustomBossChallenge-FollowBossType": "Как тип босса",
   "CustomBossChallenge-BossLineup": "Боссы",
   "CustomBossChallenge-TierArrives": "Уровень {0}: {1}"
 }

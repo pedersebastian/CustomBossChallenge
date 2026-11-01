@@ -26,22 +26,22 @@ where you can read a share code and see the whole setup without the game, or
   the vanilla editor doesn't offer it; it is only added in the Boss Creator.
 - **Boss section** at the top of the editor:
   - Pick any boss (Bloonarius, Lych, Vortex, Dreadbloon, Phayze, Blastapopoulos, Diamondback) and toggle **Elite**.
-  - **Boss per Tier**: give each tier a boss of its own, for example Bloonarius on tier 1 and Lych on tier 2, Elite
-    or not, or Random (see [Boss per Tier](#boss-per-tier)).
+  - **Advanced Mode**: choose the boss of every tier, for example Bloonarius on tier 1 and Lych on tier 2, Elite or
+    not, or Random (see [Advanced Mode](#advanced-mode)).
+  - **Tier Preview**: a card per tier with the round it arrives on, its speed and its health, orange with ▲ where
+    it is harder than the normal game and blue with ▼ where it is easier.
   - **Boss Speed** and **Boss Health** sliders, using the game's own boss multipliers (the same ones Ninja Kiwi uses
     for weekly events such as "Vortex at 150% speed").
-  - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
   - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with +50 % health per tier, each with a look of
     its own (see [Tiers above 5](#tiers-above-5)). With fewer than 5 tiers, beating the last one wins the game.
   - **Speed per Tier** and **Health per Tier**: make every tier faster and tougher than the one before it, on top of
     the game's own steps (or easier, below 0). The steps add up evenly: +100 % health makes tiers 2-5 ×2, ×3, ×4
     and ×5.
-  - **Tier Preview**: a card per tier with the round it arrives on, its speed and its health, orange with ▲ where
-    it is harder than the normal game and blue with ▼ where it is easier.
   - **Spawn Rounds** for every tier (default 40, 60, 80, 100, 120, then every 20 rounds), set evenly with the
     **First Boss Round** and **Rounds Between Tiers** sliders or typed one by one.
   - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health
     percentages. Works for every boss and Elite tier (Lych uses its ethereal thresholds).
+  - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
 - **Free retries**: after losing, retry the last round or go back to the round the current tier arrived on, as often
   as you like and without Monkey Money. Your own Boss Challenge saves are never touched.
 - **Continue after closing the game**: a custom game is kept after every round, so closing the game or a crash never
@@ -88,17 +88,16 @@ where you can read a share code and see the whole setup without the game, or
 
 ![Main menu](docs/main-menu.jpg)
 
-## Boss per Tier
+## Advanced Mode
 
-Tick **Boss per Tier** under the boss to mix bosses in one game (#28). The cards in the **Tier Preview** then become
-buttons, each with a small pencil: click one to pick that tier's boss from every boss, **Elite** or not, or **Random**
-for a surprise that is picked when the game starts (and stays the same through restarts, retries and Continue).
-**Same as Boss Type** makes the tier follow the boss chosen above again; those tiers are shown a little faded and
-change along with it, Elite included. With the keyboard, the arrows step a card's boss, Enter opens the picker and
-Delete makes the tier follow the Boss Type again. Unticking keeps your choices, so ticking again brings them back;
-the boss's reset button turns it off.
+Tick **Advanced Mode** at the top of the Boss section to mix bosses in one game (#28). The Boss Type is hidden and
+every tier starts with the boss it had; the cards in the **Tier Preview** right below become buttons, each with a
+small pencil. Click one to pick that tier's boss from every boss, **Elite** or not, or **Random** for a surprise that is
+picked when the game starts (and stays the same through restarts, retries and Continue). With the keyboard, the
+arrows step a card's boss, Enter opens the picker and Delete puts the tier back to the boss it started with.
+Unticking brings the Boss Type back and keeps your choices, so ticking again brings them back too.
 
-![Boss per Tier in the Tier Preview](docs/tier-bosses.jpg)
+![Advanced Mode in the Tier Preview](docs/tier-bosses.jpg)
 
 ![Picking a tier's boss](docs/tier-boss-picker.jpg)
 
@@ -146,7 +145,7 @@ It shows the Tier Preview, skulls and rules like the Boss Creator does.
 A code is only data: it can't run anything, and custom games are always unranked and never touch your records.
 Codes are checked before they load, so values outside what the game can play are brought back into range.
 
-Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, or `CBC3:` when they use Boss per Tier,
+Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, or `CBC3:` when they use Advanced Mode,
 so that older versions of the mod ask for an update instead of loading them without those settings. They only contain what differs from a new
 setup, so they are usually a few hundred characters. A new, unchanged setup gives a code like this one:
 
@@ -173,7 +172,7 @@ CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg
 | Option | Range | Default | Notes |
 |---|---|---|---|
 | Boss Type | 7 bosses | Bloonarius | Elite toggle next to it. |
-| Boss per Tier | on / off | off | Each tier's boss is picked on its card in the Tier Preview: any boss, Elite or not, Random, or the Boss Type. |
+| Advanced Mode | on / off | off | Hides the Boss Type; each tier's boss is picked on its card in the Tier Preview: any boss, Elite or not, or Random. |
 | Boss Speed | 10–1000 % | 100 % | |
 | Boss Health | 10–2000 % | 100 % | |
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
@@ -233,7 +232,7 @@ The Boss Creator setup is stored in `BloonsTD6/UserData/CustomBossChallenge/Last
   on their own PC, so everyone would need the mod and the same setup, or the games would get out of sync. A co-op
   Boss Challenge is always a normal one, with the game's own bosses, even if you were in the Boss Creator before.
   This is not a bug.
-- With **Boss per Tier**, the map's music and its boss decorations stay those of the first tier's boss.
+- In **Advanced Mode**, the map's music and its boss decorations stay those of the first tier's boss.
 - Tiers above 5 use tier 5's model and abilities; only their look and their health differ (see
   [Tiers above 5](#tiers-above-5)). The glow uses a shader built for the game's Unity version; if a BTD6 update moves
   to a Unity version it doesn't work with, the glow falls back to a simpler one made from the game's own shaders until

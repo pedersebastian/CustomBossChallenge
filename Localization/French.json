@@ -104,12 +104,11 @@
   "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos Élite sur Infernal, en Difficile, et pas un seul paragon autorisé.",
   "CustomBossChallenge-ExampleBossGauntlet": "Le défilé des boss",
   "CustomBossChallenge-ExampleBossGauntletInfo": "Sept paliers, sept boss : tous les boss du jeu, l'un après l'autre.",
-  "CustomBossChallenge-DifferentBosses": "Boss par palier",
-  "CustomBossChallenge-DifferentBossesInfo": "Cochez pour donner à chaque palier son propre boss, par exemple Bloonarius au palier 1 et Lych au palier 2. Cliquez sur un palier dans l'aperçu des paliers pour choisir son boss, Élite ou non, ou Aléatoire pour une surprise tirée au début de la partie. Les paliers que vous ne modifiez pas gardent le type de boss ci-dessus et changent avec lui.",
-  "CustomBossChallenge-DifferentBossesHint": "Cliquez sur un palier dans l'aperçu des paliers pour choisir son boss",
+  "CustomBossChallenge-DifferentBosses": "Mode avancé",
+  "CustomBossChallenge-DifferentBossesInfo": "Cochez pour choisir vous-même le boss de chaque palier, par exemple Bloonarius au palier 1 et Lych au palier 2. Chaque palier commence avec le type de boss, qui est alors masqué. Cliquez sur un palier dans l'aperçu des paliers ci-dessous pour choisir son boss, Élite ou non, ou Aléatoire pour une surprise tirée au début de la partie.",
+  "CustomBossChallenge-DifferentBossesHint": "Cliquez sur un palier ci-dessous pour choisir son boss",
   "CustomBossChallenge-TierBossTitle": "Boss du palier {0}",
   "CustomBossChallenge-RandomBoss": "Aléatoire",
-  "CustomBossChallenge-FollowBossType": "Comme le type de boss",
   "CustomBossChallenge-BossLineup": "Boss",
   "CustomBossChallenge-TierArrives": "Palier {0} : {1}"
 }

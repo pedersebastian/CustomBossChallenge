@@ -104,12 +104,11 @@
   "CustomBossChallenge-ExampleParagonBanInfo": "在 Infernal 地圖、困難難度下的菁英布拉斯塔波普勒斯，不允許任何典範。",
   "CustomBossChallenge-ExampleBossGauntlet": "Boss車輪戰",
   "CustomBossChallenge-ExampleBossGauntletInfo": "七個階段，七個Boss：遊戲中的每個Boss依序登場。",
-  "CustomBossChallenge-DifferentBosses": "每級Boss",
-  "CustomBossChallenge-DifferentBossesInfo": "勾選後可以為每個階段指定自己的Boss，例如第 1 級是 Bloonarius，第 2 級是 Lych。在階段預覽中點擊一個階段來選擇它的Boss、是否精英，或選擇隨機，在遊戲開始時揭曉。沒有更改的階段沿用上方的Boss類型，並隨之變化。",
-  "CustomBossChallenge-DifferentBossesHint": "在階段預覽中點擊一個階段來選擇它的Boss",
+  "CustomBossChallenge-DifferentBosses": "進階模式",
+  "CustomBossChallenge-DifferentBossesInfo": "勾選後可以自己選擇每個階段的Boss，例如第 1 階段是 Bloonarius，第 2 階段是 Lych。每個階段一開始都是Boss類型，此時Boss類型會被隱藏。在下方的階段預覽中點擊一個階段來選擇它的Boss、是否精英，或選擇隨機，在遊戲開始時揭曉。",
+  "CustomBossChallenge-DifferentBossesHint": "點擊下方的階段來選擇它的Boss",
   "CustomBossChallenge-TierBossTitle": "第 {0} 級的Boss",
   "CustomBossChallenge-RandomBoss": "隨機",
-  "CustomBossChallenge-FollowBossType": "與Boss類型相同",
   "CustomBossChallenge-BossLineup": "Boss",
   "CustomBossChallenge-TierArrives": "第 {0} 階段：{1}"
 }
