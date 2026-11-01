@@ -26,6 +26,8 @@ where you can read a share code and see the whole setup without the game, or
   the vanilla editor doesn't offer it; it is only added in the Boss Creator.
 - **Boss section** at the top of the editor:
   - Pick any boss (Bloonarius, Lych, Vortex, Dreadbloon, Phayze, Blastapopoulos, Diamondback) and toggle **Elite**.
+  - **Boss per Tier**: give each tier a boss of its own, for example Bloonarius on tier 1 and Lych on tier 2, Elite
+    or not, or Random (see [Boss per Tier](#boss-per-tier)).
   - **Boss Speed** and **Boss Health** sliders, using the game's own boss multipliers (the same ones Ninja Kiwi uses
     for weekly events such as "Vortex at 150% speed").
   - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
@@ -86,6 +88,31 @@ where you can read a share code and see the whole setup without the game, or
 
 ![Main menu](docs/main-menu.jpg)
 
+## Boss per Tier
+
+Tick **Boss per Tier** under the boss to mix bosses in one game (#28). The cards in the **Tier Preview** then become
+buttons, each with a small pencil: click one to pick that tier's boss from every boss, **Elite** or not, or **Random**
+for a surprise that is picked when the game starts (and stays the same through restarts, retries and Continue).
+**Same as Boss Type** makes the tier follow the boss chosen above again; those tiers are shown a little faded and
+change along with it, Elite included. With the keyboard, the arrows step a card's boss, Enter opens the picker and
+Delete makes the tier follow the Boss Type again. Unticking keeps your choices, so ticking again brings them back;
+the boss's reset button turns it off.
+
+![Boss per Tier in the Tier Preview](docs/tier-bosses.jpg)
+
+![Picking a tier's boss](docs/tier-boss-picker.jpg)
+
+In the game, each tier spawns its own boss with all its abilities, and the boss panel shows that boss's portrait,
+its health bar extras (Lych's regrow, Blastapopoulos' heat, Diamondback's tail, the armour bars) and, between
+bosses, the one coming next. A banner names every boss as it arrives, and the **Bosses** line-up on the left shows
+the whole order: defeated tiers greyed out with a tick, the boss alive framed in yellow. Click **Bosses** to fold it
+away; it stays folded in later games. Tiers above 5 are made from tier 5 of their own boss. Try the **Boss
+Gauntlet** example: all seven bosses, one after the other.
+
+![A boss arriving](docs/boss-arrival.jpg)
+
+![The line-up of bosses](docs/boss-lineup.jpg)
+
 ## Saved setups
 
 The **Saved Setups** row keeps your favorite setups in the game, so you can switch between them without share codes:
@@ -119,8 +146,8 @@ It shows the Tier Preview, skulls and rules like the Boss Creator does.
 A code is only data: it can't run anything, and custom games are always unranked and never touch your records.
 Codes are checked before they load, so values outside what the game can play are brought back into range.
 
-Codes start with `CBC1:`, or `CBC2:` when they use Speed or Health per Tier so that older versions of the mod
-ask for an update instead of loading them without those settings. They only contain what differs from a new
+Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, or `CBC3:` when they use Boss per Tier,
+so that older versions of the mod ask for an update instead of loading them without those settings. They only contain what differs from a new
 setup, so they are usually a few hundred characters. A new, unchanged setup gives a code like this one:
 
 ```
@@ -133,6 +160,12 @@ And this is Vortex Elite with 7 tiers, +20 % speed and +50 % health per tier, so
 CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJSsjAx0lDxSE3NKMuBCpga1OkrJQBNrawE
 ```
 
+And the Boss Gauntlet example, a different boss on each of its 7 tiers, is a `CBC3:` code:
+
+```
+CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg2iiTKoSreNzfjS3LhD46ZyU_d4WOm7ctoI2mhVVapURTHQIskP5F7Q0Nw_SLRwj15tE83qqlELoCgzB7McB4urf0A
+```
+
 ![Share Code](docs/share-code.jpg)
 
 ## Boss options
@@ -140,6 +173,7 @@ CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJS
 | Option | Range | Default | Notes |
 |---|---|---|---|
 | Boss Type | 7 bosses | Bloonarius | Elite toggle next to it. |
+| Boss per Tier | on / off | off | Each tier's boss is picked on its card in the Tier Preview: any boss, Elite or not, Random, or the Boss Type. |
 | Boss Speed | 10–1000 % | 100 % | |
 | Boss Health | 10–2000 % | 100 % | |
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
@@ -199,6 +233,7 @@ The Boss Creator setup is stored in `BloonsTD6/UserData/CustomBossChallenge/Last
   on their own PC, so everyone would need the mod and the same setup, or the games would get out of sync. A co-op
   Boss Challenge is always a normal one, with the game's own bosses, even if you were in the Boss Creator before.
   This is not a bug.
+- With **Boss per Tier**, the map's music and its boss decorations stay those of the first tier's boss.
 - Tiers above 5 use tier 5's model and abilities; only their look and their health differ (see
   [Tiers above 5](#tiers-above-5)). The glow uses a shader built for the game's Unity version; if a BTD6 update moves
   to a Unity version it doesn't work with, the glow falls back to a simpler one made from the game's own shaders until

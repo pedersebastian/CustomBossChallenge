@@ -111,11 +111,12 @@ public class SetupCodeTest : CustomBossTest
             .Select(match => match.Value).ToList();
         Assert(examples.Any(example => example.StartsWith(SetupCode.Prefix)), "The README must show a version 1 code");
         Assert(examples.Any(example => example.StartsWith(SetupCode.Version2Prefix)), "The README must show a version 2 code");
+        Assert(examples.Any(example => example.StartsWith(SetupCode.Version3Prefix)), "The README must show a version 3 code");
         foreach (var example in examples)
         {
             Assert(SetupCode.TryDecode(example, out var readmeOptions, out _, out var readmeProblem),
                 $"README code {Shorten(example)} doesn't load: {readmeProblem}");
-            AssertEquals(example.StartsWith(SetupCode.Version2Prefix), SetupCode.NeedsVersion2(readmeOptions),
+            AssertEquals(example[..SetupCode.PrefixLength], SetupCode.PrefixFor(readmeOptions),
                 $"README code {Shorten(example)} must be the version its options need");
         }
         Log($"{examples.Count} README codes load");

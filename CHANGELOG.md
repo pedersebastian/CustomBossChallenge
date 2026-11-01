@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Boss per Tier** (#28): tick it under the boss to give every tier a boss of its own, for example Bloonarius on
+  tier 1 and Lych on tier 2. The Tier Preview's cards become buttons that open a picker with every boss, Elite or not,
+  Random (picked when the game starts, and kept through restarts, retries and Continue) and Same as Boss Type. In the
+  game each tier spawns its own boss with its abilities, the boss panel shows its portrait and its health bar extras,
+  a banner names each boss as it arrives, and a line-up on the left shows every tier's boss, the defeated ones ticked.
+  Tiers above 5 are made from tier 5 of their own boss. New example: Boss Gauntlet, all seven bosses in a row. Setups
+  with Boss per Tier are shared as `CBC3:` codes, which older versions of the mod refuse instead of playing them with
+  one boss; the website reads them.
 - **Reset and undo for the boss options** (#36): the boss, the skulls and the custom skulls get a reset button like
   the sliders have, and Delete or Backspace resets the option in the yellow keyboard frame. **Reset Boss Options** at
   the top of the Boss section puts every boss option back to its default after asking, and leaves the Challenge Editor
@@ -19,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ...; a visit to one of the editor's panels is one step), or a pasted, loaded or random setup, a reset or the
   editor's own Undo as one step each, so an accidental Paste can be undone. The challenge name isn't undone. Not while
   a text field, a popup or one of the editor's panels has the keyboard.
+
+### Fixed
+
+- The website showed some boss health one step lower than the game, e.g. 1.4M for Phayze's 1.45M tier 5 where the
+  Boss Creator shows 1.5M.
 
 ## [2.8.0] - 2026-11-01
 
