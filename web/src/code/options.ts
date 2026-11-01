@@ -10,6 +10,7 @@ import {
   spawnRounds,
 } from "../math/tiers";
 import { clamp } from "../math/dotnet";
+import { normalizeTierBosses, tierEntry, type TierBoss } from "../math/tierBosses";
 
 export const SKULL_MODES = ["Vanilla", "EvenlySpaced", "Custom"] as const;
 export type SkullMode = (typeof SKULL_MODES)[number];
@@ -26,6 +27,8 @@ export interface BossOptions {
   SpeedPerTier: number;
   HealthPerTier: number;
   SpawnRounds: string | null;
+  /** The boss of each tier with "Boss per Tier" on, or null for the same boss on every tier (codes from 2.9, CBC3) */
+  TierBosses?: string | null;
   /** Codes from before 2.3; sanitize turns it into HealthPerTier */
   ExtraTierHealth?: number | null;
 }
@@ -51,6 +54,7 @@ export function optionsJson(options: BossOptions): JsonObject {
     SpawnRounds: options.SpawnRounds,
   };
   if (options.ExtraTierHealth != null) json.ExtraTierHealth = options.ExtraTierHealth;
+  if (options.TierBosses != null) json.TierBosses = options.TierBosses;
   return json;
 }
 
@@ -102,6 +106,7 @@ export function readOptions(json: JsonObject): RawOptions {
     HealthPerTier: toInt(get("HealthPerTier"), "HealthPerTier"),
     SpawnRounds: toNullableString(get("SpawnRounds"), "SpawnRounds"),
     ExtraTierHealth: get("ExtraTierHealth") === null ? null : toInt(get("ExtraTierHealth"), "ExtraTierHealth"),
+    TierBosses: toNullableString(get("TierBosses"), "TierBosses"),
   };
 }
 
@@ -124,6 +129,7 @@ export function sanitize(raw: RawOptions): BossOptions {
         : raw.HealthPerTier,
     ),
     SpawnRounds: raw.SpawnRounds,
+    TierBosses: normalizeTierBosses(raw.TierBosses),
     ExtraTierHealth: null,
   };
 }
@@ -138,5 +144,29 @@ export function skullPercents(options: BossOptions): number[] | null {
 /** The round each tier spawns on */
 export const effectiveSpawnRounds = (options: BossOptions): number[] => spawnRounds(options.Tiers, options.SpawnRounds);
 
+/** Whether the tiers can have different bosses */
+export const isMixed = (options: BossOptions): boolean => options.TierBosses != null;
+
+/** What a tier was set to: the setup's boss (boss null), a boss of its own, or Random (BossOptions.EntryOf) */
+export const entryOf = (options: BossOptions, tier: number): TierBoss =>
+  isMixed(options) ? tierEntry(options.TierBosses, tier) : { boss: null, elite: false };
+
+/** The boss and Elite of a tier; a Random tier has the setup's boss until the game starts (BossOptions.BossOf) */
+export function bossOf(options: BossOptions, tier: number): { boss: string; elite: boolean } {
+  const entry = entryOf(options, tier);
+  return entry.boss === null || entry.boss === "Random" || !BOSSES.includes(entry.boss)
+    ? { boss: options.Boss, elite: options.Elite }
+    : { boss: entry.boss, elite: entry.elite };
+}
+
+/** The boss a tier has with "Boss per Tier" on, e.g. "Elite Lych" or "Random" */
+export function tierBossName(options: BossOptions, tier: number): string {
+  const entry = entryOf(options, tier);
+  if (entry.boss === "Random") return entry.elite ? "Random Elite" : "Random";
+  const { boss, elite } = bossOf(options, tier);
+  return `${elite ? "Elite " : ""}${boss}`;
+}
+
 /** The name a new setup gets, e.g. "Custom Lych" or "Custom Elite Lych" */
-export const defaultName = (options: BossOptions): string => `Custom ${options.Elite ? "Elite " : ""}${options.Boss}`;
+export const defaultName = (options: BossOptions): string =>
+  isMixed(options) ? "Custom Boss Gauntlet" : `Custom ${options.Elite ? "Elite " : ""}${options.Boss}`;

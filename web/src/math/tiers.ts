@@ -1,6 +1,6 @@
 // Port of Config/TierMath.cs: boss tiers, the rounds they spawn on and how much stronger they get
 
-import { clamp, roundHalfEven } from "./dotnet";
+import { clamp, roundHalfEven, toFixedNet } from "./dotnet";
 
 export const VANILLA_TIERS = 5;
 export const MIN_TIERS = 1;
@@ -81,7 +81,7 @@ export function healthPerTierFromExtraTierHealth(extraTierHealth: number): numbe
 /** Health the way the game shortens big numbers, e.g. 950, 7.5k, 112k, 3.4M, 1.2B (Menus/TierStrip.cs) */
 export function formatHealth(health: number): string {
   const short = (value: number, unit: string): string =>
-    (value < 10 ? value.toFixed(1).replace(/\.0$/, "") : value.toFixed(0)) + unit;
+    (value < 10 ? toFixedNet(value, 1).replace(/\.0$/, "") : toFixedNet(value, 0)) + unit;
   if (health >= 1e9) return short(health / 1e9, "B");
   if (health >= 1e6) return short(health / 1e6, "M");
   if (health >= 1e3) return short(health / 1e3, "k");

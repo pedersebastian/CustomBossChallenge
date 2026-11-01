@@ -209,7 +209,10 @@ public class WebDataTest : CustomBossTest
                 SetupCode.Pack("{\"o\":{\"Tiers\":50,\"SkullCount\":-4,\"SpeedPerTier\":900,\"CustomSkulls\":\"5, 5, 120, x\"," +
                                "\"SkullMode\":\"Custom\"},\"c\":{\"map\":\"NoSuchMap\",\"name\":\" \\u0007 \"}}"),
                 SetupCode.Pack("{\"o\":{\"Tiers\":7,\"ExtraTierHealth\":225},\"c\":{}}"),
-                SetupCode.Pack("{\"o\":{\"SpawnRounds\":\"995, 996, 1500\",\"Tiers\":6},\"c\":{}}")
+                SetupCode.Pack("{\"o\":{\"SpawnRounds\":\"995, 996, 1500\",\"Tiers\":6},\"c\":{}}"),
+                // A boss per tier, with Random, a tier that follows the boss, extra tiers and tokens to clean up
+                SetupCode.Pack("{\"o\":{\"Boss\":\"Vortex\",\"Tiers\":8,\"TierBosses\":" +
+                               "\" lych,,RandomElite,nonsense,PHAYZEelite,,DiamondbackElite\"},\"c\":{}}", SetupCode.Version3Prefix)
             })
             .Distinct()
             .ToList();

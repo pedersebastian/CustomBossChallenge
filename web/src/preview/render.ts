@@ -3,7 +3,7 @@
 import { GAME } from "../data/types";
 import { h } from "../dom";
 import { playProblem, type Challenge } from "../code/decode";
-import { effectiveSpawnRounds, type BossOptions } from "../code/options";
+import { bossOf, effectiveSpawnRounds, isMixed, tierBossName, type BossOptions } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
 import { clampTiers, endRound, formatHealth, maxModelHealth } from "../math/tiers";
@@ -26,7 +26,9 @@ const spoken = (text: string): HTMLElement => h("span", { class: "sr-only" }, te
 
 const percent = (multiplier: number): string => `${formatDecimals(multiplier * 100, 0)} %`;
 
-export const bossTitle = (options: BossOptions): string => `${options.Elite ? "Elite " : ""}${options.Boss}`;
+export const bossTitle = (options: BossOptions): string =>
+  isMixed(options) ? "Boss per Tier" : `${options.Elite ? "Elite " : ""}${options.Boss}`;
+
 
 export function renderSetup(options: BossOptions, challenge: Challenge, compact = false): HTMLElement {
   const rounds = effectiveSpawnRounds(options);
@@ -62,17 +64,22 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
   return root;
 }
 
-/** The boss's first letter; with more than 5 tiers it glows like the last tier */
+/** Long boss names may break where their parts meet on a narrow card, not anywhere: "Blasta-popoulos" */
+const breakable = (name: string): string =>
+  name.replace("Blastapopoulos", "Blasta­popoulos").replace("Diamondback", "Diamond­back").replace("Dreadbloon", "Dread­bloon");
+
+/** The boss's first letter, or ★ with a boss per tier; with more than 5 tiers it glows like the last tier */
 function renderBadge(options: BossOptions): HTMLElement {
-  const glow = tierGlow(options.Boss, clampTiers(options.Tiers));
+  const last = clampTiers(options.Tiers);
+  const glow = tierGlow(bossOf(options, last).boss, last);
   return h(
     "div",
     {
-      class: "boss-badge" + (options.Elite ? " elite" : "") + (glow ? " tier-look" : ""),
+      class: "boss-badge" + (options.Elite && !isMixed(options) ? " elite" : "") + (glow ? " tier-look" : ""),
       style: glow ? tierGlowStyle(glow) : undefined,
       "aria-hidden": "true",
     },
-    options.Boss.slice(0, 1),
+    isMixed(options) ? "★" : options.Boss.slice(0, 1),
   );
 }
 
@@ -83,17 +90,19 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
     const speed = `×${formatDecimals(card.speed, 2)}`;
     const speedTone = tone(card.speed);
     const healthTone = tone(card.healthFactor);
-    const glow = tierGlow(options.Boss, card.tier);
+    const glow = tierGlow(bossOf(options, card.tier).boss, card.tier);
+    const boss = isMixed(options) ? tierBossName(options, card.tier) : null;
     strip.append(
       h(
         "div",
         { class: glow ? "tier tier-look" : "tier", style: glow ? tierGlowStyle(glow) : undefined, role: "listitem" },
         spoken(
-          `Tier ${card.tier}, round ${card.round}, speed ${speed}, ${SPOKEN[speedTone][0]}, ` +
+          `Tier ${card.tier}${boss ? `, ${boss}` : ""}, round ${card.round}, speed ${speed}, ${SPOKEN[speedTone][0]}, ` +
             `health ${card.health}, ${SPOKEN[healthTone][1]}`,
         ),
         h("span", { class: "tier-label", "aria-hidden": "true" }, `T${card.tier}`),
         h("span", { class: "tier-round", "aria-hidden": "true" }, `R${card.round}`),
+        boss ? h("span", { class: "tier-boss", title: "This tier's boss", "aria-hidden": "true" }, breakable(boss)) : null,
         h("span", { class: `tier-speed ${speedTone}`, title: "Speed compared with the normal game", "aria-hidden": "true" }, speed + ARROW[speedTone]),
         h("span", { class: `tier-health ${healthTone}`, title: "Health", "aria-hidden": "true" }, card.health + ARROW[healthTone]),
       ),

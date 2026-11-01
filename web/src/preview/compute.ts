@@ -2,7 +2,7 @@
 
 import { GAME } from "../data/types";
 import type { Challenge } from "../code/decode";
-import { effectiveSpawnRounds, skullPercents, type BossOptions } from "../code/options";
+import { bossOf, effectiveSpawnRounds, entryOf, skullPercents, type BossOptions } from "../code/options";
 import { float } from "../math/dotnet";
 import { clampTiers, extraTierFactor, formatHealth, healthFactor, maxModelHealth, speedFactor, VANILLA_TIERS } from "../math/tiers";
 
@@ -29,11 +29,11 @@ export function tierCards(options: BossOptions, challenge: Challenge): TierCard[
   const bossSpeed = float(challenge.bossSpeed);
   const bossHealth = float(challenge.bossHealth);
   const cap = maxModelHealth(bossHealth);
-  const models = GAME.bosses[options.Boss]?.[options.Elite ? "elite" : "normal"];
 
   return Array.from({ length: clampTiers(options.Tiers) }, (_, i) => {
     const tier = i + 1;
-    const source = models?.[Math.min(tier, VANILLA_TIERS) - 1];
+    // Each tier is made from its own boss; a Random tier's boss isn't known until the game starts
+    const source = entryOf(options, tier).boss === "Random" ? undefined : modelOf(options, Math.min(tier, VANILLA_TIERS), tier);
     let healthValue: number | null = null;
     let capped = false;
     if (source) {
@@ -63,13 +63,18 @@ export function skulls(options: BossOptions): { percents: number[]; tier: number
   const custom = skullPercents(options);
   if (custom) return { percents: custom, tier: null };
 
-  const models = GAME.bosses[options.Boss]?.[options.Elite ? "elite" : "normal"] ?? [];
-  const tiers = models
-    .slice(0, Math.min(clampTiers(options.Tiers), VANILLA_TIERS))
+  const tiers = Array.from({ length: Math.min(clampTiers(options.Tiers), VANILLA_TIERS) }, (_, i) => modelOf(options, i + 1, i + 1))
+    .filter((model) => model !== undefined)
     .map((model) => model.skulls.map(float).sort((a, b) => b - a));
   if (tiers.length === 0) return { percents: [], tier: null };
 
   const first = tiers[0];
   const same = tiers.every((other) => other.length === first.length && other.every((value, i) => value === first[i]));
   return { percents: first, tier: same ? null : 1 };
+}
+
+/** The game's model of tier `modelTier` (1-5) of the boss `tier` has, like BossOptions.SourceId */
+function modelOf(options: BossOptions, modelTier: number, tier: number) {
+  const { boss, elite } = bossOf(options, tier);
+  return GAME.bosses[boss]?.[elite ? "elite" : "normal"]?.[modelTier - 1];
 }

@@ -2,7 +2,7 @@
 
 import { GAME } from "../data/types";
 import type { Challenge } from "../code/decode";
-import { effectiveSpawnRounds, type BossOptions } from "../code/options";
+import { effectiveSpawnRounds, isMixed, tierBossName, type BossOptions } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
 import { endRound } from "../math/tiers";
@@ -58,6 +58,13 @@ export function compareRows(a: Setup, b: Setup): Row[] {
   add("Tiers", "Speed per Tier", (s) => perTier(s.options.SpeedPerTier));
   add("Tiers", "Health per Tier", (s) => perTier(s.options.HealthPerTier));
   add("Tiers", "Spawn rounds", (s) => effectiveSpawnRounds(s.options).join(", "));
+  // With "Boss per Tier" on either side, each tier's boss
+  if (isMixed(a.options) || isMixed(b.options)) {
+    add("Tiers", "Boss per Tier", (s) => yesNo(isMixed(s.options)));
+    for (let tier = 1; tier <= Math.max(a.options.Tiers, b.options.Tiers); tier++) {
+      add("Tiers", `Tier ${tier} boss`, (s) => (tier <= s.options.Tiers ? tierBossName(s.options, tier) : "—"));
+    }
+  }
   add("Tiers", "Game ends", (s) => `Round ${endRound(effectiveSpawnRounds(s.options))}`);
 
   add("Game", "Map", (s) => GAME.maps[s.challenge.map] ?? s.challenge.map);
@@ -127,7 +134,10 @@ function compareValue(a: number, b: number, words: { more: string; less: string;
 export function verdict(a: Setup, b: Setup): string[] {
   const lines: string[] = [];
   // First, since the health and speed below then compare two different bosses
-  const boss = (setup: Setup): string => `${setup.options.Elite ? "Elite " : ""}${setup.options.Boss}`;
+  const boss = (setup: Setup): string =>
+    isMixed(setup.options)
+      ? Array.from({ length: setup.options.Tiers }, (_, i) => tierBossName(setup.options, i + 1)).join(", ")
+      : `${setup.options.Elite ? "Elite " : ""}${setup.options.Boss}`;
   if (boss(a) !== boss(b)) lines.push(`Different bosses: A is ${boss(a)}, B is ${boss(b)}.`);
 
   const tiersA = a.options.Tiers;

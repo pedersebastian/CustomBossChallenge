@@ -85,3 +85,13 @@ describe("tiers", () => {
     expect(roundHalfEven(-2.5)).toBe(-2);
   });
 });
+
+describe("rounding like .NET", () => {
+  // .NET rounds the shortest text of a double, so 1.45 (stored as 1.4499999…) still gives 1.5, like Phayze's tier 5
+  it.each([
+    [1_450_000, "1.5M"],
+    [1_440_000, "1.4M"],
+    [14_500, "15k"],
+    [9_950, "10k"],
+  ])("formatHealth(%d) = %s", (health, shown) => expect(formatHealth(health)).toBe(shown));
+});
