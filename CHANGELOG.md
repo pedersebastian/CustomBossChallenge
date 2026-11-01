@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   colours the first stars in the tier's colour and shows the tier's number. Tiers 1-5 and other games keep the game's
   look.
 
+- **Compare two setups on the website** (#35): a page of its own,
+  [compare.html](https://pedersebastian.github.io/CustomBossChallenge/compare.html), where you paste two codes and see
+  only the options that differ (the rest one click away), a short verdict like "B has 40 % more boss health at tier 5",
+  both setups' boss health and speed per tier in one chart (solid and dashed lines, round and square points, and the
+  values as a table) and the tiers side by side. Copy link shares the comparison as `compare.html#a=CBC2:…&b=CBC2:…`,
+  and **Compare** under a code on the main page opens it there as A.
 - **Links to a setup:** after Copy, **Copy link** gives a link like
   `https://pedersebastian.github.io/CustomBossChallenge/#code=CBC2:…` that opens the setup on the website. Paste
   reads such a link too, also as Discord shows it in `<…>`. On the website, a link opens the setup straight away, the

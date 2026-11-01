@@ -12,7 +12,8 @@ rounds you choose, and combine it with every rule the Challenge Editor already h
 Event and your Boss Challenge records and saves are never affected.
 
 **Website:** [pedersebastian.github.io/CustomBossChallenge](https://pedersebastian.github.io/CustomBossChallenge/),
-where you can read a share code and see the whole setup without the game.
+where you can read a share code and see the whole setup without the game, or
+[compare two setups](https://pedersebastian.github.io/CustomBossChallenge/compare.html) side by side.
 
 ![Boss Creator](docs/boss-creator.jpg)
 

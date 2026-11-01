@@ -682,6 +682,222 @@ main {
   padding-left: 1.3em;
 }
 
+/* Compare page */
+.nav-links a[aria-current="page"] {
+  color: var(--text);
+  text-decoration: underline 3px #ffd84d;
+  text-underline-offset: 6px;
+}
+
+.panel > h1 {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+}
+
+.compare-inputs,
+.compare-sides,
+.curves {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 14px;
+}
+
+.compare-input {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* A and B, the same everywhere on the page */
+.side-label {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid var(--outline);
+  background: var(--card);
+  font: 1.2rem "Luckiest Guy", sans-serif;
+  text-shadow: 0 2px 0 var(--outline);
+}
+
+.compare-side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.compare-side .setup {
+  flex: 1;
+}
+
+.verdict ul {
+  margin: 0;
+  padding-left: 1.3em;
+  font-weight: 700;
+}
+
+.verdict p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.toggle {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.toggle input {
+  width: 20px;
+  height: 20px;
+  accent-color: #ffd84d;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 4px;
+}
+
+.compare-table th,
+.compare-table td {
+  padding: 6px 10px;
+  text-align: left;
+  background: var(--card);
+}
+
+.compare-table thead th {
+  background: none;
+  color: var(--muted);
+  padding-bottom: 0;
+}
+
+.compare-table tr > :first-child {
+  border-radius: 10px 0 0 10px;
+}
+
+.compare-table tr > :last-child {
+  border-radius: 0 10px 10px 0;
+}
+
+.compare-table tbody th {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.compare-table td {
+  font-weight: 800;
+}
+
+.compare-table tr.group th {
+  background: none;
+  color: var(--text);
+  font: 1rem "Luckiest Guy", sans-serif;
+  text-shadow: 0 2px 0 var(--outline);
+  padding: 8px 0 0;
+}
+
+.compare-table .differs {
+  color: #ffd84d;
+  font-weight: 800;
+}
+
+.compare-table tr.changed > * {
+  background: #24508e;
+}
+
+/* Options that are the same are hidden until asked for */
+.diff:not(.show-same) .same {
+  display: none;
+}
+
+.diff tr.same td {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+
+.curve {
+  margin: 0;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 10px 10px 4px;
+}
+
+.curve figcaption {
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.curve-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.curve-chart .grid {
+  stroke: rgba(255, 255, 255, 0.15);
+}
+
+.curve-chart .tick {
+  fill: var(--muted);
+  font: 700 12px "Nunito", sans-serif;
+}
+
+/* A solid and gold, B dashed and pink, so the two differ in more than colour */
+.series {
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.series.a {
+  stroke: #ffd84d;
+  stroke-width: 4;
+}
+
+.series.b {
+  stroke: #ff7ad9;
+  stroke-width: 2.5;
+  stroke-dasharray: 7 5;
+}
+
+.point {
+  stroke: var(--outline);
+  stroke-width: 2;
+}
+
+.point.a {
+  fill: #ffd84d;
+}
+
+.point.b {
+  fill: #ff7ad9;
+}
+
 .footer {
   text-align: center;
   color: var(--muted);

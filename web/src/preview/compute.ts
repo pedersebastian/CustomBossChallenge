@@ -15,6 +15,8 @@ export interface TierCard {
   healthFactor: number;
   /** Health shortened like the game does, e.g. 1.2M, or "?" for a boss the website doesn't know */
   health: string;
+  /** The health itself, or null for a boss the website doesn't know */
+  healthValue: number | null;
   /** Held to the most health the game can take */
   capped: boolean;
 }
@@ -30,19 +32,20 @@ export function tierCards(options: BossOptions, challenge: Challenge): TierCard[
   return Array.from({ length: clampTiers(options.Tiers) }, (_, i) => {
     const tier = i + 1;
     const source = models?.[Math.min(tier, VANILLA_TIERS) - 1];
-    let health = "?";
+    let healthValue: number | null = null;
     let capped = false;
     if (source) {
       const model = source.health * extraTierFactor(tier) * healthFactor(tier, options.HealthPerTier);
       capped = model > cap;
-      health = formatHealth(Math.min(model, cap) * bossHealth);
+      healthValue = Math.min(model, cap) * bossHealth;
     }
     return {
       tier,
       round: rounds[i],
       speed: speedFactor(tier, options.SpeedPerTier) * bossSpeed,
       healthFactor: healthFactor(tier, options.HealthPerTier) * bossHealth,
-      health,
+      health: healthValue === null ? "?" : formatHealth(healthValue),
+      healthValue,
       capped,
     };
   });

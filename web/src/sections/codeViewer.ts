@@ -1,7 +1,7 @@
 // The "Read a share code" section: paste a code, see the setup. A link with #code=… opens a code straight away.
 
 import { decode, extractCode } from "../code/decode";
-import { codeFromHash, hashFor, linkTo } from "../code/link";
+import { codeFromHash, compareLinkTo, hashFor, linkTo } from "../code/link";
 import { copyWithFeedback, h } from "../dom";
 import { releaseSetup, renderSetup } from "../preview/render";
 
@@ -47,7 +47,10 @@ export function setUpCodeViewer(input: HTMLTextAreaElement, result: HTMLElement)
     const copyLink = h("button", { class: "button small blue", type: "button" }, "Copy link");
     copyLink.addEventListener("click", () => copyWithFeedback(copyLink, linkTo(trimmed), "Link copied!"));
 
-    replace(renderSetup(decoded.options, decoded.challenge), h("div", { class: "actions" }, copyCode, copyLink));
+    // Opens the compare page with this code as A
+    const compare = h("a", { class: "button small orange", href: compareLinkTo(trimmed, "") }, "Compare");
+
+    replace(renderSetup(decoded.options, decoded.challenge), h("div", { class: "actions" }, copyCode, copyLink, compare));
     history.replaceState(null, "", hashFor(trimmed));
   }
 
