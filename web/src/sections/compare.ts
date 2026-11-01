@@ -50,7 +50,7 @@ function renderDifferences(a: Setup, b: Setup): HTMLElement {
   return h(
     "div",
     { class: "block" },
-    h("h3", {}, changed === 0 ? "No differences" : `${changed} ${changed === 1 ? "difference" : "differences"}`),
+    h("h2", {}, changed === 0 ? "No differences" : `${changed} ${changed === 1 ? "difference" : "differences"}`),
     h("label", { class: "toggle" }, toggle, ` Show the ${rows.length - changed} options that are the same`),
     h("div", { class: "table-scroll" }, table),
   );
@@ -63,7 +63,7 @@ function renderComparison(a: Setup, b: Setup, codes: { a: string; b: string }): 
   const summary = h(
     "div",
     { class: "block verdict" },
-    h("h3", {}, "In short"),
+    h("h2", {}, "In short"),
     same
       ? h("p", {}, "The two setups are the same.")
       : lines.length
@@ -81,7 +81,7 @@ function renderComparison(a: Setup, b: Setup, codes: { a: string; b: string }): 
     summary,
     renderDifferences(a, b),
     renderCurves(tierPairs(a, b), { a: nameOf(a), b: nameOf(b) }),
-    h("div", { class: "block" }, h("h3", {}, "Side by side"), h("div", { class: "compare-sides" }, side("A", a), side("B", b))),
+    h("div", { class: "block" }, h("h2", {}, "Side by side"), h("div", { class: "compare-sides" }, side("A", a), side("B", b))),
     h("div", { class: "actions" }, copyLink),
   ];
 }

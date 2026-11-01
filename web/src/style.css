@@ -178,6 +178,10 @@ code {
   color: var(--muted);
   text-decoration: none;
   font-weight: 800;
+  /* 44 px tall to tap, without making the menu taller */
+  display: inline-block;
+  padding: 10px 2px;
+  margin: -10px 0;
 }
 
 .nav-links a:hover {
@@ -258,7 +262,8 @@ main {
 }
 
 .button:focus-visible,
-.code-input:focus-visible {
+.code-input:focus-visible,
+input:focus-visible {
   outline: 3px solid #ffd84d;
   outline-offset: 2px;
 }
@@ -483,8 +488,9 @@ main {
   inset: -6px;
 }
 
+/* Half white, so every boss's tier colour is readable on the card (at least 4.5:1); the glow keeps the full colour */
 .tier-look .tier-label {
-  color: var(--tier-color);
+  color: color-mix(in srgb, var(--tier-color) 50%, #fff);
   text-shadow: 0 1px 0 var(--outline);
 }
 
@@ -555,7 +561,7 @@ main {
 /* Rules */
 .rules {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
   gap: 6px 18px;
   margin: 0;
 }
@@ -652,7 +658,7 @@ main {
 /* Features */
 .features {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
   gap: 14px;
 }
 
@@ -688,7 +694,7 @@ main {
 /* Install */
 .install {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 18px;
 }
 
@@ -751,6 +757,10 @@ main {
 
 .compare-side .setup {
   flex: 1;
+}
+
+.result h2 {
+  font-size: 1.25rem;
 }
 
 .verdict ul {
@@ -930,6 +940,11 @@ main {
 }
 
 @media (max-width: 640px) {
+  /* The chart shrinks with the screen, its text too: start bigger so it stays readable */
+  .curve-chart .tick {
+    font-size: 18px;
+  }
+
   .hero {
     flex-direction: column;
     text-align: center;

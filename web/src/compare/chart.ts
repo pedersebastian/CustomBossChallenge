@@ -64,7 +64,8 @@ function marker(side: Side, x: number, y: number, title: string): SVGElement {
 
 function chart(pairs: Pairs, title: string, value: (card: TierCard) => number | null, axisFor: (values: number[]) => Axis, text: (card: TierCard) => string): HTMLElement {
   const values = pairs.flatMap((pair) => [pair.a, pair.b]).flatMap((card) => (card ? [value(card)] : [])).filter((v): v is number => v !== null && v > 0);
-  const figure = h("figure", { class: "curve" }, h("figcaption", {}, title));
+  // The chart itself is hidden from screen readers, so they are told where the values are
+  const figure = h("figure", { class: "curve" }, h("figcaption", {}, title, h("span", { class: "sr-only" }, " (the values are in the table below)")));
   if (values.length === 0) return figure;
 
   const axis = axisFor(values);
@@ -146,7 +147,7 @@ export function renderCurves(pairs: Pairs, names: { a: string; b: string }): HTM
   return h(
     "div",
     { class: "block" },
-    h("h3", {}, "Tier curves"),
+    h("h2", {}, "Tier curves"),
     legend,
     h(
       "div",
