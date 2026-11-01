@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "在阶段预览中点击一个阶段来选择它的Boss",
   "CustomBossChallenge-TierBossTitle": "第 {0} 级的Boss",
   "CustomBossChallenge-RandomBoss": "随机",
-  "CustomBossChallenge-FollowBossType": "与Boss类型相同"
+  "CustomBossChallenge-FollowBossType": "与Boss类型相同",
+  "CustomBossChallenge-BossLineup": "Boss",
+  "CustomBossChallenge-TierArrives": "第 {0} 阶段：{1}"
 }

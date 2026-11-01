@@ -3,11 +3,13 @@ using System.Collections;
 using System.Linq;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
+using CustomBossChallenge.Menus;
 using CustomBossChallenge.Persistence;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Unity;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using static CustomBossChallenge.Tests.TestUtils;
 
 namespace CustomBossChallenge.Tests;
@@ -123,6 +125,7 @@ public class MixedBossGameTest : CustomBossTest
                 AssertEquals(manager.sim.model.bossEliteMode, elite, $"Elite during tier {highestTier}");
                 AssertEquals(InGameData.CurrentGame.bossData.bossBloon, boss, $"Boss data during tier {highestTier}");
                 Log($"tier {highestTier}: {manager.CurrentBoss.bloonModel.id}");
+                CheckHud(options, highestTier, boss, elite);
             }
 
             if (!InGame.instance.bridge.AreRoundsActive()) InGame.instance.bridge.StartRound();
@@ -131,6 +134,33 @@ public class MixedBossGameTest : CustomBossTest
 
         AssertEquals(highestTier, options.Tiers, "Victory must come with the last chosen tier");
         yield return ToMainMenu();
+        AssertEquals(Visuals.BossHud.Lineup, null, "The line-up is gone outside the game");
+    }
+
+    /// <summary>
+    /// The boss panel's portrait, the banner and the line-up all show the tier that just spawned
+    /// </summary>
+    private void CheckHud(BossOptions options, int tier, BossType boss, bool elite)
+    {
+        var ui = AssertNotNull(Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.InGame.Races.BossUI>(), "No boss panel")!;
+        Visuals.BossHud.ShowPortraits(ui);
+        Visuals.BossHud.Update(now: true);
+        var lineup = AssertNotNull(Visuals.BossHud.Lineup, $"No line-up during tier {tier}")!;
+        Assert(lineup.gameObject.activeInHierarchy, "The line-up is shown");
+        AssertEquals(Visuals.BossHud.Cells.Count, options.Tiers, "A line-up cell per tier");
+
+        var banner = AssertNotNull(Visuals.BossHud.Banner, $"No banner for tier {tier}")!;
+        Assert(banner.gameObject.activeSelf, $"The banner shows when tier {tier} arrives");
+        AssertEquals(Visuals.BossHud.BannerText!.Text.text, Texts.TierArrives.T(tier, Visuals.BossHud.Name(boss, elite)),
+            "Banner text");
+
+        if (!Visuals.BossHud.LineupShown) return;
+        for (var i = 0; i < Visuals.BossHud.Cells.Count; i++)
+        {
+            var cell = Visuals.BossHud.Cells[i];
+            AssertEquals(cell.Tick.gameObject.activeSelf, i + 1 <= CustomBossState.HighestDefeatedTier, $"Tick of tier {i + 1} during tier {tier}");
+            AssertEquals(cell.Frame.gameObject.activeSelf, i + 1 == tier, $"Frame of tier {i + 1} during tier {tier}");
+        }
     }
 }
 

@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "Klicka på en nivå i nivåöversikten för att välja dess boss",
   "CustomBossChallenge-TierBossTitle": "Boss för nivå {0}",
   "CustomBossChallenge-RandomBoss": "Slumpad",
-  "CustomBossChallenge-FollowBossType": "Samma som bosstyp"
+  "CustomBossChallenge-FollowBossType": "Samma som bosstyp",
+  "CustomBossChallenge-BossLineup": "Bossar",
+  "CustomBossChallenge-TierArrives": "Nivå {0}: {1}"
 }

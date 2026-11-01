@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "انقر على مستوى في معاينة المستويات لتختار زعيمه",
   "CustomBossChallenge-TierBossTitle": "زعيم المستوى {0}",
   "CustomBossChallenge-RandomBoss": "عشوائي",
-  "CustomBossChallenge-FollowBossType": "مثل نوع الزعيم"
+  "CustomBossChallenge-FollowBossType": "مثل نوع الزعيم",
+  "CustomBossChallenge-BossLineup": "الزعماء",
+  "CustomBossChallenge-TierArrives": "المستوى {0}: {1}"
 }

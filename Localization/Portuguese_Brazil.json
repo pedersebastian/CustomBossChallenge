@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "Clique em um nível na prévia dos níveis para escolher o chefe",
   "CustomBossChallenge-TierBossTitle": "Chefe do nível {0}",
   "CustomBossChallenge-RandomBoss": "Aleatório",
-  "CustomBossChallenge-FollowBossType": "Igual ao tipo de chefe"
+  "CustomBossChallenge-FollowBossType": "Igual ao tipo de chefe",
+  "CustomBossChallenge-BossLineup": "Chefes",
+  "CustomBossChallenge-TierArrives": "Nível {0}: {1}"
 }

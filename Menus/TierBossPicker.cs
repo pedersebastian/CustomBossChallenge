@@ -104,10 +104,12 @@ public sealed class TierBossPicker
                 Anchor = new Vector2(1, 0), Pivot = new Vector2(0.75f, 0.25f)
             }, VanillaSprites.TickGreenIcon);
             marker.Image.raycastTarget = false;
-            var label = button.AddText(new Info("Label", 0, -ChoiceSize / 2 - 40, ChoiceSize + ChoiceGap, 60),
+            // Long names like Blastapopoulos shrink to their own button's width instead of running into the next one
+            var label = button.AddText(new Info("Label", 0, -ChoiceSize / 2 - 40, ChoiceSize + ChoiceGap - 16, 60),
                 choice == TierBossMath.Random ? Texts.RandomBoss.T() : choice, 38);
             label.Text.enableAutoSizing = true;
-            label.Text.fontSizeMin = 22;
+            label.Text.textWrappingMode = TextWrappingModes.NoWrap;
+            label.Text.fontSizeMin = 12;
             label.Text.fontSizeMax = 38;
             label.Text.raycastTarget = false;
             Choices[choice] = button;

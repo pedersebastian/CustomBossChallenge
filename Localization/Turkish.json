@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "Bossunu seçmek için Kademe Önizlemesi'nde bir kademeye tıklayın",
   "CustomBossChallenge-TierBossTitle": "Kademe {0} bossu",
   "CustomBossChallenge-RandomBoss": "Rastgele",
-  "CustomBossChallenge-FollowBossType": "Boss türüyle aynı"
+  "CustomBossChallenge-FollowBossType": "Boss türüyle aynı",
+  "CustomBossChallenge-BossLineup": "Bosslar",
+  "CustomBossChallenge-TierArrives": "Kademe {0}: {1}"
 }

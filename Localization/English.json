@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "Click a tier in the Tier Preview to choose its boss",
   "CustomBossChallenge-TierBossTitle": "Boss for Tier {0}",
   "CustomBossChallenge-RandomBoss": "Random",
-  "CustomBossChallenge-FollowBossType": "Same as Boss Type"
+  "CustomBossChallenge-FollowBossType": "Same as Boss Type",
+  "CustomBossChallenge-BossLineup": "Bosses",
+  "CustomBossChallenge-TierArrives": "Tier {0}: {1}"
 }

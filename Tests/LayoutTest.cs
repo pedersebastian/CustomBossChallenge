@@ -237,11 +237,19 @@ public class LayoutTest : CustomBossTest
                 }
             }
 
-            foreach (var label in picker.Choices.Values.Select(choice => choice.transform.Find("Label")?.GetComponent<Il2CppTMPro.TMP_Text>()))
+            var labels = picker.Choices.Values.Select(choice => choice.transform.Find("Label")?.GetComponent<Il2CppTMPro.TMP_Text>())
+                .Where(label => label != null).Select(label => label!).ToList();
+            foreach (var label in labels)
             {
-                if (label == null) continue;
+                label.ForceMeshUpdate();
                 var letters = LettersRect(label);
                 Expect(letters.width < 1 || Inside(letters, panel), $"{format}: the boss name '{label.text}' sticks out of the picker");
+            }
+
+            for (var i = 0; i + 1 < labels.Count; i++)
+            {
+                Expect(!Overlap(LettersRect(labels[i]), LettersRect(labels[i + 1])),
+                    $"{format}: the boss names '{labels[i].text}' and '{labels[i + 1].text}' run into each other in the picker");
             }
         }
         finally

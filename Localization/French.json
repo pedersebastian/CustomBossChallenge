@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "Cliquez sur un palier dans l'aperçu des paliers pour choisir son boss",
   "CustomBossChallenge-TierBossTitle": "Boss du palier {0}",
   "CustomBossChallenge-RandomBoss": "Aléatoire",
-  "CustomBossChallenge-FollowBossType": "Comme le type de boss"
+  "CustomBossChallenge-FollowBossType": "Comme le type de boss",
+  "CustomBossChallenge-BossLineup": "Boss",
+  "CustomBossChallenge-TierArrives": "Palier {0} : {1}"
 }

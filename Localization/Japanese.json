@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "ティアのプレビューでティアをクリックしてボスを選びます",
   "CustomBossChallenge-TierBossTitle": "ティア {0} のボス",
   "CustomBossChallenge-RandomBoss": "ランダム",
-  "CustomBossChallenge-FollowBossType": "ボスの種類と同じ"
+  "CustomBossChallenge-FollowBossType": "ボスの種類と同じ",
+  "CustomBossChallenge-BossLineup": "ボス",
+  "CustomBossChallenge-TierArrives": "ティア {0}：{1}"
 }

@@ -8,6 +8,7 @@ using CustomBossChallenge.Persistence;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Unity.UI_New;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
+using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -140,6 +141,23 @@ public class ScreenshotTour : CustomBossTest
             yield return new WaitForSecondsRealtime(1);
             yield return Capture(folder, "skull-preview");
 
+            // Boss per Tier: the Tier Preview's cards with their own bosses, and a card's boss picker
+            BossMode.Options = BossMode.Options with
+            {
+                SkullMode = SkullMode.Vanilla, TierBosses = "Bloonarius,Lych,RandomElite,,PhayzeElite,Diamondback"
+            };
+            BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
+            editor.chalName.text = editor.dcm.name = "Boss Gauntlet";
+            scroll.verticalNormalizedPosition = 0.62f;
+            yield return new WaitForSecondsRealtime(1);
+            yield return Capture(folder, "tier-bosses");
+            BossEditorSection.Current!.OpenPicker(2);
+            yield return new WaitForSecondsRealtime(1);
+            yield return Capture(folder, "tier-boss-picker");
+            TierBossPicker.Current?.Hide();
+            BossMode.Options = BossMode.Options with {TierBosses = null};
+            BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
+
             // A few saved setups, and the question before loading one
             var section = BossEditorSection.Current!;
             foreach (var (name, boss, tiers) in new[] {("Lych marathon", BossType.Lych, 10), ("Speedy Vortex", BossType.Vortex, 5), ("Phayze practice", BossType.Phayze, 3)})
@@ -181,12 +199,40 @@ public class ScreenshotTour : CustomBossTest
             yield return new WaitForSecondsRealtime(3);
             Assert(!BossMode.Active, "Leaving the Boss Creator must end boss mode");
             yield return Capture(folder, "after-back");
+            yield return MixedGame(folder);
         }
         finally
         {
             BossMode.Store = store;
             BossMode.Saved = saved;
         }
+    }
+
+    /// <summary>
+    /// A game with a different boss per tier: the banner when a boss arrives and the line-up of every tier's boss
+    /// </summary>
+    private IEnumerator MixedGame(string folder)
+    {
+        var options = new BossOptions {Tiers = 5, TierBosses = "Lych,VortexElite,Diamondback,Phayze,BloonariusElite"};
+        var dcm = TestUtils.BaseDcm();
+        dcm.startRules.round = 39;
+        dcm.startRules.cash = 20000;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+        var manager = InGame.instance.bridge.Simulation.map.spawner.bossBloonManager;
+        yield return new WaitForSecondsRealtime(2);
+
+        manager.SpawnBoss(1, false);
+        yield return new WaitForSecondsRealtime(1.5f);
+        yield return Capture(folder, "boss-arrival");
+
+        // The first tier defeated, the second one on its way
+        manager.CurrentBoss?.Destroy();
+        CustomBossState.OnBossDefeated(1);
+        yield return new WaitForSecondsRealtime(0.5f);
+        manager.SpawnBoss(2, false);
+        yield return new WaitForSecondsRealtime(Visuals.BossHud.BannerSeconds + 1);
+        yield return Capture(folder, "boss-lineup");
+        yield return ToMainMenu();
     }
 
     internal static IEnumerator Capture(string folder, string name)

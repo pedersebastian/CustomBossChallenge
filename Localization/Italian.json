@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "Fai clic su un livello nell'anteprima dei livelli per sceglierne il boss",
   "CustomBossChallenge-TierBossTitle": "Boss del livello {0}",
   "CustomBossChallenge-RandomBoss": "Casuale",
-  "CustomBossChallenge-FollowBossType": "Come il tipo di boss"
+  "CustomBossChallenge-FollowBossType": "Come il tipo di boss",
+  "CustomBossChallenge-BossLineup": "Boss",
+  "CustomBossChallenge-TierArrives": "Livello {0}: {1}"
 }

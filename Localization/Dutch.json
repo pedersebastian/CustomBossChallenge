@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "Klik op een tier in het Niveauoverzicht om de boss te kiezen",
   "CustomBossChallenge-TierBossTitle": "Boss voor tier {0}",
   "CustomBossChallenge-RandomBoss": "Willekeurig",
-  "CustomBossChallenge-FollowBossType": "Zelfde als Bosstype"
+  "CustomBossChallenge-FollowBossType": "Zelfde als Bosstype",
+  "CustomBossChallenge-BossLineup": "Bosses",
+  "CustomBossChallenge-TierArrives": "Tier {0}: {1}"
 }

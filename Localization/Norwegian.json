@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "Klikk på et nivå i nivåoversikten for å velge bossen",
   "CustomBossChallenge-TierBossTitle": "Boss for nivå {0}",
   "CustomBossChallenge-RandomBoss": "Tilfeldig",
-  "CustomBossChallenge-FollowBossType": "Samme som bosstype"
+  "CustomBossChallenge-FollowBossType": "Samme som bosstype",
+  "CustomBossChallenge-BossLineup": "Bosser",
+  "CustomBossChallenge-TierArrives": "Nivå {0}: {1}"
 }

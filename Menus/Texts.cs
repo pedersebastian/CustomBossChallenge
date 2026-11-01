@@ -31,6 +31,8 @@ public static class Texts
     public static readonly string TierBossTitle = Key(nameof(TierBossTitle), "Boss for Tier {0}");
     public static readonly string RandomBoss = Key(nameof(RandomBoss), "Random");
     public static readonly string FollowBossType = Key(nameof(FollowBossType), "Same as Boss Type");
+    public static readonly string BossLineup = Key(nameof(BossLineup), "Bosses");
+    public static readonly string TierArrives = Key(nameof(TierArrives), "Tier {0}: {1}");
 
     public static readonly string BossSpeed = Key(nameof(BossSpeed), "Boss Speed");
     public static readonly string BossSpeedInfo = Key(nameof(BossSpeedInfo),

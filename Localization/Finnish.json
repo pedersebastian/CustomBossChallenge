@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "Napsauta tasoa Tasojen esikatselussa valitaksesi sen pomon",
   "CustomBossChallenge-TierBossTitle": "Tason {0} pomo",
   "CustomBossChallenge-RandomBoss": "Satunnainen",
-  "CustomBossChallenge-FollowBossType": "Sama kuin pomotyyppi"
+  "CustomBossChallenge-FollowBossType": "Sama kuin pomotyyppi",
+  "CustomBossChallenge-BossLineup": "Pomot",
+  "CustomBossChallenge-TierArrives": "Taso {0}: {1}"
 }

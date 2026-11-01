@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "คลิกระดับในตัวอย่างระดับเพื่อเลือกบอส",
   "CustomBossChallenge-TierBossTitle": "บอสระดับ {0}",
   "CustomBossChallenge-RandomBoss": "สุ่ม",
-  "CustomBossChallenge-FollowBossType": "เหมือนชนิดบอส"
+  "CustomBossChallenge-FollowBossType": "เหมือนชนิดบอส",
+  "CustomBossChallenge-BossLineup": "บอส",
+  "CustomBossChallenge-TierArrives": "ระดับ {0}: {1}"
 }

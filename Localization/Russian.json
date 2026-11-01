@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "Нажмите на уровень в обзоре уровней, чтобы выбрать босса",
   "CustomBossChallenge-TierBossTitle": "Босс уровня {0}",
   "CustomBossChallenge-RandomBoss": "Случайный",
-  "CustomBossChallenge-FollowBossType": "Как тип босса"
+  "CustomBossChallenge-FollowBossType": "Как тип босса",
+  "CustomBossChallenge-BossLineup": "Боссы",
+  "CustomBossChallenge-TierArrives": "Уровень {0}: {1}"
 }

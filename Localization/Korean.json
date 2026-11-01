@@ -109,5 +109,7 @@
   "CustomBossChallenge-DifferentBossesHint": "단계 미리보기에서 단계를 클릭해 보스를 고르세요",
   "CustomBossChallenge-TierBossTitle": "{0}단계 보스",
   "CustomBossChallenge-RandomBoss": "무작위",
-  "CustomBossChallenge-FollowBossType": "보스 종류와 같게"
+  "CustomBossChallenge-FollowBossType": "보스 종류와 같게",
+  "CustomBossChallenge-BossLineup": "보스",
+  "CustomBossChallenge-TierArrives": "{0}단계: {1}"
 }
