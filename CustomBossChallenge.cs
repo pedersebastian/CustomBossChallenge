@@ -69,6 +69,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         var scaled = TierScaling.Apply(result, options, bossHealth);
         var skulls = SkullModifier.Apply(result, options.SkullPercents);
         result.bossSpawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
+        Patches.MixedBosses.SetType(result, options, 1);
         var bossData = InGameData.CurrentGame?.bossData;
         if (bossData != null) bossData.spawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
 

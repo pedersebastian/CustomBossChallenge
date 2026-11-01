@@ -58,7 +58,7 @@ public static class TierScaling
         for (var tier = TierMath.MinTiers; tier <= TierMath.ClampTiers(options.Tiers); tier++)
         {
             var id = options.BossId(tier);
-            var sourceId = options.BossId(Math.Min(tier, TierMath.VanillaTiers));
+            var sourceId = options.SourceId(tier);
             if (!match.DoesBloonExist(id) || !match.DoesBloonExist(sourceId)) continue;
 
             Scale(match.GetBloon(id), Original(match, sourceId), options, tier, bossHealth);

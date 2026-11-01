@@ -61,7 +61,7 @@ public abstract class CustomBossTest : ModTest
         for (var tier = 1; tier <= options.Tiers; tier++)
         {
             var model = match.GetBloon(options.BossId(tier));
-            var source = Config.TierScaling.Original(match, options.BossId(Math.Min(tier, Config.TierMath.VanillaTiers)));
+            var source = Config.TierScaling.Original(match, options.SourceId(tier));
             var speed = (float) Config.TierMath.SpeedFactor(tier, options.SpeedPerTier);
             Assert(Math.Abs(model.speed - source.Speed * speed) < 0.0001f,
                 $"{model.id} speed {model.speed}, expected {source.Speed * speed}");

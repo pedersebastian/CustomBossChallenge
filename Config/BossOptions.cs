@@ -151,6 +151,16 @@ public sealed record BossOptions
     }
 
     /// <summary>
+    /// The id of the game's own model the given tier is made from: the tier itself up to tier 5, and tier 5 of the
+    /// tier's boss above that
+    /// </summary>
+    public string SourceId(int tier)
+    {
+        var (boss, elite) = BossOf(tier);
+        return BossIdOf(boss, elite, System.Math.Min(tier, TierMath.VanillaTiers));
+    }
+
+    /// <summary>
     /// The bloon id of a boss at the given tier, e.g. "VortexElite3"
     /// </summary>
     public static string BossIdOf(BossType boss, bool elite, int tier) => $"{boss}{(elite ? "Elite" : "")}{tier}";
