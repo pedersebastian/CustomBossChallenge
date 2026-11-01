@@ -222,7 +222,9 @@ public class KeyboardTest : CustomBossTest
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
         AssertEquals(BossCreatorKeys.Current?.Name, "ResetBoss", "Tab after Elite");
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
-        AssertEquals(BossCreatorKeys.Current?.Name, "BossSpeed", "Tab after the boss's reset");
+        AssertEquals(BossCreatorKeys.Current?.Name, "DifferentBosses", "Tab after the boss's reset");
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
+        AssertEquals(BossCreatorKeys.Current?.Name, "BossSpeed", "Tab after Boss per Tier");
 
         // The frame goes around everything the row shows, its info button too
         yield return null;

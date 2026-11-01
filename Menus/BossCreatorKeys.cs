@@ -47,6 +47,15 @@ public static class BossCreatorKeys
             return;
         }
 
+        // The boss picker has the keyboard while it is open
+        if (TierBossPicker.Current is { } picker)
+        {
+            var key = ReadKeys();
+            if (key.Key != ShortcutKey.Other && !key.Ctrl) picker.Handle(key.Key, key.Shift);
+            FocusFrame.Fit();
+            return;
+        }
+
         // The mouse takes over from the keyboard
         if (Input.GetMouseButtonDown(0)) ClearFocus();
 
@@ -173,6 +182,12 @@ public static class BossCreatorKeys
     /// </summary>
     public static bool EscapeEndsFocus()
     {
+        if (TierBossPicker.Current is { } picker && EscapePressed())
+        {
+            picker.Hide();
+            return true;
+        }
+
         if (!EscapePressed() || FocusedField() == null && Time.frameCount - fieldFocusedFrame > 1 && Current == null)
         {
             return false;
@@ -187,6 +202,15 @@ public static class BossCreatorKeys
         Current = stop;
         if (stop == null) FocusFrame.Hide();
         else FocusFrame.Show(stop.Target());
+    }
+
+    /// <summary>
+    /// Gives the keyboard frame to the section's control with this name
+    /// </summary>
+    public static void FocusOn(BossEditorSection section, string name)
+    {
+        var stop = section.FocusStops.FirstOrDefault(stop => stop.Name == name);
+        if (stop != null) Show(stop);
     }
 
     public static void ClearFocus()
@@ -218,6 +242,7 @@ public static class BossCreatorKeys
     }
 
     private static bool BlockingUiOpen(BossEditorSection section) =>
+        TierBossPicker.Current != null ||
         PopupScreen.instance != null && PopupScreen.instance.GetFirstActivePopup() != null ||
         ChallengeEditor_OverrideClose.OpenPanel(section.Editor);
 

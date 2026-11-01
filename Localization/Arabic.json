@@ -103,5 +103,11 @@
   "CustomBossChallenge-ExampleParagonBan": "حظر البراغون",
   "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos النخبة على خريطة Infernal بصعوبة Hard، ولا يُسمح بأي براغون.",
   "CustomBossChallenge-ExampleBossGauntlet": "تحدي الزعماء",
-  "CustomBossChallenge-ExampleBossGauntletInfo": "سبعة مستويات وسبعة زعماء: كل زعيم في اللعبة، واحدًا تلو الآخر."
+  "CustomBossChallenge-ExampleBossGauntletInfo": "سبعة مستويات وسبعة زعماء: كل زعيم في اللعبة، واحدًا تلو الآخر.",
+  "CustomBossChallenge-DifferentBosses": "زعيم لكل مستوى",
+  "CustomBossChallenge-DifferentBossesInfo": "فعّل هذا لتعطي كل مستوى زعيمًا خاصًا به، مثل Bloonarius في المستوى 1 وLych في المستوى 2. انقر على مستوى في معاينة المستويات لتختار زعيمه، نخبة أو لا، أو عشوائي لمفاجأة تُختار عند بدء اللعبة. المستويات التي لا تغيّرها تبقى على نوع الزعيم أعلاه وتتغير معه.",
+  "CustomBossChallenge-DifferentBossesHint": "انقر على مستوى في معاينة المستويات لتختار زعيمه",
+  "CustomBossChallenge-TierBossTitle": "زعيم المستوى {0}",
+  "CustomBossChallenge-RandomBoss": "عشوائي",
+  "CustomBossChallenge-FollowBossType": "مثل نوع الزعيم"
 }

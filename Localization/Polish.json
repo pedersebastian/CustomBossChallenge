@@ -103,5 +103,11 @@
   "CustomBossChallenge-ExampleParagonBan": "Zakaz paragonów",
   "CustomBossChallenge-ExampleParagonBanInfo": "Elitarny Blastapopoulos na Infernal, Trudny, i ani jednego paragona.",
   "CustomBossChallenge-ExampleBossGauntlet": "Maraton bossów",
-  "CustomBossChallenge-ExampleBossGauntletInfo": "Siedem poziomów, siedmiu bossów: każdy boss z gry, jeden po drugim."
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Siedem poziomów, siedmiu bossów: każdy boss z gry, jeden po drugim.",
+  "CustomBossChallenge-DifferentBosses": "Boss na poziom",
+  "CustomBossChallenge-DifferentBossesInfo": "Zaznacz, aby każdy poziom miał własnego bossa, na przykład Bloonarius na poziomie 1 i Lych na poziomie 2. Kliknij poziom w podglądzie poziomów, aby wybrać jego bossa, elitarnego lub nie, albo Losowy, by dostać niespodziankę losowaną na starcie gry. Poziomy, których nie zmienisz, zachowują typ bossa powyżej i zmieniają się razem z nim.",
+  "CustomBossChallenge-DifferentBossesHint": "Kliknij poziom w podglądzie poziomów, aby wybrać jego bossa",
+  "CustomBossChallenge-TierBossTitle": "Boss poziomu {0}",
+  "CustomBossChallenge-RandomBoss": "Losowy",
+  "CustomBossChallenge-FollowBossType": "Jak typ bossa"
 }

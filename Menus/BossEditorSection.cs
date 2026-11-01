@@ -66,6 +66,17 @@ public sealed class BossEditorSection
     public SliderRow FirstSpawnRound { get; private set; } = null!;
     public SliderRow RoundsBetween { get; private set; } = null!;
     public ModHelperCheckbox Elite { get; private set; } = null!;
+
+    /// <summary>
+    /// "Boss per Tier": whether the tiers can have bosses of their own, picked on the Tier Preview's cards
+    /// </summary>
+    public ModHelperCheckbox DifferentBosses { get; private set; } = null!;
+    private ModHelperText differentBossesHint = null!;
+
+    /// <summary>
+    /// The bosses per tier from before "Boss per Tier" was turned off, so turning it back on brings them back
+    /// </summary>
+    private string? lastTierBosses;
     public ModHelperDropdown SkullMode { get; private set; } = null!;
     public ModHelperInputField CustomSkulls { get; private set; } = null!;
     public SkullStrip Skulls { get; private set; } = null!;
@@ -225,6 +236,25 @@ public sealed class BossEditorSection
         eliteLabel.transform.SetParent(bossRow.transform, false);
         ResetBossButton = EditorRows.ResetButton(bossRow, "ResetBoss", ResetBoss);
 
+        // Right under the boss: whether each tier can have a boss of its own, chosen on the Tier Preview's cards
+        var differentRow = EditorRows.LabelRow(template, rows, "TierBossesRow", Texts.DifferentBosses.T(), VanillaSprites.BossTiersIconSmall);
+        var left = EditorRows.ControlX - EditorRows.ControlWidth / 2;
+        DifferentBosses = ModHelperCheckbox.Create(new Info("DifferentBosses", left + 75, 0, 150, 150)
+        {
+            Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
+        }, false, VanillaSprites.BlueInsertPanelRound, new Action<bool>(SetDifferentBosses), VanillaSprites.TickGreenIcon, 20);
+        DifferentBosses.transform.SetParent(differentRow.transform, false);
+        var hintWidth = EditorRows.ControlWidth - 220;
+        differentBossesHint = ModHelperText.Create(new Info("Hint", left + 200 + hintWidth / 2, 0, hintWidth, 150)
+        {
+            Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
+        }, Texts.DifferentBossesHint.T(), 54, TextAlignmentOptions.Left);
+        differentBossesHint.transform.SetParent(differentRow.transform, false);
+        differentBossesHint.Text.enableAutoSizing = true;
+        differentBossesHint.Text.fontSizeMin = 32;
+        differentBossesHint.Text.fontSizeMax = 54;
+        EditorRows.AddInfo(differentRow, Texts.DifferentBosses, Texts.DifferentBossesInfo);
+
         BossSpeed = SliderRow.Clone(template, rows, "BossSpeedRow", Texts.BossSpeed.T(), VanillaSprites.FasterBossIcon,
             10, 1000, 10, 100, Percent, value => UpdateDcm("BossSpeed", dcm => dcm.bloonModifiers.bossSpeedMultiplier = value / 100f));
         BossHealth = SliderRow.Clone(template, rows, "BossHealthRow", Texts.BossHealth.T(), VanillaSprites.BossBoostIcon,
@@ -246,7 +276,7 @@ public sealed class BossEditorSection
             TierMath.MinHealthPerTier, TierMath.MaxHealthPerTier, TierMath.PerTierStep, 0, PerTier,
             value => UpdateOptions("HealthPerTier", o => o with {HealthPerTier = (int) value}));
         var stripRow = EditorRows.LabelRow(template, rows, "TierStripRow", Texts.TierPreview.T(), VanillaSprites.BossT5Icon);
-        Strip = new TierStrip(stripRow);
+        Strip = new TierStrip(stripRow) {CardClicked = tier => OpenPicker(tier)};
 
         FirstSpawnRound = SliderRow.Clone(template, rows, "FirstSpawnRoundRow", Texts.FirstBossRound.T(),
             VanillaSprites.BossT1Icon, 1, TierMath.MaxFirstSpawnRound, 1, TierMath.FirstSpawnRound, value => $"{value:0}",
@@ -408,12 +438,32 @@ public sealed class BossEditorSection
             Activate = () => Elite.Toggle.isOn = !Elite.Toggle.isOn, Reset = ResetBoss
         });
         focusStops.Add(FocusStop.ForButton("ResetBoss", ResetBossButton.Button));
+        focusStops.Add(new FocusStop("DifferentBosses", () => DifferentBosses.gameObject)
+        {
+            Activate = () => DifferentBosses.Toggle.isOn = !DifferentBosses.Toggle.isOn,
+            Reset = () => DifferentBosses.Toggle.isOn = false
+        });
         focusStops.Add(FocusStop.ForSlider("BossSpeed", BossSpeed));
         focusStops.Add(FocusStop.ForSlider("BossHealth", BossHealth));
         focusStops.Add(FocusStop.ForSlider("MaxParagons", MaxParagons));
         focusStops.Add(FocusStop.ForSlider("Tiers", Tiers));
         focusStops.Add(FocusStop.ForSlider("SpeedPerTier", SpeedPerTier));
         focusStops.Add(FocusStop.ForSlider("HealthPerTier", HealthPerTier));
+
+        // With "Boss per Tier" on, each tier's card: the arrows step through the bosses, Enter opens the picker and
+        // Delete makes the tier follow the Boss Type again
+        for (var i = 0; i < Strip.Cards.Count; i++)
+        {
+            var tier = i + 1;
+            var card = Strip.Cards[i];
+            focusStops.Add(new FocusStop(TierStopName(tier), () => card.Panel.gameObject)
+            {
+                Step = direction => StepTierBoss(tier, direction),
+                Activate = () => OpenPicker(tier),
+                Reset = () => SetTierBoss(tier, TierBoss.Follows),
+                Enabled = () => BossMode.Options.Mixed
+            });
+        }
         focusStops.Add(FocusStop.ForSlider("FirstSpawnRound", FirstSpawnRound));
         focusStops.Add(FocusStop.ForSlider("RoundsBetween", RoundsBetween));
         focusStops.Add(FocusStop.ForField("SpawnRounds", SpawnRounds.InputField));
@@ -668,15 +718,16 @@ public sealed class BossEditorSection
     /// A setup in one line for the log, e.g. "'Custom Vortex', Vortex Elite, 7 tiers, Logs, Hard, Standard"
     /// </summary>
     public static string Describe(BossOptions options, DailyChallengeModel dcm) =>
-        $"'{dcm.name}', {options.Boss}{(options.Elite ? " Elite" : "")}, {options.Tiers} tiers, " +
-        $"{dcm.map}, {dcm.difficulty}, {dcm.mode}";
+        $"'{dcm.name}', {options.Boss}{(options.Elite ? " Elite" : "")}, {options.Tiers} tiers" +
+        (options.Mixed ? $" ({options.TierBosses})" : "") + $", {dcm.map}, {dcm.difficulty}, {dcm.mode}";
 
     /// <summary>
     /// What a shared setup is, in a few words
     /// </summary>
     public static string Summary(BossOptions options, DailyChallengeModel dcm)
     {
-        var boss = options.Elite ? $"{options.Boss} {Texts.Elite.T()}" : options.Boss.ToString();
+        var boss = options.Mixed ? Texts.DifferentBosses.T()
+            : options.Elite ? $"{options.Boss} {Texts.Elite.T()}" : options.Boss.ToString();
         return $"<b>{PlainText(dcm.name)}</b>\n{boss}, {Texts.TierCount.T(options.Tiers)}\n" +
                $"{PlainText(dcm.map.T())}, {PlainText(dcm.difficulty.T())}";
     }
@@ -861,6 +912,7 @@ public sealed class BossEditorSection
             }
 
             Elite.SetChecked(options.Elite, false);
+            DifferentBosses.SetChecked(options.Mixed, false);
             Tiers.Show(options.Tiers);
             SpeedPerTier.Show(options.SpeedPerTier);
             HealthPerTier.Show(options.HealthPerTier);
@@ -868,7 +920,7 @@ public sealed class BossEditorSection
             SkullCount.Show(options.SkullCount);
             CustomSkulls.SetText(ShownSkulls(options), false);
             ShowSpawnRounds();
-            FollowBossName(options.Boss, options.Elite);
+            FollowBossName(options);
             ShowBoss();
         }
         finally
@@ -917,7 +969,7 @@ public sealed class BossEditorSection
     {
         if (boss != BossMode.Options.Boss) BossHistory.RecordChange(Editor, null);
         BossMode.Options = BossMode.Options with {Boss = boss};
-        FollowBossName(boss, BossMode.Options.Elite);
+        FollowBossName(BossMode.Options);
         ShowBoss();
     }
 
@@ -925,27 +977,92 @@ public sealed class BossEditorSection
     /// Follows the boss and Elite in the challenge name as long as the player hasn't named it themselves. An example's
     /// name stays while the boss is still the example's own.
     /// </summary>
-    private void FollowBossName(BossType boss, bool elite)
+    private void FollowBossName(BossOptions options)
     {
         var name = Editor.chalName;
         if (name == null) return;
         var example = ExampleSetups.Named(name.text);
-        if (example != null ? example.Options.Boss == boss && example.Options.Elite == elite : !BossMode.IsDefaultName(name.text))
+        if (example != null
+                ? example.Options.Boss == options.Boss && example.Options.Elite == options.Elite &&
+                  example.Options.TierBosses == options.TierBosses
+                : !BossMode.IsDefaultName(name.text))
         {
             return;
         }
 
-        name.text = BossMode.DefaultName(boss, elite);
+        name.text = BossMode.DefaultName(options);
         if (Editor.dcm != null) Editor.dcm.name = name.text;
     }
 
     /// <summary>
-    /// The boss and Elite back to a new setup's: Bloonarius, not Elite
+    /// The boss and Elite back to a new setup's: Bloonarius, not Elite, the same for every tier
     /// </summary>
     public void ResetBoss()
     {
         var defaults = new BossOptions();
-        ResetOptions(o => o with {Boss = defaults.Boss, Elite = defaults.Elite});
+        ResetOptions(o => o with {Boss = defaults.Boss, Elite = defaults.Elite, TierBosses = null});
+    }
+
+    private void SetDifferentBosses(bool on)
+    {
+        if (refreshing || on == BossMode.Options.Mixed) return;
+        if (!on) lastTierBosses = BossMode.Options.TierBosses;
+        BossHistory.RecordChange(Editor, null);
+        BossMode.Options = BossMode.Options with {TierBosses = on ? lastTierBosses ?? "" : null};
+        FollowBossName(BossMode.Options);
+        differentBossesHint.gameObject.SetActive(on);
+        ShowBoss();
+    }
+
+    public static string TierStopName(int tier) => $"{TierStrip.CardName}{tier}";
+
+    /// <summary>
+    /// Gives a tier its own boss, or makes it follow the Boss Type with <see cref="TierBoss.Follows"/>; one step for
+    /// Undo
+    /// </summary>
+    public void SetTierBoss(int tier, TierBoss boss)
+    {
+        if (!BossMode.Options.Mixed) return;
+        var changed = BossMode.Options with {TierBosses = TierBossMath.With(BossMode.Options.TierBosses, tier, boss)};
+        if (changed == BossMode.Options) return;
+        BossHistory.RecordChange(Editor, null);
+        BossMode.Options = changed;
+        ShowBoss();
+    }
+
+    /// <summary>
+    /// The next or previous boss (or Random) for a tier, from the keyboard; a run of presses is one step for Undo
+    /// </summary>
+    private void StepTierBoss(int tier, int direction)
+    {
+        var options = BossMode.Options;
+        if (!options.Mixed) return;
+        var next = TierBossMath.Step(options.EntryOf(tier), options.Boss.ToString(), options.Elite, direction);
+        BossHistory.RecordChange(Editor, TierStopName(tier));
+        BossMode.Options = options with {TierBosses = TierBossMath.With(options.TierBosses, tier, next)};
+        ShowBoss();
+    }
+
+    /// <summary>
+    /// Opens the boss picker for a tier's card
+    /// </summary>
+    public TierBossPicker? OpenPicker(int tier)
+    {
+        if (!BossMode.Options.Mixed || tier < 1 || tier > BossMode.Options.Tiers) return null;
+        var fromKeyboard = BossCreatorKeys.Current?.Name == TierStopName(tier);
+        BossCreatorKeys.ClearFocus();
+        var picker = TierBossPicker.Open(this, tier);
+        picker.ReturnFocus = fromKeyboard;
+        return picker;
+    }
+
+    /// <summary>
+    /// Shows the tier's new boss, and gives the keyboard back to its card if the picker was opened from there
+    /// </summary>
+    internal void OnPickerClosed(int tier, bool returnFocus)
+    {
+        ShowBoss();
+        if (returnFocus) BossCreatorKeys.FocusOn(this, TierStopName(tier));
     }
 
     /// <summary>
@@ -1018,7 +1135,7 @@ public sealed class BossEditorSection
         if (refreshing) return;
         if (elite != BossMode.Options.Elite) BossHistory.RecordChange(Editor, null);
         BossMode.Options = BossMode.Options with {Elite = elite};
-        FollowBossName(BossMode.Options.Boss, elite);
+        FollowBossName(BossMode.Options);
         ShowBoss();
     }
 
@@ -1069,6 +1186,7 @@ public sealed class BossEditorSection
     {
         var options = BossMode.Options;
         SkullCount.Row.SetActive(options.SkullMode == Config.SkullMode.EvenlySpaced);
+        differentBossesHint.gameObject.SetActive(options.Mixed);
         customSkullsRow.SetActive(options.SkullMode == Config.SkullMode.Custom);
         ShowSpawnRounds();
         Strip.Show(options, Editor.dcm);

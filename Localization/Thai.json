@@ -103,5 +103,11 @@
   "CustomBossChallenge-ExampleParagonBan": "ห้ามพาราก้อน",
   "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos บนแผนที่ Infernal ระดับ Hard และห้ามใช้พาราก้อนแม้แต่ตัวเดียว",
   "CustomBossChallenge-ExampleBossGauntlet": "ด่านบอสต่อเนื่อง",
-  "CustomBossChallenge-ExampleBossGauntletInfo": "เจ็ดระดับ เจ็ดบอส: บอสทุกตัวในเกม มาทีละตัว"
+  "CustomBossChallenge-ExampleBossGauntletInfo": "เจ็ดระดับ เจ็ดบอส: บอสทุกตัวในเกม มาทีละตัว",
+  "CustomBossChallenge-DifferentBosses": "บอสแต่ละระดับ",
+  "CustomBossChallenge-DifferentBossesInfo": "ติ๊กเพื่อให้แต่ละระดับมีบอสของตัวเอง เช่น Bloonarius ระดับ 1 และ Lych ระดับ 2 คลิกระดับในตัวอย่างระดับเพื่อเลือกบอส จะเป็นEliteหรือไม่ก็ได้ หรือเลือกสุ่มเพื่อเซอร์ไพรส์ที่จะสุ่มตอนเริ่มเกม ระดับที่คุณไม่เปลี่ยนจะใช้ชนิดบอสด้านบนและเปลี่ยนตามไปด้วย",
+  "CustomBossChallenge-DifferentBossesHint": "คลิกระดับในตัวอย่างระดับเพื่อเลือกบอส",
+  "CustomBossChallenge-TierBossTitle": "บอสระดับ {0}",
+  "CustomBossChallenge-RandomBoss": "สุ่ม",
+  "CustomBossChallenge-FollowBossType": "เหมือนชนิดบอส"
 }

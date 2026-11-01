@@ -9,6 +9,7 @@ using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity;
 using Il2CppTMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CustomBossChallenge.Menus;
 
@@ -16,6 +17,9 @@ namespace CustomBossChallenge.Menus;
 /// A row of small cards, one per boss tier, showing the round each tier arrives on and the speed and health it will
 /// have. Values above the normal game are orange with ▲, values below it blue with ▼, so the effect of every boss
 /// option shows at a glance, also to players who can't tell the colours apart (issue #18).
+/// <br/>
+/// With "Boss per Tier" on, every card shows its tier's boss and is a button that opens the <see cref="TierBossPicker"/>.
+/// Tiers that follow the Boss Type show its portrait a little faded.
 /// </summary>
 public sealed class TierStrip
 {
@@ -34,6 +38,13 @@ public sealed class TierStrip
     public static readonly Color Higher = new(1f, 0.62f, 0.2f);
     public static readonly Color Lower = new(0.45f, 0.8f, 1f);
     public static readonly Color Same = Color.white;
+
+    /// <summary>
+    /// The portrait of a tier that follows the Boss Type, while the tiers can have bosses of their own
+    /// </summary>
+    public static readonly Color Following = new(1, 1, 1, 0.5f);
+
+    public const string EditMarker = "Edit";
 
     /// <summary>
     /// After a value above or below the normal game, like the website's Tier Preview, so it doesn't rely on colour.
@@ -56,6 +67,11 @@ public sealed class TierStrip
 
     private readonly ModHelperPanel strip;
 
+    /// <summary>
+    /// A card was clicked while the tiers can have bosses of their own, with its tier
+    /// </summary>
+    public Action<int>? CardClicked { get; set; }
+
     public sealed class Card
     {
         public ModHelperPanel Panel = null!;
@@ -64,6 +80,16 @@ public sealed class TierStrip
         public ModHelperText Round = null!;
         public ModHelperText Speed = null!;
         public ModHelperText Health = null!;
+
+        /// <summary>
+        /// Opens the tier's boss picker; only usable while the tiers can have bosses of their own
+        /// </summary>
+        public Button Button = null!;
+
+        /// <summary>
+        /// The small pencil in the corner that shows the card can be clicked
+        /// </summary>
+        public ModHelperImage Edit = null!;
     }
 
     public TierStrip(GameObject row)
@@ -119,6 +145,16 @@ public sealed class TierStrip
                 text.Text.textWrappingMode = TextWrappingModes.NoWrap;
             }
 
+            var cardTier = tier;
+            card.Button = card.Panel.gameObject.AddComponent<Button>();
+            card.Button.targetGraphic = card.Panel.GetComponent<Image>();
+            card.Button.onClick.AddListener(new Action(() => CardClicked?.Invoke(cardTier)));
+            card.Edit = card.Panel.AddImage(new Info(EditMarker, -6, -6, 64, 64)
+            {
+                Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 1)
+            }, VanillaSprites.EditBtn);
+            card.Edit.Image.raycastTarget = false;
+
             Cards.Add(card);
         }
 
@@ -167,7 +203,6 @@ public sealed class TierStrip
         var height = Row.GetComponent<RectTransform>().sizeDelta.y;
         var tiers = TierMath.ClampTiers(options.Tiers);
         var bossHealth = dcm?.bloonModifiers?.healthMultipliers?.boss ?? 1;
-        var portrait = BossEditorSection.Portrait(options.Boss, options.Elite);
         var values = Values(options, dcm, Game.instance?.model);
 
         for (var i = 0; i < Cards.Count; i++)
@@ -177,7 +212,12 @@ public sealed class TierStrip
             if (i >= tiers) continue;
 
             var value = values[i];
-            card.Portrait.Image.SetSprite(portrait);
+            var entry = options.EntryOf(i + 1);
+            var (boss, elite) = options.BossOf(i + 1);
+            card.Portrait.Image.SetSprite(entry.IsRandom ? VanillaSprites.RandomIcon : BossEditorSection.Portrait(boss, elite));
+            card.Portrait.Image.color = options.Mixed && entry.FollowsSetup ? Following : Color.white;
+            card.Button.interactable = options.Mixed;
+            card.Edit.gameObject.SetActive(options.Mixed);
             card.Round.SetText($"R{value.Round}");
             Paint(card.Speed, $"×{value.Speed.ToString("0.##", CultureInfo.InvariantCulture)}", value.Speed);
             Paint(card.Health, value.Shown, value.HealthFactor);
@@ -191,7 +231,7 @@ public sealed class TierStrip
 
     /// <summary>
     /// What a tier's card shows: the round it arrives on, its speed and health compared with the normal game (above 1
-    /// is harder), and its health shortened like the game does, or "?" without the boss's model
+    /// is harder), and its health shortened like the game does, or "?" without the boss's model or for a Random tier
     /// </summary>
     public readonly record struct CardValues(int Tier, int Round, double Speed, double HealthFactor, string Shown, bool Capped);
 
@@ -210,10 +250,10 @@ public sealed class TierStrip
         {
             var speed = TierMath.SpeedFactor(tier, options.SpeedPerTier) * bossSpeed;
             var health = TierMath.HealthFactor(tier, options.HealthPerTier) * bossHealth;
-            var source = options.BossId(Math.Min(tier, TierMath.VanillaTiers));
+            var source = options.SourceId(tier);
             var shown = "?";
             var capped = false;
-            if (game != null && game.DoesBloonExist(source))
+            if (game != null && game.DoesBloonExist(source) && !options.EntryOf(tier).IsRandom)
             {
                 var model = game.GetBloon(source).maxHealth * TierMath.ExtraTierFactor(tier) *
                             TierMath.HealthFactor(tier, options.HealthPerTier);

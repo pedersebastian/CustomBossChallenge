@@ -102,6 +102,12 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Alle vijf niveaus voor ronde 40: elke vijf rondes een nieuwe Dreadbloon vanaf ronde 20.",
   "CustomBossChallenge-ExampleParagonBan": "Paragonverbod",
   "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos op Infernal, Moeilijk, en geen enkele paragon toegestaan.",
-  "CustomBossChallenge-ExampleBossGauntlet": "Baashandschoen",
-  "CustomBossChallenge-ExampleBossGauntletInfo": "Zeven tiers, zeven bazen: elke baas uit het spel, de een na de ander."
+  "CustomBossChallenge-ExampleBossGauntlet": "Bossmarathon",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Zeven tiers, zeven bosses: elke boss uit het spel, de een na de ander.",
+  "CustomBossChallenge-DifferentBosses": "Boss per tier",
+  "CustomBossChallenge-DifferentBossesInfo": "Vink dit aan om elke tier een eigen boss te geven, bijvoorbeeld Bloonarius op tier 1 en Lych op tier 2. Klik op een tier in het Niveauoverzicht om de boss te kiezen, Elite of niet, of Willekeurig voor een verrassing die gekozen wordt als het spel begint. Tiers die je niet verandert, houden het Bosstype hierboven en veranderen mee.",
+  "CustomBossChallenge-DifferentBossesHint": "Klik op een tier in het Niveauoverzicht om de boss te kiezen",
+  "CustomBossChallenge-TierBossTitle": "Boss voor tier {0}",
+  "CustomBossChallenge-RandomBoss": "Willekeurig",
+  "CustomBossChallenge-FollowBossType": "Zelfde als Bosstype"
 }

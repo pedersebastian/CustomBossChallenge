@@ -103,5 +103,11 @@
   "CustomBossChallenge-ExampleParagonBan": "Paragonikielto",
   "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos kartalla Infernal, Hard, eikä yhtäkään paragonia sallita.",
   "CustomBossChallenge-ExampleBossGauntlet": "Pomojen kujanjuoksu",
-  "CustomBossChallenge-ExampleBossGauntletInfo": "Seitsemän tasoa, seitsemän pomoa: pelin jokainen pomo, yksi toisensa jälkeen."
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Seitsemän tasoa, seitsemän pomoa: pelin jokainen pomo, yksi toisensa jälkeen.",
+  "CustomBossChallenge-DifferentBosses": "Pomo tasoittain",
+  "CustomBossChallenge-DifferentBossesInfo": "Valitse tämä antaaksesi jokaiselle tasolle oman pomon, esimerkiksi Bloonarius tasolle 1 ja Lych tasolle 2. Napsauta tasoa Tasojen esikatselussa valitaksesi sen pomon, Elite tai ei, tai Satunnainen yllätykseksi, joka arvotaan pelin alkaessa. Tasot, joita et muuta, käyttävät yllä olevaa pomotyyppiä ja muuttuvat sen mukana.",
+  "CustomBossChallenge-DifferentBossesHint": "Napsauta tasoa Tasojen esikatselussa valitaksesi sen pomon",
+  "CustomBossChallenge-TierBossTitle": "Tason {0} pomo",
+  "CustomBossChallenge-RandomBoss": "Satunnainen",
+  "CustomBossChallenge-FollowBossType": "Sama kuin pomotyyppi"
 }

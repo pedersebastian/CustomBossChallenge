@@ -21,6 +21,17 @@ public static class Texts
         "your last change to the boss options or the Challenge Editor rules, also a pasted, loaded or random setup, " +
         "and Ctrl+Y redoes it. Delete puts the option in the yellow frame back to its default.");
 
+    public static readonly string DifferentBosses = Key(nameof(DifferentBosses), "Boss per Tier");
+    public static readonly string DifferentBossesInfo = Key(nameof(DifferentBossesInfo),
+        "Tick this to give each tier a boss of its own, for example Bloonarius on tier 1 and Lych on tier 2. Click a " +
+        "tier in the Tier Preview to choose its boss, Elite or not, or Random for a surprise that is picked when the " +
+        "game starts. Tiers you don't change keep the Boss Type above, and change with it.");
+    public static readonly string DifferentBossesHint = Key(nameof(DifferentBossesHint),
+        "Click a tier in the Tier Preview to choose its boss");
+    public static readonly string TierBossTitle = Key(nameof(TierBossTitle), "Boss for Tier {0}");
+    public static readonly string RandomBoss = Key(nameof(RandomBoss), "Random");
+    public static readonly string FollowBossType = Key(nameof(FollowBossType), "Same as Boss Type");
+
     public static readonly string BossSpeed = Key(nameof(BossSpeed), "Boss Speed");
     public static readonly string BossSpeedInfo = Key(nameof(BossSpeedInfo),
         "How fast the boss moves, in percent of its normal speed. 100 % is the normal speed.");

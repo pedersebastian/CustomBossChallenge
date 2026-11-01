@@ -114,6 +114,9 @@ public class LayoutTest : CustomBossTest
     private void CheckEditor(string format, ChallengeEditor editor)
     {
         var section = AssertNotNull(BossEditorSection.Current, $"{format}: no Boss section")!;
+
+        // With Boss per Tier on, so its hint and the cards' pencils are checked too
+        section.DifferentBosses.Toggle.isOn = true;
         var play = ScreenRect(section.Play.GetComponentInChildren<Button>(true));
         var reset = ScreenRect(editor.transform.Find("Reset").GetComponentInChildren<Button>(true));
         Expect(Inside(play, LayoutChecks.Screen), $"{format}: Play ({Describe(play)}) is not on the screen");
@@ -198,7 +201,53 @@ public class LayoutTest : CustomBossTest
             Expect(rowRect.width < 1 || !Overlap(resetAll, rowRect),
                 $"{format}: Reset Boss Options ({Describe(resetAll)}) overlaps {NamePath(row.transform, section.Section.transform)}");
         }
+        CheckPicker(format, section);
+        section.DifferentBosses.Toggle.isOn = false;
         Log($"{format}: Play {Describe(play)}, Reset {Describe(reset)}, section {Describe(sectionRect)}, {checkedControls} controls checked");
+    }
+
+    /// <summary>
+    /// The boss picker is on the screen, and its buttons and texts are inside it without covering each other
+    /// </summary>
+    private void CheckPicker(string format, BossEditorSection section)
+    {
+        var picker = AssertNotNull(section.OpenPicker(section.Strip.Cards.Count(card => card.Panel.gameObject.activeSelf)),
+            $"{format}: the boss picker did not open")!;
+        try
+        {
+            Canvas.ForceUpdateCanvases();
+            var panel = ScreenRect(picker.Panel.RectTransform);
+            Expect(Inside(panel, LayoutChecks.Screen), $"{format}: the boss picker ({Describe(panel)}) is not on the screen");
+            var buttons = picker.Panel.GetComponentsInChildren<Selectable>().Where(control => control.gameObject != picker.Panel.gameObject).ToList();
+            foreach (var control in buttons.Select(control => (Component) control)
+                         .Concat(picker.Panel.GetComponentsInChildren<Il2CppTMPro.TMP_Text>().Select(text => (Component) text)))
+            {
+                var rect = ScreenRect(control);
+                Expect(rect.width < 1 || Inside(rect, panel),
+                    $"{format}: {NamePath(control.transform, picker.Root.transform)} ({Describe(rect)}) sticks out of the boss picker");
+            }
+
+            for (var i = 0; i < buttons.Count; i++)
+            {
+                for (var j = i + 1; j < buttons.Count; j++)
+                {
+                    if (buttons[j].transform.IsChildOf(buttons[i].transform) || buttons[i].transform.IsChildOf(buttons[j].transform)) continue;
+                    Expect(!Overlap(ScreenRect(buttons[i]), ScreenRect(buttons[j])),
+                        $"{format}: {buttons[i].name} overlaps {buttons[j].name} in the boss picker");
+                }
+            }
+
+            foreach (var label in picker.Choices.Values.Select(choice => choice.transform.Find("Label")?.GetComponent<Il2CppTMPro.TMP_Text>()))
+            {
+                if (label == null) continue;
+                var letters = LettersRect(label);
+                Expect(letters.width < 1 || Inside(letters, panel), $"{format}: the boss name '{label.text}' sticks out of the picker");
+            }
+        }
+        finally
+        {
+            picker.Hide();
+        }
     }
 
     private void Expect(bool condition, string problem)

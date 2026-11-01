@@ -103,5 +103,11 @@
   "CustomBossChallenge-ExampleParagonBan": "パラゴン禁止",
   "CustomBossChallenge-ExampleParagonBanInfo": "Infernal、難易度Hardでエリートブラスタポポラス。パラゴンは一切禁止です。",
   "CustomBossChallenge-ExampleBossGauntlet": "ボス連戦",
-  "CustomBossChallenge-ExampleBossGauntletInfo": "7段階、7体のボス：ゲームのすべてのボスが次々に登場します。"
+  "CustomBossChallenge-ExampleBossGauntletInfo": "7ティア、7体のボス：ゲームのすべてのボスが次々に登場します。",
+  "CustomBossChallenge-DifferentBosses": "ティアごとのボス",
+  "CustomBossChallenge-DifferentBossesInfo": "オンにすると、ティアごとに別のボスを設定できます。例：ティア 1 は Bloonarius、ティア 2 は Lych。ティアのプレビューでティアをクリックして、ボス、エリートかどうか、またはゲーム開始時に決まるランダムを選びます。変更しないティアは上のボスの種類を使い、それに合わせて変わります。",
+  "CustomBossChallenge-DifferentBossesHint": "ティアのプレビューでティアをクリックしてボスを選びます",
+  "CustomBossChallenge-TierBossTitle": "ティア {0} のボス",
+  "CustomBossChallenge-RandomBoss": "ランダム",
+  "CustomBossChallenge-FollowBossType": "ボスの種類と同じ"
 }

@@ -103,5 +103,11 @@
   "CustomBossChallenge-ExampleParagonBan": "Paragon Yasağı",
   "CustomBossChallenge-ExampleParagonBanInfo": "Infernal haritasında, Zor zorlukta Elit Blastapopoulos ve tek bir paragona bile izin yok.",
   "CustomBossChallenge-ExampleBossGauntlet": "Boss Maratonu",
-  "CustomBossChallenge-ExampleBossGauntletInfo": "Yedi seviye, yedi boss: oyundaki her boss, birbiri ardına."
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Yedi kademe, yedi boss: oyundaki her boss, birbiri ardına.",
+  "CustomBossChallenge-DifferentBosses": "Kademe başına boss",
+  "CustomBossChallenge-DifferentBossesInfo": "Her kademeye kendi bossunu vermek için işaretleyin, örneğin kademe 1'de Bloonarius ve kademe 2'de Lych. Bossunu seçmek için Kademe Önizlemesi'nde bir kademeye tıklayın; Elite olsun ya da olmasın, ya da oyun başlarken seçilen bir sürpriz için Rastgele. Değiştirmediğiniz kademeler yukarıdaki boss türünü kullanır ve onunla birlikte değişir.",
+  "CustomBossChallenge-DifferentBossesHint": "Bossunu seçmek için Kademe Önizlemesi'nde bir kademeye tıklayın",
+  "CustomBossChallenge-TierBossTitle": "Kademe {0} bossu",
+  "CustomBossChallenge-RandomBoss": "Rastgele",
+  "CustomBossChallenge-FollowBossType": "Boss türüyle aynı"
 }

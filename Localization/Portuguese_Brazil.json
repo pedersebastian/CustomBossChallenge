@@ -103,5 +103,11 @@
   "CustomBossChallenge-ExampleParagonBan": "Paragons proibidos",
   "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos Elite em Infernal, Difícil, e nenhum paragon permitido.",
   "CustomBossChallenge-ExampleBossGauntlet": "Desafio dos Chefes",
-  "CustomBossChallenge-ExampleBossGauntletInfo": "Sete níveis, sete chefes: todos os chefes do jogo, um depois do outro."
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Sete níveis, sete chefes: todos os chefes do jogo, um depois do outro.",
+  "CustomBossChallenge-DifferentBosses": "Chefe por nível",
+  "CustomBossChallenge-DifferentBossesInfo": "Marque para dar a cada nível um chefe próprio, por exemplo Bloonarius no nível 1 e Lych no nível 2. Clique em um nível na prévia dos níveis para escolher o chefe, Elite ou não, ou Aleatório para uma surpresa sorteada quando o jogo começa. Os níveis que você não mudar mantêm o tipo de chefe acima e mudam junto com ele.",
+  "CustomBossChallenge-DifferentBossesHint": "Clique em um nível na prévia dos níveis para escolher o chefe",
+  "CustomBossChallenge-TierBossTitle": "Chefe do nível {0}",
+  "CustomBossChallenge-RandomBoss": "Aleatório",
+  "CustomBossChallenge-FollowBossType": "Igual ao tipo de chefe"
 }
