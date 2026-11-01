@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compare two setups · Custom Boss Challenge</title>
+    <meta
+      name="description"
+      content="Paste two Boss Creator codes from the Custom Boss Challenge BTD6 mod and see what differs: the options, the boss's health and speed per tier, and the tiers side by side."
+    />
+    <link rel="icon" type="image/png" href="./icon.png" />
+    <link rel="apple-touch-icon" href="./icon.png" />
+    <link rel="canonical" href="%VITE_SITE_URL%compare.html" />
+    <meta name="theme-color" content="#0c2a52" />
+
+    <!-- The codes are after # in a link, so they never reach the server and every link shows this same card -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Custom Boss Challenge" />
+    <meta property="og:title" content="Compare two Custom Boss Challenge setups" />
+    <meta property="og:description" content="Two Boss Creator codes side by side: what differs, and the boss's health and speed per tier." />
+    <meta property="og:url" content="%VITE_SITE_URL%compare.html" />
+    <meta property="og:image" content="%VITE_SITE_URL%og-card.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Custom Boss Challenge logo with the words: build your own BTD6 boss fight" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Compare two Custom Boss Challenge setups" />
+    <meta name="twitter:description" content="Two Boss Creator codes side by side: what differs, and the boss's health and speed per tier." />
+    <meta name="twitter:image" content="%VITE_SITE_URL%og-card.png" />
+    <meta name="twitter:image:alt" content="Custom Boss Challenge logo with the words: build your own BTD6 boss fight" />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#top">Skip to content</a>
+    <header class="top">
+      <nav class="nav" aria-label="Main">
+        <a class="brand" href="./"><img src="./icon.png" alt="" width="40" height="40" /> Custom Boss Challenge</a>
+        <div class="nav-links">
+          <a href="./#codes">Read a code</a>
+          <a href="./compare.html" aria-current="page">Compare</a>
+          <a href="./#examples">Try these</a>
+          <a href="./#features">Features</a>
+          <a href="./#install">Install</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top" tabindex="-1">
+      <section class="panel">
+        <h1>Compare two setups</h1>
+        <p>
+          Paste two Boss Creator codes (or links to them) to see what differs between them. The codes are never sent
+          anywhere: they are read right here in your browser.
+        </p>
+        <div class="compare-inputs">
+          <label class="compare-input">
+            <span class="side-label">A</span>
+            <textarea id="code-a" class="code-input" rows="3" spellcheck="false" placeholder="CBC2:…" aria-label="Share code A"></textarea>
+          </label>
+          <label class="compare-input">
+            <span class="side-label">B</span>
+            <textarea id="code-b" class="code-input" rows="3" spellcheck="false" placeholder="CBC2:…" aria-label="Share code B"></textarea>
+          </label>
+        </div>
+        <div class="actions">
+          <button id="swap" class="button small orange" type="button">Swap A and B</button>
+        </div>
+        <div id="compare-result" class="result"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <a href="https://github.com/pedersebastian/CustomBossChallenge">Custom Boss Challenge on GitHub</a> ·
+        <span id="game-version"></span>
+      </p>
+      <p class="small">A fan-made mod. Not affiliated with or endorsed by Ninja Kiwi. Bloons TD 6 is a trademark of Ninja Kiwi.</p>
+      <p class="small">
+        Visits are counted anonymously with <a href="https://www.goatcounter.com/">GoatCounter</a>, without cookies.
+        Share codes are never sent.
+      </p>
+    </footer>
+
+    <script type="module" src="./src/compare.ts"></script>
+    <!-- Counts visits with GoatCounter: no cookies, and only the path is sent, never the codes after #. GoatCounter
+         skips localhost, so npm run dev isn't counted -->
+    <script data-goatcounter="https://pedersebastian.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  </body>
+</html>
