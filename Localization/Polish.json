@@ -6,7 +6,7 @@
   "CustomBossChallenge-Play": "Graj",
   "CustomBossChallenge-Elite": "Elite",
   "CustomBossChallenge-BossType": "Typ Bossa",
-  "CustomBossChallenge-BossTypeInfo": "Wybierz, z którym bossem chcesz walczyć. Zaznacz Elite, aby walczyć z dużo silniejszą wersją Elite tego bossa. Ctrl+Z cofa ostatnią zmianę opcji bossa, także wklejoną, wczytaną lub losową konfigurację, a Ctrl+Y ją ponawia. Zmiana samej zasady edytora wyzwań nie jest cofana. Delete przywraca domyślną wartość opcji w żółtej ramce.",
+  "CustomBossChallenge-BossTypeInfo": "Wybierz, z którym bossem chcesz walczyć. Zaznacz Elite, aby walczyć z dużo silniejszą wersją Elite tego bossa. Ctrl+Z cofa ostatnią zmianę opcji bossa lub zasad edytora wyzwań, także wklejoną, wczytaną lub losową konfigurację, a Ctrl+Y ją ponawia. Delete przywraca domyślną wartość opcji w żółtej ramce.",
   "CustomBossChallenge-BossSpeed": "Prędkość Bossa",
   "CustomBossChallenge-BossSpeedInfo": "Jak szybko porusza się boss, w procentach jego normalnej prędkości. 100 % to normalna prędkość.",
   "CustomBossChallenge-BossHealth": "Zdrowie Bossa",

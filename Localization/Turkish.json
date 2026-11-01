@@ -6,7 +6,7 @@
   "CustomBossChallenge-Play": "Oyna",
   "CustomBossChallenge-Elite": "Elite",
   "CustomBossChallenge-BossType": "Boss Türü",
-  "CustomBossChallenge-BossTypeInfo": "Hangi bossla savaşacağını seç. Bossun çok daha güçlü Elite sürümüyle savaşmak için Elite'i işaretle. Ctrl+Z, boss seçeneklerindeki son değişikliğini geri alır; yapıştırılan, yüklenen veya rastgele bir kurulum da buna dahildir. Ctrl+Y ise yeniden yapar. Yalnızca bir Challenge Editor kuralındaki değişiklik geri alınmaz. Delete, sarı çerçevedeki seçeneği varsayılana döndürür.",
+  "CustomBossChallenge-BossTypeInfo": "Hangi bossla savaşacağını seç. Bossun çok daha güçlü Elite sürümüyle savaşmak için Elite'i işaretle. Ctrl+Z, boss seçeneklerindeki veya Challenge Editor kurallarındaki son değişikliğini geri alır; yapıştırılan, yüklenen veya rastgele bir kurulum da buna dahildir. Ctrl+Y ise yeniden yapar. Delete, sarı çerçevedeki seçeneği varsayılana döndürür.",
   "CustomBossChallenge-BossSpeed": "Boss Hızı",
   "CustomBossChallenge-BossSpeedInfo": "Bossun normal hızının yüzdesi olarak ne kadar hızlı hareket ettiği. %100 normal hızdır.",
   "CustomBossChallenge-BossHealth": "Boss Canı",

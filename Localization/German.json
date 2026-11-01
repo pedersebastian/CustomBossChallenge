@@ -6,7 +6,7 @@
   "CustomBossChallenge-Play": "Spielen",
   "CustomBossChallenge-Elite": "Elite",
   "CustomBossChallenge-BossType": "Boss-Typ",
-  "CustomBossChallenge-BossTypeInfo": "Wähle, gegen welchen Boss du kämpfst. Aktiviere Elite, um gegen die viel stärkere Elite-Version des Bosses zu kämpfen. Strg+Z macht deine letzte Änderung an den Boss-Optionen rückgängig, auch ein eingefügtes, geladenes oder zufälliges Setup, und Strg+Y stellt sie wieder her. Eine Änderung nur an einer Challenge-Editor-Regel wird nicht rückgängig gemacht. Entf setzt die Option im gelben Rahmen auf den Standard zurück.",
+  "CustomBossChallenge-BossTypeInfo": "Wähle, gegen welchen Boss du kämpfst. Aktiviere Elite, um gegen die viel stärkere Elite-Version des Bosses zu kämpfen. Strg+Z macht deine letzte Änderung an den Boss-Optionen oder den Challenge-Editor-Regeln rückgängig, auch ein eingefügtes, geladenes oder zufälliges Setup, und Strg+Y stellt sie wieder her. Entf setzt die Option im gelben Rahmen auf den Standard zurück.",
   "CustomBossChallenge-BossSpeed": "Boss-Tempo",
   "CustomBossChallenge-BossSpeedInfo": "Wie schnell sich der Boss bewegt, in Prozent seiner normalen Geschwindigkeit. 100 % ist die normale Geschwindigkeit.",
   "CustomBossChallenge-BossHealth": "Boss-Gesundheit",

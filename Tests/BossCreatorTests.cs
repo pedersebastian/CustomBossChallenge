@@ -809,15 +809,36 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(BossMode.Options.SpeedPerTier, 20, "Ctrl+Shift+Z redoes too");
         Assert(BossHistory.RedoCount == 0 && !BossHistory.Redo(editor), "Nothing left to redo");
 
-        // Only the boss options are undone: a rule changed in between stays
+        // A change to one of the editor's own rules is a step of its own, and undoing it leaves the boss options alone
+        yield return new WaitForSecondsRealtime(0.2f);
         var speed = section.BossSpeed.Value;
+        var cash = editor.dcm.startRules.cash;
         section.BossSpeed.Slider.value = speed == 300 ? 400 : 300;
+        var changedSpeed = section.BossSpeed.Value;
         editor.dcm.startRules.cash = 7777;
         editor.ApplyDcmSettingsToUI();
+        yield return new WaitForSecondsRealtime(BossHistory.RulesCheckInterval * 2);
+        var steps = BossHistory.UndoCount;
+        yield return new WaitForSecondsRealtime(BossHistory.RulesCheckInterval * 3);
+        AssertEquals(BossHistory.UndoCount, steps, "Nothing changing must not add steps");
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+        AssertEquals(editor.dcm.startRules.cash, cash, "Ctrl+Z undoes the starting cash");
+        AssertEquals(section.BossSpeed.Value, changedSpeed, "Undoing a rule leaves Boss Speed alone");
         BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
         AssertEquals(section.BossSpeed.Value, speed, "Ctrl+Z puts Boss Speed back");
         Assert(Approximately(editor.dcm.bloonModifiers.bossSpeedMultiplier, speed / 100f), "Ctrl+Z puts Boss Speed back in the challenge");
-        AssertEquals(editor.dcm.startRules.cash, 7777, "Ctrl+Z must not undo a change to the editor's own rules");
+        AssertEquals(editor.dcm.startRules.cash, cash, "Undoing Boss Speed leaves the starting cash alone");
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Y));
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Y));
+        AssertEquals(editor.dcm.startRules.cash, 7777, "Ctrl+Y redoes the starting cash");
+        AssertEquals(section.BossSpeed.Value, changedSpeed, "Ctrl+Y redoes Boss Speed");
+
+        // A rule changed right before Ctrl+Z is undone, even before the history had a look at it
+        yield return new WaitForSecondsRealtime(0.2f);
+        editor.dcm.startRules.cash = 8888;
+        editor.ApplyDcmSettingsToUI();
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+        AssertEquals(editor.dcm.startRules.cash, 7777, "Ctrl+Z right after a rule changed");
 
         // Reset Boss Options asks first, leaves the rules alone, and is one step
         var mine = BossMode.Options;

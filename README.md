@@ -53,9 +53,11 @@ where you can read a share code and see the whole setup without the game, or
 - Every boss option has an **info button** (the "i" on its icon) that explains what it does.
 - **Reset and undo**: every boss option has a reset button that puts it back to its default, and **Reset Boss
   Options** at the top of the Boss section puts all of them back (after asking) without touching the Challenge
-  Editor rules. Ctrl+Z undoes the last change to the boss options, up to 20 steps, and Ctrl+Y or Ctrl+Shift+Z
-  redoes it; a pasted, loaded or random setup is one step, so an accidental Paste can be undone. The editor's own
-  Undo button still goes back to how the setup was when you opened it, and Ctrl+Z brings your changes back.
+  Editor rules. Ctrl+Z undoes the last change, to the boss options or to the Challenge Editor rules (map,
+  difficulty, cash, lives, towers, modifiers, ...), up to 20 steps, and Ctrl+Y or Ctrl+Shift+Z redoes it; a pasted,
+  loaded or random setup is one step, so an accidental Paste can be undone. The challenge name isn't undone. The
+  editor's own Undo button still goes back to how the setup was when you opened it, and Ctrl+Z brings your changes
+  back.
 - **Play** starts the custom boss game straight from the editor.
 - **Share Code**: copy a whole setup as a short text code and paste codes others share.
 - Your **last setup is remembered** between sessions.

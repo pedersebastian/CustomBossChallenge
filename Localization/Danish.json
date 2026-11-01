@@ -6,7 +6,7 @@
   "CustomBossChallenge-Play": "Spil",
   "CustomBossChallenge-Elite": "Elite",
   "CustomBossChallenge-BossType": "Bosstype",
-  "CustomBossChallenge-BossTypeInfo": "Vælg, hvilken boss du vil bekæmpe. Sæt kryds ved Elite for at bekæmpe den meget stærkere Elite-version af bossen. Ctrl+Z fortryder din seneste ændring af bossindstillingerne, også en indsat, indlæst eller tilfældig opsætning, og Ctrl+Y gentager den. En ændring af kun en Challenge Editor-regel fortrydes ikke. Delete sætter indstillingen i den gule ramme tilbage til standard.",
+  "CustomBossChallenge-BossTypeInfo": "Vælg, hvilken boss du vil bekæmpe. Sæt kryds ved Elite for at bekæmpe den meget stærkere Elite-version af bossen. Ctrl+Z fortryder din seneste ændring af bossindstillingerne eller Challenge Editor-reglerne, også en indsat, indlæst eller tilfældig opsætning, og Ctrl+Y gentager den. Delete sætter indstillingen i den gule ramme tilbage til standard.",
   "CustomBossChallenge-BossSpeed": "Bosshastighed",
   "CustomBossChallenge-BossSpeedInfo": "Hvor hurtigt bossen bevæger sig, i procent af dens normale hastighed. 100 % er normal hastighed.",
   "CustomBossChallenge-BossHealth": "Bosshelbred",

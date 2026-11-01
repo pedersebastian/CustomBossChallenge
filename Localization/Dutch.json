@@ -6,7 +6,7 @@
   "CustomBossChallenge-Play": "Spelen",
   "CustomBossChallenge-Elite": "Elite",
   "CustomBossChallenge-BossType": "Bosstype",
-  "CustomBossChallenge-BossTypeInfo": "Kies tegen welke boss je vecht. Vink Elite aan om tegen de veel sterkere Elite-versie van de boss te vechten. Ctrl+Z maakt je laatste wijziging aan de bossopties ongedaan, ook een geplakte, geladen of willekeurige opzet, en Ctrl+Y voert die opnieuw uit. Een wijziging aan alleen een Challenge Editor-regel wordt niet ongedaan gemaakt. Delete zet de optie in het gele kader terug naar de standaard.",
+  "CustomBossChallenge-BossTypeInfo": "Kies tegen welke boss je vecht. Vink Elite aan om tegen de veel sterkere Elite-versie van de boss te vechten. Ctrl+Z maakt je laatste wijziging aan de bossopties of de Challenge Editor-regels ongedaan, ook een geplakte, geladen of willekeurige opzet, en Ctrl+Y voert die opnieuw uit. Delete zet de optie in het gele kader terug naar de standaard.",
   "CustomBossChallenge-BossSpeed": "Bosssnelheid",
   "CustomBossChallenge-BossSpeedInfo": "Hoe snel de boss beweegt, in procent van de normale snelheid. 100 % is de normale snelheid.",
   "CustomBossChallenge-BossHealth": "Bossgezondheid",

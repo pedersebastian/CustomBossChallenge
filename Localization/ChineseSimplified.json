@@ -6,7 +6,7 @@
   "CustomBossChallenge-Play": "开始",
   "CustomBossChallenge-Elite": "精英",
   "CustomBossChallenge-BossType": "Boss类型",
-  "CustomBossChallenge-BossTypeInfo": "选择要挑战的Boss。勾选精英可挑战强大得多的精英版Boss。按 Ctrl+Z 可撤销你对首领选项的上一次更改（包括粘贴、载入或随机的配置），按 Ctrl+Y 可重做。仅对挑战编辑器规则的更改不会被撤销。按 Delete 可将黄色框中的选项恢复为默认值。",
+  "CustomBossChallenge-BossTypeInfo": "选择要挑战的Boss。勾选精英可挑战强大得多的精英版Boss。按 Ctrl+Z 可撤销你对首领选项或挑战编辑器规则的上一次更改（包括粘贴、载入或随机的配置），按 Ctrl+Y 可重做。按 Delete 可将黄色框中的选项恢复为默认值。",
   "CustomBossChallenge-BossSpeed": "Boss速度",
   "CustomBossChallenge-BossSpeedInfo": "Boss的移动速度，以其正常速度的百分比表示。100 %为正常速度。",
   "CustomBossChallenge-BossHealth": "Boss生命值",

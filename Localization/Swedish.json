@@ -6,7 +6,7 @@
   "CustomBossChallenge-Play": "Spela",
   "CustomBossChallenge-Elite": "Elit",
   "CustomBossChallenge-BossType": "Bosstyp",
-  "CustomBossChallenge-BossTypeInfo": "Välj vilken boss du vill bekämpa. Kryssa i Elit för att bekämpa den mycket starkare Elit-versionen av bossen. Ctrl+Z ångrar din senaste ändring av bossinställningarna, även en inklistrad, inläst eller slumpad uppsättning, och Ctrl+Y gör om den. En ändring av bara en Challenge Editor-regel ångras inte. Delete återställer inställningen i den gula ramen till standard.",
+  "CustomBossChallenge-BossTypeInfo": "Välj vilken boss du vill bekämpa. Kryssa i Elit för att bekämpa den mycket starkare Elit-versionen av bossen. Ctrl+Z ångrar din senaste ändring av bossinställningarna eller Challenge Editor-reglerna, även en inklistrad, inläst eller slumpad uppsättning, och Ctrl+Y gör om den. Delete återställer inställningen i den gula ramen till standard.",
   "CustomBossChallenge-BossSpeed": "Bosshastighet",
   "CustomBossChallenge-BossSpeedInfo": "Hur snabbt bossen rör sig, i procent av normal hastighet. 100 % är normal hastighet.",
   "CustomBossChallenge-BossHealth": "Bosshälsa",

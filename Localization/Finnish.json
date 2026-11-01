@@ -6,7 +6,7 @@
   "CustomBossChallenge-Play": "Pelaa",
   "CustomBossChallenge-Elite": "Elite",
   "CustomBossChallenge-BossType": "Pomotyyppi",
-  "CustomBossChallenge-BossTypeInfo": "Valitse, minkä pomon kanssa taistelet. Valitse Elite taistellaksesi pomon paljon vahvempaa Elite-versiota vastaan. Ctrl+Z peruu viimeisimmän muutoksesi pomovalintoihin, myös liitetyn, ladatun tai satunnaisen asetelman, ja Ctrl+Y tekee sen uudelleen. Pelkkää Challenge Editorin säännön muutosta ei peruta. Delete palauttaa keltaisessa kehyksessä olevan valinnan oletukseen.",
+  "CustomBossChallenge-BossTypeInfo": "Valitse, minkä pomon kanssa taistelet. Valitse Elite taistellaksesi pomon paljon vahvempaa Elite-versiota vastaan. Ctrl+Z peruu viimeisimmän muutoksesi pomovalintoihin tai Challenge Editorin sääntöihin, myös liitetyn, ladatun tai satunnaisen asetelman, ja Ctrl+Y tekee sen uudelleen. Delete palauttaa keltaisessa kehyksessä olevan valinnan oletukseen.",
   "CustomBossChallenge-BossSpeed": "Pomon nopeus",
   "CustomBossChallenge-BossSpeedInfo": "Kuinka nopeasti pomo liikkuu prosentteina sen normaalista nopeudesta. 100 % on normaali nopeus.",
   "CustomBossChallenge-BossHealth": "Pomon terveys",

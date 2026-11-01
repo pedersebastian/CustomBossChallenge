@@ -63,6 +63,10 @@ public static class BossCreatorKeys
         }
 
         FocusFrame.Fit();
+
+        // A change to the editor's own rules becomes an Undo step once nothing has the keyboard any more
+        if (focused == null && !BlockingUiOpen(section)) BossHistory.WatchRules(section.Editor);
+
         var press = ReadKeys();
 
         // Enter in a text field already moved on to the next control; it must not press that one too
