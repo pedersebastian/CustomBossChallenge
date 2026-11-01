@@ -17,6 +17,9 @@ public class KeyboardShortcutsTests
     [InlineData(ShortcutKey.V, KeyAction.Paste)]
     [InlineData(ShortcutKey.S, KeyAction.Save)]
     [InlineData(ShortcutKey.Enter, KeyAction.Play)]
+    [InlineData(ShortcutKey.Z, KeyAction.Undo)]
+    [InlineData(ShortcutKey.Y, KeyAction.Redo)]
+    [InlineData(ShortcutKey.Delete, KeyAction.None)]
     [InlineData(ShortcutKey.Tab, KeyAction.None)]
     [InlineData(ShortcutKey.Left, KeyAction.None)]
     [InlineData(ShortcutKey.Other, KeyAction.None)]
@@ -31,6 +34,7 @@ public class KeyboardShortcutsTests
     [InlineData(ShortcutKey.V)]
     [InlineData(ShortcutKey.S)]
     [InlineData(ShortcutKey.Enter)]
+    [InlineData(ShortcutKey.Y)]
     public void Keys_without_Ctrl_or_with_Shift_do_nothing_without_a_focused_control(ShortcutKey key)
     {
         Assert.Equal(KeyAction.None, KeyboardShortcuts.Decide(new KeyPress(key), Editing));
@@ -45,6 +49,10 @@ public class KeyboardShortcutsTests
     [InlineData(ShortcutKey.Left)]
     [InlineData(ShortcutKey.Down)]
     [InlineData(ShortcutKey.Space)]
+    [InlineData(ShortcutKey.Z)]
+    [InlineData(ShortcutKey.Y)]
+    [InlineData(ShortcutKey.Delete)]
+    [InlineData(ShortcutKey.Backspace)]
     public void A_focused_field_keeps_its_keys(ShortcutKey key)
     {
         Assert.Equal(KeyAction.None, KeyboardShortcuts.Decide(new KeyPress(key, Ctrl: true), InField));
@@ -69,11 +77,25 @@ public class KeyboardShortcutsTests
     [InlineData(ShortcutKey.Down, KeyAction.NextField)]
     [InlineData(ShortcutKey.Enter, KeyAction.Activate)]
     [InlineData(ShortcutKey.Space, KeyAction.Activate)]
+    [InlineData(ShortcutKey.Delete, KeyAction.ResetOption)]
+    [InlineData(ShortcutKey.Backspace, KeyAction.ResetOption)]
+    [InlineData(ShortcutKey.Z, KeyAction.None)]
     [InlineData(ShortcutKey.C, KeyAction.None)]
     public void A_focused_control_reacts_to_arrows_Enter_and_Space(ShortcutKey key, KeyAction expected)
     {
         Assert.Equal(expected, KeyboardShortcuts.Decide(new KeyPress(key), OnControl));
         Assert.Equal(KeyAction.None, KeyboardShortcuts.Decide(new KeyPress(key), Editing));
+    }
+
+    [Fact]
+    public void Ctrl_Shift_Z_redoes_and_Ctrl_Shift_Y_does_nothing()
+    {
+        foreach (var context in new[] {Editing, OnControl})
+        {
+            Assert.Equal(KeyAction.Redo, KeyboardShortcuts.Decide(new KeyPress(ShortcutKey.Z, Ctrl: true, Shift: true), context));
+            Assert.Equal(KeyAction.None, KeyboardShortcuts.Decide(new KeyPress(ShortcutKey.Y, Ctrl: true, Shift: true), context));
+            Assert.Equal(KeyAction.None, KeyboardShortcuts.Decide(new KeyPress(ShortcutKey.Delete, Shift: true), context));
+        }
     }
 
     [Theory]
@@ -86,5 +108,7 @@ public class KeyboardShortcutsTests
         Assert.Equal(KeyAction.None, KeyboardShortcuts.Decide(new KeyPress(ShortcutKey.C, Ctrl: true), context));
         Assert.Equal(KeyAction.None, KeyboardShortcuts.Decide(new KeyPress(ShortcutKey.Tab), context));
         Assert.Equal(KeyAction.None, KeyboardShortcuts.Decide(new KeyPress(ShortcutKey.Right), context));
+        Assert.Equal(KeyAction.None, KeyboardShortcuts.Decide(new KeyPress(ShortcutKey.Z, Ctrl: true), context));
+        Assert.Equal(KeyAction.None, KeyboardShortcuts.Decide(new KeyPress(ShortcutKey.Delete), context));
     }
 }

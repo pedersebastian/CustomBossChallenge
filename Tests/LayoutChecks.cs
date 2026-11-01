@@ -32,6 +32,21 @@ internal static class LayoutChecks
 
     public static Rect ScreenRect(Component component) => ScreenRect(component.GetComponent<RectTransform>());
 
+    /// <summary>
+    /// The rectangle a text's letters cover on the screen; its box is often much wider than what it shows
+    /// </summary>
+    public static Rect LettersRect(Il2CppTMPro.TMP_Text text)
+    {
+        text.ForceMeshUpdate();
+        var bounds = text.textBounds;
+        if (bounds.size.x <= 0) return Rect.zero;
+        var canvas = text.GetComponentInParent<Canvas>()?.rootCanvas;
+        var camera = canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+        var a = RectTransformUtility.WorldToScreenPoint(camera, text.transform.TransformPoint(bounds.min));
+        var b = RectTransformUtility.WorldToScreenPoint(camera, text.transform.TransformPoint(bounds.max));
+        return Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
+    }
+
     public static Rect Screen => new(0, 0, UnityEngine.Screen.width, UnityEngine.Screen.height);
 
     public static bool Overlap(Rect a, Rect b) =>

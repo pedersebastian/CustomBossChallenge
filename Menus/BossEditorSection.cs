@@ -96,6 +96,18 @@ public sealed class BossEditorSection
 
     private readonly Transform rows;
     private ModHelperButton resetRounds = null!;
+
+    /// <summary>
+    /// The buttons that put one option back to its default: the boss, the skulls and the custom skulls
+    /// </summary>
+    public ModHelperButton ResetBossButton { get; private set; } = null!;
+    public ModHelperButton ResetSkullsButton { get; private set; } = null!;
+    public ModHelperButton ResetCustomSkullsButton { get; private set; } = null!;
+
+    /// <summary>
+    /// On the section's title line: every boss option back to its default, after asking
+    /// </summary>
+    public ModHelperButton ResetAllButton { get; private set; } = null!;
     private readonly List<FocusStop> focusStops = new();
     private GameObject customSkullsRow = null!;
     private RectTransform? everything;
@@ -141,6 +153,14 @@ public sealed class BossEditorSection
             headingRect.anchoredPosition = new Vector2(titleTemplate.GetComponent<RectTransform>().anchoredPosition.x, -36.5f);
             EditorRows.SetText(heading.GetComponent<TMP_Text>(), Texts.Boss.T());
         }
+
+        // Inside the section's top edge, on the title's line
+        ResetAllButton = ModHelperButton.Create(new Info("ResetBossOptions", -60, -50, 740, 104)
+        {
+            Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 0.5f)
+        }, VanillaSprites.BlueBtnLong, new Action(OnResetAll));
+        ResetAllButton.transform.SetParent(Section.transform, false);
+        ResetAllButton.AddText(new Info("Label", InfoPreset.FillParent), Texts.ResetBossOptions.T(), 52);
 
         var rowsObject = new GameObject(RowsName, Il2CppInterop.Runtime.Il2CppType.Of<RectTransform>());
         rowsObject.transform.SetParent(Section.transform, false);
@@ -203,36 +223,37 @@ public sealed class BossEditorSection
             Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
         }, Texts.Elite.T(), 80, TextAlignmentOptions.Left);
         eliteLabel.transform.SetParent(bossRow.transform, false);
+        ResetBossButton = EditorRows.ResetButton(bossRow, "ResetBoss", ResetBoss);
 
         BossSpeed = SliderRow.Clone(template, rows, "BossSpeedRow", Texts.BossSpeed.T(), VanillaSprites.FasterBossIcon,
-            10, 1000, 10, 100, Percent, value => UpdateDcm(dcm => dcm.bloonModifiers.bossSpeedMultiplier = value / 100f));
+            10, 1000, 10, 100, Percent, value => UpdateDcm("BossSpeed", dcm => dcm.bloonModifiers.bossSpeedMultiplier = value / 100f));
         BossHealth = SliderRow.Clone(template, rows, "BossHealthRow", Texts.BossHealth.T(), VanillaSprites.BossBoostIcon,
-            10, 2000, 10, 100, Percent, value => UpdateDcm(dcm => dcm.bloonModifiers.healthMultipliers.boss = value / 100f));
+            10, 2000, 10, 100, Percent, value => UpdateDcm("BossHealth", dcm => dcm.bloonModifiers.healthMultipliers.boss = value / 100f));
 
         // The last position means no limit
         var paragons = ParagonMath.Available;
         MaxParagons = SliderRow.Clone(template, rows, "MaxParagonsRow", Texts.MaxParagons.T(), VanillaSprites.ParagonLimitIcon,
             0, paragons, 1, paragons, value => value >= paragons ? Texts.Unlimited.T() : $"{value:0}",
-            value => UpdateDcm(dcm => dcm.maxParagons = ParagonMath.FromSlider((int) value, paragons)));
+            value => UpdateDcm("MaxParagons", dcm => dcm.maxParagons = ParagonMath.FromSlider((int) value, paragons)));
 
         Tiers = SliderRow.Clone(template, rows, "TiersRow", Texts.BossTiers.T(), VanillaSprites.BossTiersIconSmall,
             TierMath.MinTiers, TierMath.MaxTiers, 1, TierMath.VanillaTiers, value => $"{value:0}",
-            value => UpdateOptions(o => o with {Tiers = (int) value}));
+            value => UpdateOptions("Tiers", o => o with {Tiers = (int) value}));
         SpeedPerTier = SliderRow.Clone(template, rows, "SpeedPerTierRow", Texts.SpeedPerTier.T(), VanillaSprites.FasterBossIcon,
             TierMath.MinSpeedPerTier, TierMath.MaxSpeedPerTier, TierMath.PerTierStep, 0, PerTier,
-            value => UpdateOptions(o => o with {SpeedPerTier = (int) value}));
+            value => UpdateOptions("SpeedPerTier", o => o with {SpeedPerTier = (int) value}));
         HealthPerTier = SliderRow.Clone(template, rows, "HealthPerTierRow", Texts.HealthPerTier.T(), VanillaSprites.BossBoostIcon,
             TierMath.MinHealthPerTier, TierMath.MaxHealthPerTier, TierMath.PerTierStep, 0, PerTier,
-            value => UpdateOptions(o => o with {HealthPerTier = (int) value}));
+            value => UpdateOptions("HealthPerTier", o => o with {HealthPerTier = (int) value}));
         var stripRow = EditorRows.LabelRow(template, rows, "TierStripRow", Texts.TierPreview.T(), VanillaSprites.BossT5Icon);
         Strip = new TierStrip(stripRow);
 
         FirstSpawnRound = SliderRow.Clone(template, rows, "FirstSpawnRoundRow", Texts.FirstBossRound.T(),
             VanillaSprites.BossT1Icon, 1, TierMath.MaxFirstSpawnRound, 1, TierMath.FirstSpawnRound, value => $"{value:0}",
-            _ => SpreadSpawnRounds());
+            _ => SpreadSpawnRounds("FirstSpawnRound"));
         RoundsBetween = SliderRow.Clone(template, rows, "RoundsBetweenRow", Texts.RoundsBetweenTiers.T(),
             VanillaSprites.BossTiersIconSmall, 1, TierMath.MaxRoundsBetweenTiers, 1, TierMath.RoundsBetweenTiers,
-            value => $"{value:0}", _ => SpreadSpawnRounds());
+            value => $"{value:0}", _ => SpreadSpawnRounds("RoundsBetween"));
 
         var roundsRow = EditorRows.LabelRow(template, rows, "SpawnRoundsRow", Texts.SpawnRounds.T(), VanillaSprites.BossT1Icon);
         SpawnRounds = ModHelperInputField.Create(EditorRows.ControlInfo("SpawnRounds", 1700, 150),
@@ -242,19 +263,16 @@ public sealed class BossEditorSection
         FollowKeyboard(SpawnRounds);
         SpawnRounds.InputField.onEndEdit.AddListener(new Action<string>(text =>
         {
-            UpdateOptions(o => o with {SpawnRounds = text});
+            // Leaving the field unchanged keeps the rounds as they are, following the defaults if they did
+            if (text == TierMath.FormatRounds(BossMode.Options.EffectiveSpawnRounds)) return;
+            UpdateOptions("SpawnRounds", o => o with {SpawnRounds = text});
             ShowSpawnRounds();
         }));
-        resetRounds = ModHelperButton.Create(new Info("ResetRounds", -132, 0, 180, 180)
-            {
-                Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
-            },
-            VanillaSprites.RestartBtn, new Action(() =>
-            {
-                UpdateOptions(o => o with {SpawnRounds = null});
-                ShowSpawnRounds();
-            }));
-        resetRounds.transform.SetParent(roundsRow.transform, false);
+        resetRounds = EditorRows.ResetButton(roundsRow, "ResetRounds", () =>
+        {
+            UpdateOptions(null, o => o with {SpawnRounds = null});
+            ShowSpawnRounds();
+        });
 
         var skullModeRow = EditorRows.LabelRow(template, rows, "SkullModeRow", Texts.Skulls.T(), VanillaSprites.CrossboneSkull);
         var modes = new Il2CppSystem.Collections.Generic.List<string>();
@@ -264,25 +282,27 @@ public sealed class BossEditorSection
         SkullMode = ModHelperDropdown.Create(EditorRows.ControlInfo("SkullMode", 900, 150),
             modes, 500, new Action<int>(index =>
             {
-                UpdateOptions(o => o with {SkullMode = (Config.SkullMode) index});
+                UpdateOptions("SkullMode", o => o with {SkullMode = (Config.SkullMode) index});
                 Relayout();
             }), VanillaSprites.BlueInsertPanelRound, 70);
         SkullMode.transform.SetParent(skullModeRow.transform, false);
+        ResetSkullsButton = EditorRows.ResetButton(skullModeRow, "ResetSkulls", ResetSkulls);
 
         SkullCount = SliderRow.Clone(template, rows, "SkullCountRow", Texts.SkullCount.T(), VanillaSprites.CrossboneSkull,
-            0, SkullMath.MaxSkulls, 1, 3, value => $"{value:0}", value => UpdateOptions(o => o with {SkullCount = (int) value}));
+            0, SkullMath.MaxSkulls, 1, 3, value => $"{value:0}", value => UpdateOptions("SkullCount", o => o with {SkullCount = (int) value}));
 
         customSkullsRow = EditorRows.LabelRow(template, rows, "CustomSkullsRow", Texts.SkullHealth.T(), VanillaSprites.CrossboneSkull);
         CustomSkulls = ModHelperInputField.Create(EditorRows.ControlInfo("CustomSkulls", 1700, 150), "75, 50, 25",
             VanillaSprites.BlueInsertPanelRound, null, 70, TMP_InputField.CharacterValidation.None,
             TextAlignmentOptions.Center, "75, 50, 25", 10);
         CustomSkulls.transform.SetParent(customSkullsRow.transform, false);
+        ResetCustomSkullsButton = EditorRows.ResetButton(customSkullsRow, "ResetCustomSkulls", ResetCustomSkulls);
         FollowKeyboard(CustomSkulls);
         CustomSkulls.InputField.onEndEdit.AddListener(new Action<string>(text =>
         {
             // Show what was understood; a list without any valid percentage keeps the previous skulls
             var skulls = SkullMath.NormalizeCustom(text, ShownSkulls(BossMode.Options));
-            UpdateOptions(o => o with {CustomSkulls = skulls});
+            UpdateOptions("CustomSkulls", o => o with {CustomSkulls = skulls});
             CustomSkulls.SetText(skulls, false);
         }));
 
@@ -373,9 +393,21 @@ public sealed class BossEditorSection
 
     private void BuildFocusStops()
     {
-        // Every boss is a stop of its own, picked with Enter or Space like a click
-        foreach (var (boss, button) in BossButtons) focusStops.Add(FocusStop.ForButton($"Boss{boss}", button.Button));
-        focusStops.Add(new FocusStop("Elite", () => Elite.gameObject) {Activate = () => Elite.Toggle.isOn = !Elite.Toggle.isOn});
+        focusStops.Add(FocusStop.ForButton("ResetBossOptions", ResetAllButton.Button));
+
+        // Every boss is a stop of its own, picked with Enter or Space like a click; Delete puts the boss back
+        foreach (var (boss, button) in BossButtons)
+        {
+            var stop = FocusStop.ForButton($"Boss{boss}", button.Button);
+            stop.Reset = ResetBoss;
+            focusStops.Add(stop);
+        }
+
+        focusStops.Add(new FocusStop("Elite", () => Elite.gameObject)
+        {
+            Activate = () => Elite.Toggle.isOn = !Elite.Toggle.isOn, Reset = ResetBoss
+        });
+        focusStops.Add(FocusStop.ForButton("ResetBoss", ResetBossButton.Button));
         focusStops.Add(FocusStop.ForSlider("BossSpeed", BossSpeed));
         focusStops.Add(FocusStop.ForSlider("BossHealth", BossHealth));
         focusStops.Add(FocusStop.ForSlider("MaxParagons", MaxParagons));
@@ -386,9 +418,13 @@ public sealed class BossEditorSection
         focusStops.Add(FocusStop.ForSlider("RoundsBetween", RoundsBetween));
         focusStops.Add(FocusStop.ForField("SpawnRounds", SpawnRounds.InputField));
         focusStops.Add(FocusStop.ForButton("ResetRounds", resetRounds.Button));
-        focusStops.Add(FocusStop.ForDropdown("SkullMode", SkullMode.Dropdown));
+        var skullMode = FocusStop.ForDropdown("SkullMode", SkullMode.Dropdown);
+        skullMode.Reset = ResetSkulls;
+        focusStops.Add(skullMode);
+        focusStops.Add(FocusStop.ForButton("ResetSkulls", ResetSkullsButton.Button));
         focusStops.Add(FocusStop.ForSlider("SkullCount", SkullCount));
         focusStops.Add(FocusStop.ForField("CustomSkulls", CustomSkulls.InputField));
+        focusStops.Add(FocusStop.ForButton("ResetCustomSkulls", ResetCustomSkullsButton.Button));
         focusStops.Add(FocusStop.ForDropdown("SavedList", SavedList.Dropdown));
         focusStops.Add(FocusStop.ForButton("SaveSetup", SaveSetup.Button));
         focusStops.Add(FocusStop.ForButton("LoadSetup", LoadSetup.Button));
@@ -855,24 +891,31 @@ public sealed class BossEditorSection
         dcm.maxParagons = ParagonMath.FromSlider((int) MaxParagons.Value, (int) MaxParagons.Slider.maxValue);
     }
 
-    private void UpdateDcm(Action<DailyChallengeModel> change)
+    /// <param name="control">The control that changes, for Undo (<see cref="BossHistory.RecordChange"/>)</param>
+    private void UpdateDcm(string control, Action<DailyChallengeModel> change)
     {
         if (refreshing || Editor.dcm == null) return;
+        BossHistory.RecordChange(Editor, control);
         Editor.dcm.bloonModifiers ??= new BloonModifiers();
         Editor.dcm.bloonModifiers.healthMultipliers ??= new BloonHealthMultipliers();
         change(Editor.dcm);
         ShowStrip();
     }
 
-    private void UpdateOptions(Func<BossOptions, BossOptions> change)
+    /// <param name="control">The control that changes, for Undo, or null for a change that is a step of its own</param>
+    private void UpdateOptions(string? control, Func<BossOptions, BossOptions> change)
     {
         if (refreshing) return;
-        BossMode.Options = change(BossMode.Options);
+        var changed = change(BossMode.Options);
+        if (changed == BossMode.Options) return;
+        BossHistory.RecordChange(Editor, control);
+        BossMode.Options = changed;
         if (!refreshing) Relayout();
     }
 
     private void SelectBoss(BossType boss)
     {
+        if (boss != BossMode.Options.Boss) BossHistory.RecordChange(Editor, null);
         BossMode.Options = BossMode.Options with {Boss = boss};
         FollowBossName(boss, BossMode.Options.Elite);
         ShowBoss();
@@ -896,9 +939,84 @@ public sealed class BossEditorSection
         if (Editor.dcm != null) Editor.dcm.name = name.text;
     }
 
+    /// <summary>
+    /// The boss and Elite back to a new setup's: Bloonarius, not Elite
+    /// </summary>
+    public void ResetBoss()
+    {
+        var defaults = new BossOptions();
+        ResetOptions(o => o with {Boss = defaults.Boss, Elite = defaults.Elite});
+    }
+
+    /// <summary>
+    /// The skulls back to the boss's own, with the evenly spaced count and the custom list at their defaults too
+    /// </summary>
+    public void ResetSkulls()
+    {
+        var defaults = new BossOptions();
+        ResetOptions(o => o with
+        {
+            SkullMode = defaults.SkullMode, SkullCount = defaults.SkullCount, CustomSkulls = defaults.CustomSkulls
+        });
+    }
+
+    public void ResetCustomSkulls() => ResetOptions(o => o with {CustomSkulls = new BossOptions().CustomSkulls});
+
+    /// <summary>
+    /// A reset of some options: one step for Undo, shown right away
+    /// </summary>
+    private void ResetOptions(Func<BossOptions, BossOptions> change)
+    {
+        var changed = change(BossMode.Options);
+        if (changed == BossMode.Options) return;
+        BossHistory.RecordChange(Editor, null);
+        BossMode.Options = changed;
+        Load(Editor.dcm, changed);
+    }
+
+    /// <summary>
+    /// Asks, then puts every boss option back to its default; the Challenge Editor's rules stay
+    /// </summary>
+    private void OnResetAll() =>
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
+            Texts.ResetBossOptions.T(), Texts.ResetBossOptionsQuestion.T(), new Action(ResetAll), Texts.Reset.T(),
+            null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
+
+    /// <summary>
+    /// Every boss option back to its default, without asking; one step for Undo
+    /// </summary>
+    public void ResetAll()
+    {
+        if (Editor.dcm == null) return;
+        BossHistory.RecordSetup(Editor);
+        ResetBossValues(Editor);
+        Load(Editor.dcm, BossMode.Options);
+        BossMode.Save();
+        ModHelper.Msg<CustomBossChallenge>("Reset the boss options");
+    }
+
+    /// <summary>
+    /// The boss values in the model and the boss options back to a new setup's, as the editor's own Reset does them.
+    /// The challenge name is left to the caller.
+    /// </summary>
+    public static void ResetBossValues(ChallengeEditor editor)
+    {
+        var dcm = editor.dcm;
+        dcm.bloonModifiers ??= new BloonModifiers();
+        dcm.bloonModifiers.healthMultipliers ??= new BloonHealthMultipliers();
+        dcm.bloonModifiers.bossSpeedMultiplier = 1;
+        dcm.bloonModifiers.healthMultipliers.boss = 1;
+        dcm.bloonModifiers.allFortified = false;
+        dcm.maxParagons = ParagonMath.NoLimit;
+        var settings = FortifiedModifier.Settings(editor);
+        if (settings != null) FortifiedModifier.Show(settings, dcm);
+        BossMode.Options = new BossOptions();
+    }
+
     private void SetElite(bool elite)
     {
         if (refreshing) return;
+        if (elite != BossMode.Options.Elite) BossHistory.RecordChange(Editor, null);
         BossMode.Options = BossMode.Options with {Elite = elite};
         FollowBossName(BossMode.Options.Boss, elite);
         ShowBoss();
@@ -941,8 +1059,8 @@ public sealed class BossEditorSection
     /// <summary>
     /// Replaces Spawn Rounds with evenly spaced rounds from the two sliders
     /// </summary>
-    private void SpreadSpawnRounds() =>
-        UpdateOptions(o => o with {SpawnRounds = TierMath.EvenRounds((int) FirstSpawnRound.Value, (int) RoundsBetween.Value)});
+    private void SpreadSpawnRounds(string control) =>
+        UpdateOptions(control, o => o with {SpawnRounds = TierMath.EvenRounds((int) FirstSpawnRound.Value, (int) RoundsBetween.Value)});
 
     /// <summary>
     /// Shows only the rows that apply, and makes room for the section in the editor's scroll area

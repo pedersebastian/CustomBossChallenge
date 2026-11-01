@@ -160,6 +160,44 @@ public class LayoutTest : CustomBossTest
         }
 
         Assert(checkedControls > 20, $"{format}: only {checkedControls} controls of the Boss section were checked");
+
+        // The reset buttons (issue #36) cover nothing else in their row, and Reset Boss Options not the section's title
+        foreach (var button in new[] {section.ResetBossButton, section.ResetSkullsButton, section.ResetCustomSkullsButton})
+        {
+            if (!button.gameObject.activeInHierarchy) continue;
+            var rect = ScreenRect(button.Button);
+            foreach (var other in button.transform.parent.GetComponentsInChildren<Selectable>())
+            {
+                if (other.transform.IsChildOf(button.transform)) continue;
+                var otherRect = ScreenRect(other);
+                Expect(otherRect.width < 1 || !Overlap(rect, otherRect),
+                    $"{format}: {button.name} ({Describe(rect)}) overlaps {NamePath(other.transform, section.Section.transform)} ({Describe(otherRect)})");
+            }
+
+            foreach (var text in button.transform.parent.GetComponentsInChildren<Il2CppTMPro.TMP_Text>())
+            {
+                if (text.transform.IsChildOf(button.transform)) continue;
+                var letters = LettersRect(text);
+                Expect(letters.width < 1 || !Overlap(rect, letters),
+                    $"{format}: {button.name} ({Describe(rect)}) covers the text '{text.text}' ({Describe(letters)})");
+            }
+        }
+
+        var resetAll = ScreenRect(section.ResetAllButton.Button);
+        Expect(InsideHorizontally(resetAll, sectionRect), $"{format}: Reset Boss Options ({Describe(resetAll)}) sticks out of the section");
+        var heading = section.Section.transform.Find("Heading")?.GetComponent<Il2CppTMPro.TMP_Text>();
+        if (heading != null)
+        {
+            var letters = LettersRect(heading);
+            Expect(!Overlap(resetAll, letters), $"{format}: Reset Boss Options ({Describe(resetAll)}) covers the title ({Describe(letters)})");
+        }
+
+        foreach (var row in section.Section.transform.Find(BossEditorSection.RowsName).GetComponentsInChildren<Selectable>())
+        {
+            var rowRect = ScreenRect(row);
+            Expect(rowRect.width < 1 || !Overlap(resetAll, rowRect),
+                $"{format}: Reset Boss Options ({Describe(resetAll)}) overlaps {NamePath(row.transform, section.Section.transform)}");
+        }
         Log($"{format}: Play {Describe(play)}, Reset {Describe(reset)}, section {Describe(sectionRect)}, {checkedControls} controls checked");
     }
 

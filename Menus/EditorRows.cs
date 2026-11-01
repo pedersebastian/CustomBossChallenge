@@ -54,6 +54,11 @@ public sealed class SliderRow
     /// </summary>
     public void Step(int direction) => Set(Value + direction * step);
 
+    /// <summary>
+    /// Goes back to the default, like the row's reset button
+    /// </summary>
+    public void Reset() => Set(Default);
+
     private void Set(float value)
     {
         Show(value);
@@ -90,7 +95,7 @@ public sealed class SliderRow
         right.onClick = new Button.ButtonClickedEvent();
         right.onClick.AddListener(new Action(() => result.Set(result.Value + step)));
         reset.onClick = new Button.ButtonClickedEvent();
-        reset.onClick.AddListener(new Action(() => result.Set(defaultValue)));
+        reset.onClick.AddListener(new Action(result.Reset));
 
         if (notch != null)
         {
@@ -116,6 +121,19 @@ public static class EditorRows
     public const float ControlX = -1328;
     public const float ControlWidth = 1990;
     public const float RowHeight = 200;
+
+    /// <summary>
+    /// A round reset button at the end of a row, where the slider rows have theirs
+    /// </summary>
+    public static ModHelperButton ResetButton(GameObject row, string name, Action action)
+    {
+        var button = ModHelperButton.Create(new Info(name, -132, 0, 180, 180)
+        {
+            Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
+        }, VanillaSprites.RestartBtn, action);
+        button.transform.SetParent(row.transform, false);
+        return button;
+    }
 
     /// <summary>
     /// Copies a slider row, relabels it and gives it a new icon. The vanilla row component is returned so the caller

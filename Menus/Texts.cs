@@ -17,7 +17,10 @@ public static class Texts
 
     public static readonly string BossType = Key(nameof(BossType), "Boss Type");
     public static readonly string BossTypeInfo = Key(nameof(BossTypeInfo),
-        "Choose which boss to fight. Tick Elite to fight the much stronger Elite version of the boss.");
+        "Choose which boss to fight. Tick Elite to fight the much stronger Elite version of the boss. Ctrl+Z undoes " +
+        "your last change to the boss options, also a pasted, loaded or random setup, and Ctrl+Y redoes it. A change " +
+        "to a Challenge Editor rule on its own isn't undone. Delete puts the option in the yellow frame back to its " +
+        "default.");
 
     public static readonly string BossSpeed = Key(nameof(BossSpeed), "Boss Speed");
     public static readonly string BossSpeedInfo = Key(nameof(BossSpeedInfo),
@@ -153,6 +156,11 @@ public static class Texts
     public static readonly string Load = Key(nameof(Load), "Load");
     public static readonly string Ok = Key(nameof(Ok), "OK");
     public static readonly string Cancel = Key(nameof(Cancel), "Cancel");
+    public static readonly string ResetBossOptions = Key(nameof(ResetBossOptions), "Reset Boss Options");
+    public static readonly string ResetBossOptionsQuestion = Key(nameof(ResetBossOptionsQuestion),
+        "Put every boss option back to its default? The Challenge Editor rules, like the map and starting cash, stay " +
+        "as they are. Ctrl+Z undoes it.");
+    public static readonly string Reset = Key(nameof(Reset), "Reset");
     public static readonly string TierCount = Key(nameof(TierCount), "{0} tiers");
     public static readonly string HealthCap = Key(nameof(HealthCap),
         "Health stops at {0} per tier, the game's limit: some tiers get less than the settings ask for.");

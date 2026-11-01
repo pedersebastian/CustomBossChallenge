@@ -113,6 +113,15 @@ public static class BossCreatorKeys
             case KeyAction.Activate:
                 stop!.Activate?.Invoke();
                 break;
+            case KeyAction.Undo:
+                BossHistory.Undo(section!.Editor);
+                break;
+            case KeyAction.Redo:
+                BossHistory.Redo(section!.Editor);
+                break;
+            case KeyAction.ResetOption:
+                stop!.Reset?.Invoke();
+                break;
         }
 
         return action;
@@ -255,6 +264,10 @@ public static class BossCreatorKeys
             : Input.GetKeyDown(KeyCode.RightArrow) ? ShortcutKey.Right
             : Input.GetKeyDown(KeyCode.UpArrow) ? ShortcutKey.Up
             : Input.GetKeyDown(KeyCode.DownArrow) ? ShortcutKey.Down
+            : Input.GetKeyDown(KeyCode.Z) ? ShortcutKey.Z
+            : Input.GetKeyDown(KeyCode.Y) ? ShortcutKey.Y
+            : Input.GetKeyDown(KeyCode.Delete) ? ShortcutKey.Delete
+            : Input.GetKeyDown(KeyCode.Backspace) ? ShortcutKey.Backspace
             : ShortcutKey.Other;
         var ctrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) ||
                    Input.GetKey(KeyCode.LeftCommand) || Input.GetKey(KeyCode.RightCommand);

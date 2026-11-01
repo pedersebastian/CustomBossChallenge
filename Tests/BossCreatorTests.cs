@@ -41,6 +41,7 @@ public class BossCreatorTest : CustomBossTest
             yield return EditSetup();
             yield return ShareCodes();
             yield return SavedSetups();
+            yield return ResetAndUndo();
             yield return NormalEditorHasNoBossSection();
             yield return PlayLaunchesTheGame();
         }
@@ -745,6 +746,140 @@ public class BossCreatorTest : CustomBossTest
         Assert(BossMode.Active && MenuManager.instance.GetCurrentMenu()?.GetIl2CppType().Name == nameof(ChallengeEditor),
             $"Back in {name} left the Boss Creator");
     }
+
+    /// <summary>
+    /// Every boss option can be reset on its own and all at once, and Ctrl+Z and Ctrl+Y undo and redo changes to the
+    /// boss options, with a pasted or random setup, a reset and the editor's own Undo as one step each (issue #36)
+    /// </summary>
+    private IEnumerator ResetAndUndo()
+    {
+        var clipboard = "";
+        Clipboard.Read = () => clipboard;
+        Clipboard.Write = text => clipboard = text;
+        var defaults = new BossOptions();
+
+        BossMode.Enter();
+        ChallengeEditor? editor = null;
+        yield return WaitForEditor(e => editor = e);
+        var section = BossEditorSection.Current!;
+        AssertEquals(BossHistory.UndoCount, 0, "Opening the Boss Creator starts without history");
+        var start = BossMode.Options;
+        var startDcm = editor!.dcm.Clone();
+        editor!.dcm.startRules.cash = 5000;
+        editor.ApplyDcmSettingsToUI();
+
+        // The boss, the skulls and the custom skulls have reset buttons like the sliders
+        section.BossButtons[BossType.Lych].Button.onClick.Invoke();
+        section.Elite.SetChecked(true, true);
+        section.ResetBossButton.Button.onClick.Invoke();
+        AssertEquals((BossMode.Options.Boss, BossMode.Options.Elite), (defaults.Boss, defaults.Elite), "Reset of the boss");
+        Assert(!section.Elite.Toggle.isOn, "The Elite tick must follow the reset");
+
+        section.SkullMode.Dropdown.value = (int) SkullMode.Custom;
+        section.CustomSkulls.InputField.onEndEdit.Invoke("90, 10");
+        Assert(BossMode.Options.CustomSkulls != defaults.CustomSkulls, "Custom skulls changed");
+        section.ResetCustomSkullsButton.Button.onClick.Invoke();
+        AssertEquals(BossMode.Options.CustomSkulls, defaults.CustomSkulls, "Reset of the custom skulls");
+        AssertEquals(section.CustomSkulls.InputField.text, defaults.CustomSkulls, "The skull field follows the reset");
+        AssertEquals(BossMode.Options.SkullMode, SkullMode.Custom, "The custom skulls' reset keeps the mode");
+        section.SkullMode.Dropdown.value = (int) SkullMode.EvenlySpaced;
+        section.SkullCount.Slider.value = 7;
+        section.ResetSkullsButton.Button.onClick.Invoke();
+        AssertEquals((BossMode.Options.SkullMode, BossMode.Options.SkullCount), (defaults.SkullMode, defaults.SkullCount),
+            "Reset of the skulls");
+        AssertEquals(section.SkullMode.Dropdown.value, (int) defaults.SkullMode, "The skull list follows the reset");
+
+        // Ctrl+Z goes back one change at a time, and a slider moved in several steps is one change. From the defaults,
+        // whatever the earlier tests left
+        section.ResetAll();
+        BossHistory.Clear();
+        var before = BossMode.Options;
+        AssertEquals(before, defaults, "Reset Boss Options without asking");
+        for (var tiers = 6; tiers <= 9; tiers++) section.Tiers.Slider.value = tiers;
+        section.SpeedPerTier.Slider.value = 20;
+        AssertEquals(BossHistory.UndoCount, 2, "A slider drag and another slider");
+        AssertEquals(BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z)), KeyAction.Undo, "Ctrl+Z");
+        AssertEquals(BossMode.Options.SpeedPerTier, 0, "Ctrl+Z undoes the last change");
+        AssertEquals(section.SpeedPerTier.Value, 0f, "The slider follows Ctrl+Z");
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+        AssertEquals(BossMode.Options, before, "A second Ctrl+Z undoes the whole slider drag");
+        AssertEquals(BossCreatorKeys.Handle(Ctrl(ShortcutKey.Y)), KeyAction.Redo, "Ctrl+Y");
+        AssertEquals(BossMode.Options.Tiers, 9, "Ctrl+Y redoes the slider drag");
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Z, Ctrl: true, Shift: true)), KeyAction.Redo, "Ctrl+Shift+Z");
+        AssertEquals(BossMode.Options.SpeedPerTier, 20, "Ctrl+Shift+Z redoes too");
+        Assert(BossHistory.RedoCount == 0 && !BossHistory.Redo(editor), "Nothing left to redo");
+
+        // Only the boss options are undone: a rule changed in between stays
+        var speed = section.BossSpeed.Value;
+        section.BossSpeed.Slider.value = speed == 300 ? 400 : 300;
+        editor.dcm.startRules.cash = 7777;
+        editor.ApplyDcmSettingsToUI();
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+        AssertEquals(section.BossSpeed.Value, speed, "Ctrl+Z puts Boss Speed back");
+        Assert(Approximately(editor.dcm.bloonModifiers.bossSpeedMultiplier, speed / 100f), "Ctrl+Z puts Boss Speed back in the challenge");
+        AssertEquals(editor.dcm.startRules.cash, 7777, "Ctrl+Z must not undo a change to the editor's own rules");
+
+        // Reset Boss Options asks first, leaves the rules alone, and is one step
+        var mine = BossMode.Options;
+        var map = editor.dcm.map;
+        section.ResetAllButton.Button.onClick.Invoke();
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup popup = null!;
+        yield return WaitForPopup(p => popup = p);
+        Assert(popup.body.text.Contains(Texts.ResetBossOptionsQuestion.T()), $"Reset popup: {popup.body.text}");
+        yield return ClosePopup(popup, false);
+        AssertEquals(BossMode.Options, mine, "Cancel keeps the boss options");
+        section.ResetAllButton.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        yield return ClosePopup(popup, true);
+        AssertEquals(BossMode.Options, defaults, "Reset Boss Options");
+        AssertEquals(section.Tiers.Value, (float) defaults.Tiers, "The sliders follow Reset Boss Options");
+        AssertEquals(editor.dcm.startRules.cash, 7777, "Reset Boss Options keeps the starting cash");
+        AssertEquals(editor.dcm.map, map, "Reset Boss Options keeps the map");
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+        AssertEquals(BossMode.Options, mine, "Ctrl+Z undoes Reset Boss Options in one step");
+        AssertEquals(editor.dcm.startRules.cash, 7777, "Undoing the reset keeps the starting cash");
+
+        // A pasted setup is one step, and Ctrl+Z brings the old setup back, rules included
+        var shared = new BossOptions {Boss = BossType.Phayze, Tiers = 3};
+        var sharedDcm = BossMode.DefaultDcm(shared);
+        sharedDcm.startRules.cash = 100;
+        clipboard = SetupCode.Encode(shared, sharedDcm);
+        section.PasteCode.Button.onClick.Invoke();
+        yield return WaitForPopup(p => popup = p);
+        yield return ClosePopup(popup, true);
+        AssertEquals(BossMode.Options, shared, "Pasted setup");
+        AssertEquals(editor.dcm.startRules.cash, 100, "Pasted starting cash");
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+        AssertEquals(BossMode.Options, mine, "Ctrl+Z undoes a Paste");
+        AssertEquals(editor.dcm.startRules.cash, 7777, "Ctrl+Z after Paste brings the old rules back");
+        Assert(editor.dcm.Pointer == BossMode.Dcm!.Pointer, "The editor must keep the Boss Creator's model after Ctrl+Z");
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Y));
+        AssertEquals(BossMode.Options, shared, "Ctrl+Y pastes it again");
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+
+        // Random is one step
+        editor.Randomize();
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+        AssertEquals(BossMode.Options, mine, "Ctrl+Z undoes Random");
+        AssertEquals(editor.dcm.startRules.cash, 7777, "Ctrl+Z after Random brings the old rules back");
+
+        // The editor's own Undo still goes back to how the setup was opened, and Ctrl+Z brings the changes back
+        editor.Undo();
+        yield return null;
+        AssertEquals(BossMode.Options, BossMode.OpenedOptions, "The editor's Undo");
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+        AssertEquals(BossMode.Options, mine, "Ctrl+Z after the editor's Undo");
+
+        // The history is only for this visit to the Boss Creator. The setup goes back to how it was, for the next tests.
+        BossMode.Replace(editor, start, startDcm);
+        Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
+        yield return WaitFor(() => !BossMode.Active, "Leaving the Boss Creator");
+        AssertEquals(BossHistory.UndoCount, 0, "Leaving clears the history");
+        Clipboard.Reset();
+        yield return ToMainMenu();
+    }
+
+    private static KeyPress Ctrl(ShortcutKey key) => new(key, Ctrl: true);
 
     private IEnumerator WaitForEditor(Action<ChallengeEditor> found)
     {

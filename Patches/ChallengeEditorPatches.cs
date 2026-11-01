@@ -28,11 +28,15 @@ internal static class ChallengeEditor_Open
 }
 
 /// <summary>
-/// The editor's Undo goes back to the model it was opened with; the boss options go back with it
+/// The editor's Undo goes back to the model it was opened with; the boss options go back with it. Going back is one
+/// step for Ctrl+Z, so the changes can be brought back.
 /// </summary>
 [HarmonyPatch(typeof(ChallengeEditor), nameof(ChallengeEditor.Undo))]
 internal static class ChallengeEditor_Undo
 {
+    [HarmonyPrefix]
+    internal static void Prefix(ChallengeEditor __instance) => BossHistory.RecordSetup(__instance);
+
     [HarmonyPostfix]
     internal static void Postfix(ChallengeEditor __instance)
     {
@@ -74,6 +78,9 @@ internal static class ChallengeEditor_ApplyUiSettingsToDCM
 [HarmonyPatch(typeof(ChallengeEditor), nameof(ChallengeEditor.Randomize))]
 internal static class ChallengeEditor_Randomize
 {
+    [HarmonyPrefix]
+    internal static void Prefix(ChallengeEditor __instance) => BossHistory.RecordSetup(__instance);
+
     [HarmonyPostfix]
     internal static void Postfix(ChallengeEditor __instance)
     {
@@ -96,22 +103,17 @@ internal static class ChallengeEditor_Randomize
 [HarmonyPatch(typeof(ChallengeEditor), nameof(ChallengeEditor.Clear))]
 internal static class ChallengeEditor_Clear
 {
+    [HarmonyPrefix]
+    internal static void Prefix(ChallengeEditor __instance) => BossHistory.RecordSetup(__instance);
+
     [HarmonyPostfix]
     internal static void Postfix(ChallengeEditor __instance)
     {
         if (!BossMode.Active) return;
 
-        // The vanilla reset doesn't know about the boss values in the model
-        var modifiers = __instance.dcm.bloonModifiers;
-        modifiers.bossSpeedMultiplier = 1;
-        modifiers.healthMultipliers.boss = 1;
-        modifiers.allFortified = false;
-        __instance.dcm.maxParagons = ParagonMath.NoLimit;
-        var settings = FortifiedModifier.Settings(__instance);
-        if (settings != null) FortifiedModifier.Show(settings, __instance.dcm);
-
-        // Like a new setup: the first boss, Bloonarius, with its default challenge name
-        BossMode.Options = new BossOptions();
+        // The vanilla reset doesn't know about the boss values in the model. Like a new setup: the first boss,
+        // Bloonarius, with its default challenge name.
+        BossEditorSection.ResetBossValues(__instance);
         __instance.dcm.name = BossMode.DefaultName(BossMode.Options.Boss);
         if (__instance.chalName != null) __instance.chalName.text = __instance.dcm.name;
         BossEditorSection.Current?.Load(__instance.dcm, BossMode.Options);
