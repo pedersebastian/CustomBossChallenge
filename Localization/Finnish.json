@@ -105,10 +105,11 @@
   "CustomBossChallenge-ExampleBossGauntlet": "Pomojen kujanjuoksu",
   "CustomBossChallenge-ExampleBossGauntletInfo": "Seitsemän tasoa, seitsemän pomoa: pelin jokainen pomo, yksi toisensa jälkeen.",
   "CustomBossChallenge-DifferentBosses": "Edistynyt tila",
-  "CustomBossChallenge-DifferentBossesInfo": "Valitse tämä valitaksesi itse jokaisen tason pomon, esimerkiksi Bloonarius tasolle 1 ja Lych tasolle 2. Jokainen taso alkaa pomotyypillä, joka on sillä aikaa piilossa. Napsauta tasoa alla olevassa Tasojen esikatselussa valitaksesi sen pomon, Elite tai ei, tai Satunnainen yllätykseksi, joka arvotaan pelin alkaessa.",
-  "CustomBossChallenge-DifferentBossesHint": "Napsauta tasoa alla valitaksesi sen pomon",
+  "CustomBossChallenge-DifferentBossesInfo": "Valitse Edistynyt-välilehti valitaksesi itse jokaisen tason pomon, esimerkiksi Bloonarius tasolle 1 ja Lych tasolle 2. Jokainen taso alkaa pomotyypillä, joka on sillä aikaa piilossa. Napsauta tasoa alla olevassa Tasojen esikatselussa valitaksesi sen pomon, Elite tai ei, tai Satunnainen yllätykseksi, joka arvotaan pelin alkaessa.",
   "CustomBossChallenge-TierBossTitle": "Tason {0} pomo",
   "CustomBossChallenge-RandomBoss": "Satunnainen",
   "CustomBossChallenge-BossLineup": "Pomot",
-  "CustomBossChallenge-TierArrives": "Taso {0}: {1}"
+  "CustomBossChallenge-TierArrives": "Taso {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Tavallinen",
+  "CustomBossChallenge-ModeAdvanced": "Edistynyt"
 }

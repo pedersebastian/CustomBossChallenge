@@ -90,12 +90,12 @@ where you can read a share code and see the whole setup without the game, or
 
 ## Advanced Mode
 
-Tick **Advanced Mode** at the top of the Boss section to mix bosses in one game (#28). The Boss Type is hidden and
-every tier starts with the boss it had; the cards in the **Tier Preview** right below become buttons, each with a
-small pencil. Click one to pick that tier's boss from every boss, **Elite** or not, or **Random** for a surprise that is
+Pick the **Advanced** tab at the top of the Boss section, next to **Standard**, to mix bosses in one game (#28). The
+Boss Type is hidden and every tier starts with the boss it had; the cards in the **Tier Preview** right below become
+buttons, each with a small pencil. Click one to pick that tier's boss from every boss, **Elite** or not, or **Random** for a surprise that is
 picked when the game starts (and stays the same through restarts, retries and Continue). With the keyboard, the
 arrows step a card's boss, Enter opens the picker and Delete puts the tier back to the boss it started with.
-Unticking brings the Boss Type back and keeps your choices, so ticking again brings them back too.
+Going back to **Standard** brings the Boss Type back and keeps your choices, so **Advanced** brings them back too.
 
 ![Advanced Mode in the Tier Preview](docs/tier-bosses.jpg)
 
@@ -172,7 +172,7 @@ CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg
 | Option | Range | Default | Notes |
 |---|---|---|---|
 | Boss Type | 7 bosses | Bloonarius | Elite toggle next to it. |
-| Advanced Mode | on / off | off | Hides the Boss Type; each tier's boss is picked on its card in the Tier Preview: any boss, Elite or not, or Random. |
+| Standard / Advanced | tabs | Standard | Hides the Boss Type; each tier's boss is picked on its card in the Tier Preview: any boss, Elite or not, or Random. |
 | Boss Speed | 10–1000 % | 100 % | |
 | Boss Health | 10–2000 % | 100 % | |
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |

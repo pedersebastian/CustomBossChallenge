@@ -105,10 +105,11 @@
   "CustomBossChallenge-ExampleBossGauntlet": "Bossmarathon",
   "CustomBossChallenge-ExampleBossGauntletInfo": "Zeven tiers, zeven bosses: elke boss uit het spel, de een na de ander.",
   "CustomBossChallenge-DifferentBosses": "Geavanceerde modus",
-  "CustomBossChallenge-DifferentBossesInfo": "Vink dit aan om zelf de boss van elke tier te kiezen, bijvoorbeeld Bloonarius op tier 1 en Lych op tier 2. Elke tier begint met het Bosstype, dat zolang verborgen is. Klik op een tier in het Niveauoverzicht hieronder om de boss te kiezen, Elite of niet, of Willekeurig voor een verrassing die gekozen wordt als het spel begint.",
-  "CustomBossChallenge-DifferentBossesHint": "Klik hieronder op een tier om de boss te kiezen",
+  "CustomBossChallenge-DifferentBossesInfo": "Kies het tabblad Geavanceerd om zelf de boss van elke tier te kiezen, bijvoorbeeld Bloonarius op tier 1 en Lych op tier 2. Elke tier begint met het Bosstype, dat zolang verborgen is. Klik op een tier in het Niveauoverzicht hieronder om de boss te kiezen, Elite of niet, of Willekeurig voor een verrassing die gekozen wordt als het spel begint.",
   "CustomBossChallenge-TierBossTitle": "Boss voor tier {0}",
   "CustomBossChallenge-RandomBoss": "Willekeurig",
   "CustomBossChallenge-BossLineup": "Bosses",
-  "CustomBossChallenge-TierArrives": "Tier {0}: {1}"
+  "CustomBossChallenge-TierArrives": "Tier {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Standaard",
+  "CustomBossChallenge-ModeAdvanced": "Geavanceerd"
 }

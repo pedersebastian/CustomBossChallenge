@@ -105,10 +105,11 @@
   "CustomBossChallenge-ExampleBossGauntlet": "Boss Gauntlet",
   "CustomBossChallenge-ExampleBossGauntletInfo": "Seven tiers, seven bosses: every boss in the game, one after the other.",
   "CustomBossChallenge-DifferentBosses": "Advanced Mode",
-  "CustomBossChallenge-DifferentBossesInfo": "Tick this to choose the boss of every tier yourself, for example Bloonarius on tier 1 and Lych on tier 2. Every tier starts with the Boss Type, which is hidden meanwhile. Click a tier in the Tier Preview below to choose its boss, Elite or not, or Random for a surprise that is picked when the game starts.",
-  "CustomBossChallenge-DifferentBossesHint": "Click a tier below to choose its boss",
+  "CustomBossChallenge-DifferentBossesInfo": "Pick the Advanced tab to choose the boss of every tier yourself, for example Bloonarius on tier 1 and Lych on tier 2. Every tier starts with the Boss Type, which is hidden meanwhile. Click a tier in the Tier Preview to choose its boss, Elite or not, or Random for a surprise that is picked when the game starts.",
   "CustomBossChallenge-TierBossTitle": "Boss for Tier {0}",
   "CustomBossChallenge-RandomBoss": "Random",
   "CustomBossChallenge-BossLineup": "Bosses",
-  "CustomBossChallenge-TierArrives": "Tier {0}: {1}"
+  "CustomBossChallenge-TierArrives": "Tier {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Standard",
+  "CustomBossChallenge-ModeAdvanced": "Advanced"
 }

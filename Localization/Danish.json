@@ -105,10 +105,11 @@
   "CustomBossChallenge-ExampleBossGauntlet": "Boss-maraton",
   "CustomBossChallenge-ExampleBossGauntletInfo": "Syv niveauer, syv bosser: alle spillets bosser, den ene efter den anden.",
   "CustomBossChallenge-DifferentBosses": "Avanceret tilstand",
-  "CustomBossChallenge-DifferentBossesInfo": "Sæt flueben for selv at vælge bossen på hvert niveau, for eksempel Bloonarius på niveau 1 og Lych på niveau 2. Hvert niveau starter med bosstypen, som imens er skjult. Klik på et niveau i Niveauoversigten nedenfor for at vælge dets boss, Elite eller ej, eller Tilfældig for en overraskelse, der vælges, når spillet starter.",
-  "CustomBossChallenge-DifferentBossesHint": "Klik på et niveau nedenfor for at vælge dets boss",
+  "CustomBossChallenge-DifferentBossesInfo": "Vælg fanen Avanceret for selv at vælge bossen på hvert niveau, for eksempel Bloonarius på niveau 1 og Lych på niveau 2. Hvert niveau starter med bosstypen, som imens er skjult. Klik på et niveau i Niveauoversigten nedenfor for at vælge dets boss, Elite eller ej, eller Tilfældig for en overraskelse, der vælges, når spillet starter.",
   "CustomBossChallenge-TierBossTitle": "Boss for niveau {0}",
   "CustomBossChallenge-RandomBoss": "Tilfældig",
   "CustomBossChallenge-BossLineup": "Bosser",
-  "CustomBossChallenge-TierArrives": "Niveau {0}: {1}"
+  "CustomBossChallenge-TierArrives": "Niveau {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Standard",
+  "CustomBossChallenge-ModeAdvanced": "Avanceret"
 }

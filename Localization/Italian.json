@@ -105,10 +105,11 @@
   "CustomBossChallenge-ExampleBossGauntlet": "Sfilata di boss",
   "CustomBossChallenge-ExampleBossGauntletInfo": "Sette livelli, sette boss: tutti i boss del gioco, uno dopo l'altro.",
   "CustomBossChallenge-DifferentBosses": "Modalità avanzata",
-  "CustomBossChallenge-DifferentBossesInfo": "Spunta per scegliere tu il boss di ogni livello, per esempio Bloonarius al livello 1 e Lych al livello 2. Ogni livello parte con il tipo di boss, che nel frattempo è nascosto. Fai clic su un livello nell'anteprima dei livelli qui sotto per sceglierne il boss, Elite o no, oppure Casuale per una sorpresa estratta all'inizio della partita.",
-  "CustomBossChallenge-DifferentBossesHint": "Fai clic su un livello qui sotto per sceglierne il boss",
+  "CustomBossChallenge-DifferentBossesInfo": "Scegli la scheda Avanzata per scegliere tu il boss di ogni livello, per esempio Bloonarius al livello 1 e Lych al livello 2. Ogni livello parte con il tipo di boss, che nel frattempo è nascosto. Fai clic su un livello nell'anteprima dei livelli qui sotto per sceglierne il boss, Elite o no, oppure Casuale per una sorpresa estratta all'inizio della partita.",
   "CustomBossChallenge-TierBossTitle": "Boss del livello {0}",
   "CustomBossChallenge-RandomBoss": "Casuale",
   "CustomBossChallenge-BossLineup": "Boss",
-  "CustomBossChallenge-TierArrives": "Livello {0}: {1}"
+  "CustomBossChallenge-TierArrives": "Livello {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Standard",
+  "CustomBossChallenge-ModeAdvanced": "Avanzata"
 }

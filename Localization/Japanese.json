@@ -105,10 +105,11 @@
   "CustomBossChallenge-ExampleBossGauntlet": "ボス連戦",
   "CustomBossChallenge-ExampleBossGauntletInfo": "7ティア、7体のボス：ゲームのすべてのボスが次々に登場します。",
   "CustomBossChallenge-DifferentBosses": "アドバンスモード",
-  "CustomBossChallenge-DifferentBossesInfo": "オンにすると、各ティアのボスを自分で選べます。例：ティア 1 は Bloonarius、ティア 2 は Lych。各ティアは最初はボスの種類と同じで、その間ボスの種類は非表示になります。下のティアのプレビューでティアをクリックして、ボス、エリートかどうか、またはゲーム開始時に決まるランダムを選びます。",
-  "CustomBossChallenge-DifferentBossesHint": "下のティアをクリックしてボスを選びます",
+  "CustomBossChallenge-DifferentBossesInfo": "「アドバンス」タブを選ぶと、各ティアのボスを自分で選べます。例：ティア 1 は Bloonarius、ティア 2 は Lych。各ティアは最初はボスの種類と同じで、その間ボスの種類は非表示になります。下のティアのプレビューでティアをクリックして、ボス、エリートかどうか、またはゲーム開始時に決まるランダムを選びます。",
   "CustomBossChallenge-TierBossTitle": "ティア {0} のボス",
   "CustomBossChallenge-RandomBoss": "ランダム",
   "CustomBossChallenge-BossLineup": "ボス",
-  "CustomBossChallenge-TierArrives": "ティア {0}：{1}"
+  "CustomBossChallenge-TierArrives": "ティア {0}：{1}",
+  "CustomBossChallenge-ModeStandard": "スタンダード",
+  "CustomBossChallenge-ModeAdvanced": "アドバンス"
 }

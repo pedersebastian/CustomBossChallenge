@@ -116,7 +116,7 @@ public class LayoutTest : CustomBossTest
         var section = AssertNotNull(BossEditorSection.Current, $"{format}: no Boss section")!;
 
         // In Advanced Mode, so its hint and the cards' pencils are checked too
-        section.DifferentBosses.Toggle.isOn = true;
+        section.SetAdvanced(true);
         var play = ScreenRect(section.Play.GetComponentInChildren<Button>(true));
         var reset = ScreenRect(editor.transform.Find("Reset").GetComponentInChildren<Button>(true));
         Expect(Inside(play, LayoutChecks.Screen), $"{format}: Play ({Describe(play)}) is not on the screen");
@@ -202,7 +202,7 @@ public class LayoutTest : CustomBossTest
                 $"{format}: Reset Boss Options ({Describe(resetAll)}) overlaps {NamePath(row.transform, section.Section.transform)}");
         }
         CheckPicker(format, section);
-        section.DifferentBosses.Toggle.isOn = false;
+        section.SetAdvanced(false);
         Log($"{format}: Play {Describe(play)}, Reset {Describe(reset)}, section {Describe(sectionRect)}, {checkedControls} controls checked");
     }
 

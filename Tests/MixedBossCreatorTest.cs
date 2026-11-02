@@ -65,14 +65,17 @@ public class MixedBossCreatorTest : CustomBossTest
         Assert(!card2.Edit.gameObject.activeSelf, "No pencil on the cards while Advanced Mode is off");
         Assert(section.OpenPicker(2) == null, "No picker while Advanced Mode is off");
 
-        // The Tier Preview comes right after Advanced Mode, and Max Paragons after the skulls
-        AssertEquals(section.Strip.Row.transform.GetSiblingIndex(), section.DifferentBosses.transform.parent.GetSiblingIndex() + 1,
-            "The Tier Preview is right under Advanced Mode");
+        // The tabs come first, the Tier Preview right under the boss, and Max Paragons after the skulls
+        AssertEquals(section.Mode.Row.transform.GetSiblingIndex(), 0, "The mode tabs are the section's first row");
+        AssertEquals(section.Strip.Row.transform.GetSiblingIndex(), section.BossTypeRow.transform.GetSiblingIndex() + 1,
+            "The Tier Preview is right under the boss");
+        Assert(!section.Mode.AdvancedPicked, "Standard is the picked tab");
         Assert(section.MaxParagons.Row.transform.GetSiblingIndex() > section.Skulls.Row.transform.GetSiblingIndex(),
             "Max Paragons comes after the skulls");
 
-        // On: every tier starts with the Boss Type, which is hidden
-        section.DifferentBosses.Toggle.isOn = true;
+        // Advanced: every tier starts with the Boss Type, which is hidden
+        section.Mode.Advanced.onClick.Invoke();
+        Assert(section.Mode.AdvancedPicked, "Clicking Advanced picks its tab");
         AssertEquals(BossMode.Options.TierBosses, string.Join(",", Enumerable.Repeat("Vortex", TierMath.MaxTiers)),
             "Advanced Mode on: every tier starts with the Boss Type");
         Assert(!section.BossTypeRow.activeInHierarchy, "The Boss Type is hidden in Advanced Mode");
@@ -140,15 +143,16 @@ public class MixedBossCreatorTest : CustomBossTest
 
         // Off and on again brings the bosses back; the boss's reset turns it off
         var mixed = BossMode.Options.TierBosses;
-        section.DifferentBosses.Toggle.isOn = false;
+        section.Mode.Standard.onClick.Invoke();
+        Assert(!section.Mode.AdvancedPicked, "Clicking Standard picks its tab");
         AssertEquals(BossMode.Options.TierBosses, null, "Off: one boss for every tier");
         AssertEquals(BossMode.Options.BossId(2), "Vortex2", "Off: tier 2 has the Boss Type");
         Assert(!card2.Button.interactable, "Off: the cards are a preview again");
         Assert(section.BossTypeRow.activeInHierarchy, "Off: the Boss Type shows again");
-        section.DifferentBosses.Toggle.isOn = true;
+        section.SetAdvanced(true);
         AssertEquals(BossMode.Options.TierBosses, mixed, "On again: the bosses per tier come back");
         section.ResetBoss();
-        Assert(!BossMode.Options.Mixed && !section.DifferentBosses.Toggle.isOn, "Reset of the boss turns Advanced Mode off");
+        Assert(!BossMode.Options.Mixed && !section.Mode.AdvancedPicked, "Reset of the boss goes back to Standard");
 
         Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
         yield return new WaitForSecondsRealtime(1);

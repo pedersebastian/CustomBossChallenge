@@ -23,11 +23,11 @@ public static class Texts
 
     public static readonly string DifferentBosses = Key(nameof(DifferentBosses), "Advanced Mode");
     public static readonly string DifferentBossesInfo = Key(nameof(DifferentBossesInfo),
-        "Tick this to choose the boss of every tier yourself, for example Bloonarius on tier 1 and Lych on tier 2. " +
-        "Every tier starts with the Boss Type, which is hidden meanwhile. Click a tier in the Tier Preview below to " +
-        "choose its boss, Elite or not, or Random for a surprise that is picked when the game starts.");
-    public static readonly string DifferentBossesHint = Key(nameof(DifferentBossesHint),
-        "Click a tier below to choose its boss");
+        "Pick the Advanced tab to choose the boss of every tier yourself, for example Bloonarius on tier 1 and Lych " +
+        "on tier 2. Every tier starts with the Boss Type, which is hidden meanwhile. Click a tier in the Tier Preview " +
+        "to choose its boss, Elite or not, or Random for a surprise that is picked when the game starts.");
+    public static readonly string ModeStandard = Key(nameof(ModeStandard), "Standard");
+    public static readonly string ModeAdvanced = Key(nameof(ModeAdvanced), "Advanced");
     public static readonly string TierBossTitle = Key(nameof(TierBossTitle), "Boss for Tier {0}");
     public static readonly string RandomBoss = Key(nameof(RandomBoss), "Random");
     public static readonly string BossLineup = Key(nameof(BossLineup), "Bosses");

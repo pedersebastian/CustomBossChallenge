@@ -105,10 +105,11 @@
   "CustomBossChallenge-ExampleBossGauntlet": "تحدي الزعماء",
   "CustomBossChallenge-ExampleBossGauntletInfo": "سبعة مستويات وسبعة زعماء: كل زعيم في اللعبة، واحدًا تلو الآخر.",
   "CustomBossChallenge-DifferentBosses": "الوضع المتقدم",
-  "CustomBossChallenge-DifferentBossesInfo": "فعّل هذا لتختار زعيم كل مستوى بنفسك، مثل Bloonarius في المستوى 1 وLych في المستوى 2. يبدأ كل مستوى بنوع الزعيم، الذي يُخفى في هذه الأثناء. انقر على مستوى في معاينة المستويات أدناه لتختار زعيمه، Elite أو لا، أو عشوائي لمفاجأة تُختار عند بدء اللعبة.",
-  "CustomBossChallenge-DifferentBossesHint": "انقر على مستوى في الأسفل لتختار زعيمه",
+  "CustomBossChallenge-DifferentBossesInfo": "اختر تبويب «متقدم» لتختار زعيم كل مستوى بنفسك، مثل Bloonarius في المستوى 1 وLych في المستوى 2. يبدأ كل مستوى بنوع الزعيم، الذي يُخفى في هذه الأثناء. انقر على مستوى في معاينة المستويات أدناه لتختار زعيمه، Elite أو لا، أو عشوائي لمفاجأة تُختار عند بدء اللعبة.",
   "CustomBossChallenge-TierBossTitle": "زعيم المستوى {0}",
   "CustomBossChallenge-RandomBoss": "عشوائي",
   "CustomBossChallenge-BossLineup": "الزعماء",
-  "CustomBossChallenge-TierArrives": "المستوى {0}: {1}"
+  "CustomBossChallenge-TierArrives": "المستوى {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "عادي",
+  "CustomBossChallenge-ModeAdvanced": "متقدم"
 }

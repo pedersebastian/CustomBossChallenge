@@ -105,10 +105,11 @@
   "CustomBossChallenge-ExampleBossGauntlet": "Bossgatlopp",
   "CustomBossChallenge-ExampleBossGauntletInfo": "Sju nivåer, sju bossar: alla bossar i spelet, den ena efter den andra.",
   "CustomBossChallenge-DifferentBosses": "Avancerat läge",
-  "CustomBossChallenge-DifferentBossesInfo": "Kryssa i för att själv välja bossen på varje nivå, till exempel Bloonarius på nivå 1 och Lych på nivå 2. Varje nivå börjar med bosstypen, som är dold så länge. Klicka på en nivå i nivåöversikten nedan för att välja dess boss, Elit eller inte, eller Slumpad för en överraskning som lottas när spelet startar.",
-  "CustomBossChallenge-DifferentBossesHint": "Klicka på en nivå nedan för att välja dess boss",
+  "CustomBossChallenge-DifferentBossesInfo": "Välj fliken Avancerat för att själv välja bossen på varje nivå, till exempel Bloonarius på nivå 1 och Lych på nivå 2. Varje nivå börjar med bosstypen, som är dold så länge. Klicka på en nivå i nivåöversikten nedan för att välja dess boss, Elit eller inte, eller Slumpad för en överraskning som lottas när spelet startar.",
   "CustomBossChallenge-TierBossTitle": "Boss för nivå {0}",
   "CustomBossChallenge-RandomBoss": "Slumpad",
   "CustomBossChallenge-BossLineup": "Bossar",
-  "CustomBossChallenge-TierArrives": "Nivå {0}: {1}"
+  "CustomBossChallenge-TierArrives": "Nivå {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Standard",
+  "CustomBossChallenge-ModeAdvanced": "Avancerat"
 }
