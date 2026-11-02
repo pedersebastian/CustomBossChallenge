@@ -137,6 +137,17 @@ public class MixedBossCreatorTest : CustomBossTest
         BossCreatorKeys.EscapePressed = () => false;
         AssertEquals(TierBossPicker.Current, null, "Esc closes the picker");
 
+        // Random keeps the mode: Advanced gets new bosses per tier and stays Advanced
+        var randomBefore = BossMode.Options.TierBosses;
+        section.Editor.randomBtn.onClick.Invoke();
+        yield return new WaitForSecondsRealtime(0.5f);
+        Assert(BossMode.Options.Mixed && section.Mode.AdvancedPicked, "Random in Advanced stays Advanced");
+        Assert(!section.BossTypeRow.activeInHierarchy, "Random in Advanced keeps the Boss Type hidden");
+        Assert(BossMode.Options.TierBosses != randomBefore, "Random in Advanced picks new bosses per tier");
+        BossHistory.Undo(section.Editor);
+        yield return null;
+        AssertEquals(BossMode.Options.TierBosses, randomBefore, "Undo of Random in Advanced");
+
         // Codes keep the bosses per tier
         var code = SetupCode.Encode(BossMode.Options, section.Editor.dcm);
         Assert(code.StartsWith(SetupCode.Version3Prefix), $"Advanced Mode gives a version 3 code: {code}");
@@ -149,6 +160,11 @@ public class MixedBossCreatorTest : CustomBossTest
         AssertEquals(BossMode.Options.BossId(2), "Vortex2", "Off: tier 2 has the Boss Type");
         Assert(!card2.Button.interactable, "Off: the cards are a preview again");
         Assert(section.BossTypeRow.activeInHierarchy, "Off: the Boss Type shows again");
+        section.Editor.randomBtn.onClick.Invoke();
+        yield return new WaitForSecondsRealtime(0.5f);
+        Assert(!BossMode.Options.Mixed && !section.Mode.AdvancedPicked, "Random in Standard stays Standard");
+        BossHistory.Undo(section.Editor);
+        yield return null;
         section.SetAdvanced(true);
         AssertEquals(BossMode.Options.TierBosses, mixed, "On again: the bosses per tier come back");
         section.ResetBoss();

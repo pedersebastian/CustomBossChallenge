@@ -31,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Max Paragons moved down below the skulls, and the Tier Preview up, right under the boss.
+- The editor's **Random** button keeps the mode: in Advanced every tier gets a random boss (now and then Random, Elite
+  more often in later tiers), Standard stays one boss. Random boss speed and health now go up to 400 %, with values
+  near 100 % far more likely than extreme ones.
 
 ### Fixed
 

@@ -140,7 +140,7 @@ public class BossRandomizerTest : CustomBossTest
         var modes = ChallengeLimits.Modes;
         var unsupported = Menus.BossEditorSection.UnsupportedModes;
         var bosses = new System.Collections.Generic.HashSet<BossType>();
-        int defaultSpeed = 0, defaultHealth = 0, elite = 0, defaultTiers = 0, limited = 0;
+        int defaultSpeed = 0, defaultHealth = 0, elite = 0, defaultTiers = 0, limited = 0, nearNormal = 0, extreme = 0;
         try
         {
             for (var i = 0; i < Runs; i++)
@@ -158,8 +158,14 @@ public class BossRandomizerTest : CustomBossTest
                 AssertEquals(Menus.BossEditorSection.PlayProblem(dcm, options), null, "A random setup must be playable");
                 var speed = dcm.bloonModifiers.bossSpeedMultiplier;
                 var health = dcm.bloonModifiers.healthMultipliers.boss;
-                Assert(speed >= 0.5f && speed <= 2f, $"Boss speed {speed}");
-                Assert(health >= 0.5f && health <= 2f, $"Boss health {health}");
+                Assert(speed >= 0.5f && speed <= 4f, $"Boss speed {speed}");
+                Assert(health >= 0.5f && health <= 4f, $"Boss health {health}");
+                AssertEquals(options.Mixed, false, "Random in Standard stays Standard");
+                foreach (var value in new[] {speed, health})
+                {
+                    if (!Approximately(value, 1) && value <= 1.2f) nearNormal++;
+                    if (value >= 3f) extreme++;
+                }
                 Assert(dcm.maxParagons == ParagonMath.NoLimit || dcm.maxParagons is >= 0 and <= BossRandomizer.MaxRandomParagons,
                     $"Max paragons {dcm.maxParagons}");
                 Assert(options.SpeedPerTier is >= 0 and <= BossRandomizer.MaxRandomSpeedPerTier && options.SpeedPerTier % TierMath.PerTierStep == 0,
@@ -183,6 +189,46 @@ public class BossRandomizerTest : CustomBossTest
         Log($"default speed {defaultSpeed}, default health {defaultHealth}, elite {elite}, 5 tiers {defaultTiers}, " +
             $"paragon limit {limited} of {Runs}");
         AssertEquals(bosses.Count, System.Enum.GetValues<BossType>().Length, "Every boss can come up");
+        Log($"speed and health just above normal {nearNormal}, at 300 % or more {extreme}");
+        Assert(extreme > 0, "Speed and health up to 400 % can come up");
+        Assert(nearNormal > extreme * 5, $"Values near 100 % must be far more likely than extreme ones: {nearNormal} vs {extreme}");
+        Assert(BossRandomizer.PercentWeight(110) > BossRandomizer.PercentWeight(400) * 10, "110 % is far more likely than 400 %");
+
+        // In Advanced Mode every tier gets a boss, sometimes Random, rarely the same as the tier before it
+        BossRandomizer.Random = new System.Random(99);
+        int tiersSeen = 0, randomTiers = 0, repeats = 0, eliteFirst = 0, eliteLast = 0;
+        try
+        {
+            for (var i = 0; i < Runs; i++)
+            {
+                var dcm = BaseDcm();
+                var options = BossRandomizer.Randomize(dcm, unsupported, advanced: true);
+                Assert(options.Mixed, "Random in Advanced stays Advanced");
+                AssertEquals(options, options.Sanitized(), "Random advanced options must already be in range");
+                AssertEquals(Menus.BossEditorSection.PlayProblem(dcm, options), null, "A random advanced setup must be playable");
+                var tiers = TierBossMath.Parse(options.TierBosses);
+                AssertEquals(tiers.Length, TierMath.MaxTiers, "Random gives every tier a boss");
+                for (var tier = 0; tier < tiers.Length; tier++)
+                {
+                    Assert(!tiers[tier].FollowsSetup, "No random tier follows the hidden Boss Type");
+                    tiersSeen++;
+                    if (tiers[tier].IsRandom) randomTiers++;
+                    if (tier > 0 && !tiers[tier].IsRandom && tiers[tier].Boss == tiers[tier - 1].Boss) repeats++;
+                }
+
+                if (tiers[0].Elite) eliteFirst++;
+                if (tiers[^1].Elite) eliteLast++;
+            }
+        }
+        finally
+        {
+            BossRandomizer.Random = random;
+        }
+
+        Log($"advanced: {randomTiers} Random and {repeats} repeated of {tiersSeen} tiers, Elite on tier 1 {eliteFirst}, on tier 10 {eliteLast}");
+        Assert(randomTiers > 0 && randomTiers < tiersSeen / 5, $"Some tiers are Random, most are not: {randomTiers}");
+        Assert(repeats < tiersSeen / 4, $"A tier rarely has the boss of the tier before it: {repeats}");
+        Assert(eliteLast > eliteFirst * 2, $"Later tiers are Elite more often: {eliteFirst} vs {eliteLast}");
         AssertBetween(defaultSpeed, 0.55, 0.7, "Boss speed left at 100 %");
         AssertBetween(defaultHealth, 0.55, 0.7, "Boss health left at 100 %");
         AssertBetween(elite, 0.25, 0.35, "Elite");

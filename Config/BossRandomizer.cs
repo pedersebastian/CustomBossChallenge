@@ -7,8 +7,9 @@ namespace CustomBossChallenge.Config;
 
 /// <summary>
 /// What the Challenge Editor's Random button does to the boss options. It works like the game's own randomizer: each
-/// option has a chance to change and otherwise keeps its default, and a changed value is spread evenly over a range
-/// that stays playable.
+/// option has a chance to change and otherwise keeps its default. A changed value is spread over a range that stays
+/// playable, with values close to the normal game more likely than extreme ones (110 % far more often than 400 %).
+/// In Advanced Mode every tier gets a boss of its own, and the setup stays in Advanced Mode; Standard stays Standard.
 /// </summary>
 public static class BossRandomizer
 {
@@ -23,10 +24,25 @@ public static class BossRandomizer
     public const double SkullsChance = 0.3;
 
     /// <summary>
-    /// Boss speed and health range in percent, like the game's 50-200 % for bloon speed and health
+    /// Boss speed and health range in percent. Values near 100 % are the most likely, see <see cref="PercentWeight"/>.
     /// </summary>
     public const int MinPercent = 50;
-    public const int MaxPercent = 200;
+    public const int MaxPercent = 400;
+    public const int PercentStep = 10;
+
+    /// <summary>
+    /// How far from 100 % a boss speed or health still is about half as likely as 100 % itself
+    /// </summary>
+    public const double PercentSpread = 40;
+
+    /// <summary>
+    /// In Advanced Mode: the chance that a tier is Random, that it keeps the tier before it's boss, and that tier 1 or
+    /// tier 10 is Elite (the tiers between them in steps)
+    /// </summary>
+    public const double RandomTierChance = 0.1;
+    public const double SameBossChance = 0.2;
+    public const double FirstTierEliteChance = 0.15;
+    public const double LastTierEliteChance = 0.5;
 
     public const int MaxRandomParagons = 3;
     public const int MaxRandomSpeedPerTier = 25;
@@ -41,7 +57,8 @@ public static class BossRandomizer
     /// New random boss options, with the boss values in the challenge randomized to match. Fixes what the game's
     /// randomizer picks that a boss game can't use: unsupported game modes and a start round after the first tier.
     /// </summary>
-    public static BossOptions Randomize(DailyChallengeModel dcm, string[] unsupportedModes)
+    /// <param name="advanced">Whether the setup is in Advanced Mode, which random setups then are too</param>
+    public static BossOptions Randomize(DailyChallengeModel dcm, string[] unsupportedModes, bool advanced = false)
     {
         var bosses = Enum.GetValues<BossType>();
         var options = new BossOptions
@@ -50,6 +67,8 @@ public static class BossRandomizer
             Elite = Chance(EliteChance),
             Tiers = Chance(TiersChance) ? Random.Next(TierMath.MinTiers, TierMath.MaxTiers + 1) : TierMath.VanillaTiers
         };
+
+        if (advanced) options = options with {TierBosses = RandomTierBosses()};
 
         if (Chance(SpeedPerTierChance))
         {
@@ -70,8 +89,8 @@ public static class BossRandomizer
 
         var modifiers = dcm.bloonModifiers ??= new BloonModifiers();
         var health = modifiers.healthMultipliers ??= new BloonHealthMultipliers();
-        modifiers.bossSpeedMultiplier = Chance(SpeedChance) ? Step(MinPercent, MaxPercent, 10) / 100f : 1;
-        health.boss = Chance(HealthChance) ? Step(MinPercent, MaxPercent, 10) / 100f : 1;
+        modifiers.bossSpeedMultiplier = Chance(SpeedChance) ? WeightedPercent() / 100f : 1;
+        health.boss = Chance(HealthChance) ? WeightedPercent() / 100f : 1;
         modifiers.allFortified = Chance(FortifiedChance);
         dcm.maxParagons = Chance(ParagonChance) ? Random.Next(0, MaxRandomParagons + 1) : ParagonMath.NoLimit;
 
@@ -86,6 +105,60 @@ public static class BossRandomizer
     }
 
     private static bool Chance(double chance) => Random.NextDouble() < chance;
+
+    /// <summary>
+    /// How likely a boss speed or health is, compared with 100 %: 1 at 100 %, about 0.94 at 110 % and 0.02 at 400 %
+    /// </summary>
+    public static double PercentWeight(int percent)
+    {
+        var distance = (percent - 100) / PercentSpread;
+        return 1 / (1 + distance * distance);
+    }
+
+    /// <summary>
+    /// A boss speed or health from <see cref="MinPercent"/> to <see cref="MaxPercent"/> in steps of
+    /// <see cref="PercentStep"/>, picked by <see cref="PercentWeight"/>
+    /// </summary>
+    public static int WeightedPercent()
+    {
+        var values = Enumerable.Range(0, (MaxPercent - MinPercent) / PercentStep + 1).Select(i => MinPercent + i * PercentStep).ToList();
+        var pick = Random.NextDouble() * values.Sum(PercentWeight);
+        foreach (var value in values)
+        {
+            pick -= PercentWeight(value);
+            if (pick < 0) return value;
+        }
+
+        return values[^1];
+    }
+
+    /// <summary>
+    /// A boss for each of the 10 tiers, so changing the number of tiers later keeps them. A tier is Random now and
+    /// then, rarely has the same boss as the tier before it, and is Elite more often the later it comes.
+    /// </summary>
+    public static string RandomTierBosses()
+    {
+        var tiers = new System.Collections.Generic.List<TierBoss>();
+        string? previous = null;
+        for (var tier = 1; tier <= TierMath.MaxTiers; tier++)
+        {
+            var eliteChance = FirstTierEliteChance +
+                              (LastTierEliteChance - FirstTierEliteChance) * (tier - 1) / (TierMath.MaxTiers - 1);
+            var elite = Chance(eliteChance);
+            if (Chance(RandomTierChance))
+            {
+                tiers.Add(new TierBoss(TierBossMath.Random, elite));
+                continue;
+            }
+
+            var others = TierBossMath.Bosses.Where(boss => boss != previous).ToArray();
+            var boss = previous != null && Chance(SameBossChance) ? previous : others[Random.Next(others.Length)];
+            tiers.Add(new TierBoss(boss, elite));
+            previous = boss;
+        }
+
+        return TierBossMath.Format(tiers);
+    }
 
     /// <summary>
     /// A random multiple of <paramref name="step"/> from <paramref name="min"/> to <paramref name="max"/>

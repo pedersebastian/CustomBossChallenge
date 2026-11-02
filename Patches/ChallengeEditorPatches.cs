@@ -87,7 +87,8 @@ internal static class ChallengeEditor_Randomize
         if (!BossMode.Active || __instance.dcm == null) return;
 
         __instance.ApplyUiSettingsToDCM();
-        BossMode.Options = BossRandomizer.Randomize(__instance.dcm, BossEditorSection.UnsupportedModes);
+        // Random keeps the mode: Advanced gets a boss per tier, Standard one boss
+        BossMode.Options = BossRandomizer.Randomize(__instance.dcm, BossEditorSection.UnsupportedModes, BossMode.Options.Mixed);
 
         // A random setup is no longer the example it may have started from
         if (ExampleSetups.Named(__instance.dcm.name) != null)
