@@ -198,7 +198,7 @@ public class BossRandomizerTest : CustomBossTest
 
         // In Advanced Mode every tier gets a boss, sometimes Random, rarely the same as the tier before it
         BossRandomizer.Random = new System.Random(99);
-        int tiersSeen = 0, randomTiers = 0, repeats = 0, eliteFirst = 0, eliteLast = 0, ownSpeed = 0, ownHealth = 0;
+        int tiersSeen = 0, randomTiers = 0, repeats = 0, eliteFirst = 0, eliteLast = 0, ownSpeed = 0, ownHealth = 0, ownSkulls = 0;
         try
         {
             for (var i = 0; i < Runs; i++)
@@ -208,6 +208,7 @@ public class BossRandomizerTest : CustomBossTest
                 Assert(options.Mixed, "Random in Advanced stays Advanced");
                 AssertEquals(dcm.bloonModifiers.bossSpeedMultiplier, 1f, "In Advanced Boss Speed stays at 100 %");
                 AssertEquals(dcm.bloonModifiers.healthMultipliers.boss, 1f, "In Advanced Boss Health stays at 100 %");
+                AssertEquals(options.SkullMode, SkullMode.Vanilla, "In Advanced the Skulls option stays Vanilla");
                 AssertEquals(options, options.Sanitized(), "Random advanced options must already be in range");
                 AssertEquals(Menus.BossEditorSection.PlayProblem(dcm, options), null, "A random advanced setup must be playable");
                 var tiers = TierBossMath.Parse(options.TierBosses);
@@ -219,6 +220,7 @@ public class BossRandomizerTest : CustomBossTest
                     if (tiers[tier].IsRandom) randomTiers++;
                     if (tiers[tier].Speed != TierBossMath.Normal) ownSpeed++;
                     if (tiers[tier].Health != TierBossMath.Normal) ownHealth++;
+                    if (tiers[tier].Skulls != SkullMode.Vanilla) ownSkulls++;
                     Assert(tiers[tier].Speed is >= BossRandomizer.MinPercent and <= BossRandomizer.MaxPercent, $"Tier speed {tiers[tier].Speed}");
                     if (tier > 0 && !tiers[tier].IsRandom && tiers[tier].Boss == tiers[tier - 1].Boss) repeats++;
                 }
@@ -236,9 +238,10 @@ public class BossRandomizerTest : CustomBossTest
         Assert(randomTiers > 0 && randomTiers < tiersSeen / 5, $"Some tiers are Random, most are not: {randomTiers}");
         Assert(repeats < tiersSeen / 4, $"A tier rarely has the boss of the tier before it: {repeats}");
         Assert(eliteLast > eliteFirst * 2, $"Later tiers are Elite more often: {eliteFirst} vs {eliteLast}");
-        Log($"advanced: own speed on {ownSpeed}, own health on {ownHealth} of {tiersSeen} tiers");
+        Log($"advanced: own speed on {ownSpeed}, own health on {ownHealth}, own skulls on {ownSkulls} of {tiersSeen} tiers");
         Assert(ownSpeed > tiersSeen / 5 && ownSpeed < tiersSeen / 2, $"Some tiers get their own speed: {ownSpeed}");
         Assert(ownHealth > tiersSeen / 5 && ownHealth < tiersSeen / 2, $"Some tiers get their own health: {ownHealth}");
+        Assert(ownSkulls > tiersSeen / 5 && ownSkulls < tiersSeen / 2, $"Some tiers get their own skulls: {ownSkulls}");
         AssertBetween(defaultSpeed, 0.55, 0.7, "Boss speed left at 100 %");
         AssertBetween(defaultHealth, 0.55, 0.7, "Boss health left at 100 %");
         AssertBetween(elite, 0.25, 0.35, "Elite");

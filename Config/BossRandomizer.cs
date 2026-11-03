@@ -85,11 +85,11 @@ public static class BossRandomizer
             options = options with {HealthPerTier = Step(TierMath.PerTierStep, MaxRandomHealthPerTier, TierMath.PerTierStep)};
         }
 
-        if (Chance(SkullsChance))
+        // In Advanced every tier has its own skulls, and the Skulls option stays Vanilla
+        if (!advanced)
         {
-            options = Random.Next(2) == 0
-                ? options with {SkullMode = SkullMode.EvenlySpaced, SkullCount = Random.Next(0, 7)}
-                : options with {SkullMode = SkullMode.Custom, CustomSkulls = RandomSkulls()};
+            var skulls = RandomSkullsOf(TierBoss.Follows);
+            options = options with {SkullMode = skulls.Skulls, SkullCount = skulls.SkullCount, CustomSkulls = skulls.CustomSkulls};
         }
 
         var modifiers = dcm.bloonModifiers ??= new BloonModifiers();
@@ -163,8 +163,8 @@ public static class BossRandomizer
     /// <summary>
     /// A boss for each of the 10 tiers, so changing the number of tiers later keeps them. A tier is Random now and
     /// then, rarely has the same boss as the tier before it, and is Elite more often the later it comes. Each tier's
-    /// speed and health change as often as Boss Speed and Boss Health do in Standard, with values near 100 % the most
-    /// likely.
+    /// speed, health and skulls change as often as Boss Speed, Boss Health and Skulls do in Standard, with values near
+    /// 100 % the most likely.
     /// </summary>
     public static string RandomTierBosses()
     {
@@ -177,15 +177,16 @@ public static class BossRandomizer
             var elite = Chance(eliteChance);
             var speed = Chance(SpeedChance) ? WeightedPercent() : TierBossMath.Normal;
             var health = Chance(HealthChance) ? WeightedPercent() : TierBossMath.Normal;
+            var values = RandomSkullsOf(TierBoss.Follows with {Elite = elite, Speed = speed, Health = health});
             if (Chance(RandomTierChance))
             {
-                tiers.Add(new TierBoss(TierBossMath.Random, elite, speed, health));
+                tiers.Add(values with {Boss = TierBossMath.Random});
                 continue;
             }
 
             var others = TierBossMath.Bosses.Where(boss => boss != previous).ToArray();
             var boss = previous != null && Chance(SameBossChance) ? previous : others[Random.Next(others.Length)];
-            tiers.Add(new TierBoss(boss, elite, speed, health));
+            tiers.Add(values with {Boss = boss});
             previous = boss;
         }
 
@@ -196,6 +197,17 @@ public static class BossRandomizer
     /// A random multiple of <paramref name="step"/> from <paramref name="min"/> to <paramref name="max"/>
     /// </summary>
     private static int Step(int min, int max, int step) => min + Random.Next((max - min) / step + 1) * step;
+
+    /// <summary>
+    /// <paramref name="tier"/> with its own skulls now and then: evenly spaced or a custom list, as likely as each other
+    /// </summary>
+    private static TierBoss RandomSkullsOf(TierBoss tier)
+    {
+        if (!Chance(SkullsChance)) return tier;
+        return Random.Next(2) == 0
+            ? tier with {Skulls = SkullMode.EvenlySpaced, SkullCount = Random.Next(0, 7)}
+            : tier with {Skulls = SkullMode.Custom, CustomSkulls = RandomSkulls()};
+    }
 
     /// <summary>
     /// Two to four different skulls between 10 and 90 %, e.g. "85, 50, 15"

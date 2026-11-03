@@ -144,7 +144,7 @@ public class ScreenshotTour : CustomBossTest
             // Advanced Mode: the Tier Preview's cards with their own bosses, and a card's boss picker
             BossMode.Options = BossMode.Options with
             {
-                SkullMode = SkullMode.Vanilla, TierBosses = "Bloonarius,Lych,RandomElite,,PhayzeElite,Diamondback"
+                SkullMode = SkullMode.Vanilla, TierBosses = "Bloonarius,Lych#4,RandomElite,,PhayzeElite,Diamondback"
             };
             BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
             editor.chalName.text = editor.dcm.name = "Boss Gauntlet";

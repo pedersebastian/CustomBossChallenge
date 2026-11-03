@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
@@ -15,8 +14,8 @@ namespace CustomBossChallenge.Menus;
 /// <summary>
 /// A health bar like the boss's own, full on the left and empty on the right, with a skull at every health percentage
 /// where the boss uses its special ability. Shows the skulls the chosen skull settings give, or the boss's own skulls
-/// for Vanilla. In Advanced Mode the bosses' own skulls differ from tier to tier (Elite Bloonarius has 7, Bloonarius 3),
-/// so the bar shows the tier last pointed at or focused in the Tier Preview, named in its corner.
+/// for Vanilla. When the boss's own skulls differ between its tiers, the bar shows tier 1's, named in its corner. In
+/// Advanced Mode every tier has its own skulls, and the tier's boss picker shows them on a bar of its own.
 /// </summary>
 public sealed class SkullStrip
 {
@@ -155,21 +154,16 @@ public sealed class SkullStrip
 
     /// <summary>
     /// The skull percentages (0-1, from full health down) the preview shows, and the tier they belong to when the
-    /// boss's own skulls differ between its tiers. In Advanced Mode those are <paramref name="shownTier"/>'s, null for
-    /// a Random tier.
+    /// boss's own skulls differ between its tiers. In Advanced Mode those are <paramref name="shownTier"/>'s, which the
+    /// picker names itself; null for a Random tier that keeps its boss's own.
     /// </summary>
     public static (float[]? Percents, int? Tier) Skulls(BossOptions options, int shownTier = 1)
     {
-        if (options.SkullPercents is { } percents) return (percents, null);
-
         var game = Game.instance?.model;
-        if (game == null) return (Array.Empty<float>(), null);
+        if (options.Mixed) return (TierSkulls(options, Math.Clamp(shownTier, 1, TierMath.ClampTiers(options.Tiers)), game), null);
 
-        if (options.Mixed)
-        {
-            var tier = Math.Clamp(shownTier, 1, TierMath.ClampTiers(options.Tiers));
-            return (TierSkulls(options, tier, game), tier);
-        }
+        if (options.SkullPercents is { } percents) return (percents, null);
+        if (game == null) return (Array.Empty<float>(), null);
 
         var tiers = Enumerable.Range(1, Math.Min(TierMath.ClampTiers(options.Tiers), TierMath.VanillaTiers))
             .Select(tier => options.BossId(tier))
@@ -184,11 +178,12 @@ public sealed class SkullStrip
     }
 
     /// <summary>
-    /// The skulls (0-1, from full health down) a tier's boss gets, or null for a Random tier or a boss without a model
+    /// The skulls (0-1, from full health down) a tier's boss gets, or null for a Random tier that keeps its boss's own
+    /// or a boss without a model
     /// </summary>
     public static float[]? TierSkulls(BossOptions options, int tier, GameModel? game)
     {
-        if (options.SkullPercents is { } percents) return percents;
+        if (options.TierSkullPercents(tier) is { } percents) return percents;
         if (game == null || options.EntryOf(tier).IsRandom) return null;
 
         // Tiers after 5 are copies of tier 5, so they have its skulls
@@ -200,6 +195,5 @@ public sealed class SkullStrip
     /// <summary>
     /// A skull's health percentage, e.g. 0.3333 -> "33.33%"
     /// </summary>
-    public static string Format(float percent) =>
-        Math.Round(percent * 100.0, 2).ToString("0.##", CultureInfo.InvariantCulture) + "%";
+    public static string Format(float percent) => SkullMath.FormatPercent(percent);
 }

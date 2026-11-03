@@ -10,7 +10,7 @@ import {
   spawnRounds,
 } from "../math/tiers";
 import { clamp } from "../math/dotnet";
-import { FOLLOWS, normalizeTierBosses, tierEntry, type TierBoss } from "../math/tierBosses";
+import { FOLLOWS, normalizeTierBosses, tierEntry, tierPercents, type TierBoss } from "../math/tierBosses";
 
 export const SKULL_MODES = ["Vanilla", "EvenlySpaced", "Custom"] as const;
 export type SkullMode = (typeof SKULL_MODES)[number];
@@ -139,6 +139,19 @@ export function skullPercents(options: BossOptions): number[] | null {
   if (options.SkullMode === "EvenlySpaced") return evenlySpaced(options.SkullCount);
   if (options.SkullMode === "Custom") return parseCustom(options.CustomSkulls);
   return null;
+}
+
+/**
+ * The skull thresholds a tier asks for, or null to keep its boss's own: in Advanced Mode the tier's own skulls, and the
+ * Skulls option for a tier that keeps Vanilla (BossOptions.TierSkullPercents)
+ */
+export const tierSkullPercents = (options: BossOptions, tier: number): number[] | null =>
+  tierPercents(entryOf(options, tier)) ?? skullPercents(options);
+
+/** The skull mode a tier has, the tier's own in Advanced Mode */
+export function tierSkullMode(options: BossOptions, tier: number): SkullMode {
+  const own = entryOf(options, tier).skulls;
+  return own === "Vanilla" ? options.SkullMode : own;
 }
 
 /** The round each tier spawns on */

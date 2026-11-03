@@ -28,6 +28,16 @@ public static class SkullModifier
     }
 
     /// <summary>
+    /// Applies each tier's own skulls to its boss, for a setup with a different boss per tier. Every tier has a model
+    /// of its own, so tiers with the same boss can have different skulls.
+    /// </summary>
+    /// <returns>How many boss models were changed</returns>
+    public static int ApplyTiers(GameModel gameModel, BossOptions options) =>
+        Enumerable.Range(1, TierMath.ClampTiers(options.Tiers)).Count(tier =>
+            options.TierSkullPercents(tier) is { } percents && gameModel.DoesBloonExist(options.BossId(tier)) &&
+            Apply(gameModel.GetBloon(options.BossId(tier)), percents));
+
+    /// <summary>
     /// Applies the skulls to a single boss model
     /// </summary>
     /// <returns>Whether the bloon had skulls that were changed</returns>

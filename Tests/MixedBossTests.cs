@@ -109,11 +109,11 @@ public class MixedBossGameTest : CustomBossTest
 
     protected override IEnumerator Run()
     {
-        // The strong test tower can't damage Dreadbloon, so it isn't in the line-up
+        // The strong test tower can't damage Dreadbloon, so it isn't in the line-up. Some tiers have skulls of their own.
         var options = new BossOptions
         {
             Tiers = 6, HealthPerTier = 10, SpawnRounds = "40,43,46,49,52,55",
-            TierBosses = "Lych,,Diamondback,VortexElite,Phayze,Blastapopoulos"
+            TierBosses = "Lych#2,,Diamondback#60%;30%,VortexElite,Phayze,Blastapopoulos#0"
         };
         var dcm = BaseDcm();
         dcm.startRules.round = 39;
@@ -126,6 +126,13 @@ public class MixedBossGameTest : CustomBossTest
         Assert(ExtraTiers.HasAllTiers(gameModel, options), "The match is missing boss tier models");
         AssertScaledTiers(gameModel, options);
         AssertEquals(gameModel.bossBloonType, "Lych", "The game starts as the first tier's boss");
+        float[]? Skulls(int tier) => SkullModifier.GetSkulls(gameModel.GetBloon(options.BossId(tier)));
+        Assert(SameValues(Skulls(1), SkullMath.EvenlySpaced(2)), $"Tier 1 has its own 2 skulls: {Show(Skulls(1))}");
+        AssertEquals(Skulls(2)?.Length, 3, "Tier 2 keeps Bloonarius's own skulls");
+        Assert(SameValues(Skulls(3), new[] {0.6f, 0.3f}), $"Tier 3 has its own list: {Show(Skulls(3))}");
+        AssertEquals(Skulls(4)?.Length, 7, "Tier 4 keeps Elite Vortex's own skulls");
+        AssertEquals(Skulls(6)?.Length, 0, "The extra tier 6 has no skulls");
+        AssertEquals(SkullModifier.GetSkulls(gameModel.GetBloon("Lych2"))?.Length, 5, "Lych's other tiers keep their skulls");
 
         var manager = InGame.instance.bridge.Simulation.map.spawner.bossBloonManager;
         ExtraTierGameTest.PlaceStrongTower(gameModel.GetTowerFromId("DartMonkey"));

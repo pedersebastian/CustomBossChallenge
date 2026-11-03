@@ -2,7 +2,7 @@
 
 import { GAME } from "../data/types";
 import type { Challenge } from "../code/decode";
-import { effectiveSpawnRounds, entryOf, isMixed, tierBossName, type BossOptions } from "../code/options";
+import { effectiveSpawnRounds, entryOf, isMixed, tierBossName, tierSkullMode, type BossOptions, type SkullMode } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
 import { clampTiers, endRound } from "../math/tiers";
@@ -33,15 +33,24 @@ const paragons = (value: number): string => (value < 0 ? "Unlimited" : value ===
 const towerLimit = (value: number | undefined): string =>
   value === undefined ? "Default" : value === 0 ? "Not allowed" : value < 0 ? "No limit" : `Max ${value}`;
 
+const skullModeText = (mode: SkullMode): string =>
+  mode === "Vanilla" ? "Boss's own" : mode === "EvenlySpaced" ? "Evenly spaced" : "Custom";
+
 function skullText(options: BossOptions): string {
-  const mode = options.SkullMode === "Vanilla" ? "Boss's own" : options.SkullMode === "EvenlySpaced" ? "Evenly spaced" : "Custom";
-  // With a boss per tier, each tier's boss has its own number of skulls
-  if (isMixed(options) && options.SkullMode === "Vanilla") {
+  // In Advanced Mode each tier has its own skulls, shown per tier
+  if (isMixed(options)) {
     const counts = Array.from({ length: clampTiers(options.Tiers) }, (_, i) => tierSkulls(options, i + 1)?.length ?? "?");
-    return `${mode}, per tier: ${counts.join(", ")}`;
+    return `Per tier: ${counts.join(", ")}`;
   }
   const percents = skulls(options).percents ?? [];
-  return `${mode}: ${percents.length === 0 ? "none" : percents.map(formatPercent).join(", ")}`;
+  return `${skullModeText(options.SkullMode)}: ${percents.length === 0 ? "none" : percents.map(formatPercent).join(", ")}`;
+}
+
+/** A tier's own skulls in Advanced Mode, e.g. "Evenly spaced: 80%, 60%, 40%, 20%" */
+function tierSkullText(options: BossOptions, tier: number): string {
+  const percents = tierSkulls(options, tier);
+  const list = percents === null ? "?" : percents.length === 0 ? "none" : percents.map(formatPercent).join(", ");
+  return `${skullModeText(tierSkullMode(options, tier))}: ${list}`;
 }
 
 /** Every option of both setups, in the order the Boss Creator and Challenge Editor show them */
@@ -74,6 +83,7 @@ export function compareRows(a: Setup, b: Setup): Row[] {
         const entry = entryOf(s.options, tier);
         return `${entry.speed} %, ${entry.health} %`;
       });
+      add("Tiers", `Tier ${tier} skulls`, (s) => (tier <= s.options.Tiers ? tierSkullText(s.options, tier) : "—"));
     }
   }
   add("Tiers", "Game ends", (s) => `Round ${endRound(effectiveSpawnRounds(s.options))}`);

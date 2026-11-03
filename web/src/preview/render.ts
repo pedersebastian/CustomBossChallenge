@@ -3,7 +3,7 @@
 import { GAME } from "../data/types";
 import { h } from "../dom";
 import { playProblem, type Challenge } from "../code/decode";
-import { bossOf, effectiveSpawnRounds, isMixed, tierBossName, type BossOptions } from "../code/options";
+import { bossOf, effectiveSpawnRounds, isMixed, tierBossName, tierSkullMode, type BossOptions } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
 import { clampTiers, endRound, formatHealth, maxModelHealth } from "../math/tiers";
@@ -163,8 +163,9 @@ function renderSkulls(options: BossOptions, shownTier = 1): HTMLElement {
   // Whether labels fit side by side depends on the bar's width, so they are laid out again when it changes
   skullBars.observe(bar);
 
-  const mode =
-    options.SkullMode === "Vanilla" ? "the boss's own skulls" : options.SkullMode === "EvenlySpaced" ? "evenly spaced" : "custom";
+  // In Advanced Mode each tier has its own skulls
+  const own = isMixed(options) ? tierSkullMode(options, tier ?? 1) : options.SkullMode;
+  const mode = own === "Vanilla" ? "the boss's own skulls" : own === "EvenlySpaced" ? "evenly spaced" : "custom";
   return h(
     "div",
     { class: "block" },

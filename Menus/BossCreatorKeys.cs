@@ -47,16 +47,16 @@ public static class BossCreatorKeys
             return;
         }
 
-        // The boss picker has the keyboard while it is open
+        // The boss picker has the keyboard while it is open, except while its skull list is being typed in
         if (TierBossPicker.Current is { } picker)
         {
+            if (FocusedField() != null) fieldFocusedFrame = Time.frameCount;
             var key = ReadKeys();
-            if (key.Key != ShortcutKey.Other && !key.Ctrl) picker.Handle(key.Key, key.Shift);
+            var typing = Time.frameCount - fieldFocusedFrame <= 1;
+            if (key.Key != ShortcutKey.Other && !key.Ctrl && !typing) picker.Handle(key.Key, key.Shift);
             FocusFrame.Fit();
             return;
         }
-
-        section.FollowPointedTier();
 
         // The mouse takes over from the keyboard
         if (Input.GetMouseButtonDown(0)) ClearFocus();
@@ -186,7 +186,9 @@ public static class BossCreatorKeys
     {
         if (TierBossPicker.Current is { } picker && EscapePressed())
         {
-            picker.Hide();
+            // Esc while typing the skull list only ends the edit
+            if (FocusedField() is { } field) field.DeactivateInputField();
+            else if (Time.frameCount - fieldFocusedFrame > 1) picker.Hide();
             return true;
         }
 

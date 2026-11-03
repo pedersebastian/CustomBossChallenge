@@ -4,21 +4,6 @@ using Newtonsoft.Json;
 namespace CustomBossChallenge.Config;
 
 /// <summary>
-/// How the skull thresholds of the boss should be determined
-/// </summary>
-public enum SkullMode
-{
-    /// <summary>Keep the skulls the boss normally has</summary>
-    Vanilla,
-
-    /// <summary>Place <see cref="BossOptions.SkullCount"/> skulls evenly across the health bar</summary>
-    EvenlySpaced,
-
-    /// <summary>Use the comma separated percentages in <see cref="BossOptions.CustomSkulls"/></summary>
-    Custom
-}
-
-/// <summary>
 /// The boss specific part of a Boss Creator setup. Everything else (map, rules, bloon and boss multipliers, towers)
 /// lives in the Challenge Editor's DailyChallengeModel.
 /// </summary>
@@ -28,8 +13,8 @@ public sealed record BossOptions
     public bool Elite { get; init; }
 
     public SkullMode SkullMode { get; init; } = SkullMode.Vanilla;
-    public int SkullCount { get; init; } = 3;
-    public string CustomSkulls { get; init; } = "75, 50, 25";
+    public int SkullCount { get; init; } = SkullMath.DefaultCount;
+    public string CustomSkulls { get; init; } = SkullMath.DefaultCustom;
 
     /// <summary>Number of boss tiers, 1-10. Tiers above 5 are stronger copies of tier 5.</summary>
     public int Tiers { get; init; } = TierMath.VanillaTiers;
@@ -68,12 +53,7 @@ public sealed record BossOptions
     /// The skull thresholds (0-1, descending) these options ask for, or null to keep the vanilla skulls
     /// </summary>
     [JsonIgnore]
-    public float[]? SkullPercents => SkullMode switch
-    {
-        SkullMode.EvenlySpaced => SkullMath.EvenlySpaced(SkullCount),
-        SkullMode.Custom => SkullMath.ParseCustom(CustomSkulls),
-        _ => null
-    };
+    public float[]? SkullPercents => SkullMath.Percents(SkullMode, SkullCount, CustomSkulls);
 
     /// <summary>
     /// The round each tier spawns on, always exactly <see cref="Tiers"/> ascending rounds
@@ -136,6 +116,12 @@ public sealed record BossOptions
     public double TierSpeedFactor(int tier) => EntryOf(tier).SpeedFactor;
 
     public double TierHealthFactor(int tier) => EntryOf(tier).HealthFactor;
+
+    /// <summary>
+    /// The skull thresholds (0-1, descending) the given tier asks for, or null to keep its boss's own: in Advanced Mode
+    /// the tier's own skulls, and <see cref="SkullPercents"/> for a tier that keeps Vanilla
+    /// </summary>
+    public float[]? TierSkullPercents(int tier) => EntryOf(tier).SkullPercents ?? SkullPercents;
 
     /// <summary>Whether a tier will get a random boss when the game starts</summary>
     [JsonIgnore]

@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { evenlySpaced, formatCustom, formatPercent, normalizeCustom, parseCustom } from "../src/math/skulls";
 import { endRound, formatHealth, healthPerTierFromExtraTierHealth, spawnRounds } from "../src/math/tiers";
 import { roundHalfEven } from "../src/math/dotnet";
-import { normalizeTierBosses, tierEntry } from "../src/math/tierBosses";
+import { FOLLOWS, normalizeTierBosses, tierEntry, tierPercents } from "../src/math/tierBosses";
 
 const f = (values: number[]) => values.map(Math.fround);
 const show = (rounds: number[]) => rounds.join(", ");
@@ -110,8 +110,27 @@ describe("tier bosses", () => {
     ["@150/100,,", "@150/100"],
     ["Nonsense@200/200", "@200/200"],
     ["Lych@99999999999/100", "Lych"],
+    ["LychElite@120/80#4", "LychElite@120/80#4"],
+    [" lych # 12 ", "Lych#10"],
+    ["Lych#-3", "Lych#0"],
+    ["Vortex#25;50%;75;junk;50", "Vortex#75%;50%;25%"],
+    ["Vortex#33.5%", "Vortex#33.5%"],
+    ["Lych#junk,Lych#%", "Lych,Lych"],
+    ["#5,,", "#5"],
+    ["Lych#4@150/100", "Lych"],
   ])("normalizes %j to %j", (list, expected) => expect(normalizeTierBosses(list)).toBe(expected));
 
   it("reads each tier's speed and health", () =>
-    expect(tierEntry("Lych,VortexElite@150/250", 2)).toEqual({ boss: "Vortex", elite: true, speed: 150, health: 250 }));
+    expect(tierEntry("Lych,VortexElite@150/250", 2)).toEqual({ ...FOLLOWS, boss: "Vortex", elite: true, speed: 150, health: 250 }));
+
+  it("reads each tier's skulls", () => {
+    const even = tierEntry("Lych,Vortex#4", 2);
+    expect(even).toEqual({ ...FOLLOWS, boss: "Vortex", skulls: "EvenlySpaced", skullCount: 4 });
+    expect(tierPercents(even)).toEqual(f([0.8, 0.6, 0.4, 0.2]));
+    const custom = tierEntry("Vortex@200/100#60%;30%", 1);
+    expect(custom).toEqual({ ...FOLLOWS, boss: "Vortex", speed: 200, skulls: "Custom", customSkulls: "60, 30" });
+    expect(tierPercents(custom)).toEqual(f([0.6, 0.3]));
+    expect(tierPercents(tierEntry("Lych", 1))).toBeNull();
+    expect(tierPercents(tierEntry("Lych#0", 1))).toEqual([]);
+  });
 });

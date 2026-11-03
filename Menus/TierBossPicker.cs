@@ -14,16 +14,26 @@ namespace CustomBossChallenge.Menus;
 
 /// <summary>
 /// The window that opens on a tier's card in the Tier Preview in Advanced Mode: every boss and Random to pick from, the
-/// tier's own Boss Speed and Boss Health, and Elite for that tier. A click outside it or Esc closes it. The keyboard
-/// moves through its controls with the arrows (or Tab), steps a slider with left and right, puts it back to 100 % with
-/// Delete, and presses buttons with Enter or Space.
+/// tier's own Boss Speed, Boss Health and skulls with their preview, and Elite for that tier. A click outside it or Esc
+/// closes it. The keyboard moves through its controls with the arrows (or Tab), steps a slider or the skull mode with
+/// left and right, puts it back to its default with Delete, types in the skull list after Enter, and presses buttons
+/// with Enter or Space.
 /// </summary>
 public sealed class TierBossPicker
 {
     public const string Name = "CustomBossTierPicker";
     public const float Width = 2140;
-    public const float Height = 1240;
     private const float SliderWidth = 2000;
+
+    /// <summary>
+    /// From the top of the window: the middle of the boss buttons and of the first row, the room a row takes, and the
+    /// room from the last row to Elite and from Elite to the bottom
+    /// </summary>
+    private const float ChoicesTop = 370;
+    private const float RowsTop = 660;
+    private const float RowStep = 220;
+    private const float EliteGap = 130;
+    private const float BottomGap = 120;
     private const float ChoiceSize = 200;
     private const float ChoiceGap = 30;
 
@@ -54,7 +64,24 @@ public sealed class TierBossPicker
     public SliderRow Health { get; }
 
     /// <summary>
-    /// What the keyboard moves through, in order: the bosses, Random, speed, health, Elite, Close
+    /// The tier's own skulls, like the Skulls rows in Standard: the mode, the count for Evenly Spaced or the list for
+    /// Custom, and the preview of what the tier gets
+    /// </summary>
+    public ModHelperDropdown SkullMode { get; }
+    public SliderRow SkullCount { get; }
+    public ModHelperInputField CustomSkulls { get; }
+    public SkullStrip Skulls { get; }
+    public ModHelperButton ResetSkulls { get; }
+    public ModHelperButton ResetCustomSkulls { get; }
+
+    /// <summary>
+    /// The window's height, which follows the skull rows that show
+    /// </summary>
+    public float Height => Panel.RectTransform.sizeDelta.y;
+
+    /// <summary>
+    /// What the keyboard moves through, in order: the bosses, Random, speed, health, the skull rows, Elite, Close;
+    /// hidden ones are skipped
     /// </summary>
     public IReadOnlyList<GameObject> Stops { get; }
 
@@ -69,6 +96,9 @@ public sealed class TierBossPicker
     public bool ReturnFocus { get; set; }
 
     private readonly BossEditorSection section;
+    private readonly GameObject skullModeRow;
+    private readonly GameObject customSkullsRow;
+    private readonly GameObject eliteLabel;
     private bool refreshing;
 
     private TierBossPicker(BossEditorSection section, int tier)
@@ -87,7 +117,7 @@ public sealed class TierBossPicker
         closeOutside.transition = Selectable.Transition.None;
         closeOutside.onClick.AddListener(new Action(Hide));
 
-        Panel = shade.AddPanel(new Info("Panel", 0, 0, Width, Height), VanillaSprites.MainBGPanelBlue);
+        Panel = shade.AddPanel(new Info("Panel", 0, 0, Width, RowsTop), VanillaSprites.MainBGPanelBlue);
         // The panel takes clicks itself, so clicking between its buttons doesn't close it
         Panel.gameObject.AddComponent<Button>().transition = Selectable.Transition.None;
 
@@ -104,8 +134,10 @@ public sealed class TierBossPicker
         foreach (var choice in TierBossMath.Choices)
         {
             var name = choice;
-            var button = Panel.AddButton(new Info($"Choice{choice}", x, 250, ChoiceSize, ChoiceSize), VanillaSprites.RandomIcon,
-                new Action(() => Pick(name)));
+            var button = Panel.AddButton(new Info($"Choice{choice}", x, -ChoicesTop, ChoiceSize, ChoiceSize)
+            {
+                Anchor = new Vector2(0.5f, 1)
+            }, VanillaSprites.RandomIcon, new Action(() => Pick(name)));
             var marker = button.AddImage(new Info(BossEditorSection.SelectedMarker, 0, 0, 110, 110)
             {
                 Anchor = new Vector2(1, 0), Pivot = new Vector2(0.75f, 0.25f)
@@ -123,41 +155,127 @@ public sealed class TierBossPicker
             x += ChoiceSize + ChoiceGap;
         }
 
-        // The editor's own slider rows, shrunk to fit the window; a run of changes is one step for Undo
-        Speed = Slider("Speed", -40, Texts.BossSpeed.T(), VanillaSprites.FasterBossIcon, TierBossMath.MinSpeed,
-            TierBossMath.MaxSpeed, value => SetValues(Shown() with {Speed = (int) value}, "Speed"));
-        Health = Slider("Health", -260, Texts.BossHealth.T(), VanillaSprites.BossBoostIcon, TierBossMath.MinHealth,
-            TierBossMath.MaxHealth, value => SetValues(Shown() with {Health = (int) value}, "Health"));
+        // The editor's own rows, shrunk to fit the window; a run of changes is one step for Undo
+        var template = section.SliderTemplate;
+        Speed = Fit(SliderRow.Clone(template, Panel.transform, "Speed", Texts.BossSpeed.T(), VanillaSprites.FasterBossIcon,
+            TierBossMath.MinSpeed, TierBossMath.MaxSpeed, TierBossMath.ValueStep, TierBossMath.Normal, value => $"{value:0} %",
+            value => SetValues(Shown() with {Speed = (int) value}, "Speed")));
+        Health = Fit(SliderRow.Clone(template, Panel.transform, "Health", Texts.BossHealth.T(), VanillaSprites.BossBoostIcon,
+            TierBossMath.MinHealth, TierBossMath.MaxHealth, TierBossMath.ValueStep, TierBossMath.Normal, value => $"{value:0} %",
+            value => SetValues(Shown() with {Health = (int) value}, "Health")));
 
-        var bottom = -Height / 2 + 120;
-        Elite = Panel.AddCheckbox(new Info("Elite", -110, bottom, 140, 140), false, VanillaSprites.BlueInsertPanelRound,
+        skullModeRow = Fit(EditorRows.LabelRow(template, Panel.transform, "SkullModeRow", Texts.Skulls.T(), VanillaSprites.CrossboneSkull));
+        var modes = new Il2CppSystem.Collections.Generic.List<string>();
+        modes.Add(Texts.SkullsVanilla.T());
+        modes.Add(Texts.SkullsEvenlySpaced.T());
+        modes.Add(Texts.SkullsCustom.T());
+        SkullMode = ModHelperDropdown.Create(EditorRows.ControlInfo("SkullMode", 900, 150), modes, 500,
+            new Action<int>(index => SetValues(Shown() with {Skulls = (Config.SkullMode) index}, "SkullMode")),
+            VanillaSprites.BlueInsertPanelRound, 70);
+        SkullMode.transform.SetParent(skullModeRow.transform, false);
+        ResetSkulls = EditorRows.ResetButton(skullModeRow, "ResetSkulls", () => SetValues(Shown() with
+        {
+            Skulls = Config.SkullMode.Vanilla, SkullCount = SkullMath.DefaultCount, CustomSkulls = SkullMath.DefaultCustom
+        }, "ResetSkulls"));
+
+        SkullCount = Fit(SliderRow.Clone(template, Panel.transform, "SkullCountRow", Texts.SkullCount.T(),
+            VanillaSprites.CrossboneSkull, 0, SkullMath.MaxSkulls, 1, SkullMath.DefaultCount, value => $"{value:0}",
+            value => SetValues(Shown() with {SkullCount = (int) value}, "SkullCount")));
+
+        customSkullsRow = Fit(EditorRows.LabelRow(template, Panel.transform, "CustomSkullsRow", Texts.SkullHealth.T(),
+            VanillaSprites.CrossboneSkull));
+        CustomSkulls = ModHelperInputField.Create(EditorRows.ControlInfo("CustomSkulls", 1700, 150), SkullMath.DefaultCustom,
+            VanillaSprites.BlueInsertPanelRound, null, 70, TMP_InputField.CharacterValidation.None,
+            TextAlignmentOptions.Center, SkullMath.DefaultCustom, 10);
+        CustomSkulls.transform.SetParent(customSkullsRow.transform, false);
+        CustomSkulls.InputField.onEndEdit.AddListener(new Action<string>(text =>
+        {
+            // Show what was understood; a list without any valid percentage keeps the previous skulls
+            var shown = Shown();
+            SetValues(shown with {CustomSkulls = SkullMath.NormalizeCustom(text, shown.CustomSkulls)}, "CustomSkulls");
+            Show();
+        }));
+        ResetCustomSkulls = EditorRows.ResetButton(customSkullsRow, "ResetCustomSkulls",
+            () => SetValues(Shown() with {CustomSkulls = SkullMath.DefaultCustom}, "ResetCustomSkulls"));
+
+        Skulls = new SkullStrip(Fit(EditorRows.LabelRow(template, Panel.transform, "SkullStripRow", Texts.SkullPreview.T(),
+            VanillaSprites.CrossboneSkull)));
+
+        Elite = Panel.AddCheckbox(new Info("Elite", -110, 0, 140, 140), false, VanillaSprites.BlueInsertPanelRound,
             new Action<bool>(SetElite), VanillaSprites.TickGreenIcon, 20);
-        Panel.AddText(new Info("EliteLabel", 110, bottom, 280, 140), Texts.Elite.T(), 70, TextAlignmentOptions.Left);
+        eliteLabel = Panel.AddText(new Info("EliteLabel", 110, 0, 280, 140), Texts.Elite.T(), 70, TextAlignmentOptions.Left).gameObject;
 
         Stops = Choices.Values.Select(button => button.gameObject)
-            .Concat(new[] {Speed.Row, Health.Row, Elite.gameObject, Close.gameObject}).ToList();
+            .Concat(new[]
+            {
+                Speed.Row, Health.Row, SkullMode.gameObject, ResetSkulls.gameObject, SkullCount.Row, CustomSkulls.gameObject,
+                ResetCustomSkulls.gameObject, Elite.gameObject, Close.gameObject
+            }).ToList();
         Show();
     }
 
-    private SliderRow Slider(string name, float y, string label, string icon, int min, int max, Action<float> changed)
+    private SliderRow Fit(SliderRow row)
     {
-        var row = SliderRow.Clone(section.SliderTemplate, Panel.transform, name, label, icon, min, max,
-            TierBossMath.ValueStep, TierBossMath.Normal, value => $"{value:0} %", changed);
-        // As wide and high as the editor's own rows, so the slider and its arrows sit the same, then shrunk as a whole
+        Fit(row.Row);
+        return row;
+    }
+
+    /// <summary>
+    /// Makes one of the editor's rows as wide as there, so its controls sit the same, then shrinks it as a whole to fit
+    /// the window; <see cref="Layout"/> places it
+    /// </summary>
+    private GameObject Fit(GameObject row)
+    {
         var size = section.BossSpeed.Row.GetComponent<RectTransform>().rect.size;
-        var rect = row.Row.GetComponent<RectTransform>();
-        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = size;
+        var rect = row.GetComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 1);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta = new Vector2(size.x, Mathf.Max(rect.sizeDelta.y, size.y));
         var scale = Mathf.Min(1, SliderWidth / Mathf.Max(size.x, 1));
         rect.localScale = new Vector3(scale, scale, 1);
-        rect.anchoredPosition = new Vector2(0, y);
         return row;
+    }
+
+    /// <summary>
+    /// Shows the skull rows the tier's skull mode uses, stacks the rows from the top, and makes the window as high as
+    /// they need
+    /// </summary>
+    private void Layout(TierBoss shown)
+    {
+        SkullCount.Row.SetActive(shown.Skulls == Config.SkullMode.EvenlySpaced);
+        customSkullsRow.SetActive(shown.Skulls == Config.SkullMode.Custom);
+
+        var rowHeight = section.BossSpeed.Row.GetComponent<RectTransform>().rect.height;
+        var middle = RowsTop - RowStep;
+        var previousRoom = RowStep;
+        foreach (var row in new[] {Speed.Row, Health.Row, skullModeRow, SkullCount.Row, customSkullsRow, Skulls.Row})
+        {
+            if (!row.activeSelf) continue;
+            var rect = row.GetComponent<RectTransform>();
+
+            // The skull bar is higher than a slider row; the rest of a row's room is for the value above it
+            var room = RowStep + (rect.sizeDelta.y - rowHeight) * rect.localScale.y;
+            middle += (previousRoom + room) / 2;
+            rect.anchoredPosition = new Vector2(0, -middle);
+            previousRoom = room;
+        }
+
+        var elite = middle + previousRoom / 2 + EliteGap;
+        foreach (var control in new[] {Elite.gameObject, eliteLabel})
+        {
+            var rect = control.GetComponent<RectTransform>();
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 1);
+            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, -elite);
+        }
+
+        Panel.RectTransform.sizeDelta = new Vector2(Width, elite + BottomGap);
     }
 
     private void SetValues(TierBoss tier, string control)
     {
         if (refreshing) return;
         section.SetTierBoss(Tier, tier, $"Tier{Tier}{control}");
+        Show();
     }
 
     /// <summary>
@@ -198,7 +316,13 @@ public sealed class TierBossPicker
         Elite.SetChecked(shown.Elite, false);
         Speed.Show(shown.Speed);
         Health.Show(shown.Health);
+        SkullMode.Dropdown.SetValueWithoutNotify((int) shown.Skulls);
+        SkullCount.Show(shown.SkullCount);
+        if (!CustomSkulls.InputField.isFocused) CustomSkulls.SetText(shown.CustomSkulls, false);
         refreshing = false;
+
+        Skulls.Show(Creator.BossMode.Options, Tier);
+        Layout(shown);
     }
 
     /// <summary>
@@ -232,6 +356,7 @@ public sealed class TierBossPicker
     public void Handle(ShortcutKey key, bool shift = false)
     {
         var slider = FocusedSlider();
+        var onMode = Focused >= 0 && Stops[Focused] == SkullMode.gameObject;
         switch (key)
         {
             case ShortcutKey.Left or ShortcutKey.Right when slider != null:
@@ -239,6 +364,13 @@ public sealed class TierBossPicker
                 break;
             case ShortcutKey.Delete or ShortcutKey.Backspace when slider != null:
                 slider.Reset();
+                break;
+            case ShortcutKey.Left or ShortcutKey.Right when onMode:
+                var dropdown = SkullMode.Dropdown;
+                dropdown.value = Math.Clamp(dropdown.value + (key == ShortcutKey.Right ? 1 : -1), 0, dropdown.options.Count - 1);
+                break;
+            case ShortcutKey.Delete or ShortcutKey.Backspace when onMode:
+                ResetSkulls.Button.onClick.Invoke();
                 break;
             case ShortcutKey.Left or ShortcutKey.Up:
                 Move(-1);
@@ -256,7 +388,7 @@ public sealed class TierBossPicker
     }
 
     private SliderRow? FocusedSlider() =>
-        Focused < 0 ? null : Stops[Focused] == Speed.Row ? Speed : Stops[Focused] == Health.Row ? Health : null;
+        Focused < 0 ? null : new[] {Speed, Health, SkullCount}.FirstOrDefault(slider => slider.Row == Stops[Focused]);
 
     private void Move(int step)
     {
@@ -268,7 +400,9 @@ public sealed class TierBossPicker
         }
         else
         {
-            Focused = ((Focused + step) % Stops.Count + Stops.Count) % Stops.Count;
+            // Rows the skull mode hides are skipped
+            do Focused = ((Focused + step) % Stops.Count + Stops.Count) % Stops.Count;
+            while (!Stops[Focused].activeInHierarchy);
         }
 
         FocusFrame.Show(Stops[Focused]);
@@ -277,6 +411,12 @@ public sealed class TierBossPicker
     private void Press(GameObject stop)
     {
         if (stop == Elite.gameObject) Elite.Toggle.isOn = !Elite.Toggle.isOn;
+        else if (stop == SkullMode.gameObject) SkullMode.Dropdown.Show();
+        else if (stop == CustomSkulls.gameObject)
+        {
+            UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(stop);
+            CustomSkulls.InputField.ActivateInputField();
+        }
         else stop.GetComponent<Button>()?.onClick.Invoke();
     }
 }

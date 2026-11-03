@@ -5,11 +5,43 @@ using System.Linq;
 namespace CustomBossChallenge.Config;
 
 /// <summary>
+/// How the skull thresholds of the boss should be determined
+/// </summary>
+public enum SkullMode
+{
+    /// <summary>Keep the skulls the boss normally has</summary>
+    Vanilla,
+
+    /// <summary>Place a count of skulls evenly across the health bar</summary>
+    EvenlySpaced,
+
+    /// <summary>Use the comma separated percentages in a list</summary>
+    Custom
+}
+
+/// <summary>
 /// Pure helpers for turning skull settings into health percentage thresholds
 /// </summary>
 public static class SkullMath
 {
     public const int MaxSkulls = 10;
+
+    /// <summary>
+    /// The skulls a new setup has for Evenly Spaced and Custom
+    /// </summary>
+    public const int DefaultCount = 3;
+    public const string DefaultCustom = "75, 50, 25";
+
+    /// <summary>
+    /// The thresholds a skull mode gives, or null for <see cref="SkullMode.Vanilla"/> (and for a Custom list without a
+    /// single valid value), which keeps the boss's own
+    /// </summary>
+    public static float[]? Percents(SkullMode mode, int count, string? custom) => mode switch
+    {
+        SkullMode.EvenlySpaced => EvenlySpaced(count),
+        SkullMode.Custom => ParseCustom(custom),
+        _ => null
+    };
 
     /// <summary>
     /// Evenly spaced thresholds, e.g. 3 -> [0.75, 0.5, 0.25]. 0 skulls gives an empty array.
@@ -56,4 +88,10 @@ public static class SkullMath
     /// </summary>
     public static string NormalizeCustom(string? text, string fallback) =>
         ParseCustom(text) is { } values ? FormatCustom(values) : fallback;
+
+    /// <summary>
+    /// A skull's health percentage, e.g. 0.3333 -> "33.33%"
+    /// </summary>
+    public static string FormatPercent(float percent) =>
+        Math.Round(percent * 100.0, 2).ToString("0.##", CultureInfo.InvariantCulture) + "%";
 }

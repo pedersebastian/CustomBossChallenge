@@ -100,14 +100,14 @@ picked when the game starts (and stays the same through restarts, retries and Co
 arrows step a card's boss, Enter opens the picker and Delete puts the tier back to the boss it started with.
 Going back to **Standard** brings the Boss Type back and keeps your choices, so **Advanced** brings them back too.
 
-In **Advanced**, **Boss Speed** and **Boss Health** are set per tier instead: the two sliders are hidden, and each
-tier's picker has its own, from 10 to 1000 % and 10 to 2000 %. Every tier starts with the values the sliders had, and
-**Standard** brings those back. Speed per Tier and Health per Tier still go on top, and the cards show the result.
+In **Advanced**, **Boss Speed**, **Boss Health** and the **Skulls** are set per tier instead: their rows and the
+Skull Preview are hidden, and each tier's picker has its own, from 10 to 1000 % speed and 10 to 2000 % health, and
+Vanilla, Evenly Spaced or Custom skulls with a Skull Preview of that tier. Every tier starts with what Standard had,
+and **Standard** brings that back. Speed per Tier and Health per Tier still go on top, and the cards show the result.
 
-Each boss has its own number of skulls, and Elite often more: Bloonarius has 3 and Elite Bloonarius 7. With the
-boss's own skulls (**Vanilla**) every tier keeps its boss's skulls, so each card shows how many it has, and the
-**Skull Preview** shows the tier you point at or move the keyboard frame to (its corner says which). **Evenly
-Spaced** and **Custom** give every tier the same skulls. A Random tier shows **?** until the game starts.
+Each boss has its own number of skulls, and Elite often more: Bloonarius has 3 and Elite Bloonarius 7. A tier with
+**Vanilla** skulls keeps its boss's, so each card shows how many skulls its tier has. A Random tier with Vanilla
+skulls shows **?** until the game starts.
 
 ![Advanced Mode in the Tier Preview](docs/tier-bosses.jpg)
 
@@ -184,7 +184,7 @@ CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg
 | Option | Range | Default | Notes |
 |---|---|---|---|
 | Boss Type | 7 bosses | Bloonarius | Elite toggle next to it. |
-| Standard / Advanced | tabs | Standard | Hides the Boss Type, Boss Speed and Boss Health; each tier's boss, speed and health are picked on its card in the Tier Preview: any boss, Elite or not, or Random. |
+| Standard / Advanced | tabs | Standard | Hides the Boss Type, Boss Speed, Boss Health and the skulls; each tier's boss, speed, health and skulls are picked on its card in the Tier Preview: any boss, Elite or not, or Random. |
 | Boss Speed | 10–1000 % | 100 % | In Advanced, set per tier in its picker. |
 | Boss Health | 10–2000 % | 100 % | In Advanced, set per tier in its picker. |
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
@@ -194,7 +194,7 @@ CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg
 | First Boss Round | 1–200 | 40 | Fills in Spawn Rounds together with Rounds Between Tiers. |
 | Rounds Between Tiers | 1–50 | 20 | Fills in Spawn Rounds; 1 sends a new tier every round. |
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
-| Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | |
+| Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | In Advanced, set per tier in its picker, with the count and the list below. |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
 | Skull Health % | comma separated % (1–99) | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. Use a point for decimals (`33.5`). The field shows the list as it is used: sorted, duplicates merged, invalid values dropped. |
 

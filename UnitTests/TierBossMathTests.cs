@@ -23,6 +23,14 @@ public class TierBossMathTests
     [InlineData("@150/100,,", "@150/100")]
     [InlineData("Nonsense@200/200", "@200/200")]
     [InlineData("Lych@99999999999/100", "Lych")]
+    [InlineData("LychElite@120/80#4", "LychElite@120/80#4")]
+    [InlineData(" lych # 12 ", "Lych#10")]
+    [InlineData("Lych#-3", "Lych#0")]
+    [InlineData("Vortex#25;50%;75;junk;50", "Vortex#75%;50%;25%")]
+    [InlineData("Vortex#33.5%", "Vortex#33.5%")]
+    [InlineData("Lych#junk,Lych#%", "Lych,Lych")]
+    [InlineData("#5,,", "#5")]
+    [InlineData("Lych#4@150/100", "Lych")]
     public void Normalize_gives_the_canonical_list(string list, string expected) =>
         Assert.Equal(expected, TierBossMath.Normalize(list));
 
@@ -95,9 +103,36 @@ public class TierBossMathTests
     }
 
     [Fact]
-    public void Resolve_gives_tiers_without_an_entry_the_setups_speed_and_health() =>
-        Assert.Equal("LychElite@120/90,LychElite@200/300,LychElite@200/300",
-            TierBossMath.Resolve("@120/90", "Lych", true, 3, _ => 0, 200, 300));
+    public void Each_tier_keeps_its_skulls()
+    {
+        var even = TierBossMath.Entry("Lych,Vortex#4", 2);
+        Assert.Equal(new TierBoss("Vortex", false, Skulls: SkullMode.EvenlySpaced, SkullCount: 4), even);
+        Assert.Equal(new[] {0.8f, 0.6f, 0.4f, 0.2f}, even.SkullPercents);
+
+        var custom = TierBossMath.Entry("Vortex@200/100#60%;30%", 1);
+        Assert.Equal(SkullMode.Custom, custom.Skulls);
+        Assert.Equal("60, 30", custom.CustomSkulls);
+        Assert.Equal(new[] {0.6f, 0.3f}, custom.SkullPercents);
+        Assert.Equal(200, custom.Speed);
+
+        // The boss's own skulls, and no skulls at all, which is not the same
+        Assert.Null(TierBossMath.Entry("Lych", 1).SkullPercents);
+        Assert.Empty(TierBossMath.Entry("Lych#0", 1).SkullPercents!);
+
+        // A mode's leftover count or list doesn't go into the token
+        Assert.Equal("Lych", new TierBoss("Lych", false, SkullCount: 7, CustomSkulls: "10").ToString());
+        Assert.Equal("Lych", new TierBoss("Lych", false, Skulls: SkullMode.Custom, CustomSkulls: "junk").ToString());
+
+        // Stepping the boss and resolving Random keep them
+        Assert.Equal("Dreadbloon#4", TierBossMath.Step(even, "Lych", false, 1).ToString());
+        Assert.Equal("Diamondback#60%;30%", TierBossMath.Resolve("Random#60%;30%", "Lych", false, 1, _ => 6));
+    }
+
+    [Fact]
+    public void Resolve_gives_tiers_without_an_entry_the_setups_speed_health_and_skulls() =>
+        Assert.Equal("LychElite@120/90,LychElite@200/300#5,LychElite@200/300#5",
+            TierBossMath.Resolve("@120/90", "Lych", true, 3, _ => 0,
+                new TierBoss(null, false, 200, 300, SkullMode.EvenlySpaced, 5)));
 
     [Fact]
     public void Resolve_clamps_a_bad_pick() =>

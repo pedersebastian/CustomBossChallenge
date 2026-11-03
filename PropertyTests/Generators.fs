@@ -61,7 +61,7 @@ let customSkulls: Gen<string> =
     }
 
 /// A boss per tier, or None for a single boss: bosses, Random and tiers that follow the setup's boss, Elite or not,
-/// often at their normal speed and health and otherwise anywhere in range
+/// often at their normal speed, health and skulls and otherwise anywhere in range
 let tierBosses: Gen<string option> =
     let value low high =
         Gen.frequency
@@ -73,7 +73,10 @@ let tierBosses: Gen<string option> =
             let! elite = Gen.elements [ false; true ]
             let! speed = value TierBossMath.MinSpeed TierBossMath.MaxSpeed
             let! health = value TierBossMath.MinHealth TierBossMath.MaxHealth
-            return TierBoss(Option.toObj boss, elite, speed, health)
+            let! count = Gen.choose (0, SkullMath.MaxSkulls)
+            let! custom = customSkulls
+            let! skulls = Gen.elements [ SkullMode.Vanilla; SkullMode.Vanilla; SkullMode.EvenlySpaced; SkullMode.Custom ]
+            return TierBoss(Option.toObj boss, elite, speed, health, skulls, count, custom)
         }
     Gen.frequency
         [ 3, Gen.constant None

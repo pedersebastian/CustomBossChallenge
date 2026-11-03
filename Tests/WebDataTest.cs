@@ -216,7 +216,11 @@ public class WebDataTest : CustomBossTest
                 // Each tier with its own speed and health, held to their range, on top of a hand made Boss Health
                 SetupCode.Pack("{\"o\":{\"Boss\":\"Lych\",\"Tiers\":7,\"HealthPerTier\":20,\"TierBosses\":" +
                                "\"Bloonarius@150/50,LychElite@100/300,Random@80/100,@20/2000,Vortex@5000/1,,Diamondback@125/100\"}," +
-                               "\"c\":{\"bloonModifiers\":{\"healthMultipliers\":{\"boss\":1.5}}}}", SetupCode.Version3Prefix)
+                               "\"c\":{\"bloonModifiers\":{\"healthMultipliers\":{\"boss\":1.5}}}}", SetupCode.Version3Prefix),
+                // Each tier with its own skulls, and tiers that keep their boss's own or the Skulls option
+                SetupCode.Pack("{\"o\":{\"Tiers\":7,\"SkullMode\":\"EvenlySpaced\",\"SkullCount\":2,\"TierBosses\":" +
+                               "\"Lych#4,BloonariusElite#0,Random#60%;30%,Vortex,DreadbloonElite#25;75%;junk,Phayze#99,Blastapopoulos#x\"}," +
+                               "\"c\":{}}", SetupCode.Version3Prefix)
             })
             .Distinct()
             .ToList();

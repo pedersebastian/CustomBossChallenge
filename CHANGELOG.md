@@ -19,9 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a line-up on the left shows every tier's boss, the defeated ones ticked. Tiers above 5 are made from tier 5 of their
   own boss. New example: Boss Gauntlet, all seven bosses in a row. Setups in Advanced Mode are shared as `CBC3:` codes,
   which older versions of the mod refuse instead of playing them with one boss; the website reads them. Each tier
-  card shows how many skulls its boss has (Elite bosses often have more), and the Skull Preview shows the tier
-  pointed at or focused; the website does the same. Boss Speed and Boss Health are set per tier in Advanced Mode, in
-  each tier's picker, in place of the two sliders.
+  card shows how many skulls its tier has (Elite bosses often have more of their own). Boss Speed, Boss Health and
+  the skulls (Vanilla, Evenly Spaced or Custom, with a Skull Preview of the tier) are set per tier in Advanced Mode,
+  in each tier's picker, in place of their rows in the Boss section.
 - **Reset and undo for the boss options** (#36): the boss, the skulls and the custom skulls get a reset button like
   the sliders have, and Delete or Backspace resets the option in the yellow keyboard frame. **Reset Boss Options** at
   the top of the Boss section puts every boss option back to its default after asking, and leaves the Challenge Editor

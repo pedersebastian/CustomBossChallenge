@@ -12,6 +12,7 @@ using Il2CppAssets.Scripts.Unity.Menu;
 using Il2CppAssets.Scripts.Unity.UI_New;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
 using UnityEngine;
+using static CustomBossChallenge.Tests.TestUtils;
 using Object = UnityEngine.Object;
 
 namespace CustomBossChallenge.Tests;
@@ -137,7 +138,7 @@ public class MixedBossCreatorTest : CustomBossTest
         BossCreatorKeys.EscapePressed = () => false;
         AssertEquals(TierBossPicker.Current, null, "Esc closes the picker");
 
-        // Each card shows its boss's skulls, and the Skull Preview shows the tier pointed at or focused
+        // Each card shows its boss's skulls, and each tier's picker has its own skulls with their preview
         section.SetTierBoss(1, new TierBoss(nameof(BossType.Bloonarius), false));
         section.SetTierBoss(2, new TierBoss(nameof(BossType.Bloonarius), true));
         section.SetTierBoss(4, new TierBoss(TierBossMath.Random, false));
@@ -146,17 +147,37 @@ public class MixedBossCreatorTest : CustomBossTest
         AssertEquals(section.Strip.Cards[1].SkullCount.Text.text, "7", "Elite Bloonarius has 7 skulls");
         AssertEquals(section.Strip.Cards[3].SkullCount.Text.text, "?", "A Random tier's skulls aren't known yet");
         Assert(section.Strip.Cards[0].Skulls.gameObject.activeInHierarchy, "The skull count shows in Advanced");
-        section.ShowSkullsOf(1);
-        AssertEquals(section.Skulls.Markers.Count(m => m.Panel.gameObject.activeSelf), 3, "The Skull Preview of tier 1");
-        AssertEquals(section.Skulls.Tier.Text.text, "T1", "The Skull Preview names its tier");
-        BossCreatorKeys.FocusOn(section, BossEditorSection.TierStopName(2));
-        section.FollowPointedTier();
-        AssertEquals(section.SkullTier, 2, "The Skull Preview follows the focused card");
-        AssertEquals(section.Skulls.Markers.Count(m => m.Panel.gameObject.activeSelf), 7, "The Skull Preview of tier 2");
-        AssertEquals(section.Skulls.Tier.Text.text, "T2", "The Skull Preview names tier 2");
-        section.ShowSkullsOf(4);
-        AssertEquals(section.Skulls.Empty.Text.text, "?", "A Random tier's Skull Preview");
-        BossCreatorKeys.ClearFocus();
+        Assert(!section.Skulls.Row.activeInHierarchy && !section.SkullMode.gameObject.activeInHierarchy,
+            "Advanced hides the Skulls rows and the Skull Preview");
+        var picker2 = section.OpenPicker(2)!;
+        yield return null;
+        int Shown(SkullStrip strip) => strip.Markers.Count(marker => marker.Panel.gameObject.activeSelf);
+        AssertEquals(Shown(picker2.Skulls), 7, "The picker's Skull Preview has Elite Bloonarius's 7 skulls");
+        AssertEquals(picker2.Skulls.Tier.Text.text, "", "The picker names its tier in its title, not on the bar");
+        Assert(!picker2.SkullCount.Row.activeSelf && !picker2.CustomSkulls.gameObject.activeInHierarchy,
+            "Vanilla shows neither the count nor the list");
+        var vanillaHeight = picker2.Height;
+        picker2.SkullMode.Dropdown.value = (int) SkullMode.EvenlySpaced;
+        Assert(picker2.SkullCount.Row.activeSelf, "Evenly Spaced shows the count");
+        Assert(picker2.Height > vanillaHeight, $"The picker grows for the count: {vanillaHeight} -> {picker2.Height}");
+        picker2.SkullCount.Step(1);
+        AssertEquals(BossMode.Options.EntryOf(2).Skulls, SkullMode.EvenlySpaced, "The picker's skull mode is the tier's");
+        AssertEquals(BossMode.Options.EntryOf(2).SkullCount, 4, "The picker's count is the tier's");
+        AssertEquals(Shown(picker2.Skulls), 4, "The picker's Skull Preview follows the count");
+        AssertEquals(section.Strip.Cards[1].SkullCount.Text.text, "4", "The card follows the tier's skulls");
+        AssertEquals(section.Strip.Cards[0].SkullCount.Text.text, "3", "Other tiers keep their skulls");
+        picker2.SkullMode.Dropdown.value = (int) SkullMode.Custom;
+        Assert(picker2.CustomSkulls.gameObject.activeInHierarchy && !picker2.SkullCount.Row.activeSelf, "Custom shows the list");
+        picker2.CustomSkulls.InputField.onEndEdit.Invoke("30, 60, junk");
+        Assert(SameValues(BossMode.Options.TierSkullPercents(2), new[] {0.6f, 0.3f}),
+            $"The picker's list is the tier's: {BossMode.Options.TierBosses}");
+        AssertEquals(picker2.CustomSkulls.InputField.text, "60, 30", "The list shows what was understood");
+        AssertEquals(Shown(picker2.Skulls), 2, "The picker's Skull Preview follows the list");
+        Assert(BossMode.Options.TierBosses!.Split(',')[1].EndsWith("#60%;30%"), $"The code keeps the skulls: {BossMode.Options.TierBosses}");
+        picker2.ResetSkulls.Button.onClick.Invoke();
+        AssertEquals(BossMode.Options.EntryOf(2).Skulls, SkullMode.Vanilla, "The reset gives the tier its boss's skulls back");
+        AssertEquals(picker2.Height, vanillaHeight, "The picker shrinks back");
+        picker2.Hide();
 
         // Boss Speed and Boss Health are per tier in Advanced: the sliders are hidden, and each tier's picker has its own
         Assert(!section.BossSpeed.Row.activeInHierarchy && !section.BossHealth.Row.activeInHierarchy,
@@ -187,15 +208,23 @@ public class MixedBossCreatorTest : CustomBossTest
         section.ResetAll();
         section.BossSpeed.Slider.value = 150;
         section.BossHealth.Slider.value = 300;
+        section.SkullMode.Dropdown.value = (int) SkullMode.EvenlySpaced;
+        section.SkullCount.Slider.value = 5;
         section.SetAdvanced(true);
         Assert(TierBossMath.Parse(BossMode.Options.TierBosses).All(t => t.Speed == 150 && t.Health == 300),
             $"Every tier starts with Boss Speed and Boss Health: {BossMode.Options.TierBosses}");
+        Assert(TierBossMath.Parse(BossMode.Options.TierBosses).All(t => t is {Skulls: SkullMode.EvenlySpaced, SkullCount: 5}),
+            $"Every tier starts with the skulls: {BossMode.Options.TierBosses}");
         AssertEquals(section.Editor.dcm.bloonModifiers.bossSpeedMultiplier, 1f, "Boss Speed is 100 % in Advanced");
         AssertEquals(section.Editor.dcm.bloonModifiers.healthMultipliers.boss, 1f, "Boss Health is 100 % in Advanced");
+        AssertEquals(BossMode.Options.SkullMode, SkullMode.Vanilla, "The Skulls option is Vanilla in Advanced");
         AssertEquals(section.Strip.Cards[0].Speed.Text.text.StartsWith("×1.5"), true, "The cards still show 150 %");
+        AssertEquals(section.Strip.Cards[0].SkullCount.Text.text, "5", "The cards show the skulls");
         section.SetAdvanced(false);
         AssertEquals(section.BossSpeed.Value, 150f, "Standard brings Boss Speed back");
         AssertEquals(section.Editor.dcm.bloonModifiers.healthMultipliers.boss, 3f, "Standard brings Boss Health back");
+        AssertEquals((BossMode.Options.SkullMode, BossMode.Options.SkullCount), (SkullMode.EvenlySpaced, 5), "Standard brings the skulls back");
+        Assert(section.SkullCount.Row.activeInHierarchy && section.Skulls.Row.activeInHierarchy, "Standard shows the skull rows again");
 
         // The editor's own Reset forgets a changed lineup and the Standard values too, like Reset Boss Options
         section.ResetAll();

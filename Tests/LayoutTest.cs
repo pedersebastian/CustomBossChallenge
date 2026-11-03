@@ -234,7 +234,7 @@ public class LayoutTest : CustomBossTest
                     if (buttons[j].transform.IsChildOf(buttons[i].transform) || buttons[i].transform.IsChildOf(buttons[j].transform)) continue;
 
                     // A slider row is the game's own: its arrows sit right against its slider, like in the editor
-                    if (new[] {picker.Speed.Row, picker.Health.Row}.Any(row =>
+                    if (new[] {picker.Speed.Row, picker.Health.Row, picker.SkullCount.Row}.Any(row =>
                             buttons[i].transform.IsChildOf(row.transform) && buttons[j].transform.IsChildOf(row.transform))) continue;
                     Expect(!Overlap(ScreenRect(buttons[i]), ScreenRect(buttons[j])),
                         $"{format}: {buttons[i].name} overlaps {buttons[j].name} in the boss picker");

@@ -95,23 +95,6 @@ public sealed class TierStrip
         public ModHelperText SkullCount = null!;
     }
 
-    /// <summary>
-    /// The card under the mouse, or null
-    /// </summary>
-    public int? PointedTier()
-    {
-        var canvas = Row.GetComponentInParent<Canvas>();
-        var camera = canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
-        for (var i = 0; i < Cards.Count; i++)
-        {
-            var rect = Cards[i].Panel.RectTransform;
-            if (rect.gameObject.activeInHierarchy &&
-                RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition, camera)) return i + 1;
-        }
-
-        return null;
-    }
-
     public TierStrip(GameObject row)
     {
         Row = row;
