@@ -2,11 +2,11 @@
 
 import { GAME } from "../data/types";
 import type { Challenge } from "../code/decode";
-import { effectiveSpawnRounds, type BossOptions } from "../code/options";
+import { effectiveSpawnRounds, entryOf, isMixed, tierBossName, tierSkullMode, type BossOptions, type SkullMode } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
-import { endRound } from "../math/tiers";
-import { skulls, tierCards, type TierCard } from "../preview/compute";
+import { clampTiers, endRound } from "../math/tiers";
+import { skulls, tierCards, tierSkulls, type TierCard } from "../preview/compute";
 
 export interface Setup {
   options: BossOptions;
@@ -33,10 +33,24 @@ const paragons = (value: number): string => (value < 0 ? "Unlimited" : value ===
 const towerLimit = (value: number | undefined): string =>
   value === undefined ? "Default" : value === 0 ? "Not allowed" : value < 0 ? "No limit" : `Max ${value}`;
 
+const skullModeText = (mode: SkullMode): string =>
+  mode === "Vanilla" ? "Boss's own" : mode === "EvenlySpaced" ? "Evenly spaced" : "Custom";
+
 function skullText(options: BossOptions): string {
-  const { percents } = skulls(options);
-  const mode = options.SkullMode === "Vanilla" ? "Boss's own" : options.SkullMode === "EvenlySpaced" ? "Evenly spaced" : "Custom";
-  return `${mode}: ${percents.length === 0 ? "none" : percents.map(formatPercent).join(", ")}`;
+  // In Advanced Mode each tier has its own skulls, shown per tier
+  if (isMixed(options)) {
+    const counts = Array.from({ length: clampTiers(options.Tiers) }, (_, i) => tierSkulls(options, i + 1)?.length ?? "?");
+    return `Per tier: ${counts.join(", ")}`;
+  }
+  const percents = skulls(options).percents ?? [];
+  return `${skullModeText(options.SkullMode)}: ${percents.length === 0 ? "none" : percents.map(formatPercent).join(", ")}`;
+}
+
+/** A tier's own skulls in Advanced Mode, e.g. "Evenly spaced: 80%, 60%, 40%, 20%" */
+function tierSkullText(options: BossOptions, tier: number): string {
+  const percents = tierSkulls(options, tier);
+  const list = percents === null ? "?" : percents.length === 0 ? "none" : percents.map(formatPercent).join(", ");
+  return `${skullModeText(tierSkullMode(options, tier))}: ${list}`;
 }
 
 /** Every option of both setups, in the order the Boss Creator and Challenge Editor show them */
@@ -58,6 +72,20 @@ export function compareRows(a: Setup, b: Setup): Row[] {
   add("Tiers", "Speed per Tier", (s) => perTier(s.options.SpeedPerTier));
   add("Tiers", "Health per Tier", (s) => perTier(s.options.HealthPerTier));
   add("Tiers", "Spawn rounds", (s) => effectiveSpawnRounds(s.options).join(", "));
+  // With Advanced Mode on either side, each tier's boss
+  if (isMixed(a.options) || isMixed(b.options)) {
+    add("Tiers", "Advanced Mode", (s) => yesNo(isMixed(s.options)));
+    for (let tier = 1; tier <= Math.max(a.options.Tiers, b.options.Tiers); tier++) {
+      add("Tiers", `Tier ${tier} boss`, (s) => (tier <= s.options.Tiers ? tierBossName(s.options, tier) : "—"));
+      // In Advanced Mode each tier has its own Boss Speed and Boss Health
+      add("Tiers", `Tier ${tier} speed and health`, (s) => {
+        if (tier > s.options.Tiers) return "—";
+        const entry = entryOf(s.options, tier);
+        return `${entry.speed} %, ${entry.health} %`;
+      });
+      add("Tiers", `Tier ${tier} skulls`, (s) => (tier <= s.options.Tiers ? tierSkullText(s.options, tier) : "—"));
+    }
+  }
   add("Tiers", "Game ends", (s) => `Round ${endRound(effectiveSpawnRounds(s.options))}`);
 
   add("Game", "Map", (s) => GAME.maps[s.challenge.map] ?? s.challenge.map);
@@ -127,7 +155,10 @@ function compareValue(a: number, b: number, words: { more: string; less: string;
 export function verdict(a: Setup, b: Setup): string[] {
   const lines: string[] = [];
   // First, since the health and speed below then compare two different bosses
-  const boss = (setup: Setup): string => `${setup.options.Elite ? "Elite " : ""}${setup.options.Boss}`;
+  const boss = (setup: Setup): string =>
+    isMixed(setup.options)
+      ? Array.from({ length: setup.options.Tiers }, (_, i) => tierBossName(setup.options, i + 1)).join(", ")
+      : `${setup.options.Elite ? "Elite " : ""}${setup.options.Boss}`;
   if (boss(a) !== boss(b)) lines.push(`Different bosses: A is ${boss(a)}, B is ${boss(b)}.`);
 
   const tiersA = a.options.Tiers;

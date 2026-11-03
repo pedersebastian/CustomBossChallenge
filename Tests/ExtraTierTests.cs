@@ -97,7 +97,7 @@ public class ExtraTierGameTest : CustomBossTest
         if (changed.Count > 0) manager.SetAchievementProgress(open.Id, achievements[open.Id].Progress);
         AssertEquals(string.Join(", ", changed), "", "Achievements changed in a custom game");
         // On easy a normal game ends at round 40, which used to end boss games after the first tier
-        yield return PlayToVictory(new BossOptions {Tiers = 2, SpawnRounds = "40,45"}, "Easy");
+        yield return PlayToVictory(new BossOptions {Tiers = 2, SpawnRounds = "40,41"}, "Easy");
         yield return ToMainMenu();
     }
 

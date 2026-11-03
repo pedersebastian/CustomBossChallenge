@@ -3,7 +3,7 @@
 import { GAME } from "../data/types";
 import { h } from "../dom";
 import { playProblem, type Challenge } from "../code/decode";
-import { effectiveSpawnRounds, type BossOptions } from "../code/options";
+import { bossOf, effectiveSpawnRounds, isMixed, tierBossName, tierSkullMode, type BossOptions } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
 import { clampTiers, endRound, formatHealth, maxModelHealth } from "../math/tiers";
@@ -26,7 +26,9 @@ const spoken = (text: string): HTMLElement => h("span", { class: "sr-only" }, te
 
 const percent = (multiplier: number): string => `${formatDecimals(multiplier * 100, 0)} %`;
 
-export const bossTitle = (options: BossOptions): string => `${options.Elite ? "Elite " : ""}${options.Boss}`;
+export const bossTitle = (options: BossOptions): string =>
+  isMixed(options) ? "Advanced Mode" : `${options.Elite ? "Elite " : ""}${options.Boss}`;
+
 
 export function renderSetup(options: BossOptions, challenge: Challenge, compact = false): HTMLElement {
   const rounds = effectiveSpawnRounds(options);
@@ -58,21 +60,41 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
   root.append(renderTiers(options, challenge));
   if (compact) return root;
 
-  root.append(renderSkulls(options), renderRules(options, challenge, rounds));
+  // With a boss per tier the bosses' own skulls differ between tiers, so the skulls follow the card pointed at or
+  // focused, like the Boss Creator's Skull Preview
+  let skullBlock = renderSkulls(options);
+  root.append(skullBlock, renderRules(options, challenge, rounds));
+  if (isMixed(options)) {
+    root.querySelectorAll<HTMLElement>(".tier").forEach((card, i) => {
+      const show = (): void => {
+        const next = renderSkulls(options, i + 1);
+        skullBlock.querySelectorAll(".skull-bar").forEach((bar) => skullBars.unobserve(bar));
+        skullBlock.replaceWith(next);
+        skullBlock = next;
+      };
+      card.addEventListener("mouseenter", show);
+      card.addEventListener("focus", show);
+    });
+  }
   return root;
 }
 
-/** The boss's first letter; with more than 5 tiers it glows like the last tier */
+/** Long boss names may break where their parts meet on a narrow card, not anywhere: "Blasta-popoulos" */
+const breakable = (name: string): string =>
+  name.replace("Blastapopoulos", "Blasta­popoulos").replace("Diamondback", "Diamond­back").replace("Dreadbloon", "Dread­bloon");
+
+/** The boss's first letter, or ★ with a boss per tier; with more than 5 tiers it glows like the last tier */
 function renderBadge(options: BossOptions): HTMLElement {
-  const glow = tierGlow(options.Boss, clampTiers(options.Tiers));
+  const last = clampTiers(options.Tiers);
+  const glow = tierGlow(bossOf(options, last).boss, last);
   return h(
     "div",
     {
-      class: "boss-badge" + (options.Elite ? " elite" : "") + (glow ? " tier-look" : ""),
+      class: "boss-badge" + (options.Elite && !isMixed(options) ? " elite" : "") + (glow ? " tier-look" : ""),
       style: glow ? tierGlowStyle(glow) : undefined,
       "aria-hidden": "true",
     },
-    options.Boss.slice(0, 1),
+    isMixed(options) ? "★" : options.Boss.slice(0, 1),
   );
 }
 
@@ -83,19 +105,30 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
     const speed = `×${formatDecimals(card.speed, 2)}`;
     const speedTone = tone(card.speed);
     const healthTone = tone(card.healthFactor);
-    const glow = tierGlow(options.Boss, card.tier);
+    const glow = tierGlow(bossOf(options, card.tier).boss, card.tier);
+    const boss = isMixed(options) ? tierBossName(options, card.tier) : null;
     strip.append(
       h(
         "div",
-        { class: glow ? "tier tier-look" : "tier", style: glow ? tierGlowStyle(glow) : undefined, role: "listitem" },
+        {
+          class: glow ? "tier tier-look" : "tier",
+          style: glow ? tierGlowStyle(glow) : undefined,
+          role: "listitem",
+          tabindex: boss ? "0" : undefined,
+        },
         spoken(
-          `Tier ${card.tier}, round ${card.round}, speed ${speed}, ${SPOKEN[speedTone][0]}, ` +
-            `health ${card.health}, ${SPOKEN[healthTone][1]}`,
+          `Tier ${card.tier}${boss ? `, ${boss}` : ""}, round ${card.round}, speed ${speed}, ${SPOKEN[speedTone][0]}, ` +
+            `health ${card.health}, ${SPOKEN[healthTone][1]}` +
+            (boss ? `, ${card.skulls === null ? "skulls unknown" : `${card.skulls} skulls`}` : ""),
         ),
         h("span", { class: "tier-label", "aria-hidden": "true" }, `T${card.tier}`),
         h("span", { class: "tier-round", "aria-hidden": "true" }, `R${card.round}`),
+        boss ? h("span", { class: "tier-boss", title: "This tier's boss", "aria-hidden": "true" }, breakable(boss)) : null,
         h("span", { class: `tier-speed ${speedTone}`, title: "Speed compared with the normal game", "aria-hidden": "true" }, speed + ARROW[speedTone]),
         h("span", { class: `tier-health ${healthTone}`, title: "Health", "aria-hidden": "true" }, card.health + ARROW[healthTone]),
+        boss
+          ? h("span", { class: "tier-skulls", title: "Skulls of this tier's boss", "aria-hidden": "true" }, `☠${card.skulls ?? "?"}`)
+          : null,
       ),
     );
   }
@@ -114,8 +147,9 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
   return wrapper;
 }
 
-function renderSkulls(options: BossOptions): HTMLElement {
-  const { percents, tier } = skulls(options);
+function renderSkulls(options: BossOptions, shownTier = 1): HTMLElement {
+  const { percents: shown, tier } = skulls(options, shownTier);
+  const percents = shown ?? [];
   const bar = h(
     "div",
     { class: "skull-bar", role: "img", "aria-label": `Health bar with skulls at ${percents.map(formatPercent).join(", ")} of the boss's health` },
@@ -129,13 +163,18 @@ function renderSkulls(options: BossOptions): HTMLElement {
   // Whether labels fit side by side depends on the bar's width, so they are laid out again when it changes
   skullBars.observe(bar);
 
-  const mode =
-    options.SkullMode === "Vanilla" ? "the boss's own skulls" : options.SkullMode === "EvenlySpaced" ? "evenly spaced" : "custom";
+  // In Advanced Mode each tier has its own skulls
+  const own = isMixed(options) ? tierSkullMode(options, tier ?? 1) : options.SkullMode;
+  const mode = own === "Vanilla" ? "the boss's own skulls" : own === "EvenlySpaced" ? "evenly spaced" : "custom";
   return h(
     "div",
     { class: "block" },
     h("h4", {}, `Skulls (${mode}${tier ? `, tier ${tier}` : ""})`),
-    percents.length === 0 ? h("p", { class: "muted" }, "No skulls: the boss never triggers its skull effect.") : bar,
+    shown === null
+      ? h("p", { class: "muted" }, "A Random tier gets the skulls of the boss it gets when the game starts.")
+      : percents.length === 0
+        ? h("p", { class: "muted" }, "No skulls: the boss never triggers its skull effect.")
+        : bar,
   );
 }
 

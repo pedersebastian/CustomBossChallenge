@@ -34,10 +34,12 @@ public abstract class CustomBossTest : ModTest
         TempFolder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "CustomBossChallengeTest-" + Guid.NewGuid().ToString("N"));
         CustomBossRetries.Store = new Persistence.ContinueStore(System.IO.Path.Combine(TempFolder, "Continue.json"));
 
+        // The time each test takes is logged, to see which tests make the suite slow
         Log("starting");
+        var started = UnityEngine.Time.realtimeSinceStartup;
         yield return RunSafely(ToMainMenu());
         yield return RunSafely(Run());
-        Log("done");
+        Log($"done in {UnityEngine.Time.realtimeSinceStartup - started:0}s");
 
         CustomBossRetries.Store = store;
         if (System.IO.Directory.Exists(TempFolder)) System.IO.Directory.Delete(TempFolder, true);
@@ -61,15 +63,18 @@ public abstract class CustomBossTest : ModTest
         for (var tier = 1; tier <= options.Tiers; tier++)
         {
             var model = match.GetBloon(options.BossId(tier));
-            var source = Config.TierScaling.Original(match, options.BossId(Math.Min(tier, Config.TierMath.VanillaTiers)));
-            var speed = (float) Config.TierMath.SpeedFactor(tier, options.SpeedPerTier);
+            var source = Config.TierScaling.Original(match, options.SourceId(tier));
+            // In Advanced Mode each tier has its own speed and health on top
+            var speed = (float) (Config.TierMath.SpeedFactor(tier, options.SpeedPerTier) * options.TierSpeedFactor(tier));
             Assert(Math.Abs(model.speed - source.Speed * speed) < 0.0001f,
                 $"{model.id} speed {model.speed}, expected {source.Speed * speed}");
             Assert(Math.Abs(model.speedFrames - source.SpeedFrames * speed) < 0.0001f, $"{model.id} speed frames");
             // The game applies Boss Health to the models after they are scaled, so compare health with tier 1's
             var expected = Config.TierMath.ScaleHealth(source.MaxHealth,
-                Config.TierMath.ExtraTierFactor(tier) * Config.TierMath.HealthFactor(tier, options.HealthPerTier)) /
-                (double) Config.TierScaling.Original(match, options.BossId(1)).MaxHealth;
+                Config.TierMath.ExtraTierFactor(tier) * Config.TierMath.HealthFactor(tier, options.HealthPerTier) *
+                options.TierHealthFactor(tier)) /
+                (double) Config.TierMath.ScaleHealth(Config.TierScaling.Original(match, options.BossId(1)).MaxHealth,
+                    options.TierHealthFactor(1));
             var actual = model.maxHealth / (double) match.GetBloon(options.BossId(1)).maxHealth;
             Assert(Math.Abs(actual / expected - 1) < 0.001, $"{model.id} health is x{actual} of tier 1, expected x{expected}");
         }
@@ -80,7 +85,8 @@ public abstract class CustomBossTest : ModTest
         for (var tier = 2; tier <= Math.Min(options.Tiers, Config.TierMath.VanillaTiers); tier++)
         {
             var ratio = match.GetBloon(options.BossId(tier)).speed / game.GetBloon(options.BossId(tier)).speed / tier1;
-            Assert(Math.Abs(ratio - Config.TierMath.SpeedFactor(tier, options.SpeedPerTier)) < 0.001,
+            var own = options.TierSpeedFactor(tier) / options.TierSpeedFactor(1);
+            Assert(Math.Abs(ratio - Config.TierMath.SpeedFactor(tier, options.SpeedPerTier) * own) < 0.001,
                 $"Tier {tier} is x{ratio} as fast as the game makes it, compared with tier 1");
         }
     }

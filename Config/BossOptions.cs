@@ -4,21 +4,6 @@ using Newtonsoft.Json;
 namespace CustomBossChallenge.Config;
 
 /// <summary>
-/// How the skull thresholds of the boss should be determined
-/// </summary>
-public enum SkullMode
-{
-    /// <summary>Keep the skulls the boss normally has</summary>
-    Vanilla,
-
-    /// <summary>Place <see cref="BossOptions.SkullCount"/> skulls evenly across the health bar</summary>
-    EvenlySpaced,
-
-    /// <summary>Use the comma separated percentages in <see cref="BossOptions.CustomSkulls"/></summary>
-    Custom
-}
-
-/// <summary>
 /// The boss specific part of a Boss Creator setup. Everything else (map, rules, bloon and boss multipliers, towers)
 /// lives in the Challenge Editor's DailyChallengeModel.
 /// </summary>
@@ -28,8 +13,8 @@ public sealed record BossOptions
     public bool Elite { get; init; }
 
     public SkullMode SkullMode { get; init; } = SkullMode.Vanilla;
-    public int SkullCount { get; init; } = 3;
-    public string CustomSkulls { get; init; } = "75, 50, 25";
+    public int SkullCount { get; init; } = SkullMath.DefaultCount;
+    public string CustomSkulls { get; init; } = SkullMath.DefaultCustom;
 
     /// <summary>Number of boss tiers, 1-10. Tiers above 5 are stronger copies of tier 5.</summary>
     public int Tiers { get; init; } = TierMath.VanillaTiers;
@@ -54,15 +39,21 @@ public sealed record BossOptions
     public string? SpawnRounds { get; init; }
 
     /// <summary>
+    /// The boss of each tier when "Different boss per tier" is on, or null when every tier has <see cref="Boss"/>.
+    /// A comma separated token per tier, like "Lych,,RandomElite"; see <see cref="TierBossMath"/>.
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string? TierBosses { get; init; }
+
+    /// <summary>Whether the tiers can have different bosses</summary>
+    [JsonIgnore]
+    public bool Mixed => TierBosses != null;
+
+    /// <summary>
     /// The skull thresholds (0-1, descending) these options ask for, or null to keep the vanilla skulls
     /// </summary>
     [JsonIgnore]
-    public float[]? SkullPercents => SkullMode switch
-    {
-        SkullMode.EvenlySpaced => SkullMath.EvenlySpaced(SkullCount),
-        SkullMode.Custom => SkullMath.ParseCustom(CustomSkulls),
-        _ => null
-    };
+    public float[]? SkullPercents => SkullMath.Percents(SkullMode, SkullCount, CustomSkulls);
 
     /// <summary>
     /// The round each tier spawns on, always exactly <see cref="Tiers"/> ascending rounds
@@ -93,12 +84,78 @@ public sealed record BossOptions
             HealthPerTier = TierMath.ClampHealthPerTier(ExtraTierHealth is { } legacy && HealthPerTier == 0
                 ? TierMath.HealthPerTierFromExtraTierHealth(legacy)
                 : HealthPerTier),
-            ExtraTierHealth = null
+            ExtraTierHealth = null,
+            TierBosses = TierBossMath.Normalize(TierBosses)
         };
     }
 
     /// <summary>
-    /// The bloon id of this boss at the given tier, e.g. "VortexElite3"
+    /// What the given tier was set to: the setup's boss, a boss of its own, or Random
     /// </summary>
-    public string BossId(int tier) => $"{Boss}{(Elite ? "Elite" : "")}{tier}";
+    public TierBoss EntryOf(int tier) => Mixed ? TierBossMath.Entry(TierBosses, tier) : TierBoss.Follows;
+
+    /// <summary>
+    /// The boss and Elite of the given tier. A Random tier has the setup's boss here; games always start with
+    /// <see cref="ResolveRandom"/>'s options, which have no Random tiers left.
+    /// </summary>
+    public (BossType Boss, bool Elite) BossOf(int tier)
+    {
+        var entry = EntryOf(tier);
+        if (entry.FollowsSetup || entry.IsRandom || !System.Enum.TryParse<BossType>(entry.Boss, out var boss))
+        {
+            return (Boss, Elite);
+        }
+
+        return (boss, entry.Elite);
+    }
+
+    /// <summary>
+    /// A tier's own speed and health compared with the normal game, in Advanced Mode in place of Boss Speed and Boss
+    /// Health; 1 without a boss per tier
+    /// </summary>
+    public double TierSpeedFactor(int tier) => EntryOf(tier).SpeedFactor;
+
+    public double TierHealthFactor(int tier) => EntryOf(tier).HealthFactor;
+
+    /// <summary>
+    /// The skull thresholds (0-1, descending) the given tier asks for, or null to keep its boss's own: in Advanced Mode
+    /// the tier's own skulls, and <see cref="SkullPercents"/> for a tier that keeps Vanilla
+    /// </summary>
+    public float[]? TierSkullPercents(int tier) => EntryOf(tier).SkullPercents ?? SkullPercents;
+
+    /// <summary>Whether a tier will get a random boss when the game starts</summary>
+    [JsonIgnore]
+    public bool HasRandom => Mixed && TierBossMath.HasRandom(TierBosses, Tiers);
+
+    /// <summary>
+    /// These options with a concrete boss for every tier: Random tiers get a boss picked by <paramref name="random"/>.
+    /// Options without different bosses per tier come back as they are.
+    /// </summary>
+    public BossOptions ResolveRandom(System.Random random) => Mixed
+        ? this with {TierBosses = TierBossMath.Resolve(TierBosses, Boss.ToString(), Elite, Tiers, random.Next)}
+        : this;
+
+    /// <summary>
+    /// The bloon id of the boss at the given tier, e.g. "VortexElite3"
+    /// </summary>
+    public string BossId(int tier)
+    {
+        var (boss, elite) = BossOf(tier);
+        return BossIdOf(boss, elite, tier);
+    }
+
+    /// <summary>
+    /// The id of the game's own model the given tier is made from: the tier itself up to tier 5, and tier 5 of the
+    /// tier's boss above that
+    /// </summary>
+    public string SourceId(int tier)
+    {
+        var (boss, elite) = BossOf(tier);
+        return BossIdOf(boss, elite, System.Math.Min(tier, TierMath.VanillaTiers));
+    }
+
+    /// <summary>
+    /// The bloon id of a boss at the given tier, e.g. "VortexElite3"
+    /// </summary>
+    public static string BossIdOf(BossType boss, bool elite, int tier) => $"{boss}{(elite ? "Elite" : "")}{tier}";
 }

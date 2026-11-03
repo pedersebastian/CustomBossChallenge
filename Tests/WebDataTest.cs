@@ -209,7 +209,18 @@ public class WebDataTest : CustomBossTest
                 SetupCode.Pack("{\"o\":{\"Tiers\":50,\"SkullCount\":-4,\"SpeedPerTier\":900,\"CustomSkulls\":\"5, 5, 120, x\"," +
                                "\"SkullMode\":\"Custom\"},\"c\":{\"map\":\"NoSuchMap\",\"name\":\" \\u0007 \"}}"),
                 SetupCode.Pack("{\"o\":{\"Tiers\":7,\"ExtraTierHealth\":225},\"c\":{}}"),
-                SetupCode.Pack("{\"o\":{\"SpawnRounds\":\"995, 996, 1500\",\"Tiers\":6},\"c\":{}}")
+                SetupCode.Pack("{\"o\":{\"SpawnRounds\":\"995, 996, 1500\",\"Tiers\":6},\"c\":{}}"),
+                // A boss per tier, with Random, a tier that follows the boss, extra tiers and tokens to clean up
+                SetupCode.Pack("{\"o\":{\"Boss\":\"Vortex\",\"Tiers\":8,\"TierBosses\":" +
+                               "\" lych,,RandomElite,nonsense,PHAYZEelite,,DiamondbackElite\"},\"c\":{}}", SetupCode.Version3Prefix),
+                // Each tier with its own speed and health, held to their range, on top of a hand made Boss Health
+                SetupCode.Pack("{\"o\":{\"Boss\":\"Lych\",\"Tiers\":7,\"HealthPerTier\":20,\"TierBosses\":" +
+                               "\"Bloonarius@150/50,LychElite@100/300,Random@80/100,@20/2000,Vortex@5000/1,,Diamondback@125/100\"}," +
+                               "\"c\":{\"bloonModifiers\":{\"healthMultipliers\":{\"boss\":1.5}}}}", SetupCode.Version3Prefix),
+                // Each tier with its own skulls, and tiers that keep their boss's own or the Skulls option
+                SetupCode.Pack("{\"o\":{\"Tiers\":7,\"SkullMode\":\"EvenlySpaced\",\"SkullCount\":2,\"TierBosses\":" +
+                               "\"Lych#4,BloonariusElite#0,Random#60%;30%,Vortex,DreadbloonElite#25;75%;junk,Phayze#99,Blastapopoulos#x\"}," +
+                               "\"c\":{}}", SetupCode.Version3Prefix)
             })
             .Distinct()
             .ToList();
@@ -232,9 +243,10 @@ public class WebDataTest : CustomBossTest
                     ["speed"] = Math.Round(card.Speed, 6),
                     ["healthFactor"] = Math.Round(card.HealthFactor, 6),
                     ["health"] = card.Shown,
-                    ["capped"] = card.Capped
+                    ["capped"] = card.Capped,
+                    ["skulls"] = card.Skulls
                 })),
-                ["skulls"] = new JArray(SkullStrip.Skulls(options).Percents.Select(SkullStrip.Format).Cast<object>()),
+                ["skulls"] = new JArray((SkullStrip.Skulls(options).Percents ?? Array.Empty<float>()).Select(SkullStrip.Format).Cast<object>()),
                 ["playProblem"] = BossEditorSection.PlayProblem(dcm!, options) is null ? null : "yes"
             });
         }

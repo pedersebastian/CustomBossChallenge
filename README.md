@@ -26,20 +26,22 @@ where you can read a share code and see the whole setup without the game, or
   the vanilla editor doesn't offer it; it is only added in the Boss Creator.
 - **Boss section** at the top of the editor:
   - Pick any boss (Bloonarius, Lych, Vortex, Dreadbloon, Phayze, Blastapopoulos, Diamondback) and toggle **Elite**.
+  - **Advanced Mode**: choose the boss of every tier, for example Bloonarius on tier 1 and Lych on tier 2, Elite or
+    not, or Random (see [Advanced Mode](#advanced-mode)).
+  - **Tier Preview**: a card per tier with the round it arrives on, its speed and its health, orange with ▲ where
+    it is harder than the normal game and blue with ▼ where it is easier.
   - **Boss Speed** and **Boss Health** sliders, using the game's own boss multipliers (the same ones Ninja Kiwi uses
     for weekly events such as "Vortex at 150% speed").
-  - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
   - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with +50 % health per tier, each with a look of
     its own (see [Tiers above 5](#tiers-above-5)). With fewer than 5 tiers, beating the last one wins the game.
   - **Speed per Tier** and **Health per Tier**: make every tier faster and tougher than the one before it, on top of
     the game's own steps (or easier, below 0). The steps add up evenly: +100 % health makes tiers 2-5 ×2, ×3, ×4
     and ×5.
-  - **Tier Preview**: a card per tier with the round it arrives on, its speed and its health, orange with ▲ where
-    it is harder than the normal game and blue with ▼ where it is easier.
   - **Spawn Rounds** for every tier (default 40, 60, 80, 100, 120, then every 20 rounds), set evenly with the
     **First Boss Round** and **Rounds Between Tiers** sliders or typed one by one.
   - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health
     percentages. Works for every boss and Elite tier (Lych uses its ethereal thresholds).
+  - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
 - **Free retries**: after losing, retry the last round or go back to the round the current tier arrived on, as often
   as you like and without Monkey Money. Your own Boss Challenge saves are never touched.
 - **Continue after closing the game**: a custom game is kept after every round, so closing the game or a crash never
@@ -82,9 +84,45 @@ where you can read a share code and see the whole setup without the game, or
 3. Set the map, difficulty, rules, towers and sliders like in any custom challenge.
 4. Press **Play**. Pressing back saves the setup and returns to the main menu. After a game you return to the
    Boss Creator with the same setup. **Reset** also resets the boss options, back to a new setup with Bloonarius, and
-   **Random** also randomizes them, always into a setup that can be played.
+   **Random** also randomizes them, always into a setup that can be played: speed and health close to normal are far
+   more likely than extreme ones (up to 400 %), the number of tiers is most often around 5, and in **Advanced** every
+   tier gets a random boss of its own (now and then a Random tier, more often Elite in later tiers) while **Standard**
+   stays one boss.
 
 ![Main menu](docs/main-menu.jpg)
+
+## Advanced Mode
+
+Pick the **Advanced** tab at the top of the Boss section, next to **Standard**, to mix bosses in one game (#28). The
+Boss Type is hidden and every tier starts with the boss it had; the cards in the **Tier Preview** right below become
+buttons, each with a small pencil. Click one to pick that tier's boss from every boss, **Elite** or not, or **Random** for a surprise that is
+picked when the game starts (and stays the same through restarts, retries and Continue). With the keyboard, the
+arrows step a card's boss, Enter opens the picker and Delete puts the tier back to the boss it started with.
+Going back to **Standard** brings the Boss Type back and keeps your choices, so **Advanced** brings them back too.
+
+In **Advanced**, **Boss Speed**, **Boss Health** and the **Skulls** are set per tier instead: their rows and the
+Skull Preview are hidden, and each tier's picker has its own, from 10 to 1000 % speed and 10 to 2000 % health, and
+Vanilla, Evenly Spaced or Custom skulls with a Skull Preview of that tier. Every tier starts with what Standard had,
+and **Standard** brings that back. Speed per Tier and Health per Tier still go on top, and the cards show the result.
+
+Each boss has its own number of skulls, and Elite often more: Bloonarius has 3 and Elite Bloonarius 7. A tier with
+**Vanilla** skulls keeps its boss's, so each card shows how many skulls its tier has. A Random tier with Vanilla
+skulls shows **?** until the game starts.
+
+![Advanced Mode in the Tier Preview](docs/tier-bosses.jpg)
+
+![Picking a tier's boss](docs/tier-boss-picker.jpg)
+
+In the game, each tier spawns its own boss with all its abilities, and the boss panel shows that boss's portrait,
+its health bar extras (Lych's regrow, Blastapopoulos' heat, Diamondback's tail, the armour bars) and, between
+bosses, the one coming next. A banner names every boss as it arrives, and the **Bosses** line-up on the left shows
+the whole order: defeated tiers greyed out with a tick, the boss alive framed in yellow. Click **Bosses** to fold it
+away; it stays folded in later games. Tiers above 5 are made from tier 5 of their own boss. Try the **Boss
+Gauntlet** example: all seven bosses, one after the other.
+
+![A boss arriving](docs/boss-arrival.jpg)
+
+![The line-up of bosses](docs/boss-lineup.jpg)
 
 ## Saved setups
 
@@ -119,8 +157,8 @@ It shows the Tier Preview, skulls and rules like the Boss Creator does.
 A code is only data: it can't run anything, and custom games are always unranked and never touch your records.
 Codes are checked before they load, so values outside what the game can play are brought back into range.
 
-Codes start with `CBC1:`, or `CBC2:` when they use Speed or Health per Tier so that older versions of the mod
-ask for an update instead of loading them without those settings. They only contain what differs from a new
+Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, or `CBC3:` when they use Advanced Mode,
+so that older versions of the mod ask for an update instead of loading them without those settings. They only contain what differs from a new
 setup, so they are usually a few hundred characters. A new, unchanged setup gives a code like this one:
 
 ```
@@ -133,6 +171,12 @@ And this is Vortex Elite with 7 tiers, +20 % speed and +50 % health per tier, so
 CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJSsjAx0lDxSE3NKMuBCpga1OkrJQBNrawE
 ```
 
+And the Boss Gauntlet example, a different boss on each of its 7 tiers, is a `CBC3:` code:
+
+```
+CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg2iiTKoSreNzfjS3LhD46ZyU_d4WOm7ctoI2mhVVapURTHQIskP5F7Q0Nw_SLRwj15tE83qqlELoCgzB7McB4urf0A
+```
+
 ![Share Code](docs/share-code.jpg)
 
 ## Boss options
@@ -140,8 +184,9 @@ CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJS
 | Option | Range | Default | Notes |
 |---|---|---|---|
 | Boss Type | 7 bosses | Bloonarius | Elite toggle next to it. |
-| Boss Speed | 10–1000 % | 100 % | |
-| Boss Health | 10–2000 % | 100 % | |
+| Standard / Advanced | tabs | Standard | Hides the Boss Type, Boss Speed, Boss Health and the skulls; each tier's boss, speed, health and skulls are picked on its card in the Tier Preview: any boss, Elite or not, or Random. |
+| Boss Speed | 10–1000 % | 100 % | In Advanced, set per tier in its picker. |
+| Boss Health | 10–2000 % | 100 % | In Advanced, set per tier in its picker. |
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
 | Boss Tiers | 1–10 | 5 | The game is won when the last tier is defeated. |
 | Speed per Tier | −10 to +50 % | 0 % | This share of a tier's normal speed is added for every tier after the first: +20 % makes tier 3 ×1.4. Capped at ×5. |
@@ -149,7 +194,7 @@ CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJS
 | First Boss Round | 1–200 | 40 | Fills in Spawn Rounds together with Rounds Between Tiers. |
 | Rounds Between Tiers | 1–50 | 20 | Fills in Spawn Rounds; 1 sends a new tier every round. |
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
-| Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | |
+| Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | In Advanced, set per tier in its picker, with the count and the list below. |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
 | Skull Health % | comma separated % (1–99) | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. Use a point for decimals (`33.5`). The field shows the list as it is used: sorted, duplicates merged, invalid values dropped. |
 
@@ -199,6 +244,7 @@ The Boss Creator setup is stored in `BloonsTD6/UserData/CustomBossChallenge/Last
   on their own PC, so everyone would need the mod and the same setup, or the games would get out of sync. A co-op
   Boss Challenge is always a normal one, with the game's own bosses, even if you were in the Boss Creator before.
   This is not a bug.
+- In **Advanced Mode**, the map's music and its boss decorations stay those of the first tier's boss.
 - Tiers above 5 use tier 5's model and abilities; only their look and their health differ (see
   [Tiers above 5](#tiers-above-5)). The glow uses a shader built for the game's Unity version; if a BTD6 update moves
   to a Unity version it doesn't work with, the glow falls back to a simpler one made from the game's own shaders until

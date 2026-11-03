@@ -114,6 +114,9 @@ public class LayoutTest : CustomBossTest
     private void CheckEditor(string format, ChallengeEditor editor)
     {
         var section = AssertNotNull(BossEditorSection.Current, $"{format}: no Boss section")!;
+
+        // In Advanced Mode, so its hint and the cards' pencils are checked too
+        section.SetAdvanced(true);
         var play = ScreenRect(section.Play.GetComponentInChildren<Button>(true));
         var reset = ScreenRect(editor.transform.Find("Reset").GetComponentInChildren<Button>(true));
         Expect(Inside(play, LayoutChecks.Screen), $"{format}: Play ({Describe(play)}) is not on the screen");
@@ -198,7 +201,65 @@ public class LayoutTest : CustomBossTest
             Expect(rowRect.width < 1 || !Overlap(resetAll, rowRect),
                 $"{format}: Reset Boss Options ({Describe(resetAll)}) overlaps {NamePath(row.transform, section.Section.transform)}");
         }
+        CheckPicker(format, section);
+        section.SetAdvanced(false);
         Log($"{format}: Play {Describe(play)}, Reset {Describe(reset)}, section {Describe(sectionRect)}, {checkedControls} controls checked");
+    }
+
+    /// <summary>
+    /// The boss picker is on the screen, and its buttons and texts are inside it without covering each other
+    /// </summary>
+    private void CheckPicker(string format, BossEditorSection section)
+    {
+        var picker = AssertNotNull(section.OpenPicker(section.Strip.Cards.Count(card => card.Panel.gameObject.activeSelf)),
+            $"{format}: the boss picker did not open")!;
+        try
+        {
+            Canvas.ForceUpdateCanvases();
+            var panel = ScreenRect(picker.Panel.RectTransform);
+            Expect(Inside(panel, LayoutChecks.Screen), $"{format}: the boss picker ({Describe(panel)}) is not on the screen");
+            var buttons = picker.Panel.GetComponentsInChildren<Selectable>().Where(control => control.gameObject != picker.Panel.gameObject).ToList();
+            foreach (var control in buttons.Select(control => (Component) control)
+                         .Concat(picker.Panel.GetComponentsInChildren<Il2CppTMPro.TMP_Text>().Select(text => (Component) text)))
+            {
+                var rect = ScreenRect(control);
+                Expect(rect.width < 1 || Inside(rect, panel),
+                    $"{format}: {NamePath(control.transform, picker.Root.transform)} ({Describe(rect)}) sticks out of the boss picker");
+            }
+
+            for (var i = 0; i < buttons.Count; i++)
+            {
+                for (var j = i + 1; j < buttons.Count; j++)
+                {
+                    if (buttons[j].transform.IsChildOf(buttons[i].transform) || buttons[i].transform.IsChildOf(buttons[j].transform)) continue;
+
+                    // A slider row is the game's own: its arrows sit right against its slider, like in the editor
+                    if (new[] {picker.Speed.Row, picker.Health.Row, picker.SkullCount.Row}.Any(row =>
+                            buttons[i].transform.IsChildOf(row.transform) && buttons[j].transform.IsChildOf(row.transform))) continue;
+                    Expect(!Overlap(ScreenRect(buttons[i]), ScreenRect(buttons[j])),
+                        $"{format}: {buttons[i].name} overlaps {buttons[j].name} in the boss picker");
+                }
+            }
+
+            var labels = picker.Choices.Values.Select(choice => choice.transform.Find("Label")?.GetComponent<Il2CppTMPro.TMP_Text>())
+                .Where(label => label != null).Select(label => label!).ToList();
+            foreach (var label in labels)
+            {
+                label.ForceMeshUpdate();
+                var letters = LettersRect(label);
+                Expect(letters.width < 1 || Inside(letters, panel), $"{format}: the boss name '{label.text}' sticks out of the picker");
+            }
+
+            for (var i = 0; i + 1 < labels.Count; i++)
+            {
+                Expect(!Overlap(LettersRect(labels[i]), LettersRect(labels[i + 1])),
+                    $"{format}: the boss names '{labels[i].text}' and '{labels[i + 1].text}' run into each other in the picker");
+            }
+        }
+        finally
+        {
+            picker.Hide();
+        }
     }
 
     private void Expect(bool condition, string problem)

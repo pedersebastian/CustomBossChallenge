@@ -183,7 +183,9 @@ public class KeyboardTest : CustomBossTest
         AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab)), KeyAction.NextField, "Tab without a control");
         AssertEquals(BossCreatorKeys.Current?.Name, first, "First control");
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
-        AssertEquals(BossCreatorKeys.Current?.Name, $"Boss{bosses[0]}", "Tab after Reset Boss Options");
+        AssertEquals(BossCreatorKeys.Current?.Name, "Mode", "Tab after Reset Boss Options");
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
+        AssertEquals(BossCreatorKeys.Current?.Name, $"Boss{bosses[0]}", "Tab after the mode tabs");
         var frame = AssertNotNull(FocusFrame.Current, "No keyboard frame")!;
         AssertEquals(frame.transform.parent.gameObject.name, section.BossButtons[bosses[0]].gameObject.name,
             "The frame must be around the first boss");

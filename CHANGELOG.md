@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Advanced Mode** (#28): pick the Advanced tab at the top of the Boss section, next to Standard, to choose the boss
+  of every tier, for example Bloonarius on tier 1 and Lych on tier 2. The Boss Type is hidden, and the Tier Preview,
+  now right below it, gets cards that open a picker with every boss, Elite or not, and Random (picked when the game
+  starts, and kept through restarts, retries and Continue). In the game each tier spawns its own boss with its
+  abilities, the boss panel shows its portrait and its health bar extras, a banner names each boss as it arrives, and
+  a line-up on the left shows every tier's boss, the defeated ones ticked. Tiers above 5 are made from tier 5 of their
+  own boss. New example: Boss Gauntlet, all seven bosses in a row. Setups in Advanced Mode are shared as `CBC3:` codes,
+  which older versions of the mod refuse instead of playing them with one boss; the website reads them. Each tier
+  card shows how many skulls its tier has (Elite bosses often have more of their own). Boss Speed, Boss Health and
+  the skulls (Vanilla, Evenly Spaced or Custom, with a Skull Preview of the tier) are set per tier in Advanced Mode,
+  in each tier's picker, in place of their rows in the Boss section.
 - **Reset and undo for the boss options** (#36): the boss, the skulls and the custom skulls get a reset button like
   the sliders have, and Delete or Backspace resets the option in the yellow keyboard frame. **Reset Boss Options** at
   the top of the Boss section puts every boss option back to its default after asking, and leaves the Challenge Editor
@@ -19,6 +30,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ...; a visit to one of the editor's panels is one step), or a pasted, loaded or random setup, a reset or the
   editor's own Undo as one step each, so an accidental Paste can be undone. The challenge name isn't undone. Not while
   a text field, a popup or one of the editor's panels has the keyboard.
+
+### Changed
+
+- Max Paragons moved down below the skulls, and the Tier Preview up, right under the boss.
+- The editor's **Random** button keeps the mode: in Advanced every tier gets a random boss (now and then Random, Elite
+  more often in later tiers), Standard stays one boss. Random boss speed and health now go up to 400 %, with values
+  near 100 % far more likely than extreme ones. The number of tiers is a bell curve around 5 instead of 5 half the
+  time and anything from 1 to 10 the other half.
+
+### Fixed
+
+- The website showed some boss health one step lower than the game, e.g. 1.4M for Phayze's 1.45M tier 5 where the
+  Boss Creator shows 1.5M.
 
 ## [2.8.0] - 2026-11-01
 

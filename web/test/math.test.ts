@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { evenlySpaced, formatCustom, formatPercent, normalizeCustom, parseCustom } from "../src/math/skulls";
 import { endRound, formatHealth, healthPerTierFromExtraTierHealth, spawnRounds } from "../src/math/tiers";
 import { roundHalfEven } from "../src/math/dotnet";
+import { FOLLOWS, normalizeTierBosses, tierEntry, tierPercents } from "../src/math/tierBosses";
 
 const f = (values: number[]) => values.map(Math.fround);
 const show = (rounds: number[]) => rounds.join(", ");
@@ -83,5 +84,53 @@ describe("tiers", () => {
     expect(roundHalfEven(2.5)).toBe(2);
     expect(roundHalfEven(3.5)).toBe(4);
     expect(roundHalfEven(-2.5)).toBe(-2);
+  });
+});
+
+describe("rounding like .NET", () => {
+  // .NET rounds the shortest text of a double, so 1.45 (stored as 1.4499999…) still gives 1.5, like Phayze's tier 5
+  it.each([
+    [1_450_000, "1.5M"],
+    [1_440_000, "1.4M"],
+    [14_500, "15k"],
+    [9_950, "10k"],
+  ])("formatHealth(%d) = %s", (health, shown) => expect(formatHealth(health)).toBe(shown));
+});
+
+// The same cases as UnitTests/TierBossMathTests.cs
+describe("tier bosses", () => {
+  it.each([
+    ["Lych,,RandomElite,VortexElite", "Lych,,RandomElite,VortexElite"],
+    [" lych , VORTEXelite ", "Lych,VortexElite"],
+    ["Lych,,,", "Lych"],
+    ["Nonsense,Lych", ",Lych"],
+    ["LychElite@120/80,Vortex@100/100", "LychElite@120/80,Vortex"],
+    [" lych @ 125 / 5000 ", "Lych@130/2000"],
+    ["Lych@0/x", "Lych@10/100"],
+    ["@150/100,,", "@150/100"],
+    ["Nonsense@200/200", "@200/200"],
+    ["Lych@99999999999/100", "Lych"],
+    ["LychElite@120/80#4", "LychElite@120/80#4"],
+    [" lych # 12 ", "Lych#10"],
+    ["Lych#-3", "Lych#0"],
+    ["Vortex#25;50%;75;junk;50", "Vortex#75%;50%;25%"],
+    ["Vortex#33.5%", "Vortex#33.5%"],
+    ["Lych#junk,Lych#%", "Lych,Lych"],
+    ["#5,,", "#5"],
+    ["Lych#4@150/100", "Lych"],
+  ])("normalizes %j to %j", (list, expected) => expect(normalizeTierBosses(list)).toBe(expected));
+
+  it("reads each tier's speed and health", () =>
+    expect(tierEntry("Lych,VortexElite@150/250", 2)).toEqual({ ...FOLLOWS, boss: "Vortex", elite: true, speed: 150, health: 250 }));
+
+  it("reads each tier's skulls", () => {
+    const even = tierEntry("Lych,Vortex#4", 2);
+    expect(even).toEqual({ ...FOLLOWS, boss: "Vortex", skulls: "EvenlySpaced", skullCount: 4 });
+    expect(tierPercents(even)).toEqual(f([0.8, 0.6, 0.4, 0.2]));
+    const custom = tierEntry("Vortex@200/100#60%;30%", 1);
+    expect(custom).toEqual({ ...FOLLOWS, boss: "Vortex", speed: 200, skulls: "Custom", customSkulls: "60, 30" });
+    expect(tierPercents(custom)).toEqual(f([0.6, 0.3]));
+    expect(tierPercents(tierEntry("Lych", 1))).toBeNull();
+    expect(tierPercents(tierEntry("Lych#0", 1))).toEqual([]);
   });
 });

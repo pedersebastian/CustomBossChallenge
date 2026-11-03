@@ -87,12 +87,13 @@ internal static class ChallengeEditor_Randomize
         if (!BossMode.Active || __instance.dcm == null) return;
 
         __instance.ApplyUiSettingsToDCM();
-        BossMode.Options = BossRandomizer.Randomize(__instance.dcm, BossEditorSection.UnsupportedModes);
+        // Random keeps the mode: Advanced gets a boss per tier, Standard one boss
+        BossMode.Options = BossRandomizer.Randomize(__instance.dcm, BossEditorSection.UnsupportedModes, BossMode.Options.Mixed);
 
         // A random setup is no longer the example it may have started from
         if (ExampleSetups.Named(__instance.dcm.name) != null)
         {
-            __instance.dcm.name = BossMode.DefaultName(BossMode.Options.Boss, BossMode.Options.Elite);
+            __instance.dcm.name = BossMode.DefaultName(BossMode.Options);
             if (__instance.chalName != null) __instance.chalName.text = __instance.dcm.name;
         }
 
@@ -114,6 +115,7 @@ internal static class ChallengeEditor_Clear
         // The vanilla reset doesn't know about the boss values in the model. Like a new setup: the first boss,
         // Bloonarius, with its default challenge name.
         BossEditorSection.ResetBossValues(__instance);
+        BossEditorSection.Current?.ForgetAdvanced();
         __instance.dcm.name = BossMode.DefaultName(BossMode.Options.Boss);
         if (__instance.chalName != null) __instance.chalName.text = __instance.dcm.name;
         BossEditorSection.Current?.Load(__instance.dcm, BossMode.Options);
@@ -193,7 +195,7 @@ internal static class MapSelectPanel_Open
     {
         if (!BossMode.Active || __instance.GetComponentInParent<ChallengeEditor>() == null) return;
 
-        bossType = BossMode.Options.Boss;
+        bossType = BossMode.Options.BossOf(1).Boss;
         showBossVisuals = true;
     }
 }

@@ -1,3 +1,4 @@
+using System.Linq;
 using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Persistence;
@@ -24,8 +25,23 @@ public static class BossGameLauncher
         data.selectedMap = dcm.map;
         data.selectedMode = dcm.mode;
         data.selectedDifficulty = dcm.difficulty;
-        data.SetupBossChallenge("", options.Boss, options.Elite, false, dcm, LeaderboardScoringType.GameTime);
+        // With a different boss per tier the game starts as the first tier's boss; MixedBosses switches it per tier
+        var (boss, elite) = options.BossOf(1);
+        data.SetupBossChallenge("", boss, elite, false, dcm, LeaderboardScoringType.GameTime);
         return data;
+    }
+
+    /// <summary>
+    /// The options a new game is played with: Random tiers get their boss here, once, so a restart, a retry and
+    /// continuing the game later all have the same bosses
+    /// </summary>
+    public static BossOptions Resolve(BossOptions options)
+    {
+        if (!options.Mixed) return options;
+        var resolved = options.ResolveRandom(new System.Random());
+        ModHelper.Msg<CustomBossChallenge>(
+            $"Bosses per tier: {string.Join(", ", Enumerable.Range(1, resolved.Tiers).Select(resolved.BossId))}");
+        return resolved;
     }
 
     /// <summary>
@@ -34,7 +50,7 @@ public static class BossGameLauncher
     public static void Launch(DailyChallengeModel editorDcm, BossOptions options)
     {
         BossMode.Exit();
-        BuildInGameData(editorDcm, options);
+        BuildInGameData(editorDcm, Resolve(options));
         UI.instance.LoadGame(null, null, null, false, false);
     }
 

@@ -47,6 +47,17 @@ public static class BossCreatorKeys
             return;
         }
 
+        // The boss picker has the keyboard while it is open, except while its skull list is being typed in
+        if (TierBossPicker.Current is { } picker)
+        {
+            if (FocusedField() != null) fieldFocusedFrame = Time.frameCount;
+            var key = ReadKeys();
+            var typing = Time.frameCount - fieldFocusedFrame <= 1;
+            if (key.Key != ShortcutKey.Other && !key.Ctrl && !typing) picker.Handle(key.Key, key.Shift);
+            FocusFrame.Fit();
+            return;
+        }
+
         // The mouse takes over from the keyboard
         if (Input.GetMouseButtonDown(0)) ClearFocus();
 
@@ -173,6 +184,14 @@ public static class BossCreatorKeys
     /// </summary>
     public static bool EscapeEndsFocus()
     {
+        if (TierBossPicker.Current is { } picker && EscapePressed())
+        {
+            // Esc while typing the skull list only ends the edit
+            if (FocusedField() is { } field) field.DeactivateInputField();
+            else if (Time.frameCount - fieldFocusedFrame > 1) picker.Hide();
+            return true;
+        }
+
         if (!EscapePressed() || FocusedField() == null && Time.frameCount - fieldFocusedFrame > 1 && Current == null)
         {
             return false;
@@ -187,6 +206,15 @@ public static class BossCreatorKeys
         Current = stop;
         if (stop == null) FocusFrame.Hide();
         else FocusFrame.Show(stop.Target());
+    }
+
+    /// <summary>
+    /// Gives the keyboard frame to the section's control with this name
+    /// </summary>
+    public static void FocusOn(BossEditorSection section, string name)
+    {
+        var stop = section.FocusStops.FirstOrDefault(stop => stop.Name == name);
+        if (stop != null) Show(stop);
     }
 
     public static void ClearFocus()
@@ -218,6 +246,7 @@ public static class BossCreatorKeys
     }
 
     private static bool BlockingUiOpen(BossEditorSection section) =>
+        TierBossPicker.Current != null ||
         PopupScreen.instance != null && PopupScreen.instance.GetFirstActivePopup() != null ||
         ChallengeEditor_OverrideClose.OpenPanel(section.Editor);
 

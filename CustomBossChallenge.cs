@@ -37,6 +37,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         Menus.MainMenuButton.UpdatePosition();
         Menus.BossCreatorKeys.Update();
         Visuals.TierLookApplier.Update();
+        Visuals.BossHud.Update();
     }
 
     public override void OnNewGameModel(GameModel result)
@@ -67,8 +68,9 @@ public class CustomBossChallenge : BloonsTD6Mod
         // challenge, assume the highest Boss Health.
         var bossHealth = InGameData.CurrentGame?.dcModel?.bloonModifiers?.healthMultipliers?.boss ?? ChallengeLimits.MaxBossHealth;
         var scaled = TierScaling.Apply(result, options, bossHealth);
-        var skulls = SkullModifier.Apply(result, options.SkullPercents);
+        var skulls = options.Mixed ? SkullModifier.ApplyTiers(result, options) : SkullModifier.Apply(result, options.SkullPercents);
         result.bossSpawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
+        Patches.MixedBosses.SetType(result, options, 1);
         var bossData = InGameData.CurrentGame?.bossData;
         if (bossData != null) bossData.spawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
 

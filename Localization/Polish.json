@@ -101,5 +101,15 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun Dreadbloona",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Wszystkie pięć poziomów do rundy 40: nowy Dreadbloon co pięć rund od rundy 20.",
   "CustomBossChallenge-ExampleParagonBan": "Zakaz paragonów",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Elitarny Blastapopoulos na Infernal, Trudny, i ani jednego paragona."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Elitarny Blastapopoulos na Infernal, Trudny, i ani jednego paragona.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Maraton bossów",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Siedem poziomów, siedmiu bossów: każdy boss z gry, jeden po drugim.",
+  "CustomBossChallenge-DifferentBosses": "Tryb zaawansowany",
+  "CustomBossChallenge-DifferentBossesInfo": "Wybierz kartę Zaawansowany, aby samemu wybrać bossa każdego poziomu, na przykład Bloonarius na poziomie 1 i Lych na poziomie 2. Każdy poziom zaczyna z typem bossa, który jest w tym czasie ukryty. Kliknij poziom w podglądzie poziomów poniżej, aby wybrać jego bossa, elitarnego lub nie, albo Losowy, by dostać niespodziankę losowaną na starcie gry.",
+  "CustomBossChallenge-TierBossTitle": "Boss poziomu {0}",
+  "CustomBossChallenge-RandomBoss": "Losowy",
+  "CustomBossChallenge-BossLineup": "Bossowie",
+  "CustomBossChallenge-TierArrives": "Poziom {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Standardowy",
+  "CustomBossChallenge-ModeAdvanced": "Zaawansowany"
 }

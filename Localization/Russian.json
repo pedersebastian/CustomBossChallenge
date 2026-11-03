@@ -101,5 +101,15 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Спидран Дредблуна",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Все пять уровней к 40-му раунду: новый Дредблун каждые пять раундов начиная с 20-го.",
   "CustomBossChallenge-ExampleParagonBan": "Запрет парагонов",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Элитный Бластапопулос на карте Infernal, сложность Hard, и ни одного парагона."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Элитный Бластапопулос на карте Infernal, сложность Hard, и ни одного парагона.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Парад боссов",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Семь уровней, семь боссов: все боссы игры, один за другим.",
+  "CustomBossChallenge-DifferentBosses": "Расширенный режим",
+  "CustomBossChallenge-DifferentBossesInfo": "Выберите вкладку «Расширенный», чтобы самому выбрать босса каждого уровня, например Bloonarius на уровне 1 и Lych на уровне 2. Каждый уровень начинается с типа босса, который в это время скрыт. Нажмите на уровень в обзоре уровней ниже, чтобы выбрать его босса, элитного или нет, или Случайный — сюрприз, который выбирается в начале игры.",
+  "CustomBossChallenge-TierBossTitle": "Босс уровня {0}",
+  "CustomBossChallenge-RandomBoss": "Случайный",
+  "CustomBossChallenge-BossLineup": "Боссы",
+  "CustomBossChallenge-TierArrives": "Уровень {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Обычный",
+  "CustomBossChallenge-ModeAdvanced": "Расширенный"
 }

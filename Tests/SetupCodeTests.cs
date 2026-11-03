@@ -92,9 +92,9 @@ public class SetupCodeTest : CustomBossTest
         Assert(SetupCode.TryDecode(SetupCode.Pack(SetupCode.Contents(code)), out var asVersion1, out _, out _),
             "The same contents must also read as version 1");
         AssertEquals(asVersion1, options, "Options read as version 1");
-        Assert(!SetupCode.TryDecode("CBC3:" + code[SetupCode.PrefixLength..], out _, out _, out var version3),
-            "A version 3 code must not decode");
-        AssertEquals(version3, CodeProblem.TooNew, "Problem of a version 3 code");
+        Assert(!SetupCode.TryDecode("CBC4:" + code[SetupCode.PrefixLength..], out _, out _, out var version4),
+            "A version 4 code must not decode");
+        AssertEquals(version4, CodeProblem.TooNew, "Problem of a version 4 code");
 
         // Codes from before 2.3 had Extra Tier Health; it becomes Health per Tier
         Assert(SetupCode.TryDecode(SetupCode.Pack("{\"o\":{\"Tiers\":7,\"ExtraTierHealth\":225},\"c\":{}}"), out var old, out _, out _),
@@ -111,11 +111,12 @@ public class SetupCodeTest : CustomBossTest
             .Select(match => match.Value).ToList();
         Assert(examples.Any(example => example.StartsWith(SetupCode.Prefix)), "The README must show a version 1 code");
         Assert(examples.Any(example => example.StartsWith(SetupCode.Version2Prefix)), "The README must show a version 2 code");
+        Assert(examples.Any(example => example.StartsWith(SetupCode.Version3Prefix)), "The README must show a version 3 code");
         foreach (var example in examples)
         {
             Assert(SetupCode.TryDecode(example, out var readmeOptions, out _, out var readmeProblem),
                 $"README code {Shorten(example)} doesn't load: {readmeProblem}");
-            AssertEquals(example.StartsWith(SetupCode.Version2Prefix), SetupCode.NeedsVersion2(readmeOptions),
+            AssertEquals(example[..SetupCode.PrefixLength], SetupCode.PrefixFor(readmeOptions),
                 $"README code {Shorten(example)} must be the version its options need");
         }
         Log($"{examples.Count} README codes load");

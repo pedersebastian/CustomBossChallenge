@@ -101,5 +101,15 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "恐怖气球速通",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "第 40 回合前打完全部五个阶段：从第 20 回合起每五回合出现一个新的恐怖气球。",
   "CustomBossChallenge-ExampleParagonBan": "禁用模范",
-  "CustomBossChallenge-ExampleParagonBanInfo": "在 Infernal 地图、困难难度下的精英布拉斯塔波普勒斯，不允许任何模范。"
+  "CustomBossChallenge-ExampleParagonBanInfo": "在 Infernal 地图、困难难度下的精英布拉斯塔波普勒斯，不允许任何模范。",
+  "CustomBossChallenge-ExampleBossGauntlet": "Boss车轮战",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "七个阶段，七个Boss：游戏中的每个Boss依次登场。",
+  "CustomBossChallenge-DifferentBosses": "高级模式",
+  "CustomBossChallenge-DifferentBossesInfo": "选择“高级”标签后可以自己选择每个阶段的Boss，例如第 1 阶段是 Bloonarius，第 2 阶段是 Lych。每个阶段一开始都是Boss类型，此时Boss类型会被隐藏。在下方的阶段预览中点击一个阶段来选择它的Boss、是否精英，或选择随机，在游戏开始时揭晓。",
+  "CustomBossChallenge-TierBossTitle": "第 {0} 级的Boss",
+  "CustomBossChallenge-RandomBoss": "随机",
+  "CustomBossChallenge-BossLineup": "Boss",
+  "CustomBossChallenge-TierArrives": "第 {0} 阶段：{1}",
+  "CustomBossChallenge-ModeStandard": "标准",
+  "CustomBossChallenge-ModeAdvanced": "高级"
 }

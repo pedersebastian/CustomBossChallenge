@@ -49,11 +49,13 @@ let ``Encoding a code's setup again gives the same code`` () =
     |> check
 
 [<Fact>]
-let ``Codes use version 2 exactly when they need it, and only characters chats leave alone`` () =
+let ``Codes use version 2 and 3 exactly when they need it, and only characters chats leave alone`` () =
     Prop.forAll setups (fun setup ->
         let code = encode setup
+        let mixed = not (isNull setup.Options["TierBosses"])
         let perTier = setup.Options.Value<int>("SpeedPerTier") <> 0 || setup.Options.Value<int>("HealthPerTier") <> 0
-        (code.StartsWith(CodeFormat.Version2Prefix) = perTier |@ "version")
+        (code.StartsWith(CodeFormat.Version3Prefix) = mixed |@ "version 3")
+        .&. (code.StartsWith(CodeFormat.Version2Prefix) = (perTier && not mixed) |@ "version 2")
         .&. (code.Length <= CodeFormat.MaxLength |@ "too long to be read")
         .&. (code[CodeFormat.PrefixLength ..] |> Seq.forall (fun c -> System.Char.IsAsciiLetterOrDigit c || c = '-' || c = '_')
              |@ code))
@@ -64,7 +66,7 @@ let ``Broken codes are refused without throwing`` () =
     Prop.forAll (Arb.fromGen junk) (fun code ->
         let loaded, payload, problem, _ = CodeFormat.TryUnpack(code)
         let trimmed = code.Trim()
-        let known = trimmed.StartsWith(CodeFormat.Prefix) || trimmed.StartsWith(CodeFormat.Version2Prefix)
+        let known = CodeFormat.KnownPrefixes |> Array.exists trimmed.StartsWith
         let tooNew = not known && trimmed.Length > 4 && trimmed.StartsWith("CBC") && System.Char.IsDigit trimmed[3]
         if loaded then
             // A damaged code can still be a readable one; then it is a JSON object, like every code

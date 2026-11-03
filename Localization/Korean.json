@@ -101,5 +101,15 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "드레드블룬 스피드런",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "40라운드까지 다섯 단계 모두: 20라운드부터 다섯 라운드마다 새 드레드블룬.",
   "CustomBossChallenge-ExampleParagonBan": "패러곤 금지",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Infernal 맵, Hard 난이도의 엘리트 블라스타포풀로스, 패러곤은 하나도 허용되지 않습니다."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Infernal 맵, Hard 난이도의 엘리트 블라스타포풀로스, 패러곤은 하나도 허용되지 않습니다.",
+  "CustomBossChallenge-ExampleBossGauntlet": "보스 연전",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "7단계, 7명의 보스: 게임의 모든 보스가 차례로 등장합니다.",
+  "CustomBossChallenge-DifferentBosses": "고급 모드",
+  "CustomBossChallenge-DifferentBossesInfo": "고급 탭을 고르면 각 단계의 보스를 직접 고를 수 있습니다. 예: 1단계는 Bloonarius, 2단계는 Lych. 모든 단계는 보스 종류로 시작하며, 그동안 보스 종류는 숨겨집니다. 아래 단계 미리보기에서 단계를 클릭해 보스와 엘리트 여부를 고르거나, 게임이 시작될 때 정해지는 무작위를 고르세요.",
+  "CustomBossChallenge-TierBossTitle": "{0}단계 보스",
+  "CustomBossChallenge-RandomBoss": "무작위",
+  "CustomBossChallenge-BossLineup": "보스",
+  "CustomBossChallenge-TierArrives": "{0}단계: {1}",
+  "CustomBossChallenge-ModeStandard": "기본",
+  "CustomBossChallenge-ModeAdvanced": "고급"
 }

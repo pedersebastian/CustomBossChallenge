@@ -6,7 +6,8 @@ using Il2CppAssets.Scripts.Models.Bloons;
 namespace CustomBossChallenge.Config;
 
 /// <summary>
-/// Gives every boss tier its speed and health from Speed per tier and Health per tier.
+/// Gives every boss tier its speed and health from Speed per tier and Health per tier, and in Advanced Mode from the
+/// tier's own speed and health.
 /// <br/>
 /// The game has already applied the challenge's own multipliers to the match's tier models when the mod sees them,
 /// and a restart reuses those models. So the values a model had before it was first scaled are remembered per match,
@@ -35,11 +36,12 @@ public static class TierScaling
     /// </summary>
     public static void Scale(BloonModel model, Values source, BossOptions options, int tier, double bossHealth = 1)
     {
-        var speed = (float) TierMath.SpeedFactor(tier, options.SpeedPerTier);
+        var speed = (float) (TierMath.SpeedFactor(tier, options.SpeedPerTier) * options.TierSpeedFactor(tier));
         model.speed = source.Speed * speed;
         model.speedFrames = source.SpeedFrames * speed;
         model.maxHealth = TierMath.ScaleHealth(source.MaxHealth,
-            TierMath.ExtraTierFactor(tier) * TierMath.HealthFactor(tier, options.HealthPerTier), bossHealth);
+            TierMath.ExtraTierFactor(tier) * TierMath.HealthFactor(tier, options.HealthPerTier) * options.TierHealthFactor(tier),
+            bossHealth);
     }
 
     /// <summary>
@@ -58,7 +60,7 @@ public static class TierScaling
         for (var tier = TierMath.MinTiers; tier <= TierMath.ClampTiers(options.Tiers); tier++)
         {
             var id = options.BossId(tier);
-            var sourceId = options.BossId(Math.Min(tier, TierMath.VanillaTiers));
+            var sourceId = options.SourceId(tier);
             if (!match.DoesBloonExist(id) || !match.DoesBloonExist(sourceId)) continue;
 
             Scale(match.GetBloon(id), Original(match, sourceId), options, tier, bossHealth);

@@ -446,6 +446,26 @@ input:focus-visible {
   font-size: 0.85rem;
 }
 
+/* In Advanced Mode: how many skulls the tier's boss has */
+.tier-skulls {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.tier[tabindex]:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* In Advanced Mode: the tier's own boss, shrunk so Blastapopoulos fits a narrow card */
+.tier-boss {
+  font-size: 0.72rem;
+  max-width: 100%;
+  hyphens: manual;
+  text-align: center;
+  line-height: 1.1;
+}
+
 /*
  * Tiers above 5 and the boss badge of a setup with more than 5 tiers, like in the game: an aura around and a glow over
  * them in the tier's colour, both pulsing. The colours and strengths come from preview/tierLook.ts. Only opacity is

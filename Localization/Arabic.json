@@ -101,5 +101,15 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "سباق Dreadbloon السريع",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "المستويات الخمسة كلها بحلول الجولة 40: Dreadbloon جديد كل خمس جولات بدءًا من الجولة 20.",
   "CustomBossChallenge-ExampleParagonBan": "حظر البراغون",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos النخبة على خريطة Infernal بصعوبة Hard، ولا يُسمح بأي براغون."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos النخبة على خريطة Infernal بصعوبة Hard، ولا يُسمح بأي براغون.",
+  "CustomBossChallenge-ExampleBossGauntlet": "تحدي الزعماء",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "سبعة مستويات وسبعة زعماء: كل زعيم في اللعبة، واحدًا تلو الآخر.",
+  "CustomBossChallenge-DifferentBosses": "الوضع المتقدم",
+  "CustomBossChallenge-DifferentBossesInfo": "اختر تبويب «متقدم» لتختار زعيم كل مستوى بنفسك، مثل Bloonarius في المستوى 1 وLych في المستوى 2. يبدأ كل مستوى بنوع الزعيم، الذي يُخفى في هذه الأثناء. انقر على مستوى في معاينة المستويات أدناه لتختار زعيمه، Elite أو لا، أو عشوائي لمفاجأة تُختار عند بدء اللعبة.",
+  "CustomBossChallenge-TierBossTitle": "زعيم المستوى {0}",
+  "CustomBossChallenge-RandomBoss": "عشوائي",
+  "CustomBossChallenge-BossLineup": "الزعماء",
+  "CustomBossChallenge-TierArrives": "المستوى {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "عادي",
+  "CustomBossChallenge-ModeAdvanced": "متقدم"
 }

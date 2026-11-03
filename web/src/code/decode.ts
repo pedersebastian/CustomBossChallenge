@@ -8,6 +8,8 @@ import { OptionTypeError, defaultName, defaultOptions, optionsJson, readOptions,
 
 export const PREFIX = "CBC1:";
 export const VERSION2_PREFIX = "CBC2:";
+export const VERSION3_PREFIX = "CBC3:";
+const KNOWN_PREFIXES = [PREFIX, VERSION2_PREFIX, VERSION3_PREFIX];
 const PREFIX_LENGTH = 5;
 const ITEMS_KEY = "$items";
 
@@ -132,11 +134,11 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
   const trimmed = extractCode(code);
   if (trimmed === "") return fail("Invalid", "The code is empty.");
   if (trimmed.length > GAME.limits.maxCodeLength) return fail("Invalid", "The code is too long.");
-  if (!trimmed.startsWith(PREFIX) && !trimmed.startsWith(VERSION2_PREFIX)) {
+  if (!KNOWN_PREFIXES.some((prefix) => trimmed.startsWith(prefix))) {
     if (trimmed.startsWith("CBC") && trimmed.length > 4 && /\d/.test(trimmed[3])) {
       return fail("TooNew", "This code comes from a newer version of Custom Boss Challenge.");
     }
-    return fail("Invalid", "This isn't a Boss Creator code. Codes start with CBC1: or CBC2:.");
+    return fail("Invalid", "This isn't a Boss Creator code. Codes start with CBC1:, CBC2: or CBC3:.");
   }
 
   try {

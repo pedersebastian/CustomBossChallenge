@@ -101,5 +101,15 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun-Dreadbloon",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Alle fünf Stufen bis Runde 40: ab Runde 20 alle fünf Runden ein neuer Dreadbloon.",
   "CustomBossChallenge-ExampleParagonBan": "Paragon-Verbot",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Elite-Blastapopoulos auf Infernal, Schwer, und kein einziger Paragon erlaubt."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Elite-Blastapopoulos auf Infernal, Schwer, und kein einziger Paragon erlaubt.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Boss-Spießrutenlauf",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Sieben Stufen, sieben Bosse: jeder Boss des Spiels, einer nach dem anderen.",
+  "CustomBossChallenge-DifferentBosses": "Erweiterter Modus",
+  "CustomBossChallenge-DifferentBossesInfo": "Wähle den Reiter Erweitert, um den Boss jeder Stufe selbst zu wählen, zum Beispiel Bloonarius auf Stufe 1 und Lych auf Stufe 2. Jede Stufe beginnt mit dem Boss-Typ, der so lange ausgeblendet ist. Klicke unten in der Stufenvorschau auf eine Stufe, um ihren Boss zu wählen, Elite oder nicht, oder Zufällig für eine Überraschung, die beim Spielstart gezogen wird.",
+  "CustomBossChallenge-TierBossTitle": "Boss für Stufe {0}",
+  "CustomBossChallenge-RandomBoss": "Zufällig",
+  "CustomBossChallenge-BossLineup": "Bosse",
+  "CustomBossChallenge-TierArrives": "Stufe {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Standard",
+  "CustomBossChallenge-ModeAdvanced": "Erweitert"
 }

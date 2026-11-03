@@ -101,5 +101,15 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "恐怖氣球速通",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "第 40 回合前打完全部五個階段：從第 20 回合起每五回合出現一個新的恐怖氣球。",
   "CustomBossChallenge-ExampleParagonBan": "禁用典範",
-  "CustomBossChallenge-ExampleParagonBanInfo": "在 Infernal 地圖、困難難度下的菁英布拉斯塔波普勒斯，不允許任何典範。"
+  "CustomBossChallenge-ExampleParagonBanInfo": "在 Infernal 地圖、困難難度下的菁英布拉斯塔波普勒斯，不允許任何典範。",
+  "CustomBossChallenge-ExampleBossGauntlet": "Boss車輪戰",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "七個階段，七個Boss：遊戲中的每個Boss依序登場。",
+  "CustomBossChallenge-DifferentBosses": "進階模式",
+  "CustomBossChallenge-DifferentBossesInfo": "選擇「進階」分頁後可以自己選擇每個階段的Boss，例如第 1 階段是 Bloonarius，第 2 階段是 Lych。每個階段一開始都是Boss類型，此時Boss類型會被隱藏。在下方的階段預覽中點擊一個階段來選擇它的Boss、是否精英，或選擇隨機，在遊戲開始時揭曉。",
+  "CustomBossChallenge-TierBossTitle": "第 {0} 級的Boss",
+  "CustomBossChallenge-RandomBoss": "隨機",
+  "CustomBossChallenge-BossLineup": "Boss",
+  "CustomBossChallenge-TierArrives": "第 {0} 階段：{1}",
+  "CustomBossChallenge-ModeStandard": "標準",
+  "CustomBossChallenge-ModeAdvanced": "進階"
 }

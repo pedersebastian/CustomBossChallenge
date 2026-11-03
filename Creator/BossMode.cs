@@ -160,16 +160,27 @@ public static class BossMode
         elite ? $"Custom Elite {boss}" : $"Custom {boss}";
 
     /// <summary>
+    /// The name a setup with a different boss per tier gets
+    /// </summary>
+    public const string MixedName = "Custom Boss Gauntlet";
+
+    /// <summary>
+    /// The challenge name a new setup with these options gets
+    /// </summary>
+    public static string DefaultName(BossOptions options) =>
+        options.Mixed ? MixedName : DefaultName(options.Boss, options.Elite);
+
+    /// <summary>
     /// Whether a challenge still has a name the Boss Creator gave it, rather than one the player chose
     /// </summary>
     public static bool IsDefaultName(string? name) =>
-        System.Enum.GetValues<Il2CppAssets.Scripts.Data.Boss.BossType>()
+        name == MixedName || System.Enum.GetValues<Il2CppAssets.Scripts.Data.Boss.BossType>()
             .Any(boss => name == DefaultName(boss) || name == DefaultName(boss, true));
 
     public static DailyChallengeModel DefaultDcm(BossOptions options)
     {
         var dcm = DailyChallengeModel.CreateDefaultEditorModel();
-        dcm.name = DefaultName(options.Boss, options.Elite);
+        dcm.name = DefaultName(options);
         return dcm;
     }
 }

@@ -101,5 +101,15 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "สปีดรัน Dreadbloon",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "ครบทั้งห้าระดับภายในรอบ 40: Dreadbloon ตัวใหม่ทุกห้ารอบตั้งแต่รอบ 20",
   "CustomBossChallenge-ExampleParagonBan": "ห้ามพาราก้อน",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos บนแผนที่ Infernal ระดับ Hard และห้ามใช้พาราก้อนแม้แต่ตัวเดียว"
+  "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos บนแผนที่ Infernal ระดับ Hard และห้ามใช้พาราก้อนแม้แต่ตัวเดียว",
+  "CustomBossChallenge-ExampleBossGauntlet": "ด่านบอสต่อเนื่อง",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "เจ็ดระดับ เจ็ดบอส: บอสทุกตัวในเกม มาทีละตัว",
+  "CustomBossChallenge-DifferentBosses": "โหมดขั้นสูง",
+  "CustomBossChallenge-DifferentBossesInfo": "เลือกแท็บขั้นสูงเพื่อเลือกบอสของแต่ละระดับเอง เช่น Bloonarius ระดับ 1 และ Lych ระดับ 2 ทุกระดับเริ่มด้วยชนิดบอส ซึ่งจะถูกซ่อนไว้ระหว่างนี้ คลิกระดับในตัวอย่างระดับด้านล่างเพื่อเลือกบอส จะเป็น Elite หรือไม่ก็ได้ หรือเลือกสุ่มเพื่อเซอร์ไพรส์ที่จะสุ่มตอนเริ่มเกม",
+  "CustomBossChallenge-TierBossTitle": "บอสระดับ {0}",
+  "CustomBossChallenge-RandomBoss": "สุ่ม",
+  "CustomBossChallenge-BossLineup": "บอส",
+  "CustomBossChallenge-TierArrives": "ระดับ {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "มาตรฐาน",
+  "CustomBossChallenge-ModeAdvanced": "ขั้นสูง"
 }

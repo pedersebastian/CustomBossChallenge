@@ -101,5 +101,15 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun-Dreadbloon",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Alle fem nivåene innen runde 40: en ny Dreadbloon hver femte runde fra runde 20.",
   "CustomBossChallenge-ExampleParagonBan": "Paragonforbud",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos på Infernal, Hard, og ikke en eneste paragon tillatt."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Elite Blastapopoulos på Infernal, Hard, og ikke en eneste paragon tillatt.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Bossløpet",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Sju nivåer, sju bosser: alle bossene i spillet, den ene etter den andre.",
+  "CustomBossChallenge-DifferentBosses": "Avansert modus",
+  "CustomBossChallenge-DifferentBossesInfo": "Velg fanen Avansert for å velge bossen på hvert nivå selv, for eksempel Bloonarius på nivå 1 og Lych på nivå 2. Hvert nivå starter med bosstypen, som er skjult så lenge. Klikk på et nivå i nivåoversikten nedenfor for å velge bossen, Elite eller ikke, eller Tilfeldig for en overraskelse som trekkes når spillet starter.",
+  "CustomBossChallenge-TierBossTitle": "Boss for nivå {0}",
+  "CustomBossChallenge-RandomBoss": "Tilfeldig",
+  "CustomBossChallenge-BossLineup": "Bosser",
+  "CustomBossChallenge-TierArrives": "Nivå {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Standard",
+  "CustomBossChallenge-ModeAdvanced": "Avansert"
 }

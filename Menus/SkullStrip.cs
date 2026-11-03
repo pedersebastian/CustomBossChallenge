@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
 using CustomBossChallenge.Config;
+using Il2CppAssets.Scripts.Models;
 using Il2CppAssets.Scripts.Unity;
 using Il2CppTMPro;
 using UnityEngine;
@@ -14,7 +14,8 @@ namespace CustomBossChallenge.Menus;
 /// <summary>
 /// A health bar like the boss's own, full on the left and empty on the right, with a skull at every health percentage
 /// where the boss uses its special ability. Shows the skulls the chosen skull settings give, or the boss's own skulls
-/// for Vanilla.
+/// for Vanilla. When the boss's own skulls differ between its tiers, the bar shows tier 1's, named in its corner. In
+/// Advanced Mode every tier has its own skulls, and the tier's boss picker shows them on a bar of its own.
 /// </summary>
 public sealed class SkullStrip
 {
@@ -123,11 +124,12 @@ public sealed class SkullStrip
     }
 
     /// <summary>
-    /// Shows the skulls <paramref name="options"/> gives the boss
+    /// Shows the skulls <paramref name="options"/> gives the boss, in Advanced Mode those of <paramref name="shownTier"/>
     /// </summary>
-    public void Show(BossOptions options)
+    public void Show(BossOptions options, int shownTier = 1)
     {
-        var (percents, tier) = Skulls(options);
+        var (shown, tier) = Skulls(options, shownTier);
+        var percents = shown ?? Array.Empty<float>();
         var lastUpper = float.NegativeInfinity;
         for (var i = 0; i < Markers.Count; i++)
         {
@@ -145,19 +147,22 @@ public sealed class SkullStrip
             marker.Percent.RectTransform.anchoredPosition = new Vector2(0, upper ? TextY : LowerTextY);
         }
 
-        EditorRows.SetText(Empty.Text, percents.Length == 0 ? Texts.NoSkulls.T() : "");
-        Tier.SetText(tier is { } shown ? $"T{shown}" : "");
+        // A Random tier's skulls are those of the boss it gets when the game starts
+        EditorRows.SetText(Empty.Text, shown == null ? "?" : percents.Length == 0 ? Texts.NoSkulls.T() : "");
+        Tier.SetText(tier is { } named ? $"T{named}" : "");
     }
 
     /// <summary>
     /// The skull percentages (0-1, from full health down) the preview shows, and the tier they belong to when the
-    /// boss's own skulls differ between its tiers
+    /// boss's own skulls differ between its tiers. In Advanced Mode those are <paramref name="shownTier"/>'s, which the
+    /// picker names itself; null for a Random tier that keeps its boss's own.
     /// </summary>
-    public static (float[] Percents, int? Tier) Skulls(BossOptions options)
+    public static (float[]? Percents, int? Tier) Skulls(BossOptions options, int shownTier = 1)
     {
-        if (options.SkullPercents is { } percents) return (percents, null);
-
         var game = Game.instance?.model;
+        if (options.Mixed) return (TierSkulls(options, Math.Clamp(shownTier, 1, TierMath.ClampTiers(options.Tiers)), game), null);
+
+        if (options.SkullPercents is { } percents) return (percents, null);
         if (game == null) return (Array.Empty<float>(), null);
 
         var tiers = Enumerable.Range(1, Math.Min(TierMath.ClampTiers(options.Tiers), TierMath.VanillaTiers))
@@ -173,8 +178,22 @@ public sealed class SkullStrip
     }
 
     /// <summary>
+    /// The skulls (0-1, from full health down) a tier's boss gets, or null for a Random tier that keeps its boss's own
+    /// or a boss without a model
+    /// </summary>
+    public static float[]? TierSkulls(BossOptions options, int tier, GameModel? game)
+    {
+        if (options.TierSkullPercents(tier) is { } percents) return percents;
+        if (game == null || options.EntryOf(tier).IsRandom) return null;
+
+        // Tiers after 5 are copies of tier 5, so they have its skulls
+        var id = options.SourceId(tier);
+        if (!game.DoesBloonExist(id)) return null;
+        return (SkullModifier.GetSkulls(game.GetBloon(id)) ?? Array.Empty<float>()).OrderByDescending(p => p).ToArray();
+    }
+
+    /// <summary>
     /// A skull's health percentage, e.g. 0.3333 -> "33.33%"
     /// </summary>
-    public static string Format(float percent) =>
-        Math.Round(percent * 100.0, 2).ToString("0.##", CultureInfo.InvariantCulture) + "%";
+    public static string Format(float percent) => SkullMath.FormatPercent(percent);
 }

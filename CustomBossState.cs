@@ -109,6 +109,11 @@ public static class CustomBossState
     private static int? resumeTiers;
 
     /// <summary>
+    /// Whether a retry or a continued game is loading a snapshot, until its first round starts
+    /// </summary>
+    public static bool Resuming => resumeTiers != null;
+
+    /// <summary>
     /// Called right before a retry or a continued game loads a snapshot, with the tiers that were defeated when it
     /// was taken
     /// </summary>

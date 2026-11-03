@@ -101,5 +101,15 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun de Dreadbloon",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Los cinco niveles antes de la ronda 40: un Dreadbloon nuevo cada cinco rondas desde la ronda 20.",
   "CustomBossChallenge-ExampleParagonBan": "Paragones prohibidos",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos Élite en Infernal, Difícil, y ni un solo paragón permitido."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Blastapopoulos Élite en Infernal, Difícil, y ni un solo paragón permitido.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Desfile de jefes",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Siete niveles, siete jefes: todos los jefes del juego, uno tras otro.",
+  "CustomBossChallenge-DifferentBosses": "Modo avanzado",
+  "CustomBossChallenge-DifferentBossesInfo": "Elige la pestaña Avanzado para elegir tú mismo el jefe de cada nivel, por ejemplo Bloonarius en el nivel 1 y Lych en el nivel 2. Cada nivel empieza con el tipo de jefe, que mientras tanto queda oculto. Haz clic en un nivel de la vista previa de niveles de abajo para elegir su jefe, Élite o no, o Aleatorio para una sorpresa que se elige al empezar la partida.",
+  "CustomBossChallenge-TierBossTitle": "Jefe del nivel {0}",
+  "CustomBossChallenge-RandomBoss": "Aleatorio",
+  "CustomBossChallenge-BossLineup": "Jefes",
+  "CustomBossChallenge-TierArrives": "Nivel {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Estándar",
+  "CustomBossChallenge-ModeAdvanced": "Avanzado"
 }

@@ -4,6 +4,10 @@ import { clamp, float, formatDecimals, roundHalfEven } from "./dotnet";
 
 export const MAX_SKULLS = 10;
 
+/** The skulls a new setup has for Evenly Spaced and Custom */
+export const DEFAULT_COUNT = 3;
+export const DEFAULT_CUSTOM = "75, 50, 25";
+
 /** Evenly spaced thresholds, e.g. 3 -> [0.75, 0.5, 0.25]; 0 skulls gives an empty list */
 export function evenlySpaced(count: number): number[] {
   count = clamp(count, 0, MAX_SKULLS);

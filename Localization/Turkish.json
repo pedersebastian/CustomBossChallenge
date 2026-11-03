@@ -101,5 +101,15 @@
   "CustomBossChallenge-ExampleSpeedrunDreadbloon": "Speedrun Dreadbloon",
   "CustomBossChallenge-ExampleSpeedrunDreadbloonInfo": "Beş kademenin hepsi 40. tura kadar: 20. turdan itibaren her beş turda yeni bir Dreadbloon.",
   "CustomBossChallenge-ExampleParagonBan": "Paragon Yasağı",
-  "CustomBossChallenge-ExampleParagonBanInfo": "Infernal haritasında, Zor zorlukta Elit Blastapopoulos ve tek bir paragona bile izin yok."
+  "CustomBossChallenge-ExampleParagonBanInfo": "Infernal haritasında, Zor zorlukta Elit Blastapopoulos ve tek bir paragona bile izin yok.",
+  "CustomBossChallenge-ExampleBossGauntlet": "Boss Maratonu",
+  "CustomBossChallenge-ExampleBossGauntletInfo": "Yedi kademe, yedi boss: oyundaki her boss, birbiri ardına.",
+  "CustomBossChallenge-DifferentBosses": "Gelişmiş Mod",
+  "CustomBossChallenge-DifferentBossesInfo": "Her kademenin bossunu kendiniz seçmek için Gelişmiş sekmesini seçin, örneğin kademe 1'de Bloonarius ve kademe 2'de Lych. Her kademe Boss Türü ile başlar ve bu sırada Boss Türü gizlenir. Bossunu seçmek için aşağıdaki Kademe Önizlemesi'nde bir kademeye tıklayın; Elite olsun ya da olmasın, ya da oyun başlarken seçilen bir sürpriz için Rastgele.",
+  "CustomBossChallenge-TierBossTitle": "Kademe {0} bossu",
+  "CustomBossChallenge-RandomBoss": "Rastgele",
+  "CustomBossChallenge-BossLineup": "Bosslar",
+  "CustomBossChallenge-TierArrives": "Kademe {0}: {1}",
+  "CustomBossChallenge-ModeStandard": "Standart",
+  "CustomBossChallenge-ModeAdvanced": "Gelişmiş"
 }

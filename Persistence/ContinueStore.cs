@@ -66,7 +66,15 @@ public sealed record ContinueLoad(ContinueProblem Problem, ContinueGame? Game = 
 /// </summary>
 public sealed class ContinueStore
 {
-    public const int Version = 1;
+    /// <summary>
+    /// The newest file version this reads. Games with a different boss per tier are written as version 2, so older
+    /// versions of the mod, which would play them with one boss, leave them alone; other games stay version 1.
+    /// </summary>
+    public const int Version = 2;
+
+    public const int SingleBossVersion = 1;
+
+    public static int VersionFor(BossOptions options) => options.Mixed ? Version : SingleBossVersion;
 
     public static readonly ContinueStore Default =
         new(Path.Combine(MelonEnvironment.UserDataDirectory, "CustomBossChallenge", "Continue.json"));
@@ -105,7 +113,7 @@ public sealed class ContinueStore
     {
         var file = new ContinueFile
         {
-            Version = Version, Options = options, Challenge = DcmJson.Serialize(dcm),
+            Version = VersionFor(options), Options = options, Challenge = DcmJson.Serialize(dcm),
             Snapshots = snapshots.OrderBy(snapshot => snapshot.Round).ToList()
         };
         SafeFile.WriteAllText(FilePath, JsonConvert.SerializeObject(file, JsonSettings));
@@ -134,9 +142,9 @@ public sealed class ContinueStore
                 toldTooNew = true;
                 return new ContinueLoad(ContinueProblem.TooNew);
             }
-            if (file == null || file.Version != Version)
+            if (file == null || file.Version < SingleBossVersion)
             {
-                throw new InvalidDataException($"Version {file?.Version}, expected {Version}");
+                throw new InvalidDataException($"Version {file?.Version}, expected {SingleBossVersion}-{Version}");
             }
             if (file.Options == null || string.IsNullOrEmpty(file.Challenge))
             {

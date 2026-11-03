@@ -40,6 +40,7 @@ internal static class BossBloonManager_Init
 
         // A restart makes a new simulation but reuses the game model, so this is where every match starts
         if (CustomBossState.IsActive) CustomBossState.OnMatchStart();
+        MixedBosses.Sync(__instance);
     }
 }
 
@@ -47,14 +48,32 @@ internal static class BossBloonManager_Init
 internal static class BossBloonManager_MatchReady
 {
     [HarmonyPostfix]
-    internal static void Postfix(BossBloonManager __instance) => BossTierPatches.EnsureBossTimes(__instance);
+    internal static void Postfix(BossBloonManager __instance)
+    {
+        BossTierPatches.EnsureBossTimes(__instance);
+        MixedBosses.Sync(__instance);
+    }
+}
+
+[HarmonyPatch(typeof(BossBloonManager), nameof(BossBloonManager.SetSaveMetaData))]
+internal static class BossBloonManager_SetSaveMetaData
+{
+    [HarmonyPostfix]
+    internal static void Postfix(BossBloonManager __instance) => MixedBosses.Sync(__instance);
 }
 
 [HarmonyPatch(typeof(BossBloonManager), nameof(BossBloonManager.SpawnBoss))]
 internal static class BossBloonManager_SpawnBoss
 {
     [HarmonyPrefix]
-    internal static void Prefix(BossBloonManager __instance) => BossTierPatches.EnsureBossTimes(__instance);
+    internal static void Prefix(BossBloonManager __instance, int tier)
+    {
+        BossTierPatches.EnsureBossTimes(__instance);
+        MixedBosses.BeforeSpawn(__instance, tier);
+    }
+
+    [HarmonyPostfix]
+    internal static void Postfix(BossBloonManager __instance, int tier) => MixedBosses.AfterSpawn(__instance, tier);
 }
 
 /// <summary>
@@ -88,8 +107,11 @@ internal static class BossVictoryPatches
 internal static class BossBloonManager_BloonDestroyed
 {
     [HarmonyPostfix]
-    internal static void Postfix(BossBloonManager __instance, Il2CppSystem.Object obj) =>
+    internal static void Postfix(BossBloonManager __instance, Il2CppSystem.Object obj)
+    {
         BossVictoryPatches.TrackDefeat(__instance, obj);
+        MixedBosses.Sync(__instance);
+    }
 }
 
 [HarmonyPatch(typeof(BossBloonManager), nameof(BossBloonManager.Process))]
