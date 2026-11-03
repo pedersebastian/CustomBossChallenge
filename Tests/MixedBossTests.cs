@@ -109,11 +109,12 @@ public class MixedBossGameTest : CustomBossTest
 
     protected override IEnumerator Run()
     {
-        // The strong test tower can't damage Dreadbloon, so it isn't in the line-up. Some tiers have skulls of their own.
+        // The strong test tower can't damage Dreadbloon, so it isn't in the line-up. Some tiers have speed, health and
+        // skulls of their own.
         var options = new BossOptions
         {
             Tiers = 6, HealthPerTier = 10, SpawnRounds = "40,43,46,49,52,55",
-            TierBosses = "Lych#2,,Diamondback#60%;30%,VortexElite,Phayze,Blastapopoulos#0"
+            TierBosses = "Lych#2,@150/80,Diamondback@60/150#60%;30%,VortexElite,Phayze@200/100,Blastapopoulos#0"
         };
         var dcm = BaseDcm();
         dcm.startRules.round = 39;
@@ -139,6 +140,8 @@ public class MixedBossGameTest : CustomBossTest
         InGame.instance.bridge.SetFastForward(true);
 
         var highestTier = 0;
+        var skulls = Array.Empty<float>();
+        var passed = 0;
         var start = Time.realtimeSinceStartup;
         while (!InGame.instance.bridge.Simulation.gameWon)
         {
@@ -147,6 +150,7 @@ public class MixedBossGameTest : CustomBossTest
 
             if (manager.CurrentBossTier > highestTier && manager.CurrentBoss != null)
             {
+                if (highestTier > 0) AssertEquals(passed, skulls.Length, $"Tier {highestTier} used every one of its skulls");
                 highestTier = manager.CurrentBossTier;
                 var (boss, elite) = options.BossOf(highestTier);
                 AssertEquals(manager.CurrentBoss.bloonModel.id, options.BossId(highestTier), "Spawned boss");
@@ -155,13 +159,37 @@ public class MixedBossGameTest : CustomBossTest
                 AssertEquals(InGameData.CurrentGame.bossData.bossBloon, boss, $"Boss data during tier {highestTier}");
                 Log($"tier {highestTier}: {manager.CurrentBoss.bloonModel.id}");
                 CheckHud(options, highestTier, boss, elite);
+
+                // The boss that spawned has the tier's own health and speed (AssertScaledTiers checked the models);
+                // Phayze speeds itself up, so a boss may be faster but never slower
+                var model = gameModel.GetBloon(options.BossId(highestTier));
+                var spawned = manager.CurrentBoss.bloonModel;
+                AssertEquals(spawned.maxHealth, model.maxHealth, $"Tier {highestTier}'s health");
+                Assert(spawned.speed >= model.speed * 0.999f, $"Tier {highestTier} moves at {spawned.speed}, its tier {model.speed}");
+                skulls = SkullModifier.GetSkulls(model)!.OrderByDescending(p => p).ToArray();
+                passed = 0;
+            }
+
+            // The boss uses each skull right where the tier puts it: the game holds its health there for the skull
+            // effect. Several skulls can go at once when a hit takes more than the gap between them.
+            var current = manager.CurrentBoss;
+            var skull = current == null ? 0 : InGame.instance.bridge.GetCurrentBossSkull();
+            if (current != null && skull > passed)
+            {
+                var health = current.health / (double) current.bloonModel.maxHealth;
+                Log($"tier {highestTier}: skull {skull} of {skulls.Length} at {health:P2} health");
+                Assert(skull <= skulls.Length, $"Tier {highestTier} used skull {skull}, but has only {skulls.Length}");
+                Assert(skull - passed > 1 ? health <= skulls[skull - 1] + 0.005 : Math.Abs(health - skulls[skull - 1]) < 0.01,
+                    $"Tier {highestTier} used skull {skull} at {health:P2} health, it is at {skulls[skull - 1]:P2}");
+                passed = skull;
             }
 
             if (!InGame.instance.bridge.AreRoundsActive()) InGame.instance.bridge.StartRound();
-            yield return new WaitForSecondsRealtime(0.25f);
+            yield return null;
         }
 
         AssertEquals(highestTier, options.Tiers, "Victory must come with the last chosen tier");
+        AssertEquals(passed, skulls.Length, $"Tier {highestTier} used every one of its skulls");
         yield return ToMainMenu();
         AssertEquals(Visuals.BossHud.Lineup, null, "The line-up is gone outside the game");
     }
