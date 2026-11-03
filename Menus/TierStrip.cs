@@ -226,6 +226,7 @@ public sealed class TierStrip
             var entry = options.EntryOf(i + 1);
             var (boss, elite) = options.BossOf(i + 1);
             card.Portrait.Image.SetSprite(entry.IsRandom ? VanillaSprites.RandomIcon : BossEditorSection.Portrait(boss, elite));
+            BossEditorSection.ShowEliteGlow(card.Portrait, entry.IsRandom && entry.Elite);
             card.Button.interactable = options.Mixed;
             card.Edit.gameObject.SetActive(options.Mixed);
             card.Skulls.gameObject.SetActive(options.Mixed);

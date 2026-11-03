@@ -1364,6 +1364,45 @@ public sealed class BossEditorSection
 
     private static string PerTier(float value) => Texts.PerTier.T(value > 0 ? $"+{value:0}" : $"{value:0}");
 
+    /// <summary>
+    /// Behind a Random tier's die when the tier is Elite, since the die has no Elite look of its own like the bosses'
+    /// portraits have
+    /// </summary>
+    public const string EliteGlowName = "EliteGlow";
+
+    private static readonly Color EliteGlowColor = new(1f, 0.32f, 0.08f, 0.9f);
+    private const float EliteGlowSize = 1.3f;
+
+    /// <summary>
+    /// Shows or hides the Elite glow behind <paramref name="icon"/>. The glow is the icon's sibling just before it, so
+    /// it is drawn behind it, and follows the icon's place and size.
+    /// </summary>
+    public static void ShowEliteGlow(Component icon, bool on)
+    {
+        var parent = icon.transform.parent;
+        var name = $"{EliteGlowName}{icon.name}";
+        var glow = parent.Find(name);
+        if (glow == null)
+        {
+            if (!on) return;
+            var image = ModHelperImage.Create(new Info(name), VanillaSprites.GlowSkillCircle);
+            image.Image.color = EliteGlowColor;
+            image.Image.raycastTarget = false;
+            image.transform.SetParent(parent, false);
+            glow = image.transform;
+        }
+
+        var source = icon.GetComponent<RectTransform>();
+        var rect = glow.GetComponent<RectTransform>();
+        rect.anchorMin = source.anchorMin;
+        rect.anchorMax = source.anchorMax;
+        rect.pivot = source.pivot;
+        rect.anchoredPosition = source.anchoredPosition;
+        rect.sizeDelta = source.sizeDelta * EliteGlowSize;
+        glow.SetSiblingIndex(Math.Max(icon.transform.GetSiblingIndex() - (glow.GetSiblingIndex() < icon.transform.GetSiblingIndex() ? 1 : 0), 0));
+        glow.gameObject.SetActive(on);
+    }
+
     public static string Portrait(BossType boss, bool elite) => (boss, elite) switch
     {
         (BossType.Bloonarius, false) => VanillaSprites.BloonariusPortrait,

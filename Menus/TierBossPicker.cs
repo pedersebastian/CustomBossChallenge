@@ -310,6 +310,7 @@ public sealed class TierBossPicker
                 ? VanillaSprites.RandomIcon
                 : BossEditorSection.Portrait(Enum.Parse<BossType>(choice), shown.Elite));
             button.transform.Find(BossEditorSection.SelectedMarker)?.gameObject.SetActive(choice == shown.Boss);
+            if (choice == TierBossMath.Random) BossEditorSection.ShowEliteGlow(button, shown.Elite);
         }
 
         refreshing = true;

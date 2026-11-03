@@ -155,6 +155,10 @@ public class ScreenshotTour : CustomBossTest
             yield return new WaitForSecondsRealtime(1);
             yield return Capture(folder, "tier-boss-picker");
             TierBossPicker.Current?.Hide();
+            BossEditorSection.Current!.OpenPicker(3);
+            yield return new WaitForSecondsRealtime(1);
+            yield return Capture(folder, "tier-boss-picker-random-elite");
+            TierBossPicker.Current?.Hide();
             BossMode.Options = BossMode.Options with {TierBosses = null};
             BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
 

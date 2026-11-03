@@ -147,6 +147,20 @@ public class MixedBossCreatorTest : CustomBossTest
         AssertEquals(section.Strip.Cards[1].SkullCount.Text.text, "7", "Elite Bloonarius has 7 skulls");
         AssertEquals(section.Strip.Cards[3].SkullCount.Text.text, "?", "A Random tier's skulls aren't known yet");
         Assert(section.Strip.Cards[0].Skulls.gameObject.activeInHierarchy, "The skull count shows in Advanced");
+
+        // A Random die glows behind it when the tier is Elite, on the card and in the picker
+        GameObject? Glow(Component icon) => icon.transform.parent.Find(BossEditorSection.EliteGlowName + icon.name)?.gameObject;
+        var randomCard = section.Strip.Cards[3].Portrait;
+        Assert(Glow(randomCard) is not {activeSelf: true}, "A Random tier that isn't Elite has no glow");
+        section.SetTierBoss(4, new TierBoss(TierBossMath.Random, true));
+        Assert(Glow(randomCard) is {activeSelf: true}, "An Elite Random tier's die glows");
+        Assert(Glow(randomCard)!.transform.GetSiblingIndex() < randomCard.transform.GetSiblingIndex(), "The glow is behind the die");
+        var picker4 = section.OpenPicker(4)!;
+        var die = picker4.Choices[TierBossMath.Random];
+        Assert(Glow(die) is {activeSelf: true}, "The picker's die glows for an Elite tier");
+        picker4.Elite.Toggle.isOn = false;
+        Assert(Glow(die) is not {activeSelf: true} && Glow(randomCard) is not {activeSelf: true}, "Elite off takes the glow away");
+        picker4.Hide();
         Assert(!section.Skulls.Row.activeInHierarchy && !section.SkullMode.gameObject.activeInHierarchy,
             "Advanced hides the Skulls rows and the Skull Preview");
         var picker2 = section.OpenPicker(2)!;
