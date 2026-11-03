@@ -81,6 +81,11 @@ public sealed class BossEditorSection
     public ModHelperDropdown SkullMode { get; private set; } = null!;
     public ModHelperInputField CustomSkulls { get; private set; } = null!;
     public SkullStrip Skulls { get; private set; } = null!;
+
+    /// <summary>
+    /// The tier whose skulls the Skull Preview shows in Advanced Mode: the card last pointed at or focused
+    /// </summary>
+    public int SkullTier { get; private set; } = 1;
     public ModHelperInputField SpawnRounds { get; private set; } = null!;
     public ModHelperDropdown SavedList { get; private set; } = null!;
     public ModHelperButton SaveSetup { get; private set; } = null!;
@@ -1018,6 +1023,7 @@ public sealed class BossEditorSection
         if (!on) lastTierBosses = options.TierBosses == StartingTierBosses(options) ? null : options.TierBosses;
         BossHistory.RecordChange(Editor, null);
         BossMode.Options = options with {TierBosses = on ? lastTierBosses ?? StartingTierBosses(options) : null};
+        SkullTier = 1;
         FollowBossName(BossMode.Options);
         Mode.Show(on);
         ShowBoss();
@@ -1029,6 +1035,29 @@ public sealed class BossEditorSection
     /// </summary>
     private static string StartingTierBosses(BossOptions options) =>
         TierBossMath.Resolve(null, options.Boss.ToString(), options.Elite, TierMath.MaxTiers, _ => 0);
+
+    /// <summary>
+    /// In Advanced Mode, the Skull Preview follows the tier card under the mouse or with the keyboard frame
+    /// </summary>
+    public void FollowPointedTier()
+    {
+        if (!BossMode.Options.Mixed) return;
+        var focused = BossCreatorKeys.Current?.Name is { } name && name.StartsWith(TierStrip.CardName) &&
+                      int.TryParse(name[TierStrip.CardName.Length..], out var number)
+            ? number
+            : (int?) null;
+        if ((Strip.PointedTier() ?? focused) is { } tier) ShowSkullsOf(tier);
+    }
+
+    /// <summary>
+    /// Shows a tier's skulls in the Skull Preview
+    /// </summary>
+    public void ShowSkullsOf(int tier)
+    {
+        if (tier == SkullTier) return;
+        SkullTier = tier;
+        Skulls.Show(BossMode.Options, tier);
+    }
 
     public static string TierStopName(int tier) => $"{TierStrip.CardName}{tier}";
 
@@ -1174,7 +1203,7 @@ public sealed class BossEditorSection
     private void ShowStrip()
     {
         // The boss's own skulls follow the boss and Elite
-        Skulls.Show(BossMode.Options);
+        Skulls.Show(BossMode.Options, SkullTier);
         if (Strip.Show(BossMode.Options, Editor.dcm) && !refreshing) Relayout();
     }
 
@@ -1207,7 +1236,7 @@ public sealed class BossEditorSection
         customSkullsRow.SetActive(options.SkullMode == Config.SkullMode.Custom);
         ShowSpawnRounds();
         Strip.Show(options, Editor.dcm);
-        Skulls.Show(options);
+        Skulls.Show(options, SkullTier);
 
         // Rows are as high as the slider rows they copy, except the tier strip and the skull bar
         var visible = Enumerable.Range(0, rows.childCount).Select(rows.GetChild).Where(row => row.gameObject.activeSelf).ToList();

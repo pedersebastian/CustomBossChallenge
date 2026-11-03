@@ -235,9 +235,10 @@ public class WebDataTest : CustomBossTest
                     ["speed"] = Math.Round(card.Speed, 6),
                     ["healthFactor"] = Math.Round(card.HealthFactor, 6),
                     ["health"] = card.Shown,
-                    ["capped"] = card.Capped
+                    ["capped"] = card.Capped,
+                    ["skulls"] = card.Skulls
                 })),
-                ["skulls"] = new JArray(SkullStrip.Skulls(options).Percents.Select(SkullStrip.Format).Cast<object>()),
+                ["skulls"] = new JArray((SkullStrip.Skulls(options).Percents ?? Array.Empty<float>()).Select(SkullStrip.Format).Cast<object>()),
                 ["playProblem"] = BossEditorSection.PlayProblem(dcm!, options) is null ? null : "yes"
             });
         }

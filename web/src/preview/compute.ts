@@ -2,7 +2,7 @@
 
 import { GAME } from "../data/types";
 import type { Challenge } from "../code/decode";
-import { bossOf, effectiveSpawnRounds, entryOf, skullPercents, type BossOptions } from "../code/options";
+import { bossOf, effectiveSpawnRounds, entryOf, isMixed, skullPercents, type BossOptions } from "../code/options";
 import { float } from "../math/dotnet";
 import { clampTiers, extraTierFactor, formatHealth, healthFactor, maxModelHealth, speedFactor, VANILLA_TIERS } from "../math/tiers";
 
@@ -21,6 +21,8 @@ export interface TierCard {
   healthValue: number | null;
   /** Held to the most health the game can take */
   capped: boolean;
+  /** How many skulls the tier's boss has, or null for a Random tier or a boss the website doesn't know */
+  skulls: number | null;
 }
 
 export function tierCards(options: BossOptions, challenge: Challenge): TierCard[] {
@@ -51,17 +53,23 @@ export function tierCards(options: BossOptions, challenge: Challenge): TierCard[
       health: healthValue === null ? "?" : formatHealth(healthValue),
       healthValue,
       capped,
+      skulls: tierSkulls(options, tier)?.length ?? null,
     };
   });
 }
 
 /**
  * The skull thresholds (0-1, from full health down) the boss gets, and the tier they belong to when the boss's own
- * skulls differ between its tiers
+ * skulls differ between its tiers. With a boss per tier those are `shownTier`'s, null for a Random tier.
  */
-export function skulls(options: BossOptions): { percents: number[]; tier: number | null } {
+export function skulls(options: BossOptions, shownTier = 1): { percents: number[] | null; tier: number | null } {
   const custom = skullPercents(options);
   if (custom) return { percents: custom, tier: null };
+
+  if (isMixed(options)) {
+    const tier = Math.min(Math.max(shownTier, 1), clampTiers(options.Tiers));
+    return { percents: tierSkulls(options, tier), tier };
+  }
 
   const tiers = Array.from({ length: Math.min(clampTiers(options.Tiers), VANILLA_TIERS) }, (_, i) => modelOf(options, i + 1, i + 1))
     .filter((model) => model !== undefined)
@@ -71,6 +79,17 @@ export function skulls(options: BossOptions): { percents: number[]; tier: number
   const first = tiers[0];
   const same = tiers.every((other) => other.length === first.length && other.every((value, i) => value === first[i]));
   return { percents: first, tier: same ? null : 1 };
+}
+
+/** The skulls a tier's boss gets, like SkullStrip.TierSkulls: null for a Random tier or a boss the website doesn't know */
+export function tierSkulls(options: BossOptions, tier: number): number[] | null {
+  const custom = skullPercents(options);
+  if (custom) return custom;
+  if (entryOf(options, tier).boss === "Random") return null;
+
+  // Tiers after 5 are copies of tier 5, so they have its skulls
+  const model = modelOf(options, Math.min(tier, VANILLA_TIERS), tier);
+  return model ? model.skulls.map(float).sort((a, b) => b - a) : null;
 }
 
 /** The game's model of tier `modelTier` (1-5) of the boss `tier` has, like BossOptions.SourceId */

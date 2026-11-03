@@ -100,6 +100,11 @@ picked when the game starts (and stays the same through restarts, retries and Co
 arrows step a card's boss, Enter opens the picker and Delete puts the tier back to the boss it started with.
 Going back to **Standard** brings the Boss Type back and keeps your choices, so **Advanced** brings them back too.
 
+Each boss has its own number of skulls, and Elite often more: Bloonarius has 3 and Elite Bloonarius 7. With the
+boss's own skulls (**Vanilla**) every tier keeps its boss's skulls, so each card shows how many it has, and the
+**Skull Preview** shows the tier you point at or move the keyboard frame to (its corner says which). **Evenly
+Spaced** and **Custom** give every tier the same skulls. A Random tier shows **?** until the game starts.
+
 ![Advanced Mode in the Tier Preview](docs/tier-bosses.jpg)
 
 ![Picking a tier's boss](docs/tier-boss-picker.jpg)

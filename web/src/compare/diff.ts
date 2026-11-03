@@ -5,8 +5,8 @@ import type { Challenge } from "../code/decode";
 import { effectiveSpawnRounds, isMixed, tierBossName, type BossOptions } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
-import { endRound } from "../math/tiers";
-import { skulls, tierCards, type TierCard } from "../preview/compute";
+import { clampTiers, endRound } from "../math/tiers";
+import { skulls, tierCards, tierSkulls, type TierCard } from "../preview/compute";
 
 export interface Setup {
   options: BossOptions;
@@ -34,8 +34,13 @@ const towerLimit = (value: number | undefined): string =>
   value === undefined ? "Default" : value === 0 ? "Not allowed" : value < 0 ? "No limit" : `Max ${value}`;
 
 function skullText(options: BossOptions): string {
-  const { percents } = skulls(options);
   const mode = options.SkullMode === "Vanilla" ? "Boss's own" : options.SkullMode === "EvenlySpaced" ? "Evenly spaced" : "Custom";
+  // With a boss per tier, each tier's boss has its own number of skulls
+  if (isMixed(options) && options.SkullMode === "Vanilla") {
+    const counts = Array.from({ length: clampTiers(options.Tiers) }, (_, i) => tierSkulls(options, i + 1)?.length ?? "?");
+    return `${mode}, per tier: ${counts.join(", ")}`;
+  }
+  const percents = skulls(options).percents ?? [];
   return `${mode}: ${percents.length === 0 ? "none" : percents.map(formatPercent).join(", ")}`;
 }
 

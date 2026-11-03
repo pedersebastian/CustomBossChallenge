@@ -137,6 +137,27 @@ public class MixedBossCreatorTest : CustomBossTest
         BossCreatorKeys.EscapePressed = () => false;
         AssertEquals(TierBossPicker.Current, null, "Esc closes the picker");
 
+        // Each card shows its boss's skulls, and the Skull Preview shows the tier pointed at or focused
+        section.SetTierBoss(1, new TierBoss(nameof(BossType.Bloonarius), false));
+        section.SetTierBoss(2, new TierBoss(nameof(BossType.Bloonarius), true));
+        section.SetTierBoss(4, new TierBoss(TierBossMath.Random, false));
+        yield return null;
+        AssertEquals(section.Strip.Cards[0].SkullCount.Text.text, "3", "Bloonarius has 3 skulls");
+        AssertEquals(section.Strip.Cards[1].SkullCount.Text.text, "7", "Elite Bloonarius has 7 skulls");
+        AssertEquals(section.Strip.Cards[3].SkullCount.Text.text, "?", "A Random tier's skulls aren't known yet");
+        Assert(section.Strip.Cards[0].Skulls.gameObject.activeInHierarchy, "The skull count shows in Advanced");
+        section.ShowSkullsOf(1);
+        AssertEquals(section.Skulls.Markers.Count(m => m.Panel.gameObject.activeSelf), 3, "The Skull Preview of tier 1");
+        AssertEquals(section.Skulls.Tier.Text.text, "T1", "The Skull Preview names its tier");
+        BossCreatorKeys.FocusOn(section, BossEditorSection.TierStopName(2));
+        section.FollowPointedTier();
+        AssertEquals(section.SkullTier, 2, "The Skull Preview follows the focused card");
+        AssertEquals(section.Skulls.Markers.Count(m => m.Panel.gameObject.activeSelf), 7, "The Skull Preview of tier 2");
+        AssertEquals(section.Skulls.Tier.Text.text, "T2", "The Skull Preview names tier 2");
+        section.ShowSkullsOf(4);
+        AssertEquals(section.Skulls.Empty.Text.text, "?", "A Random tier's Skull Preview");
+        BossCreatorKeys.ClearFocus();
+
         // Random keeps the mode: Advanced gets new bosses per tier and stays Advanced
         var randomBefore = BossMode.Options.TierBosses;
         section.Editor.randomBtn.onClick.Invoke();

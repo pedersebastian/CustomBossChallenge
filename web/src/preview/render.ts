@@ -60,7 +60,22 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
   root.append(renderTiers(options, challenge));
   if (compact) return root;
 
-  root.append(renderSkulls(options), renderRules(options, challenge, rounds));
+  // With a boss per tier the bosses' own skulls differ between tiers, so the skulls follow the card pointed at or
+  // focused, like the Boss Creator's Skull Preview
+  let skullBlock = renderSkulls(options);
+  root.append(skullBlock, renderRules(options, challenge, rounds));
+  if (isMixed(options)) {
+    root.querySelectorAll<HTMLElement>(".tier").forEach((card, i) => {
+      const show = (): void => {
+        const next = renderSkulls(options, i + 1);
+        skullBlock.querySelectorAll(".skull-bar").forEach((bar) => skullBars.unobserve(bar));
+        skullBlock.replaceWith(next);
+        skullBlock = next;
+      };
+      card.addEventListener("mouseenter", show);
+      card.addEventListener("focus", show);
+    });
+  }
   return root;
 }
 
@@ -95,16 +110,25 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
     strip.append(
       h(
         "div",
-        { class: glow ? "tier tier-look" : "tier", style: glow ? tierGlowStyle(glow) : undefined, role: "listitem" },
+        {
+          class: glow ? "tier tier-look" : "tier",
+          style: glow ? tierGlowStyle(glow) : undefined,
+          role: "listitem",
+          tabindex: boss ? "0" : undefined,
+        },
         spoken(
           `Tier ${card.tier}${boss ? `, ${boss}` : ""}, round ${card.round}, speed ${speed}, ${SPOKEN[speedTone][0]}, ` +
-            `health ${card.health}, ${SPOKEN[healthTone][1]}`,
+            `health ${card.health}, ${SPOKEN[healthTone][1]}` +
+            (boss ? `, ${card.skulls === null ? "skulls unknown" : `${card.skulls} skulls`}` : ""),
         ),
         h("span", { class: "tier-label", "aria-hidden": "true" }, `T${card.tier}`),
         h("span", { class: "tier-round", "aria-hidden": "true" }, `R${card.round}`),
         boss ? h("span", { class: "tier-boss", title: "This tier's boss", "aria-hidden": "true" }, breakable(boss)) : null,
         h("span", { class: `tier-speed ${speedTone}`, title: "Speed compared with the normal game", "aria-hidden": "true" }, speed + ARROW[speedTone]),
         h("span", { class: `tier-health ${healthTone}`, title: "Health", "aria-hidden": "true" }, card.health + ARROW[healthTone]),
+        boss
+          ? h("span", { class: "tier-skulls", title: "Skulls of this tier's boss", "aria-hidden": "true" }, `☠${card.skulls ?? "?"}`)
+          : null,
       ),
     );
   }
@@ -123,8 +147,9 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
   return wrapper;
 }
 
-function renderSkulls(options: BossOptions): HTMLElement {
-  const { percents, tier } = skulls(options);
+function renderSkulls(options: BossOptions, shownTier = 1): HTMLElement {
+  const { percents: shown, tier } = skulls(options, shownTier);
+  const percents = shown ?? [];
   const bar = h(
     "div",
     { class: "skull-bar", role: "img", "aria-label": `Health bar with skulls at ${percents.map(formatPercent).join(", ")} of the boss's health` },
@@ -144,7 +169,11 @@ function renderSkulls(options: BossOptions): HTMLElement {
     "div",
     { class: "block" },
     h("h4", {}, `Skulls (${mode}${tier ? `, tier ${tier}` : ""})`),
-    percents.length === 0 ? h("p", { class: "muted" }, "No skulls: the boss never triggers its skull effect.") : bar,
+    shown === null
+      ? h("p", { class: "muted" }, "A Random tier gets the skulls of the boss it gets when the game starts.")
+      : percents.length === 0
+        ? h("p", { class: "muted" }, "No skulls: the boss never triggers its skull effect.")
+        : bar,
   );
 }
 

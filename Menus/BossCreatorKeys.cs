@@ -56,6 +56,8 @@ public static class BossCreatorKeys
             return;
         }
 
+        section.FollowPointedTier();
+
         // The mouse takes over from the keyboard
         if (Input.GetMouseButtonDown(0)) ClearFocus();
 

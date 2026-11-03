@@ -5,6 +5,7 @@ using System.Linq;
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
 using CustomBossChallenge.Config;
+using Il2CppAssets.Scripts.Models;
 using Il2CppAssets.Scripts.Unity;
 using Il2CppTMPro;
 using UnityEngine;
@@ -14,7 +15,8 @@ namespace CustomBossChallenge.Menus;
 /// <summary>
 /// A health bar like the boss's own, full on the left and empty on the right, with a skull at every health percentage
 /// where the boss uses its special ability. Shows the skulls the chosen skull settings give, or the boss's own skulls
-/// for Vanilla.
+/// for Vanilla. In Advanced Mode the bosses' own skulls differ from tier to tier (Elite Bloonarius has 7, Bloonarius 3),
+/// so the bar shows the tier last pointed at or focused in the Tier Preview, named in its corner.
 /// </summary>
 public sealed class SkullStrip
 {
@@ -123,11 +125,12 @@ public sealed class SkullStrip
     }
 
     /// <summary>
-    /// Shows the skulls <paramref name="options"/> gives the boss
+    /// Shows the skulls <paramref name="options"/> gives the boss, in Advanced Mode those of <paramref name="shownTier"/>
     /// </summary>
-    public void Show(BossOptions options)
+    public void Show(BossOptions options, int shownTier = 1)
     {
-        var (percents, tier) = Skulls(options);
+        var (shown, tier) = Skulls(options, shownTier);
+        var percents = shown ?? Array.Empty<float>();
         var lastUpper = float.NegativeInfinity;
         for (var i = 0; i < Markers.Count; i++)
         {
@@ -145,20 +148,28 @@ public sealed class SkullStrip
             marker.Percent.RectTransform.anchoredPosition = new Vector2(0, upper ? TextY : LowerTextY);
         }
 
-        EditorRows.SetText(Empty.Text, percents.Length == 0 ? Texts.NoSkulls.T() : "");
-        Tier.SetText(tier is { } shown ? $"T{shown}" : "");
+        // A Random tier's skulls are those of the boss it gets when the game starts
+        EditorRows.SetText(Empty.Text, shown == null ? "?" : percents.Length == 0 ? Texts.NoSkulls.T() : "");
+        Tier.SetText(tier is { } named ? $"T{named}" : "");
     }
 
     /// <summary>
     /// The skull percentages (0-1, from full health down) the preview shows, and the tier they belong to when the
-    /// boss's own skulls differ between its tiers
+    /// boss's own skulls differ between its tiers. In Advanced Mode those are <paramref name="shownTier"/>'s, null for
+    /// a Random tier.
     /// </summary>
-    public static (float[] Percents, int? Tier) Skulls(BossOptions options)
+    public static (float[]? Percents, int? Tier) Skulls(BossOptions options, int shownTier = 1)
     {
         if (options.SkullPercents is { } percents) return (percents, null);
 
         var game = Game.instance?.model;
         if (game == null) return (Array.Empty<float>(), null);
+
+        if (options.Mixed)
+        {
+            var tier = Math.Clamp(shownTier, 1, TierMath.ClampTiers(options.Tiers));
+            return (TierSkulls(options, tier, game), tier);
+        }
 
         var tiers = Enumerable.Range(1, Math.Min(TierMath.ClampTiers(options.Tiers), TierMath.VanillaTiers))
             .Select(tier => options.BossId(tier))
@@ -170,6 +181,20 @@ public sealed class SkullStrip
         var first = tiers[0].OrderByDescending(p => p).ToArray();
         var same = tiers.All(skulls => skulls.OrderByDescending(p => p).SequenceEqual(first));
         return (first, same ? null : 1);
+    }
+
+    /// <summary>
+    /// The skulls (0-1, from full health down) a tier's boss gets, or null for a Random tier or a boss without a model
+    /// </summary>
+    public static float[]? TierSkulls(BossOptions options, int tier, GameModel? game)
+    {
+        if (options.SkullPercents is { } percents) return percents;
+        if (game == null || options.EntryOf(tier).IsRandom) return null;
+
+        // Tiers after 5 are copies of tier 5, so they have its skulls
+        var id = options.SourceId(tier);
+        if (!game.DoesBloonExist(id)) return null;
+        return (SkullModifier.GetSkulls(game.GetBloon(id)) ?? Array.Empty<float>()).OrderByDescending(p => p).ToArray();
     }
 
     /// <summary>

@@ -36,10 +36,11 @@ describe("codes the mod reads", () => {
         healthFactor: round6(card.healthFactor),
         health: card.health,
         capped: card.capped,
+        skulls: card.skulls,
       }));
       expect(cards).toEqual(fixture.tiers);
 
-      expect(skulls(result.options).percents.map(formatPercent)).toEqual(fixture.skulls);
+      expect((skulls(result.options).percents ?? []).map(formatPercent)).toEqual(fixture.skulls);
       expect(playProblem(result.challenge, rounds) === null ? null : "yes").toBe(fixture.playProblem);
     });
   }

@@ -18,7 +18,8 @@ namespace CustomBossChallenge.Menus;
 /// have. Values above the normal game are orange with ▲, values below it blue with ▼, so the effect of every boss
 /// option shows at a glance, also to players who can't tell the colours apart (issue #18).
 /// <br/>
-/// In Advanced Mode, every card shows its tier's boss and is a button that opens the <see cref="TierBossPicker"/>.
+/// In Advanced Mode, every card shows its tier's boss and how many skulls it has, and is a button that opens the
+/// <see cref="TierBossPicker"/>.
 /// </summary>
 public sealed class TierStrip
 {
@@ -39,6 +40,7 @@ public sealed class TierStrip
     public static readonly Color Same = Color.white;
 
     public const string EditMarker = "Edit";
+    public const string SkullsMarker = "Skulls";
 
     /// <summary>
     /// After a value above or below the normal game, like the website's Tier Preview, so it doesn't rely on colour.
@@ -84,6 +86,30 @@ public sealed class TierStrip
         /// The small pencil in the corner that shows the card can be clicked
         /// </summary>
         public ModHelperImage Edit = null!;
+
+        /// <summary>
+        /// A skull with the number of skulls the tier's boss has under it, at the card's left; only in Advanced Mode,
+        /// where the bosses and so their skulls differ between tiers
+        /// </summary>
+        public ModHelperPanel Skulls = null!;
+        public ModHelperText SkullCount = null!;
+    }
+
+    /// <summary>
+    /// The card under the mouse, or null
+    /// </summary>
+    public int? PointedTier()
+    {
+        var canvas = Row.GetComponentInParent<Canvas>();
+        var camera = canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+        for (var i = 0; i < Cards.Count; i++)
+        {
+            var rect = Cards[i].Panel.RectTransform;
+            if (rect.gameObject.activeInHierarchy &&
+                RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition, camera)) return i + 1;
+        }
+
+        return null;
     }
 
     public TierStrip(GameObject row)
@@ -149,6 +175,14 @@ public sealed class TierStrip
             }, VanillaSprites.EditBtn);
             card.Edit.Image.raycastTarget = false;
 
+            card.Skulls = card.Panel.AddPanel(new Info(SkullsMarker, 6, -8, 56, 104)
+            {
+                Anchor = new Vector2(0, 0.5f), Pivot = new Vector2(0, 0.5f)
+            });
+            card.Skulls.AddImage(new Info("Icon", 0, 26, 50, 50), VanillaSprites.CrossboneSkull).Image.raycastTarget = false;
+            card.SkullCount = card.Skulls.AddText(new Info("Count", 0, -26, 56, 54), "", 44);
+            card.SkullCount.Text.raycastTarget = false;
+
             Cards.Add(card);
         }
 
@@ -211,6 +245,8 @@ public sealed class TierStrip
             card.Portrait.Image.SetSprite(entry.IsRandom ? VanillaSprites.RandomIcon : BossEditorSection.Portrait(boss, elite));
             card.Button.interactable = options.Mixed;
             card.Edit.gameObject.SetActive(options.Mixed);
+            card.Skulls.gameObject.SetActive(options.Mixed);
+            card.SkullCount.SetText(value.Skulls?.ToString(CultureInfo.InvariantCulture) ?? "?");
             card.Round.SetText($"R{value.Round}");
             Paint(card.Speed, $"×{value.Speed.ToString("0.##", CultureInfo.InvariantCulture)}", value.Speed);
             Paint(card.Health, value.Shown, value.HealthFactor);
@@ -224,9 +260,11 @@ public sealed class TierStrip
 
     /// <summary>
     /// What a tier's card shows: the round it arrives on, its speed and health compared with the normal game (above 1
-    /// is harder), and its health shortened like the game does, or "?" without the boss's model or for a Random tier
+    /// is harder), and its health shortened like the game does, or "?" without the boss's model or for a Random tier.
+    /// Also how many skulls it has, null for a Random tier.
     /// </summary>
-    public readonly record struct CardValues(int Tier, int Round, double Speed, double HealthFactor, string Shown, bool Capped);
+    public readonly record struct CardValues(int Tier, int Round, double Speed, double HealthFactor, string Shown, bool Capped,
+        int? Skulls);
 
     /// <summary>
     /// The cards for <paramref name="options"/> with the boss multipliers from <paramref name="dcm"/>. The website
@@ -254,7 +292,8 @@ public sealed class TierStrip
                 shown = FormatHealth(Math.Min(model, cap) * bossHealth);
             }
 
-            values.Add(new CardValues(tier, rounds[tier - 1], speed, health, shown, capped));
+            values.Add(new CardValues(tier, rounds[tier - 1], speed, health, shown, capped,
+                SkullStrip.TierSkulls(options, tier, game)?.Length));
         }
 
         return values;

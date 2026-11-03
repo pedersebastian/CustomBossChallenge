@@ -446,6 +446,17 @@ input:focus-visible {
   font-size: 0.85rem;
 }
 
+/* In Advanced Mode: how many skulls the tier's boss has */
+.tier-skulls {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.tier[tabindex]:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
 /* In Advanced Mode: the tier's own boss, shrunk so Blastapopoulos fits a narrow card */
 .tier-boss {
   font-size: 0.72rem;
