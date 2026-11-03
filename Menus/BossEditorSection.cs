@@ -1193,12 +1193,21 @@ public sealed class BossEditorSection
     {
         if (Editor.dcm == null) return;
         BossHistory.RecordSetup(Editor);
-        lastTierBosses = null;
-        standardValues = null;
+        ForgetAdvanced();
         ResetBossValues(Editor);
         Load(Editor.dcm, BossMode.Options);
         BossMode.Save();
         ModHelper.Msg<CustomBossChallenge>("Reset the boss options");
+    }
+
+    /// <summary>
+    /// Forgets the bosses per tier and the Boss Speed and Boss Health remembered for switching between Advanced and
+    /// Standard, so after a reset Advanced starts over from what Standard has
+    /// </summary>
+    public void ForgetAdvanced()
+    {
+        lastTierBosses = null;
+        standardValues = null;
     }
 
     /// <summary>

@@ -115,6 +115,7 @@ internal static class ChallengeEditor_Clear
         // The vanilla reset doesn't know about the boss values in the model. Like a new setup: the first boss,
         // Bloonarius, with its default challenge name.
         BossEditorSection.ResetBossValues(__instance);
+        BossEditorSection.Current?.ForgetAdvanced();
         __instance.dcm.name = BossMode.DefaultName(BossMode.Options.Boss);
         if (__instance.chalName != null) __instance.chalName.text = __instance.dcm.name;
         BossEditorSection.Current?.Load(__instance.dcm, BossMode.Options);

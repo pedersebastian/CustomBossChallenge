@@ -196,6 +196,20 @@ public class MixedBossCreatorTest : CustomBossTest
         section.SetAdvanced(false);
         AssertEquals(section.BossSpeed.Value, 150f, "Standard brings Boss Speed back");
         AssertEquals(section.Editor.dcm.bloonModifiers.healthMultipliers.boss, 3f, "Standard brings Boss Health back");
+
+        // The editor's own Reset forgets a changed lineup and the Standard values too, like Reset Boss Options
+        section.ResetAll();
+        section.SetAdvanced(true);
+        section.SetTierBoss(2, new TierBoss(nameof(BossType.Vortex), true, 200, 50));
+        section.SetAdvanced(false);
+        section.Editor.clearBtn.onClick.Invoke();
+        yield return new WaitForSecondsRealtime(1);
+        section.SetAdvanced(true);
+        Assert(TierBossMath.Parse(BossMode.Options.TierBosses).All(t => t == new TierBoss(nameof(BossType.Bloonarius), false)),
+            $"Advanced after the editor's Reset starts with Bloonarius at 100 % on every tier: {BossMode.Options.TierBosses}");
+        section.SetAdvanced(false);
+        AssertEquals(section.BossSpeed.Value, 100f, "Standard after the editor's Reset has Boss Speed at 100 %");
+
         section.ResetAll();
         section.SetAdvanced(true);
         BossMode.Options = standardBefore;
