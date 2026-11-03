@@ -141,6 +141,7 @@ public class BossRandomizerTest : CustomBossTest
         var unsupported = Menus.BossEditorSection.UnsupportedModes;
         var bosses = new System.Collections.Generic.HashSet<BossType>();
         int defaultSpeed = 0, defaultHealth = 0, elite = 0, defaultTiers = 0, limited = 0, nearNormal = 0, extreme = 0;
+        var tierCounts = new int[TierMath.MaxTiers + 1];
         try
         {
             for (var i = 0; i < Runs; i++)
@@ -178,6 +179,7 @@ public class BossRandomizerTest : CustomBossTest
                 if (Approximately(health, 1)) defaultHealth++;
                 if (options.Elite) elite++;
                 if (options.Tiers == TierMath.VanillaTiers) defaultTiers++;
+                tierCounts[options.Tiers]++;
                 if (dcm.maxParagons != ParagonMath.NoLimit) limited++;
             }
         }
@@ -187,7 +189,7 @@ public class BossRandomizerTest : CustomBossTest
         }
 
         Log($"default speed {defaultSpeed}, default health {defaultHealth}, elite {elite}, 5 tiers {defaultTiers}, " +
-            $"paragon limit {limited} of {Runs}");
+            $"paragon limit {limited} of {Runs}, tiers 1-10 {string.Join(", ", tierCounts.Skip(1))}");
         AssertEquals(bosses.Count, System.Enum.GetValues<BossType>().Length, "Every boss can come up");
         Log($"speed and health just above normal {nearNormal}, at 300 % or more {extreme}");
         Assert(extreme > 0, "Speed and health up to 400 % can come up");
@@ -232,7 +234,10 @@ public class BossRandomizerTest : CustomBossTest
         AssertBetween(defaultSpeed, 0.55, 0.7, "Boss speed left at 100 %");
         AssertBetween(defaultHealth, 0.55, 0.7, "Boss health left at 100 %");
         AssertBetween(elite, 0.25, 0.35, "Elite");
-        AssertBetween(defaultTiers, 0.5, 0.6, "5 tiers");
+        AssertBetween(defaultTiers, 0.17, 0.24, "5 tiers");
+        Assert(tierCounts[4] > tierCounts[1] * 3 && tierCounts[6] > tierCounts[9] * 3,
+            "The number of tiers is a bell curve around 5: " + string.Join(", ", tierCounts.Skip(1)));
+        Assert(tierCounts[1] > 0 && tierCounts[10] > 0, "1 and 10 tiers can still come up");
         AssertBetween(limited, 0.15, 0.25, "Paragon limit");
         yield break;
     }

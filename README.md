@@ -85,8 +85,9 @@ where you can read a share code and see the whole setup without the game, or
 4. Press **Play**. Pressing back saves the setup and returns to the main menu. After a game you return to the
    Boss Creator with the same setup. **Reset** also resets the boss options, back to a new setup with Bloonarius, and
    **Random** also randomizes them, always into a setup that can be played: speed and health close to normal are far
-   more likely than extreme ones (up to 400 %), and in **Advanced** every tier gets a random boss of its own (now and
-   then a Random tier, more often Elite in later tiers) while **Standard** stays one boss.
+   more likely than extreme ones (up to 400 %), the number of tiers is most often around 5, and in **Advanced** every
+   tier gets a random boss of its own (now and then a Random tier, more often Elite in later tiers) while **Standard**
+   stays one boss.
 
 ![Main menu](docs/main-menu.jpg)
 

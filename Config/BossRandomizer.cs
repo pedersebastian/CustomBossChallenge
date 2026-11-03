@@ -18,7 +18,6 @@ public static class BossRandomizer
     public const double HealthChance = 0.4;
     public const double FortifiedChance = 0.15;
     public const double ParagonChance = 0.2;
-    public const double TiersChance = 0.5;
     public const double SpeedPerTierChance = 0.4;
     public const double HealthPerTierChance = 0.4;
     public const double SkullsChance = 0.3;
@@ -34,6 +33,12 @@ public static class BossRandomizer
     /// How far from 100 % a boss speed or health still is about half as likely as 100 % itself
     /// </summary>
     public const double PercentSpread = 40;
+
+    /// <summary>
+    /// The spread of the number of tiers around the normal 5, like a bell curve: 4 and 6 come up almost as often as
+    /// 5, 1 and 10 only now and then
+    /// </summary>
+    public const double TierSpread = 2;
 
     /// <summary>
     /// In Advanced Mode: the chance that a tier is Random, that it keeps the tier before it's boss, and that tier 1 or
@@ -65,7 +70,7 @@ public static class BossRandomizer
         {
             Boss = bosses[Random.Next(bosses.Length)],
             Elite = Chance(EliteChance),
-            Tiers = Chance(TiersChance) ? Random.Next(TierMath.MinTiers, TierMath.MaxTiers + 1) : TierMath.VanillaTiers
+            Tiers = WeightedTiers()
         };
 
         if (advanced) options = options with {TierBosses = RandomTierBosses()};
@@ -119,17 +124,39 @@ public static class BossRandomizer
     /// A boss speed or health from <see cref="MinPercent"/> to <see cref="MaxPercent"/> in steps of
     /// <see cref="PercentStep"/>, picked by <see cref="PercentWeight"/>
     /// </summary>
-    public static int WeightedPercent()
+    public static int WeightedPercent() =>
+        Weighted(Enumerable.Range(0, (MaxPercent - MinPercent) / PercentStep + 1).Select(i => MinPercent + i * PercentStep), PercentWeight);
+
+    /// <summary>
+    /// How likely a number of tiers is, compared with the normal 5: 1 at 5, about 0.88 at 4 and 6, 0.04 at 10
+    /// </summary>
+    public static double TierWeight(int tiers)
     {
-        var values = Enumerable.Range(0, (MaxPercent - MinPercent) / PercentStep + 1).Select(i => MinPercent + i * PercentStep).ToList();
-        var pick = Random.NextDouble() * values.Sum(PercentWeight);
-        foreach (var value in values)
+        var distance = (tiers - TierMath.VanillaTiers) / TierSpread;
+        return Math.Exp(-distance * distance / 2);
+    }
+
+    /// <summary>
+    /// A number of tiers from <see cref="TierMath.MinTiers"/> to <see cref="TierMath.MaxTiers"/>, picked by
+    /// <see cref="TierWeight"/>
+    /// </summary>
+    public static int WeightedTiers() =>
+        Weighted(Enumerable.Range(TierMath.MinTiers, TierMath.MaxTiers - TierMath.MinTiers + 1), TierWeight);
+
+    /// <summary>
+    /// One of <paramref name="values"/>, each as likely as its <paramref name="weight"/>
+    /// </summary>
+    private static int Weighted(System.Collections.Generic.IEnumerable<int> values, Func<int, double> weight)
+    {
+        var list = values.ToList();
+        var pick = Random.NextDouble() * list.Sum(weight);
+        foreach (var value in list)
         {
-            pick -= PercentWeight(value);
+            pick -= weight(value);
             if (pick < 0) return value;
         }
 
-        return values[^1];
+        return list[^1];
     }
 
     /// <summary>

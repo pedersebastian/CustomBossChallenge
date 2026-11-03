@@ -999,6 +999,7 @@ public sealed class BossEditorSection
     public void ResetBoss()
     {
         var defaults = new BossOptions();
+        lastTierBosses = null;
         ResetOptions(o => o with {Boss = defaults.Boss, Elite = defaults.Elite, TierBosses = null});
     }
 
@@ -1011,19 +1012,23 @@ public sealed class BossEditorSection
         Mode.Show(BossMode.Options.Mixed);
         if (refreshing || on == BossMode.Options.Mixed) return;
         var options = BossMode.Options;
-        if (!on) lastTierBosses = options.TierBosses;
+
+        // Bosses per tier are remembered for coming back to Advanced only when they were changed; tiers that all still
+        // have the boss they started with follow the boss picked in Standard instead
+        if (!on) lastTierBosses = options.TierBosses == StartingTierBosses(options) ? null : options.TierBosses;
         BossHistory.RecordChange(Editor, null);
-        BossMode.Options = options with
-        {
-            TierBosses = on
-                ? lastTierBosses ?? TierBossMath.Resolve(null, options.Boss.ToString(), options.Elite, TierMath.MaxTiers, _ => 0)
-                : null
-        };
+        BossMode.Options = options with {TierBosses = on ? lastTierBosses ?? StartingTierBosses(options) : null};
         FollowBossName(BossMode.Options);
         Mode.Show(on);
         ShowBoss();
         Relayout();
     }
+
+    /// <summary>
+    /// What every tier starts with in Advanced Mode: the Boss Type and Elite picked in Standard
+    /// </summary>
+    private static string StartingTierBosses(BossOptions options) =>
+        TierBossMath.Resolve(null, options.Boss.ToString(), options.Elite, TierMath.MaxTiers, _ => 0);
 
     public static string TierStopName(int tier) => $"{TierStrip.CardName}{tier}";
 
@@ -1117,6 +1122,7 @@ public sealed class BossEditorSection
     {
         if (Editor.dcm == null) return;
         BossHistory.RecordSetup(Editor);
+        lastTierBosses = null;
         ResetBossValues(Editor);
         Load(Editor.dcm, BossMode.Options);
         BossMode.Save();

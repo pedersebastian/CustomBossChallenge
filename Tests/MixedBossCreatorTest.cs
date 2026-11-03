@@ -170,6 +170,25 @@ public class MixedBossCreatorTest : CustomBossTest
         section.ResetBoss();
         Assert(!BossMode.Options.Mixed && !section.Mode.AdvancedPicked, "Reset of the boss goes back to Standard");
 
+        // After a reset Advanced starts over from the Standard boss, Bloonarius, not the bosses from before
+        section.SetAdvanced(true);
+        AssertEquals(TierBossMath.Parse(BossMode.Options.TierBosses).All(t => t.Boss == nameof(BossType.Bloonarius)), true,
+            "Advanced after a reset starts with Bloonarius on every tier");
+
+        // Tiers left as they started follow the boss picked in Standard, and so does Advanced after Reset Boss Options
+        section.SetAdvanced(false);
+        section.BossButtons[BossType.Lych].Button.onClick.Invoke();
+        section.SetAdvanced(true);
+        AssertEquals(TierBossMath.Parse(BossMode.Options.TierBosses).All(t => t.Boss == nameof(BossType.Lych)), true,
+            "Unchanged tiers follow the boss picked in Standard");
+        section.SetTierBoss(2, new TierBoss(nameof(BossType.Vortex), false));
+        section.SetAdvanced(false);
+        section.ResetAll();
+        section.SetAdvanced(true);
+        AssertEquals(TierBossMath.Parse(BossMode.Options.TierBosses).All(t => t.Boss == nameof(BossType.Bloonarius)), true,
+            "Advanced after Reset Boss Options starts with Bloonarius on every tier");
+        section.ResetBoss();
+
         Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
         yield return new WaitForSecondsRealtime(1);
     }
