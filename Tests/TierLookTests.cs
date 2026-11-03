@@ -175,20 +175,22 @@ public class TierLookTest : CustomBossTest
         {
             foreach (var elite in new[] {false, true})
             {
+                // Elite shares the normal boss's theme, so its own displays are checked on the first tier with and
+                // without the look: the tier 5 it starts from and tier 10
                 var options = new BossOptions {Boss = boss, Elite = elite, Tiers = 10};
                 yield return TierLookScene.Start(options, data => LoadIntoGame(data));
-                yield return CheckBoss(options);
+                yield return CheckBoss(options, elite ? new[] {5, 10} : Enumerable.Range(5, 6).ToArray());
                 yield return ToMainMenu();
                 AssertEquals(TierLookApplier.Count, 0, "The look must be gone after leaving the game");
             }
         }
     }
 
-    private IEnumerator CheckBoss(BossOptions options)
+    private IEnumerator CheckBoss(BossOptions options, int[] tiers)
     {
         var name = options.BossId(0).TrimEnd('0');
         var colors = new List<Color>();
-        for (var tier = 5; tier <= 10; tier++)
+        foreach (var tier in tiers)
         {
             Bloon? boss = null;
             yield return TierLookScene.Spawn(options, tier, spawned => boss = spawned);
