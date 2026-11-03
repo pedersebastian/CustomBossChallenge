@@ -129,6 +129,14 @@ public sealed record BossOptions
         return (boss, entry.Elite);
     }
 
+    /// <summary>
+    /// A tier's own speed and health compared with the normal game, in Advanced Mode in place of Boss Speed and Boss
+    /// Health; 1 without a boss per tier
+    /// </summary>
+    public double TierSpeedFactor(int tier) => EntryOf(tier).SpeedFactor;
+
+    public double TierHealthFactor(int tier) => EntryOf(tier).HealthFactor;
+
     /// <summary>Whether a tier will get a random boss when the game starts</summary>
     [JsonIgnore]
     public bool HasRandom => Mixed && TierBossMath.HasRandom(TierBosses, Tiers);

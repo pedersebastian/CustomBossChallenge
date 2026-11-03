@@ -10,7 +10,9 @@ namespace CustomBossChallenge.Config;
 /// <param name="Boss">A boss name from <see cref="TierBossMath.Bosses"/>, <see cref="TierBossMath.Random"/>, or null
 /// when the tier follows the setup's own boss and Elite</param>
 /// <param name="Elite">Whether the tier is Elite; ignored when the tier follows the setup's boss</param>
-public readonly record struct TierBoss(string? Boss, bool Elite)
+/// <param name="Speed">The tier's own boss speed in percent, in Advanced Mode in place of Boss Speed</param>
+/// <param name="Health">The tier's own boss health in percent, in Advanced Mode in place of Boss Health</param>
+public readonly record struct TierBoss(string? Boss, bool Elite, int Speed = TierBossMath.Normal, int Health = TierBossMath.Normal)
 {
     public static readonly TierBoss Follows = new(null, false);
 
@@ -18,14 +20,24 @@ public readonly record struct TierBoss(string? Boss, bool Elite)
     public bool IsRandom => Boss == TierBossMath.Random;
 
     /// <summary>
-    /// The token this tier has in <see cref="BossOptions.TierBosses"/>: "", "Lych", "LychElite", "RandomElite", ...
+    /// The tier's speed and health compared with the normal game; 1 is normal
     /// </summary>
-    public override string ToString() => Boss == null ? "" : Boss + (Elite ? TierBossMath.EliteSuffix : "");
+    public double SpeedFactor => Speed / 100.0;
+    public double HealthFactor => Health / 100.0;
+
+    /// <summary>
+    /// The token this tier has in <see cref="BossOptions.TierBosses"/>: "", "Lych", "LychElite", "RandomElite",
+    /// "LychElite@120/80" for 120 % speed and 80 % health, ...
+    /// </summary>
+    public override string ToString() =>
+        (Boss == null ? "" : Boss + (Elite ? TierBossMath.EliteSuffix : "")) +
+        (Speed == TierBossMath.Normal && Health == TierBossMath.Normal ? "" : $"{TierBossMath.ValuesMark}{Speed}/{Health}");
 }
 
 /// <summary>
 /// Pure helpers for the boss of each tier (<see cref="BossOptions.TierBosses"/>): a comma separated list with a token
-/// per tier, like "Lych,,RandomElite,VortexElite". An empty token follows the setup's own boss and Elite. Kept free of
+/// per tier, like "Lych,,RandomElite,VortexElite@120/80". An empty token follows the setup's own boss and Elite, and
+/// "@speed/health" gives the tier its own speed and health in percent. Kept free of
 /// the game's types, so the unit and property tests can run it; BossNamesTest checks <see cref="Bosses"/> against
 /// the game's BossType.
 /// </summary>
@@ -33,6 +45,21 @@ public static class TierBossMath
 {
     public const string Random = "Random";
     public const string EliteSuffix = "Elite";
+
+    /// <summary>
+    /// Between a tier's boss and its speed and health, e.g. "Lych@120/80"
+    /// </summary>
+    public const char ValuesMark = '@';
+
+    /// <summary>
+    /// A tier's speed and health in percent, with the range and step of Boss Speed and Boss Health
+    /// </summary>
+    public const int Normal = 100;
+    public const int MinSpeed = 10;
+    public const int MaxSpeed = 1000;
+    public const int MinHealth = 10;
+    public const int MaxHealth = 2000;
+    public const int ValueStep = 10;
 
     /// <summary>
     /// The bosses in the order the Boss Creator shows them, which is the order of the game's BossType
@@ -58,11 +85,38 @@ public static class TierBossMath
     private static TierBoss ParseToken(string token)
     {
         token = token.Trim();
+        var (speed, health) = (Normal, Normal);
+        var mark = token.IndexOf(ValuesMark);
+        if (mark >= 0)
+        {
+            var values = token[(mark + 1)..].Split('/');
+            speed = ParseValue(values[0], MinSpeed, MaxSpeed);
+            health = ParseValue(values.Length > 1 ? values[1] : "", MinHealth, MaxHealth);
+            token = token[..mark].Trim();
+        }
+
         var elite = token.EndsWith(EliteSuffix, StringComparison.OrdinalIgnoreCase);
         var name = elite ? token[..^EliteSuffix.Length] : token;
         var known = Choices.FirstOrDefault(choice => string.Equals(choice, name, StringComparison.OrdinalIgnoreCase));
-        return known == null ? TierBoss.Follows : new TierBoss(known, elite);
+        return known == null
+            ? TierBoss.Follows with {Speed = speed, Health = health}
+            : new TierBoss(known, elite, speed, health);
     }
+
+    /// <summary>
+    /// A speed or health in percent, held to its range and step; junk is the normal 100
+    /// </summary>
+    private static int ParseValue(string text, int min, int max) =>
+        int.TryParse(text.Trim(), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture,
+            out var value)
+            ? ClampValue(value, min, max)
+            : Normal;
+
+    /// <summary>
+    /// A speed or health held to its range, on a multiple of <see cref="ValueStep"/>
+    /// </summary>
+    public static int ClampValue(int value, int min, int max) =>
+        Math.Clamp((int) Math.Round(value / (double) ValueStep, MidpointRounding.AwayFromZero) * ValueStep, min, max);
 
     /// <summary>
     /// The list for <paramref name="tiers"/>, without the tiers at the end that follow the setup's boss
@@ -110,23 +164,25 @@ public static class TierBossMath
         var index = Array.IndexOf(Choices, from);
         if (index < 0) index = 0;
         var next = ((index + Math.Sign(direction)) % Choices.Length + Choices.Length) % Choices.Length;
-        return new TierBoss(Choices[next], current.FollowsSetup ? setupElite : current.Elite);
+        return current with {Boss = Choices[next], Elite = current.FollowsSetup ? setupElite : current.Elite};
     }
 
     /// <summary>
     /// The concrete boss of every tier from 1 to <paramref name="tiers"/>: tiers that follow the setup get its boss and
     /// Elite, and Random tiers get a boss picked with <paramref name="pick"/> (given the number of bosses, it returns
-    /// an index), keeping their own Elite
+    /// an index), keeping their own Elite. Every tier keeps its speed and health; tiers without an entry get
+    /// <paramref name="speed"/> and <paramref name="health"/>.
     /// </summary>
-    public static string Resolve(string? list, string setupBoss, bool setupElite, int tiers, Func<int, int> pick)
+    public static string Resolve(string? list, string setupBoss, bool setupElite, int tiers, Func<int, int> pick,
+        int speed = Normal, int health = Normal)
     {
         var parsed = Parse(list);
         var resolved = Enumerable.Range(1, TierMath.ClampTiers(tiers)).Select(tier =>
         {
-            var entry = tier <= parsed.Length ? parsed[tier - 1] : TierBoss.Follows;
-            if (entry.FollowsSetup) return new TierBoss(setupBoss, setupElite);
+            var entry = tier <= parsed.Length ? parsed[tier - 1] : TierBoss.Follows with {Speed = speed, Health = health};
+            if (entry.FollowsSetup) return entry with {Boss = setupBoss, Elite = setupElite};
             if (!entry.IsRandom) return entry;
-            return new TierBoss(Bosses[Math.Clamp(pick(Bosses.Length), 0, Bosses.Length - 1)], entry.Elite);
+            return entry with {Boss = Bosses[Math.Clamp(pick(Bosses.Length), 0, Bosses.Length - 1)]};
         });
         return string.Join(",", resolved.Select(tier => tier.ToString()));
     }

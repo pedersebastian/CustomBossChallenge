@@ -35,21 +35,25 @@ export function tierCards(options: BossOptions, challenge: Challenge): TierCard[
   return Array.from({ length: clampTiers(options.Tiers) }, (_, i) => {
     const tier = i + 1;
     // Each tier is made from its own boss; a Random tier's boss isn't known until the game starts
-    const source = entryOf(options, tier).boss === "Random" ? undefined : modelOf(options, Math.min(tier, VANILLA_TIERS), tier);
+    const entry = entryOf(options, tier);
+    const source = entry.boss === "Random" ? undefined : modelOf(options, Math.min(tier, VANILLA_TIERS), tier);
+    // In Advanced Mode each tier has its own speed and health on top (BossOptions.TierSpeedFactor)
+    const tierSpeed = entry.speed / 100;
+    const tierHealth = entry.health / 100;
     let healthValue: number | null = null;
     let capped = false;
     if (source) {
-      const model = source.health * extraTierFactor(tier) * healthFactor(tier, options.HealthPerTier);
+      const model = source.health * extraTierFactor(tier) * healthFactor(tier, options.HealthPerTier) * tierHealth;
       capped = model > cap;
       healthValue = Math.min(model, cap) * bossHealth;
     }
-    const speed = speedFactor(tier, options.SpeedPerTier) * bossSpeed;
+    const speed = speedFactor(tier, options.SpeedPerTier) * tierSpeed * bossSpeed;
     return {
       tier,
       round: rounds[i],
       speed,
       speedValue: source ? source.speed * speed : null,
-      healthFactor: healthFactor(tier, options.HealthPerTier) * bossHealth,
+      healthFactor: healthFactor(tier, options.HealthPerTier) * tierHealth * bossHealth,
       health: healthValue === null ? "?" : formatHealth(healthValue),
       healthValue,
       capped,

@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { evenlySpaced, formatCustom, formatPercent, normalizeCustom, parseCustom } from "../src/math/skulls";
 import { endRound, formatHealth, healthPerTierFromExtraTierHealth, spawnRounds } from "../src/math/tiers";
 import { roundHalfEven } from "../src/math/dotnet";
+import { normalizeTierBosses, tierEntry } from "../src/math/tierBosses";
 
 const f = (values: number[]) => values.map(Math.fround);
 const show = (rounds: number[]) => rounds.join(", ");
@@ -94,4 +95,23 @@ describe("rounding like .NET", () => {
     [14_500, "15k"],
     [9_950, "10k"],
   ])("formatHealth(%d) = %s", (health, shown) => expect(formatHealth(health)).toBe(shown));
+});
+
+// The same cases as UnitTests/TierBossMathTests.cs
+describe("tier bosses", () => {
+  it.each([
+    ["Lych,,RandomElite,VortexElite", "Lych,,RandomElite,VortexElite"],
+    [" lych , VORTEXelite ", "Lych,VortexElite"],
+    ["Lych,,,", "Lych"],
+    ["Nonsense,Lych", ",Lych"],
+    ["LychElite@120/80,Vortex@100/100", "LychElite@120/80,Vortex"],
+    [" lych @ 125 / 5000 ", "Lych@130/2000"],
+    ["Lych@0/x", "Lych@10/100"],
+    ["@150/100,,", "@150/100"],
+    ["Nonsense@200/200", "@200/200"],
+    ["Lych@99999999999/100", "Lych"],
+  ])("normalizes %j to %j", (list, expected) => expect(normalizeTierBosses(list)).toBe(expected));
+
+  it("reads each tier's speed and health", () =>
+    expect(tierEntry("Lych,VortexElite@150/250", 2)).toEqual({ boss: "Vortex", elite: true, speed: 150, health: 250 }));
 });

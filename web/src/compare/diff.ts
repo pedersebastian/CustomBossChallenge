@@ -2,7 +2,7 @@
 
 import { GAME } from "../data/types";
 import type { Challenge } from "../code/decode";
-import { effectiveSpawnRounds, isMixed, tierBossName, type BossOptions } from "../code/options";
+import { effectiveSpawnRounds, entryOf, isMixed, tierBossName, type BossOptions } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
 import { clampTiers, endRound } from "../math/tiers";
@@ -68,6 +68,12 @@ export function compareRows(a: Setup, b: Setup): Row[] {
     add("Tiers", "Advanced Mode", (s) => yesNo(isMixed(s.options)));
     for (let tier = 1; tier <= Math.max(a.options.Tiers, b.options.Tiers); tier++) {
       add("Tiers", `Tier ${tier} boss`, (s) => (tier <= s.options.Tiers ? tierBossName(s.options, tier) : "—"));
+      // In Advanced Mode each tier has its own Boss Speed and Boss Health
+      add("Tiers", `Tier ${tier} speed and health`, (s) => {
+        if (tier > s.options.Tiers) return "—";
+        const entry = entryOf(s.options, tier);
+        return `${entry.speed} %, ${entry.health} %`;
+      });
     }
   }
   add("Tiers", "Game ends", (s) => `Round ${endRound(effectiveSpawnRounds(s.options))}`);

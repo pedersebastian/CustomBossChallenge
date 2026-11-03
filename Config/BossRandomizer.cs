@@ -94,8 +94,9 @@ public static class BossRandomizer
 
         var modifiers = dcm.bloonModifiers ??= new BloonModifiers();
         var health = modifiers.healthMultipliers ??= new BloonHealthMultipliers();
-        modifiers.bossSpeedMultiplier = Chance(SpeedChance) ? WeightedPercent() / 100f : 1;
-        health.boss = Chance(HealthChance) ? WeightedPercent() / 100f : 1;
+        // In Advanced every tier has its own speed and health, and Boss Speed and Boss Health stay at 100 %
+        modifiers.bossSpeedMultiplier = !advanced && Chance(SpeedChance) ? WeightedPercent() / 100f : 1;
+        health.boss = !advanced && Chance(HealthChance) ? WeightedPercent() / 100f : 1;
         modifiers.allFortified = Chance(FortifiedChance);
         dcm.maxParagons = Chance(ParagonChance) ? Random.Next(0, MaxRandomParagons + 1) : ParagonMath.NoLimit;
 
@@ -161,7 +162,9 @@ public static class BossRandomizer
 
     /// <summary>
     /// A boss for each of the 10 tiers, so changing the number of tiers later keeps them. A tier is Random now and
-    /// then, rarely has the same boss as the tier before it, and is Elite more often the later it comes.
+    /// then, rarely has the same boss as the tier before it, and is Elite more often the later it comes. Each tier's
+    /// speed and health change as often as Boss Speed and Boss Health do in Standard, with values near 100 % the most
+    /// likely.
     /// </summary>
     public static string RandomTierBosses()
     {
@@ -172,15 +175,17 @@ public static class BossRandomizer
             var eliteChance = FirstTierEliteChance +
                               (LastTierEliteChance - FirstTierEliteChance) * (tier - 1) / (TierMath.MaxTiers - 1);
             var elite = Chance(eliteChance);
+            var speed = Chance(SpeedChance) ? WeightedPercent() : TierBossMath.Normal;
+            var health = Chance(HealthChance) ? WeightedPercent() : TierBossMath.Normal;
             if (Chance(RandomTierChance))
             {
-                tiers.Add(new TierBoss(TierBossMath.Random, elite));
+                tiers.Add(new TierBoss(TierBossMath.Random, elite, speed, health));
                 continue;
             }
 
             var others = TierBossMath.Bosses.Where(boss => boss != previous).ToArray();
             var boss = previous != null && Chance(SameBossChance) ? previous : others[Random.Next(others.Length)];
-            tiers.Add(new TierBoss(boss, elite));
+            tiers.Add(new TierBoss(boss, elite, speed, health));
             previous = boss;
         }
 

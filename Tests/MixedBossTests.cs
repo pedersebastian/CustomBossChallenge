@@ -47,6 +47,16 @@ public class MixedBossModelTest : CustomBossTest
         Assert(resolved.BossId(3).EndsWith("3") && !resolved.BossId(3).Contains("Elite"), $"Random keeps its Elite: {resolved.BossId(3)}");
         AssertEquals(new BossOptions().ResolveRandom(new System.Random(1)), new BossOptions(), "A single boss setup stays as it is");
 
+        // Each tier's own speed and health go on top of Speed per Tier and Health per Tier
+        var values = new BossOptions {Tiers = 2, SpeedPerTier = 10, TierBosses = "Lych@150/200,Lych"}.Sanitized();
+        var source = game.GetBloon("Lych1");
+        var scaled = source.Clone().Cast<Il2CppAssets.Scripts.Models.Bloons.BloonModel>();
+        TierScaling.Scale(scaled, TierScaling.Values.Of(source), values, 1);
+        Assert(Approximately(scaled.speed, source.speed * 1.5f), $"Tier 1 at 150 % speed: {scaled.speed} vs {source.speed}");
+        AssertEquals(scaled.maxHealth, source.maxHealth * 2, "Tier 1 at 200 % health");
+        AssertEquals(values.TierSpeedFactor(2), 1.0, "A tier without its own values is normal");
+        AssertEquals(new BossOptions().TierHealthFactor(1), 1.0, "Without a boss per tier there are no tier values");
+
         AssertEquals(BossMode.DefaultName(options), BossMode.MixedName, "Name of a mixed setup");
         Assert(BossMode.IsDefaultName(BossMode.MixedName), "The mixed name is a default name");
         yield break;

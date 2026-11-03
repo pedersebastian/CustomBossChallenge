@@ -17,6 +17,12 @@ public class TierBossMathTests
     [InlineData("", "")]
     [InlineData(",,", "")]
     [InlineData("Lych,Lych,Lych,Lych,Lych,Lych,Lych,Lych,Lych,Lych,Vortex", "Lych,Lych,Lych,Lych,Lych,Lych,Lych,Lych,Lych,Lych")]
+    [InlineData("LychElite@120/80,Vortex@100/100", "LychElite@120/80,Vortex")]
+    [InlineData(" lych @ 125 / 5000 ", "Lych@130/2000")]
+    [InlineData("Lych@0/x", "Lych@10/100")]
+    [InlineData("@150/100,,", "@150/100")]
+    [InlineData("Nonsense@200/200", "@200/200")]
+    [InlineData("Lych@99999999999/100", "Lych")]
     public void Normalize_gives_the_canonical_list(string list, string expected) =>
         Assert.Equal(expected, TierBossMath.Normalize(list));
 
@@ -72,6 +78,26 @@ public class TierBossMathTests
         Assert.True(TierBossMath.HasRandom("Lych,,Random", 3));
         Assert.False(TierBossMath.HasRandom("Lych,,Random", 2));
     }
+
+    [Fact]
+    public void Each_tier_keeps_its_speed_and_health()
+    {
+        var tier = TierBossMath.Entry("Lych,VortexElite@150/250", 2);
+        Assert.Equal(new TierBoss("Vortex", true, 150, 250), tier);
+        Assert.Equal(1.5, tier.SpeedFactor);
+        Assert.Equal(2.5, tier.HealthFactor);
+        Assert.Equal(1, TierBossMath.Entry("Lych", 1).SpeedFactor);
+
+        // Stepping the boss and resolving Random or the setup's boss keep them
+        Assert.Equal(new TierBoss("Dreadbloon", true, 150, 250), TierBossMath.Step(tier, "Lych", false, 1));
+        Assert.Equal("VortexElite@120/90,Diamondback@200/100",
+            TierBossMath.Resolve("@120/90,Random@200/100", "Vortex", true, 2, _ => 6));
+    }
+
+    [Fact]
+    public void Resolve_gives_tiers_without_an_entry_the_setups_speed_and_health() =>
+        Assert.Equal("LychElite@120/90,LychElite@200/300,LychElite@200/300",
+            TierBossMath.Resolve("@120/90", "Lych", true, 3, _ => 0, 200, 300));
 
     [Fact]
     public void Resolve_clamps_a_bad_pick() =>

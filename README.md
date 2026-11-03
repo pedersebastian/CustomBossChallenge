@@ -100,6 +100,10 @@ picked when the game starts (and stays the same through restarts, retries and Co
 arrows step a card's boss, Enter opens the picker and Delete puts the tier back to the boss it started with.
 Going back to **Standard** brings the Boss Type back and keeps your choices, so **Advanced** brings them back too.
 
+In **Advanced**, **Boss Speed** and **Boss Health** are set per tier instead: the two sliders are hidden, and each
+tier's picker has its own, from 10 to 1000 % and 10 to 2000 %. Every tier starts with the values the sliders had, and
+**Standard** brings those back. Speed per Tier and Health per Tier still go on top, and the cards show the result.
+
 Each boss has its own number of skulls, and Elite often more: Bloonarius has 3 and Elite Bloonarius 7. With the
 boss's own skulls (**Vanilla**) every tier keeps its boss's skulls, so each card shows how many it has, and the
 **Skull Preview** shows the tier you point at or move the keyboard frame to (its corner says which). **Evenly
@@ -180,9 +184,9 @@ CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg
 | Option | Range | Default | Notes |
 |---|---|---|---|
 | Boss Type | 7 bosses | Bloonarius | Elite toggle next to it. |
-| Standard / Advanced | tabs | Standard | Hides the Boss Type; each tier's boss is picked on its card in the Tier Preview: any boss, Elite or not, or Random. |
-| Boss Speed | 10–1000 % | 100 % | |
-| Boss Health | 10–2000 % | 100 % | |
+| Standard / Advanced | tabs | Standard | Hides the Boss Type, Boss Speed and Boss Health; each tier's boss, speed and health are picked on its card in the Tier Preview: any boss, Elite or not, or Random. |
+| Boss Speed | 10–1000 % | 100 % | In Advanced, set per tier in its picker. |
+| Boss Health | 10–2000 % | 100 % | In Advanced, set per tier in its picker. |
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
 | Boss Tiers | 1–10 | 5 | The game is won when the last tier is defeated. |
 | Speed per Tier | −10 to +50 % | 0 % | This share of a tier's normal speed is added for every tier after the first: +20 % makes tier 3 ×1.4. Capped at ×5. |

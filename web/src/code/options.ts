@@ -10,7 +10,7 @@ import {
   spawnRounds,
 } from "../math/tiers";
 import { clamp } from "../math/dotnet";
-import { normalizeTierBosses, tierEntry, type TierBoss } from "../math/tierBosses";
+import { FOLLOWS, normalizeTierBosses, tierEntry, type TierBoss } from "../math/tierBosses";
 
 export const SKULL_MODES = ["Vanilla", "EvenlySpaced", "Custom"] as const;
 export type SkullMode = (typeof SKULL_MODES)[number];
@@ -149,7 +149,7 @@ export const isMixed = (options: BossOptions): boolean => options.TierBosses != 
 
 /** What a tier was set to: the setup's boss (boss null), a boss of its own, or Random (BossOptions.EntryOf) */
 export const entryOf = (options: BossOptions, tier: number): TierBoss =>
-  isMixed(options) ? tierEntry(options.TierBosses, tier) : { boss: null, elite: false };
+  isMixed(options) ? tierEntry(options.TierBosses, tier) : FOLLOWS;
 
 /** The boss and Elite of a tier; a Random tier has the setup's boss until the game starts (BossOptions.BossOf) */
 export function bossOf(options: BossOptions, tier: number): { boss: string; elite: boolean } {

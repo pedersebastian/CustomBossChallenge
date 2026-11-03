@@ -13,14 +13,17 @@ using Object = UnityEngine.Object;
 namespace CustomBossChallenge.Menus;
 
 /// <summary>
-/// The window that opens on a tier's card in the Tier Preview in Advanced Mode: every boss and Random to pick from, and
-/// Elite for that tier. A click outside it or Esc closes it. The keyboard moves through its buttons with the arrows (or Tab) and presses them with Enter or Space.
+/// The window that opens on a tier's card in the Tier Preview in Advanced Mode: every boss and Random to pick from, the
+/// tier's own Boss Speed and Boss Health, and Elite for that tier. A click outside it or Esc closes it. The keyboard
+/// moves through its controls with the arrows (or Tab), steps a slider with left and right, puts it back to 100 % with
+/// Delete, and presses buttons with Enter or Space.
 /// </summary>
 public sealed class TierBossPicker
 {
     public const string Name = "CustomBossTierPicker";
     public const float Width = 2140;
-    public const float Height = 820;
+    public const float Height = 1240;
+    private const float SliderWidth = 2000;
     private const float ChoiceSize = 200;
     private const float ChoiceGap = 30;
 
@@ -45,7 +48,13 @@ public sealed class TierBossPicker
     public ModHelperButton Close { get; }
 
     /// <summary>
-    /// What the keyboard moves through, in order: the bosses, Random, Elite, Close
+    /// The tier's own speed and health in percent, like Boss Speed and Boss Health in Standard
+    /// </summary>
+    public SliderRow Speed { get; }
+    public SliderRow Health { get; }
+
+    /// <summary>
+    /// What the keyboard moves through, in order: the bosses, Random, speed, health, Elite, Close
     /// </summary>
     public IReadOnlyList<GameObject> Stops { get; }
 
@@ -95,7 +104,7 @@ public sealed class TierBossPicker
         foreach (var choice in TierBossMath.Choices)
         {
             var name = choice;
-            var button = Panel.AddButton(new Info($"Choice{choice}", x, 40, ChoiceSize, ChoiceSize), VanillaSprites.RandomIcon,
+            var button = Panel.AddButton(new Info($"Choice{choice}", x, 250, ChoiceSize, ChoiceSize), VanillaSprites.RandomIcon,
                 new Action(() => Pick(name)));
             var marker = button.AddImage(new Info(BossEditorSection.SelectedMarker, 0, 0, 110, 110)
             {
@@ -114,14 +123,41 @@ public sealed class TierBossPicker
             x += ChoiceSize + ChoiceGap;
         }
 
+        // The editor's own slider rows, shrunk to fit the window; a run of changes is one step for Undo
+        Speed = Slider("Speed", -40, Texts.BossSpeed.T(), VanillaSprites.FasterBossIcon, TierBossMath.MinSpeed,
+            TierBossMath.MaxSpeed, value => SetValues(Shown() with {Speed = (int) value}, "Speed"));
+        Health = Slider("Health", -260, Texts.BossHealth.T(), VanillaSprites.BossBoostIcon, TierBossMath.MinHealth,
+            TierBossMath.MaxHealth, value => SetValues(Shown() with {Health = (int) value}, "Health"));
+
         var bottom = -Height / 2 + 120;
         Elite = Panel.AddCheckbox(new Info("Elite", -110, bottom, 140, 140), false, VanillaSprites.BlueInsertPanelRound,
             new Action<bool>(SetElite), VanillaSprites.TickGreenIcon, 20);
         Panel.AddText(new Info("EliteLabel", 110, bottom, 280, 140), Texts.Elite.T(), 70, TextAlignmentOptions.Left);
 
         Stops = Choices.Values.Select(button => button.gameObject)
-            .Concat(new[] {Elite.gameObject, Close.gameObject}).ToList();
+            .Concat(new[] {Speed.Row, Health.Row, Elite.gameObject, Close.gameObject}).ToList();
         Show();
+    }
+
+    private SliderRow Slider(string name, float y, string label, string icon, int min, int max, Action<float> changed)
+    {
+        var row = SliderRow.Clone(section.SliderTemplate, Panel.transform, name, label, icon, min, max,
+            TierBossMath.ValueStep, TierBossMath.Normal, value => $"{value:0} %", changed);
+        // As wide and high as the editor's own rows, so the slider and its arrows sit the same, then shrunk as a whole
+        var size = section.BossSpeed.Row.GetComponent<RectTransform>().rect.size;
+        var rect = row.Row.GetComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta = size;
+        var scale = Mathf.Min(1, SliderWidth / Mathf.Max(size.x, 1));
+        rect.localScale = new Vector3(scale, scale, 1);
+        rect.anchoredPosition = new Vector2(0, y);
+        return row;
+    }
+
+    private void SetValues(TierBoss tier, string control)
+    {
+        if (refreshing) return;
+        section.SetTierBoss(Tier, tier, $"Tier{Tier}{control}");
     }
 
     /// <summary>
@@ -141,7 +177,7 @@ public sealed class TierBossPicker
     {
         var options = Creator.BossMode.Options;
         var entry = options.EntryOf(Tier);
-        return entry.FollowsSetup ? new TierBoss(options.Boss.ToString(), options.Elite) : entry;
+        return entry.FollowsSetup ? entry with {Boss = options.Boss.ToString(), Elite = options.Elite} : entry;
     }
 
     /// <summary>
@@ -160,6 +196,8 @@ public sealed class TierBossPicker
 
         refreshing = true;
         Elite.SetChecked(shown.Elite, false);
+        Speed.Show(shown.Speed);
+        Health.Show(shown.Health);
         refreshing = false;
     }
 
@@ -168,7 +206,7 @@ public sealed class TierBossPicker
     /// </summary>
     public void Pick(string choice)
     {
-        section.SetTierBoss(Tier, new TierBoss(choice, Elite.Toggle.isOn));
+        section.SetTierBoss(Tier, Shown() with {Boss = choice, Elite = Elite.Toggle.isOn});
         Hide();
     }
 
@@ -193,8 +231,15 @@ public sealed class TierBossPicker
     /// </summary>
     public void Handle(ShortcutKey key, bool shift = false)
     {
+        var slider = FocusedSlider();
         switch (key)
         {
+            case ShortcutKey.Left or ShortcutKey.Right when slider != null:
+                slider.Step(key == ShortcutKey.Right ? 1 : -1);
+                break;
+            case ShortcutKey.Delete or ShortcutKey.Backspace when slider != null:
+                slider.Reset();
+                break;
             case ShortcutKey.Left or ShortcutKey.Up:
                 Move(-1);
                 break;
@@ -209,6 +254,9 @@ public sealed class TierBossPicker
                 break;
         }
     }
+
+    private SliderRow? FocusedSlider() =>
+        Focused < 0 ? null : Stops[Focused] == Speed.Row ? Speed : Stops[Focused] == Health.Row ? Health : null;
 
     private void Move(int step)
     {

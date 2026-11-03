@@ -158,6 +158,49 @@ public class MixedBossCreatorTest : CustomBossTest
         AssertEquals(section.Skulls.Empty.Text.text, "?", "A Random tier's Skull Preview");
         BossCreatorKeys.ClearFocus();
 
+        // Boss Speed and Boss Health are per tier in Advanced: the sliders are hidden, and each tier's picker has its own
+        Assert(!section.BossSpeed.Row.activeInHierarchy && !section.BossHealth.Row.activeInHierarchy,
+            "Advanced hides Boss Speed and Boss Health");
+        var picker3 = section.OpenPicker(3)!;
+        yield return null;
+        Assert(picker3.Speed.Row.activeInHierarchy && picker3.Health.Row.activeInHierarchy, "The picker has speed and health");
+        AssertEquals(picker3.Speed.Value, 100f, "A tier starts at 100 % speed");
+        picker3.Speed.Step(1);
+        picker3.Speed.Step(1);
+        picker3.Health.Slider.value = 250;
+        AssertEquals(BossMode.Options.EntryOf(3).Speed, 120, "The picker's speed is the tier's");
+        AssertEquals(BossMode.Options.EntryOf(3).Health, 250, "The picker's health is the tier's");
+        AssertEquals(section.Strip.Cards[2].Speed.Text.text.StartsWith("×1.2"), true,
+            $"The card shows the tier's speed: {section.Strip.Cards[2].Speed.Text.text}");
+        BossHistory.Undo(section.Editor);
+        yield return null;
+        AssertEquals(BossMode.Options.EntryOf(3).Health, 100, "Undo takes back the health");
+        AssertEquals(BossMode.Options.EntryOf(3).Speed, 120, "Two speed steps in a row are one step for Undo, kept here");
+        picker3 = section.OpenPicker(3)!;
+        picker3.Pick(nameof(BossType.Phayze));
+        AssertEquals(BossMode.Options.EntryOf(3), new TierBoss(nameof(BossType.Phayze), BossMode.Options.EntryOf(3).Elite, 120),
+            "Picking another boss keeps the tier's speed and health");
+
+        // Going to Advanced moves Boss Speed and Boss Health into every tier, and Standard brings them back
+        var standardBefore = BossMode.Options;
+        section.SetAdvanced(false);
+        section.ResetAll();
+        section.BossSpeed.Slider.value = 150;
+        section.BossHealth.Slider.value = 300;
+        section.SetAdvanced(true);
+        Assert(TierBossMath.Parse(BossMode.Options.TierBosses).All(t => t.Speed == 150 && t.Health == 300),
+            $"Every tier starts with Boss Speed and Boss Health: {BossMode.Options.TierBosses}");
+        AssertEquals(section.Editor.dcm.bloonModifiers.bossSpeedMultiplier, 1f, "Boss Speed is 100 % in Advanced");
+        AssertEquals(section.Editor.dcm.bloonModifiers.healthMultipliers.boss, 1f, "Boss Health is 100 % in Advanced");
+        AssertEquals(section.Strip.Cards[0].Speed.Text.text.StartsWith("×1.5"), true, "The cards still show 150 %");
+        section.SetAdvanced(false);
+        AssertEquals(section.BossSpeed.Value, 150f, "Standard brings Boss Speed back");
+        AssertEquals(section.Editor.dcm.bloonModifiers.healthMultipliers.boss, 3f, "Standard brings Boss Health back");
+        section.ResetAll();
+        section.SetAdvanced(true);
+        BossMode.Options = standardBefore;
+        section.Load(section.Editor.dcm, BossMode.Options);
+
         // Random keeps the mode: Advanced gets new bosses per tier and stays Advanced
         var randomBefore = BossMode.Options.TierBosses;
         section.Editor.randomBtn.onClick.Invoke();

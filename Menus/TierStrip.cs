@@ -279,15 +279,18 @@ public sealed class TierStrip
         var values = new List<CardValues>();
         for (var tier = 1; tier <= TierMath.ClampTiers(options.Tiers); tier++)
         {
-            var speed = TierMath.SpeedFactor(tier, options.SpeedPerTier) * bossSpeed;
-            var health = TierMath.HealthFactor(tier, options.HealthPerTier) * bossHealth;
+            // In Advanced Mode each tier has its own speed and health on top
+            var tierSpeed = options.TierSpeedFactor(tier);
+            var tierHealth = options.TierHealthFactor(tier);
+            var speed = TierMath.SpeedFactor(tier, options.SpeedPerTier) * tierSpeed * bossSpeed;
+            var health = TierMath.HealthFactor(tier, options.HealthPerTier) * tierHealth * bossHealth;
             var source = options.SourceId(tier);
             var shown = "?";
             var capped = false;
             if (game != null && game.DoesBloonExist(source) && !options.EntryOf(tier).IsRandom)
             {
                 var model = game.GetBloon(source).maxHealth * TierMath.ExtraTierFactor(tier) *
-                            TierMath.HealthFactor(tier, options.HealthPerTier);
+                            TierMath.HealthFactor(tier, options.HealthPerTier) * tierHealth;
                 capped = model > cap;
                 shown = FormatHealth(Math.Min(model, cap) * bossHealth);
             }

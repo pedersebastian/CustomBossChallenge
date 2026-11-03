@@ -60,13 +60,20 @@ let customSkulls: Gen<string> =
         return SkullMath.NormalizeCustom(String.concat ", " typed, "75, 50, 25")
     }
 
-/// A boss per tier, or None for a single boss: bosses, Random and tiers that follow the setup's boss, Elite or not
+/// A boss per tier, or None for a single boss: bosses, Random and tiers that follow the setup's boss, Elite or not,
+/// often at their normal speed and health and otherwise anywhere in range
 let tierBosses: Gen<string option> =
+    let value low high =
+        Gen.frequency
+            [ 2, Gen.constant TierBossMath.Normal
+              1, Gen.choose (low / TierBossMath.ValueStep, high / TierBossMath.ValueStep) |> Gen.map (fun v -> v * TierBossMath.ValueStep) ]
     let token =
         gen {
             let! boss = Gen.frequency [ 1, Gen.constant None; 4, Gen.elements TierBossMath.Choices |> Gen.map Some ]
             let! elite = Gen.elements [ false; true ]
-            return TierBoss(Option.toObj boss, elite)
+            let! speed = value TierBossMath.MinSpeed TierBossMath.MaxSpeed
+            let! health = value TierBossMath.MinHealth TierBossMath.MaxHealth
+            return TierBoss(Option.toObj boss, elite, speed, health)
         }
     Gen.frequency
         [ 3, Gen.constant None

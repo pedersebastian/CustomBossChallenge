@@ -78,6 +78,17 @@ public sealed class BossEditorSection
     /// The bosses per tier from before Advanced Mode was turned off, so turning it back on brings them back
     /// </summary>
     private string? lastTierBosses;
+
+    /// <summary>
+    /// Boss Speed and Boss Health in percent from before Advanced Mode, for going back to Standard. In Advanced Mode
+    /// every tier has its own instead, and the two sliders are hidden at 100 %.
+    /// </summary>
+    private (int Speed, int Health)? standardValues;
+
+    /// <summary>
+    /// The editor's slider row, which the tier picker copies for a tier's speed and health
+    /// </summary>
+    public ChallengeEditorSliderPanel SliderTemplate { get; private set; } = null!;
     public ModHelperDropdown SkullMode { get; private set; } = null!;
     public ModHelperInputField CustomSkulls { get; private set; } = null!;
     public SkullStrip Skulls { get; private set; } = null!;
@@ -207,6 +218,7 @@ public sealed class BossEditorSection
 
     private void BuildRows(ChallengeEditorSliderPanel template)
     {
+        SliderTemplate = template;
         // Boss picker and elite toggle
         var bossRow = EditorRows.LabelRow(template, rows, "BossRow", Texts.BossType.T(), VanillaSprites.BossChallenge);
         BossTypeRow = bossRow;
@@ -1005,6 +1017,8 @@ public sealed class BossEditorSection
     {
         var defaults = new BossOptions();
         lastTierBosses = null;
+        if (BossMode.Options.Mixed) SetBossValues(standardValues ?? (TierBossMath.Normal, TierBossMath.Normal));
+        standardValues = null;
         ResetOptions(o => o with {Boss = defaults.Boss, Elite = defaults.Elite, TierBosses = null});
     }
 
@@ -1017,12 +1031,25 @@ public sealed class BossEditorSection
         Mode.Show(BossMode.Options.Mixed);
         if (refreshing || on == BossMode.Options.Mixed) return;
         var options = BossMode.Options;
+        var modifiers = Editor.dcm?.bloonModifiers;
+        var current = ((int) Math.Round((modifiers?.bossSpeedMultiplier ?? 1) * 100),
+            (int) Math.Round((modifiers?.healthMultipliers?.boss ?? 1) * 100));
+        var standard = on ? current : standardValues ?? (TierBossMath.Normal, TierBossMath.Normal);
 
         // Bosses per tier are remembered for coming back to Advanced only when they were changed; tiers that all still
-        // have the boss they started with follow the boss picked in Standard instead
-        if (!on) lastTierBosses = options.TierBosses == StartingTierBosses(options) ? null : options.TierBosses;
+        // have the boss, speed and health they started with follow what is picked in Standard instead
+        if (!on)
+        {
+            lastTierBosses = options.TierBosses == StartingTierBosses(options, standard) ? null : options.TierBosses;
+        }
+
         BossHistory.RecordChange(Editor, null);
-        BossMode.Options = options with {TierBosses = on ? lastTierBosses ?? StartingTierBosses(options) : null};
+        BossMode.Options = options with {TierBosses = on ? lastTierBosses ?? StartingTierBosses(options, standard) : null};
+
+        // Advanced gives every tier its own speed and health, starting from Boss Speed and Boss Health, which then stay
+        // at 100 % until Standard brings them back
+        standardValues = on ? current : null;
+        SetBossValues(on ? (TierBossMath.Normal, TierBossMath.Normal) : standard);
         SkullTier = 1;
         FollowBossName(BossMode.Options);
         Mode.Show(on);
@@ -1031,10 +1058,24 @@ public sealed class BossEditorSection
     }
 
     /// <summary>
-    /// What every tier starts with in Advanced Mode: the Boss Type and Elite picked in Standard
+    /// What every tier starts with in Advanced Mode: the Boss Type, Elite, Boss Speed and Boss Health picked in Standard
     /// </summary>
-    private static string StartingTierBosses(BossOptions options) =>
-        TierBossMath.Resolve(null, options.Boss.ToString(), options.Elite, TierMath.MaxTiers, _ => 0);
+    private static string StartingTierBosses(BossOptions options, (int Speed, int Health) values) =>
+        TierBossMath.Resolve(null, options.Boss.ToString(), options.Elite, TierMath.MaxTiers, _ => 0, values.Speed, values.Health);
+
+    /// <summary>
+    /// Boss Speed and Boss Health in percent, in the challenge and on their sliders
+    /// </summary>
+    private void SetBossValues((int Speed, int Health) values)
+    {
+        if (Editor.dcm == null) return;
+        Editor.dcm.bloonModifiers ??= new BloonModifiers();
+        Editor.dcm.bloonModifiers.healthMultipliers ??= new BloonHealthMultipliers();
+        Editor.dcm.bloonModifiers.bossSpeedMultiplier = values.Speed / 100f;
+        Editor.dcm.bloonModifiers.healthMultipliers.boss = values.Health / 100f;
+        BossSpeed.Show(values.Speed);
+        BossHealth.Show(values.Health);
+    }
 
     /// <summary>
     /// In Advanced Mode, the Skull Preview follows the tier card under the mouse or with the keyboard frame
@@ -1065,12 +1106,13 @@ public sealed class BossEditorSection
     /// Gives a tier its own boss, or makes it follow the Boss Type with <see cref="TierBoss.Follows"/>; one step for
     /// Undo
     /// </summary>
-    public void SetTierBoss(int tier, TierBoss boss)
+    /// <param name="control">The control that changes, so a slider's run of changes is one step for Undo, or null</param>
+    public void SetTierBoss(int tier, TierBoss boss, string? control = null)
     {
         if (!BossMode.Options.Mixed) return;
         var changed = BossMode.Options with {TierBosses = TierBossMath.With(BossMode.Options.TierBosses, tier, boss)};
         if (changed == BossMode.Options) return;
-        BossHistory.RecordChange(Editor, null);
+        BossHistory.RecordChange(Editor, control);
         BossMode.Options = changed;
         ShowBoss();
     }
@@ -1152,6 +1194,7 @@ public sealed class BossEditorSection
         if (Editor.dcm == null) return;
         BossHistory.RecordSetup(Editor);
         lastTierBosses = null;
+        standardValues = null;
         ResetBossValues(Editor);
         Load(Editor.dcm, BossMode.Options);
         BossMode.Save();
@@ -1233,6 +1276,10 @@ public sealed class BossEditorSection
         var options = BossMode.Options;
         SkullCount.Row.SetActive(options.SkullMode == Config.SkullMode.EvenlySpaced);
         BossTypeRow.SetActive(!options.Mixed);
+
+        // In Advanced Mode every tier has its own speed and health, set in its picker
+        BossSpeed.Row.SetActive(!options.Mixed);
+        BossHealth.Row.SetActive(!options.Mixed);
         customSkullsRow.SetActive(options.SkullMode == Config.SkullMode.Custom);
         ShowSpawnRounds();
         Strip.Show(options, Editor.dcm);
