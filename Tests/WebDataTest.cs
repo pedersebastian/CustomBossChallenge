@@ -58,13 +58,14 @@ public class WebDataTest : CustomBossTest
             }
 
             // The mod still has the old files built in; the next run after rebuilding checks the new ones
+            Skip($"wrote the files instead of checking them ({EnvironmentVariable})");
             yield break;
         }
 
         // Only Debug builds carry the files (see CustomBossChallenge.csproj), so a Release build has nothing to check
         if (typeof(WebDataTest).Assembly.GetManifestResourceStream("CustomBossChallenge.web." + Files[0]) == null)
         {
-            Log("web data is only built into Debug builds: build Debug to check it");
+            Skip("web data is only built into Debug builds: build Debug to check it");
             yield break;
         }
 

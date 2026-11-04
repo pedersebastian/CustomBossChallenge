@@ -113,6 +113,19 @@ BloonsTD6.exe moddingDev -batchmode --modhelper.offline --modhelper.only='Custom
 
 The result is written to `MelonLoader/Latest.log`, e.g. `Ran 25 test(s), 25 succeeded, 0 failed`.
 
+On a Debug build, a run of every test also writes `TestResults/ingame.json` in the repo when the game quits
+(`TestRunReport`): the mod and game version, the commit, which tests failed or were skipped, and `sourceHash`, a
+fingerprint of the mod's own code from `.github/scripts/Get-SourceHash.ps1`. It covers the `.cs` and `.csproj` files,
+`Localization/*.json` and `Bundles/*.bundle`, but not `Tests/`, `UnitTests/`, `PropertyTests/`, `web/`, `docs/`,
+`tools/` or `.github/`, so changing only those doesn't need a new run. A test is skipped when it passes without
+checking what it normally checks (`Skip`), e.g. tests left out by `CBC_TESTS`, or `WebDataTest` writing its files.
+A release needs this report (see **Release version** below), so before tagging:
+
+1. Bump `Version` (and `WorksOnVersion`) in `ModHelperData.cs`.
+2. Build Debug (`dotnet build -c Debug`) and run all in-game tests.
+3. Commit `TestResults/ingame.json` with the version bump.
+4. Run `Check-Release.ps1` (below), then tag.
+
 The screenshots in the README come from the `ScreenshotTour` test. It only runs in a windowed game (without
 `-batchmode`) started with the environment variable `CBC_SCREENSHOTS=<folder>`. To look at other screen formats, also
 set `CBC_RESOLUTIONS`, e.g. `1280x800,1024x768,1680x720,1920x540`: the tour is then taken once per size, each in a
@@ -160,10 +173,12 @@ guards (`[GuardPatch]`), so a bug report's `Latest.log` shows it.
   `English.json` in the same order, keep its `{0}` placeholders and leave no text empty, and every text in
   `Menus/Texts.cs` must exist in English.
 - **Release version** (tags only): the tag must match `Version` in `ModHelperData.cs`, which Mod Helper uses to tell
-  players about updates, and `CHANGELOG.md` must have notes for it. This runs next to the release in `build.yml`, so
-  it marks a bad release instead of stopping it: run it before tagging.
+  players about updates, and `CHANGELOG.md` must have notes for it. `TestResults/ingame.json` must show a run of
+  every in-game test on that version, with none failed or skipped, and its `sourceHash` must match the tagged code,
+  so changing the mod's code after the tests ran means running them again. This runs next to the release in
+  `build.yml`, so it marks a bad release instead of stopping it: run it before tagging.
 - **Unit tests**: `dotnet test --project UnitTests`, see above. The in-game tests can't run on GitHub and still have
-  to be run locally.
+  to be run locally; the release check only sees their report.
 - **Property tests**: `dotnet test --project PropertyTests`, see above.
 - **Website**: `npm test` and `npm run build` in `web/`, see below.
 
