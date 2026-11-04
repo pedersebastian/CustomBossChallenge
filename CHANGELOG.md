@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Website easter eggs** (#61): the Konami code (↑ ↑ ↓ ↓ ← → ← → B A) lets a handful of bloons float up and pop,
+  or shows a short message with reduced motion, and a few joke codes such as `CBC0:MOAB` get a joke card instead of
+  the error. Real codes, and broken ones, read exactly as before.
+
 ## [2.9.0] - 2026-11-03
 
 ### Added
