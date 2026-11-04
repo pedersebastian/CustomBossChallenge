@@ -12,6 +12,7 @@
 
     <ItemGroup>
         <Compile Include="..\Config\KeyboardShortcuts.cs" Link="Mod\KeyboardShortcuts.cs" />
+        <Compile Include="..\Config\RandomNames.cs" Link="Mod\RandomNames.cs" />
         <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />
         <Compile Include="..\Config\TierLook.cs" Link="Mod\TierLook.cs" />
         <Compile Include="..\Config\TierMath.cs" Link="Mod\TierMath.cs" />

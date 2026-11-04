@@ -988,22 +988,26 @@ public sealed class BossEditorSection
 
     /// <summary>
     /// Follows the boss and Elite in the challenge name as long as the player hasn't named it themselves. An example's
-    /// name stays while the boss is still the example's own.
+    /// name stays while the boss is still the example's own, and a name Random made up while it still describes the
+    /// setup; otherwise a made up name is made up again.
     /// </summary>
     private void FollowBossName(BossOptions options)
     {
         var name = Editor.chalName;
         if (name == null) return;
         var example = ExampleSetups.Named(name.text);
+        var traits = BossMode.NameTraits(options, Editor.dcm);
         if (example != null
                 ? example.Options.Boss == options.Boss && example.Options.Elite == options.Elite &&
                   example.Options.TierBosses == options.TierBosses
-                : !BossMode.IsDefaultName(name.text))
+                : !BossMode.IsDefaultName(name.text) || RandomNames.Fits(name.text, traits))
         {
             return;
         }
 
-        name.text = BossMode.DefaultName(options);
+        name.text = RandomNames.IsGenerated(name.text)
+            ? RandomNames.For(traits, BossRandomizer.Random) ?? BossMode.DefaultName(options)
+            : BossMode.DefaultName(options);
         if (Editor.dcm != null) Editor.dcm.name = name.text;
     }
 
