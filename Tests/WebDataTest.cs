@@ -61,6 +61,13 @@ public class WebDataTest : CustomBossTest
             yield break;
         }
 
+        // Only Debug builds carry the files (see CustomBossChallenge.csproj), so a Release build has nothing to check
+        if (typeof(WebDataTest).Assembly.GetManifestResourceStream("CustomBossChallenge.web." + Files[0]) == null)
+        {
+            Log("web data is only built into Debug builds: build Debug to check it");
+            yield break;
+        }
+
         foreach (var (file, json) in data)
         {
             var stream = typeof(WebDataTest).Assembly.GetManifestResourceStream("CustomBossChallenge.web." + file);

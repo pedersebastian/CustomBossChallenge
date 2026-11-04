@@ -227,7 +227,8 @@ names) comes from the game, through the in-game test `WebDataTest`, into `web/sr
   the same list the Boss Creator shows, so they always load in the game.
 - `fixtures.json`: codes with what the mod reads from them; the website's tests must read them the same way.
 
-`WebDataTest` checks that these files still match the game and the mod. After a game update or a change to the code
+`WebDataTest` checks that these files still match the game and the mod. Only Debug builds carry them, so a Release
+build skips the check. After a game update or a change to the code
 format, Tier Preview, the tier look or the examples, write them again by running the in-game tests with the
 environment variable `CBC_WEB_DATA` set to the folder (start the game with PowerShell `Start-Process` so it gets the
 variable), then rebuild the mod and run the tests again:
