@@ -6,6 +6,9 @@ import "@fontsource/nunito/latin-400.css";
 import "@fontsource/nunito/latin-700.css";
 import "@fontsource/nunito/latin-800.css";
 import { GAME } from "./data/types";
+import { setUpKonami } from "./fun/konami";
+
+setUpKonami();
 
 const version = document.getElementById("game-version");
 if (version) version.textContent = `Boss data from BTD6 ${GAME.gameVersion}`;
