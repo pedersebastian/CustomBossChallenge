@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Website easter eggs** (#61): the Konami code (↑ ↑ ↓ ↓ ← → ← → B A) lets a handful of bloons float up and pop,
   or shows a short message with reduced motion, and a few joke codes such as `CBC0:MOAB` get a joke card instead of
   the error. Real codes, and broken ones, read exactly as before.
+- **Describing names for random setups** (#62): when **Random** makes a setup that stands out, it gets a fun name
+  that describes it, like "The Unkillable Snail", "Blink and It's Gone" or "Lych, Lych, Lych...", instead of "Custom
+  Lych". A setup without a striking trait keeps the default name, and a name the player typed is never replaced.
+  Changing the boss afterwards still updates the name. The names are English only for now.
 
 ## [2.9.0] - 2026-11-03
 

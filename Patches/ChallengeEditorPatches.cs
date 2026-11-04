@@ -90,10 +90,11 @@ internal static class ChallengeEditor_Randomize
         // Random keeps the mode: Advanced gets a boss per tier, Standard one boss
         BossMode.Options = BossRandomizer.Randomize(__instance.dcm, BossEditorSection.UnsupportedModes, BossMode.Options.Mixed);
 
-        // A random setup is no longer the example it may have started from
-        if (ExampleSetups.Named(__instance.dcm.name) != null)
+        // A random setup is no longer the example it may have started from, and gets a name that describes it. A name
+        // the player typed is theirs and stays.
+        if (BossMode.IsDefaultName(__instance.dcm.name) || ExampleSetups.Named(__instance.dcm.name) != null)
         {
-            __instance.dcm.name = BossMode.DefaultName(BossMode.Options);
+            __instance.dcm.name = BossMode.RandomName(BossMode.Options, __instance.dcm);
             if (__instance.chalName != null) __instance.chalName.text = __instance.dcm.name;
         }
 

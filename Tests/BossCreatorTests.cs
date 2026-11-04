@@ -432,6 +432,35 @@ public class BossCreatorTest : CustomBossTest
             AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "A random setup must be playable");
             Assert(Approximately(editor.dcm.bloonModifiers.bossSpeedMultiplier, section.BossSpeed.Value / 100f),
                 "Random boss speed shown");
+
+            // A random setup that stands out gets a name that describes it (issue #62)
+            editor.chalName.text = editor.dcm.name = BossMode.DefaultName(BossMode.Options);
+            for (var i = 0; i < 30 && !RandomNames.IsGenerated(editor.chalName.text); i++)
+            {
+                editor.randomBtn.onClick.Invoke();
+                yield return new WaitForSecondsRealtime(0.2f);
+            }
+
+            var generated = editor.chalName.text;
+            Assert(RandomNames.IsGenerated(generated), $"Random must describe a setup that stands out: {generated}");
+            AssertEquals(editor.dcm.name, generated, "The describing name is the challenge's");
+            Assert(RandomNames.Fits(generated, BossMode.NameTraits(BossMode.Options, editor.dcm)),
+                $"{generated} must describe the random setup");
+            Assert(BossMode.IsDefaultName(generated), "A describing name is one the Boss Creator gave");
+
+            // Changing the boss still follows a describing name: it stays when it still fits, or is made up again
+            var other = BossMode.Options.Boss == BossType.Lych ? BossType.Vortex : BossType.Lych;
+            section.BossButtons[other].Button.onClick.Invoke();
+            var followed = editor.chalName.text;
+            var traits = BossMode.NameTraits(BossMode.Options, editor.dcm);
+            Assert(RandomNames.Fits(followed, traits) || followed == BossMode.DefaultName(BossMode.Options),
+                $"After a new boss the name must describe the setup: {followed}");
+
+            // A name the player typed is theirs, also after Random
+            editor.chalName.text = editor.dcm.name = "My random boss";
+            editor.randomBtn.onClick.Invoke();
+            yield return new WaitForSecondsRealtime(0.2f);
+            AssertEquals(editor.chalName.text, "My random boss", "Random must keep the player's own name");
         }
         finally
         {

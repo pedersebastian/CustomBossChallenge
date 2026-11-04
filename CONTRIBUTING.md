@@ -42,8 +42,8 @@ picks bosses).
 
 ### Unit tests
 
-The logic that doesn't need the game (tier, spawn round and skull math, the keyboard shortcut rules, the share code
-format and writing the mod's files) has xUnit tests in `UnitTests/`. Those source files are built on their own in
+The logic that doesn't need the game (tier, spawn round and skull math, the keyboard shortcut rules, the names Random gives a
+setup, the share code format and writing the mod's files) has xUnit tests in `UnitTests/`. Those source files are built on their own in
 `Shared/`, so the tests build and run in seconds without BTD6:
 
 ```

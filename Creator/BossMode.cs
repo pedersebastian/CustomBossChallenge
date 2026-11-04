@@ -171,11 +171,43 @@ public static class BossMode
         options.Mixed ? MixedName : DefaultName(options.Boss, options.Elite);
 
     /// <summary>
-    /// Whether a challenge still has a name the Boss Creator gave it, rather than one the player chose
+    /// Whether a challenge still has a name the Boss Creator gave it, rather than one the player chose. A name Random
+    /// made up counts too.
     /// </summary>
     public static bool IsDefaultName(string? name) =>
-        name == MixedName || System.Enum.GetValues<Il2CppAssets.Scripts.Data.Boss.BossType>()
+        name == MixedName || RandomNames.IsGenerated(name) || System.Enum.GetValues<Il2CppAssets.Scripts.Data.Boss.BossType>()
             .Any(boss => name == DefaultName(boss) || name == DefaultName(boss, true));
+
+    /// <summary>
+    /// What a describing name for the setup looks at
+    /// </summary>
+    public static NameTraits NameTraits(BossOptions options, DailyChallengeModel? dcm)
+    {
+        var tiers = Enumerable.Range(1, options.Tiers).ToList();
+        var bosses = tiers.Select(options.BossOf).ToList();
+        var modifiers = dcm?.bloonModifiers;
+        return new NameTraits
+        {
+            Boss = options.Mixed ? "" : options.Elite ? $"Elite {options.Boss}" : options.Boss.ToString(),
+            Elite = bosses.All(boss => boss.Elite),
+            Tiers = options.Tiers,
+            BossSpeed = (int) System.Math.Round((modifiers?.bossSpeedMultiplier ?? 1) * 100),
+            BossHealth = (int) System.Math.Round((modifiers?.healthMultipliers?.boss ?? 1) * 100),
+            SpeedPerTier = options.SpeedPerTier,
+            HealthPerTier = options.HealthPerTier,
+            NoSkulls = tiers.All(tier => options.TierSkullPercents(tier) is {Length: 0}),
+            AllFortified = modifiers?.allFortified ?? false,
+            SameBoss = options.Mixed && !options.HasRandom && bosses.Select(boss => boss.Boss).Distinct().Count() == 1
+                ? bosses[0].Boss.ToString()
+                : null
+        };
+    }
+
+    /// <summary>
+    /// The name Random gives a setup: a describing one when something about it stands out, otherwise the default name
+    /// </summary>
+    public static string RandomName(BossOptions options, DailyChallengeModel? dcm) =>
+        RandomNames.For(NameTraits(options, dcm), BossRandomizer.Random) ?? DefaultName(options);
 
     public static DailyChallengeModel DefaultDcm(BossOptions options)
     {

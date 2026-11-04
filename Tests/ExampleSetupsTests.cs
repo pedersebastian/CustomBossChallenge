@@ -1,6 +1,7 @@
 using System.Collections;
 using System.IO;
 using System.Linq;
+using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
 using CustomBossChallenge.Menus;
 using CustomBossChallenge.Persistence;
@@ -113,8 +114,11 @@ public class ExampleSetupsTest : CustomBossTest
             AssertEquals(editor!.chalName.text, ExampleSetups.All[0].Name, "The example's name is loaded");
             if (randomly) editor.Randomize();
             else section.BossButtons[BossType.Vortex].Button.onClick.Invoke();
-            AssertEquals(editor.chalName.text, BossMode.DefaultName(BossMode.Options.Boss, BossMode.Options.Elite),
-                $"The name must follow the boss after {(randomly ? "Random" : "picking a boss")}");
+            // Random gives a name that describes the setup when something about it stands out
+            var name = editor.chalName.text;
+            Assert(name == BossMode.DefaultName(BossMode.Options) ||
+                   randomly && RandomNames.Fits(name, BossMode.NameTraits(BossMode.Options, editor.dcm)),
+                $"The name must follow the boss after {(randomly ? "Random" : "picking a boss")}: {name}");
         }
 
         Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();

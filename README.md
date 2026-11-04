@@ -87,7 +87,9 @@ where you can read a share code and see the whole setup without the game, or
    **Random** also randomizes them, always into a setup that can be played: speed and health close to normal are far
    more likely than extreme ones (up to 400 %), the number of tiers is most often around 5, and in **Advanced** every
    tier gets a random boss of its own (now and then a Random tier, more often Elite in later tiers) while **Standard**
-   stays one boss.
+   stays one boss. A random setup that stands out gets a name that describes it, like "The Unkillable Snail" for a
+   slow boss with lots of health or "Skull-Free Diet" without skulls (these names are English only for now). A name
+   you typed yourself is never replaced.
 
 ![Main menu](docs/main-menu.jpg)
 
