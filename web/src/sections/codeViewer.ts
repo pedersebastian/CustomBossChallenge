@@ -3,7 +3,24 @@
 import { decode, extractCode } from "../code/decode";
 import { codeFromHash, compareLinkTo, hashFor, linkTo } from "../code/link";
 import { copyWithFeedback, h } from "../dom";
+import { jokeFor, type Joke } from "../fun/jokes";
 import { bossTitle, releaseSetup, renderSetup } from "../preview/render";
+
+/** A joke code's card: shaped like a setup, but marked as a joke and without Copy or Compare */
+function renderJoke(joke: Joke): HTMLElement {
+  return h(
+    "div",
+    { class: "setup joke" },
+    h(
+      "div",
+      { class: "setup-head" },
+      h("div", { class: "boss-badge", "aria-hidden": "true" }, "🎉"),
+      h("div", {}, h("h3", { class: "setup-name" }, joke.title), h("p", { class: "setup-sub" }, joke.sub)),
+    ),
+    h("p", { class: "note" }, joke.text),
+    h("p", { class: "muted joke-tag" }, "Not a real setup, just a joke."),
+  );
+}
 
 /** Takes the code out of the address bar, keeping the page where it is */
 function clearHash(): void {
@@ -40,6 +57,14 @@ export function setUpCodeViewer(input: HTMLTextAreaElement, result: HTMLElement)
 
     // The address bar only ever links to the setup that is shown
     if (!decoded.ok) {
+      const joke = jokeFor(code);
+      if (joke) {
+        status.textContent = `${joke.title}: ${joke.text}`;
+        replace(renderJoke(joke));
+        clearHash();
+        return;
+      }
+
       status.textContent = decoded.reason;
       replace(h("p", { class: decoded.problem === "TooNew" ? "warning" : "error" }, decoded.reason));
       clearHash();
