@@ -33,6 +33,9 @@ public class ExampleSetupsTest : CustomBossTest
             AssertEquals(dcm.name, example.Name, $"Example {example.EnglishName} is named in the player's language");
         }
 
+        Assert(ExampleSetups.All.Count(example => example.Options.UsesBossEventRounds) >= 3,
+            "Some examples play the boss events' own rounds");
+
         var store = BossMode.Store;
         var saved = BossMode.Saved;
         BossMode.Store = new LastSetupStore(Path.Combine(TempFolder, "LastSetup.json"));

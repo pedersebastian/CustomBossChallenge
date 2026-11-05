@@ -473,7 +473,7 @@
       "playProblem": null
     },
     {
-      "code": "CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lEKzi7NyfHNT0kFCrqWpeblVAYXJCanpoCkClJTUwJSi0IyU4uUrEwManWUkkFG5CXmglSDpRVcUnPz8xTgxhUDxZSsjAyMzGprAQ",
+      "code": "CBC4:PY09C8IwGIT_Srk5QynikFF0FMRK99LcIKZ5Sz6KpeS_m3RwvbvnuR0CveMiIUBjEB_5hUL_SdbexbCEt5XObv0yTjS1WkjzoH-96aFPrTrgOopPSc4UT_SJWWGqZjfOVXJQzZWzuOb_EkoG3bXdOecf",
       "options": {
         "Boss": "Vortex",
         "Elite": false,
@@ -484,7 +484,7 @@
         "SpeedPerTier": 40,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "name": "Speed Demon Vortex",
@@ -721,7 +721,7 @@
       "playProblem": null
     },
     {
-      "code": "CBC1:q1bKV7KqVnLKLy5WslJyKUpNTEnKyc_PU9JRCi5ILM8Lyi_NSwFJGRnoKBiZ6igYA2ljIG1ioFSro5QM0pyXmJsKVBFckJqaUlSap4BiSjFQUMnKyMDIrLYWAA",
+      "code": "CBC4:q1bKV7KqVnLKLy5WslJyKUpNTEnKyc_PU9JRCi5ILM8Lyi_NSwFJGRnoKBiZ6igYA2ljIG1iAFQC0uZalppXAlNWUlSaWqujlAwyMy8xNxWoMbggNTWlqDRPAcXwYqCgkpWRgZFZbS0A",
       "options": {
         "Boss": "Dreadbloon",
         "Elite": false,
@@ -732,7 +732,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": "20, 25, 30, 35, 40",
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "name": "Speedrun Dreadbloon",
@@ -817,7 +817,7 @@
       "playProblem": null
     },
     {
-      "code": "CBC1:LY2xCgMhEER_JUxtcVyRwlI4uHT5heXUIHiuuAoJh_-eDaR982bmAsNecCwCC5dJOlWuPDILDLaceoDtbYRpcPzUk6qajxJDK5TV8SnGdIzcP8p3al5ZoVNreFKjF5ebo6JQQvCw67Leja68_6H-LnN-AQ",
+      "code": "CBC4:Lcw9CsMwDIbhqxTNHkKGDh4NgXYrvYGI5WJwJOOf0hB89yql66tPzwEC9gAntYIFl7A2zJKlJ6lgYEmxEdhWOpnfaHkTt6d09ro_8zCwnsKGWYE7ByqMSV99DCGuPbVd-w2L18a4qQYPLPgSvjhkjZXIg52n-WpU-fyPyk9jfAE",
       "options": {
         "Boss": "Blastapopoulos",
         "Elite": true,
@@ -828,7 +828,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "name": "Paragon Ban",
