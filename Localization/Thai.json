@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "บอส",
   "CustomBossChallenge-TierArrives": "ระดับ {0}: {1}",
   "CustomBossChallenge-ModeStandard": "มาตรฐาน",
-  "CustomBossChallenge-ModeAdvanced": "ขั้นสูง"
+  "CustomBossChallenge-ModeAdvanced": "ขั้นสูง",
+  "CustomBossChallenge-BossEventRounds": "รอบของอีเวนต์บอส",
+  "CustomBossChallenge-BossEventRoundsInfo": "ติ๊กเพื่อเล่นรอบของอีเวนต์บอสอย่างเป็นทางการของบอสนี้แทนรอบปกติ ในอีเวนต์ แต่ละระดับจะมาในรอบที่ 40, 60, 80, 100 และ 120 พร้อมบลูนที่ทำมาเพื่อมัน หากเปลี่ยนรอบที่ปรากฏ รอบเหล่านั้นจะย้ายตามระดับไปด้วย ใช้ได้เฉพาะโหมดมาตรฐาน เพราะในโหมดขั้นสูงแต่ละระดับมีบอสต่างกัน"
 }

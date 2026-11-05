@@ -42,6 +42,7 @@ public class CodeFormatTests
     [InlineData(CodeFormat.Prefix)]
     [InlineData(CodeFormat.Version2Prefix)]
     [InlineData(CodeFormat.Version3Prefix)]
+    [InlineData(CodeFormat.Version4Prefix)]
     public void Every_known_version_is_read(string prefix)
     {
         Assert.True(CodeFormat.TryUnpack(CodeFormat.Pack("{\"o\":{},\"c\":{}}", prefix), out _, out var problem, out _));

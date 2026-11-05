@@ -18,6 +18,7 @@ public static class SetupCode
     public const string Prefix = CodeFormat.Prefix;
     public const string Version2Prefix = CodeFormat.Version2Prefix;
     public const string Version3Prefix = CodeFormat.Version3Prefix;
+    public const string Version4Prefix = CodeFormat.Version4Prefix;
     public const int PrefixLength = CodeFormat.PrefixLength;
     public const int MaxLength = CodeFormat.MaxLength;
     public const int MaxJsonLength = CodeFormat.MaxJsonLength;
@@ -38,7 +39,15 @@ public static class SetupCode
     /// The oldest code version that holds everything in <paramref name="options"/>
     /// </summary>
     public static string PrefixFor(BossOptions options) =>
-        NeedsVersion3(options) ? Version3Prefix : NeedsVersion2(options) ? Version2Prefix : Prefix;
+        NeedsVersion4(options) ? Version4Prefix
+        : NeedsVersion3(options) ? Version3Prefix
+        : NeedsVersion2(options) ? Version2Prefix
+        : Prefix;
+
+    /// <summary>
+    /// Whether the code uses an option that version 3 readers (2.9) don't know
+    /// </summary>
+    public static bool NeedsVersion4(BossOptions options) => options.UsesBossEventRounds;
 
     /// <summary>
     /// Whether the code uses an option that version 2 readers (2.3-2.8) don't know

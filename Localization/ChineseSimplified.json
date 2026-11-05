@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "Boss",
   "CustomBossChallenge-TierArrives": "第 {0} 阶段：{1}",
   "CustomBossChallenge-ModeStandard": "标准",
-  "CustomBossChallenge-ModeAdvanced": "高级"
+  "CustomBossChallenge-ModeAdvanced": "高级",
+  "CustomBossChallenge-BossEventRounds": "Boss 活动回合",
+  "CustomBossChallenge-BossEventRoundsInfo": "勾选后使用该 Boss 官方 Boss 活动的回合，而不是普通回合。在活动中，各阶段在第 40、60、80、100 和 120 回合登场，并配有专门的气球；若更改出现回合，这些回合会随阶段一起移动。仅限标准模式，因为高级模式中各阶段的 Boss 不同。"
 }

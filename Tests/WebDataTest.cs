@@ -228,7 +228,12 @@ public class WebDataTest : CustomBossTest
                 // Each tier with its own skulls, and tiers that keep their boss's own or the Skulls option
                 SetupCode.Pack("{\"o\":{\"Tiers\":7,\"SkullMode\":\"EvenlySpaced\",\"SkullCount\":2,\"TierBosses\":" +
                                "\"Lych#4,BloonariusElite#0,Random#60%;30%,Vortex,DreadbloonElite#25;75%;junk,Phayze#99,Blastapopoulos#x\"}," +
-                               "\"c\":{}}", SetupCode.Version3Prefix)
+                               "\"c\":{}}", SetupCode.Version3Prefix),
+                // Boss Event Rounds, moved to other spawn rounds, and kept but not used in Advanced Mode
+                SetupCode.Pack("{\"o\":{\"Boss\":\"Vortex\",\"BossEventRounds\":true,\"SpawnRounds\":\"30, 50\"},\"c\":{}}",
+                    SetupCode.Version4Prefix),
+                SetupCode.Pack("{\"o\":{\"BossEventRounds\":true,\"TierBosses\":\"Lych,Vortex\"},\"c\":{}}",
+                    SetupCode.Version4Prefix)
             })
             .Distinct()
             .ToList();

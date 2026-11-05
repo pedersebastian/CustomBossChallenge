@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "Bosses",
   "CustomBossChallenge-TierArrives": "Tier {0}: {1}",
   "CustomBossChallenge-ModeStandard": "Standaard",
-  "CustomBossChallenge-ModeAdvanced": "Geavanceerd"
+  "CustomBossChallenge-ModeAdvanced": "Geavanceerd",
+  "CustomBossChallenge-BossEventRounds": "Baas-evenementrondes",
+  "CustomBossChallenge-BossEventRoundsInfo": "Vink aan om de rondes van de officiële baasevenementen voor deze baas te spelen in plaats van de normale rondes. In de evenementen komen de niveaus op ronde 40, 60, 80, 100 en 120 met bloons die voor hen gemaakt zijn; met andere spawnrondes verschuiven die rondes mee met de niveaus. Alleen in Standaard, omdat de niveaus in Geavanceerd verschillende bazen hebben."
 }

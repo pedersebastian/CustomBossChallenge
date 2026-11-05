@@ -9,7 +9,8 @@ import { OptionTypeError, defaultName, defaultOptions, optionsJson, readOptions,
 export const PREFIX = "CBC1:";
 export const VERSION2_PREFIX = "CBC2:";
 export const VERSION3_PREFIX = "CBC3:";
-const KNOWN_PREFIXES = [PREFIX, VERSION2_PREFIX, VERSION3_PREFIX];
+export const VERSION4_PREFIX = "CBC4:";
+const KNOWN_PREFIXES = [PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFIX];
 const PREFIX_LENGTH = 5;
 const ITEMS_KEY = "$items";
 
@@ -138,7 +139,7 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
     if (trimmed.startsWith("CBC") && trimmed.length > 4 && /\d/.test(trimmed[3])) {
       return fail("TooNew", "This code comes from a newer version of Custom Boss Challenge.");
     }
-    return fail("Invalid", "This isn't a Boss Creator code. Codes start with CBC1:, CBC2: or CBC3:.");
+    return fail("Invalid", "This isn't a Boss Creator code. Codes start with CBC1:, CBC2:, CBC3: or CBC4:.");
   }
 
   try {

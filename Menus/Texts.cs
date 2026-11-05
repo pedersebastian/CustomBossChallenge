@@ -70,6 +70,11 @@ public static class Texts
         "more than the normal game, blue is less.");
     public static readonly string PerTier = Key(nameof(PerTier), "{0} % / tier");
 
+    public static readonly string BossEventRounds = Key(nameof(BossEventRounds), "Boss Event Rounds");
+    public static readonly string BossEventRoundsInfo = Key(nameof(BossEventRoundsInfo),
+        "Tick to play the rounds of the official boss events for this boss instead of the normal rounds. In the " +
+        "events the tiers arrive on rounds 40, 60, 80, 100 and 120 with bloons made for them; with other Spawn " +
+        "Rounds those rounds move with the tiers. Only in Standard, since in Advanced the tiers have different bosses.");
     public static readonly string SpawnRounds = Key(nameof(SpawnRounds), "Spawn Rounds");
     public static readonly string SpawnRoundsInfo = Key(nameof(SpawnRoundsInfo),
         "The round each tier arrives on, separated by commas, e.g. 40, 60, 80. Missing rounds continue every 20 " +

@@ -68,6 +68,12 @@ public sealed class BossEditorSection
     public ModHelperCheckbox Elite { get; private set; } = null!;
 
     /// <summary>
+    /// Boss Event Rounds (#80), only in Standard: the rounds of the official boss events, moved with the tiers
+    /// </summary>
+    public ModHelperCheckbox BossEventRounds { get; private set; } = null!;
+    public GameObject BossEventRoundsRow { get; private set; } = null!;
+
+    /// <summary>
     /// The Standard and Advanced tabs at the top of the section. In Advanced Mode the tiers have bosses of their own,
     /// picked on the Tier Preview's cards, and the Boss Type row is hidden.
     /// </summary>
@@ -308,6 +314,15 @@ public sealed class BossEditorSection
             ShowSpawnRounds();
         });
 
+        // Right under the Spawn Rounds, since the event rounds move with them
+        BossEventRoundsRow = EditorRows.LabelRow(template, rows, "BossEventRoundsRow", Texts.BossEventRounds.T(),
+            VanillaSprites.BossChallenge);
+        BossEventRounds = ModHelperCheckbox.Create(EditorRows.ControlInfo("BossEventRounds", 150, 150),
+            false, VanillaSprites.BlueInsertPanelRound,
+            new Action<bool>(on => UpdateOptions("BossEventRounds", o => o with {BossEventRounds = on})),
+            VanillaSprites.TickGreenIcon, 20);
+        BossEventRounds.transform.SetParent(BossEventRoundsRow.transform, false);
+
         skullModeRow = EditorRows.LabelRow(template, rows, "SkullModeRow", Texts.Skulls.T(), VanillaSprites.CrossboneSkull);
         var modes = new Il2CppSystem.Collections.Generic.List<string>();
         modes.Add(Texts.SkullsVanilla.T());
@@ -386,6 +401,7 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(FirstSpawnRound.Row, Texts.FirstBossRound, Texts.FirstBossRoundInfo);
         EditorRows.AddInfo(RoundsBetween.Row, Texts.RoundsBetweenTiers, Texts.RoundsBetweenTiersInfo);
         EditorRows.AddInfo(roundsRow, Texts.SpawnRounds, Texts.SpawnRoundsInfo);
+        EditorRows.AddInfo(BossEventRoundsRow, Texts.BossEventRounds, Texts.BossEventRoundsInfo);
         EditorRows.AddInfo(skullModeRow, Texts.Skulls, Texts.SkullsInfo);
         EditorRows.AddInfo(SkullCount.Row, Texts.SkullCount, Texts.SkullCountInfo);
         EditorRows.AddInfo(customSkullsRow, Texts.SkullHealth, Texts.SkullHealthInfo);
@@ -480,6 +496,11 @@ public sealed class BossEditorSection
         focusStops.Add(FocusStop.ForSlider("RoundsBetween", RoundsBetween));
         focusStops.Add(FocusStop.ForField("SpawnRounds", SpawnRounds.InputField));
         focusStops.Add(FocusStop.ForButton("ResetRounds", resetRounds.Button));
+        focusStops.Add(new FocusStop("BossEventRounds", () => BossEventRounds.gameObject)
+        {
+            Activate = () => BossEventRounds.Toggle.isOn = !BossEventRounds.Toggle.isOn,
+            Reset = () => BossEventRounds.Toggle.isOn = false
+        });
         var skullMode = FocusStop.ForDropdown("SkullMode", SkullMode.Dropdown);
         skullMode.Reset = ResetSkulls;
         focusStops.Add(skullMode);
@@ -732,7 +753,8 @@ public sealed class BossEditorSection
     /// </summary>
     public static string Describe(BossOptions options, DailyChallengeModel dcm) =>
         $"'{dcm.name}', {options.Boss}{(options.Elite ? " Elite" : "")}, {options.Tiers} tiers" +
-        (options.Mixed ? $" ({options.TierBosses})" : "") + $", {dcm.map}, {dcm.difficulty}, {dcm.mode}";
+        (options.Mixed ? $" ({options.TierBosses})" : "") + (options.UsesBossEventRounds ? ", boss event rounds" : "") +
+        $", {dcm.map}, {dcm.difficulty}, {dcm.mode}";
 
     /// <summary>
     /// What a shared setup is, in a few words
@@ -741,7 +763,8 @@ public sealed class BossEditorSection
     {
         var boss = options.Mixed ? Texts.DifferentBosses.T()
             : options.Elite ? $"{options.Boss} {Texts.Elite.T()}" : options.Boss.ToString();
-        return $"<b>{PlainText(dcm.name)}</b>\n{boss}, {Texts.TierCount.T(options.Tiers)}\n" +
+        var rounds = options.UsesBossEventRounds ? $", {Texts.BossEventRounds.T()}" : "";
+        return $"<b>{PlainText(dcm.name)}</b>\n{boss}, {Texts.TierCount.T(options.Tiers)}{rounds}\n" +
                $"{PlainText(dcm.map.T())}, {PlainText(dcm.difficulty.T())}";
     }
 
@@ -925,6 +948,7 @@ public sealed class BossEditorSection
             }
 
             Elite.SetChecked(options.Elite, false);
+            BossEventRounds.SetChecked(options.BossEventRounds, false);
             Mode.Show(options.Mixed);
             Tiers.Show(options.Tiers);
             SpeedPerTier.Show(options.SpeedPerTier);
@@ -1285,6 +1309,8 @@ public sealed class BossEditorSection
         SkullCount.Row.SetActive(!options.Mixed && options.SkullMode == Config.SkullMode.EvenlySpaced);
         customSkullsRow.SetActive(!options.Mixed && options.SkullMode == Config.SkullMode.Custom);
         Skulls.Row.SetActive(!options.Mixed);
+        // The event rounds are a boss's own, so they need one boss for every tier
+        BossEventRoundsRow.SetActive(!options.Mixed);
         ShowSpawnRounds();
         Strip.Show(options, Editor.dcm);
         Skulls.Show(options);

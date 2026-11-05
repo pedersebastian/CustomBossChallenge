@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "Bossowie",
   "CustomBossChallenge-TierArrives": "Poziom {0}: {1}",
   "CustomBossChallenge-ModeStandard": "Standardowy",
-  "CustomBossChallenge-ModeAdvanced": "Zaawansowany"
+  "CustomBossChallenge-ModeAdvanced": "Zaawansowany",
+  "CustomBossChallenge-BossEventRounds": "Rundy wydarzeń bossów",
+  "CustomBossChallenge-BossEventRoundsInfo": "Zaznacz, aby grać rundy z oficjalnych wydarzeń bossów dla tego bossa zamiast zwykłych rund. W wydarzeniach poziomy pojawiają się w rundach 40, 60, 80, 100 i 120 z bloonami stworzonymi dla nich; przy innych rundach pojawienia te rundy przesuwają się razem z poziomami. Tylko w trybie Standardowym, bo w Zaawansowanym poziomy mają różnych bossów."
 }

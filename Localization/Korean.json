@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "보스",
   "CustomBossChallenge-TierArrives": "{0}단계: {1}",
   "CustomBossChallenge-ModeStandard": "기본",
-  "CustomBossChallenge-ModeAdvanced": "고급"
+  "CustomBossChallenge-ModeAdvanced": "고급",
+  "CustomBossChallenge-BossEventRounds": "보스 이벤트 라운드",
+  "CustomBossChallenge-BossEventRoundsInfo": "일반 라운드 대신 이 보스의 공식 보스 이벤트 라운드를 플레이합니다. 이벤트에서는 단계가 전용 블룬과 함께 40, 60, 80, 100, 120 라운드에 등장합니다. 출현 라운드를 바꾸면 그 라운드도 단계와 함께 이동합니다. 고급 모드에서는 단계마다 보스가 다르므로 표준 모드에서만 사용할 수 있습니다."
 }

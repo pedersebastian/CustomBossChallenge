@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="..\Config\BossRoundsMath.cs" Link="Mod\BossRoundsMath.cs" />
         <Compile Include="..\Config\KeyboardShortcuts.cs" Link="Mod\KeyboardShortcuts.cs" />
         <Compile Include="..\Config\RandomNames.cs" Link="Mod\RandomNames.cs" />
         <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />

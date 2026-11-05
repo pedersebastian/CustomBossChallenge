@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "Boss",
   "CustomBossChallenge-TierArrives": "Palier {0} : {1}",
   "CustomBossChallenge-ModeStandard": "Standard",
-  "CustomBossChallenge-ModeAdvanced": "Avancé"
+  "CustomBossChallenge-ModeAdvanced": "Avancé",
+  "CustomBossChallenge-BossEventRounds": "Manches des événements de boss",
+  "CustomBossChallenge-BossEventRoundsInfo": "Cochez pour jouer les manches des événements de boss officiels de ce boss au lieu des manches normales. Dans les événements, les niveaux arrivent aux manches 40, 60, 80, 100 et 120 avec des bloons faits pour eux ; avec d’autres manches d’apparition, ces manches se déplacent avec les niveaux. Seulement en Standard, car en Avancé les niveaux ont des boss différents."
 }

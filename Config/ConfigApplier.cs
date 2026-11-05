@@ -47,6 +47,15 @@ public static class ConfigApplier
         dcm.disableSaves = true;
         dcm.customMapModel = null;
 
+        // The game merges the boss's own round set over the default rounds, like in the boss events (#80);
+        // CustomBossChallenge.OnNewGameModel then moves them to the tiers' Spawn Rounds
+        if (options.UsesBossEventRounds)
+        {
+            var roundSets = dcm.roundSets ??= new Il2CppSystem.Collections.Generic.List<string>();
+            var name = BossOptions.BossEventRoundSet(options.Boss);
+            if (!roundSets.Contains(name)) roundSets.Add(name);
+        }
+
         if (!IsMarked(dcm))
         {
             var name = string.IsNullOrWhiteSpace(dcm.name) ? Creator.BossMode.DefaultName(options) : dcm.name;
@@ -68,6 +77,12 @@ public static class ConfigApplier
         dcm.chalType = defaults.chalType;
         dcm.disableSaves = defaults.disableSaves;
         if (dcm.startRules != null) dcm.startRules.endRound = defaults.startRules.endRound;
+
+        // Boss Event Rounds is a boss option, not a round set of the challenge
+        foreach (var boss in Enum.GetValues<Il2CppAssets.Scripts.Data.Boss.BossType>())
+        {
+            dcm.roundSets?.Remove(BossOptions.BossEventRoundSet(boss));
+        }
         return dcm;
     }
 

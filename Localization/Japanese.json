@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "ボス",
   "CustomBossChallenge-TierArrives": "ティア {0}：{1}",
   "CustomBossChallenge-ModeStandard": "スタンダード",
-  "CustomBossChallenge-ModeAdvanced": "アドバンス"
+  "CustomBossChallenge-ModeAdvanced": "アドバンス",
+  "CustomBossChallenge-BossEventRounds": "ボスイベントのラウンド",
+  "CustomBossChallenge-BossEventRoundsInfo": "通常のラウンドの代わりに、このボスの公式ボスイベントのラウンドをプレイします。イベントでは各ティアがラウンド40、60、80、100、120に専用のブルーンと共に登場します。出現ラウンドを変えると、それらのラウンドもティアと一緒に移動します。アドバンスでは各ティアのボスが異なるため、スタンダードのみです。"
 }

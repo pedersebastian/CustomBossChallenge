@@ -50,6 +50,21 @@ public sealed record BossOptions
     public bool Mixed => TierBosses != null;
 
     /// <summary>
+    /// The boss events' own rounds instead of the default ones (#80), moved to the tiers' Spawn Rounds. Kept but not
+    /// used in Advanced Mode, where the tiers have different bosses; see <see cref="UsesBossEventRounds"/>.
+    /// </summary>
+    public bool BossEventRounds { get; init; }
+
+    /// <summary>Whether the game is played with the boss events' own rounds: only with one boss for every tier</summary>
+    [JsonIgnore]
+    public bool UsesBossEventRounds => BossEventRounds && !Mixed;
+
+    /// <summary>
+    /// The name of a boss's own round set in the game's mergeable round sets, the same for Elite, e.g. "bloonarius"
+    /// </summary>
+    public static string BossEventRoundSet(BossType boss) => boss.ToString().ToLowerInvariant();
+
+    /// <summary>
     /// The skull thresholds (0-1, descending) these options ask for, or null to keep the vanilla skulls
     /// </summary>
     [JsonIgnore]

@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "Boss",
   "CustomBossChallenge-TierArrives": "Livello {0}: {1}",
   "CustomBossChallenge-ModeStandard": "Standard",
-  "CustomBossChallenge-ModeAdvanced": "Avanzata"
+  "CustomBossChallenge-ModeAdvanced": "Avanzata",
+  "CustomBossChallenge-BossEventRounds": "Round degli eventi boss",
+  "CustomBossChallenge-BossEventRoundsInfo": "Spunta per giocare i round degli eventi boss ufficiali di questo boss invece dei round normali. Negli eventi i livelli arrivano ai round 40, 60, 80, 100 e 120 con bloon fatti per loro; con altri round di comparsa quei round si spostano con i livelli. Solo in Standard, poiché in Avanzata i livelli hanno boss diversi."
 }

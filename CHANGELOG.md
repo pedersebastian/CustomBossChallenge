@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Boss Event Rounds** (#80): a new tick under Spawn Rounds plays the rounds of the official boss events for
+  the boss instead of the normal rounds, in every game mode, CHIMPS included. When the tiers spawn on other rounds
+  than 40, 60, 80, 100 and 120, the event's boss rounds move with them. It is only in Standard, since in Advanced
+  the tiers have different bosses. Setups with it are shared as `CBC4:` codes, so older versions of the mod ask
+  for an update instead of playing the normal rounds.
 - **Website easter eggs** (#61): the Konami code (↑ ↑ ↓ ↓ ← → ← → B A) lets a handful of bloons float up and pop,
   or shows a short message with reduced motion, and a few joke codes such as `CBC0:MOAB` get a joke card instead of
   the error. Real codes, and broken ones, read exactly as before.

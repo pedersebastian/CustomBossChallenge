@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "Bosse",
   "CustomBossChallenge-TierArrives": "Stufe {0}: {1}",
   "CustomBossChallenge-ModeStandard": "Standard",
-  "CustomBossChallenge-ModeAdvanced": "Erweitert"
+  "CustomBossChallenge-ModeAdvanced": "Erweitert",
+  "CustomBossChallenge-BossEventRounds": "Boss-Event-Runden",
+  "CustomBossChallenge-BossEventRoundsInfo": "Ankreuzen, um die Runden der offiziellen Boss-Events für diesen Boss statt der normalen Runden zu spielen. In den Events erscheinen die Stufen in Runde 40, 60, 80, 100 und 120 mit dafür gemachten Bloons; bei anderen Spawn-Runden wandern diese Runden mit den Stufen. Nur im Standardmodus, da die Stufen im Erweiterten Modus verschiedene Bosse haben."
 }

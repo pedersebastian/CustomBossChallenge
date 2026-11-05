@@ -31,16 +31,18 @@ public static class CodeFormat
     /// <summary>
     /// Codes start with "CBC", the format version and a colon. Version 1 codes (2.2) are read the same way; a code
     /// that uses an option 2.2 doesn't know is version 2, so 2.2 asks for an update instead of silently dropping it.
-    /// The same goes for version 3, which has a different boss per tier (2.9).
+    /// The same goes for version 3, which has a different boss per tier (2.9), and version 4, which has Boss Event
+    /// Rounds.
     /// </summary>
     public const string Prefix = "CBC1:";
     public const string Version2Prefix = "CBC2:";
     public const string Version3Prefix = "CBC3:";
+    public const string Version4Prefix = "CBC4:";
 
     /// <summary>
     /// The prefixes this version reads
     /// </summary>
-    public static readonly string[] KnownPrefixes = [Prefix, Version2Prefix, Version3Prefix];
+    public static readonly string[] KnownPrefixes = [Prefix, Version2Prefix, Version3Prefix, Version4Prefix];
     public const string AnyVersionPrefix = "CBC";
     public const int PrefixLength = 5;
 
