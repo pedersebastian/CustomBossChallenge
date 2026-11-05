@@ -113,5 +113,5 @@
   "CustomBossChallenge-ModeStandard": "Estándar",
   "CustomBossChallenge-ModeAdvanced": "Avanzado",
   "CustomBossChallenge-BossEventRounds": "Rondas de evento de jefe",
-  "CustomBossChallenge-BossEventRoundsInfo": "Marca para jugar las rondas de los eventos de jefe oficiales de este jefe en lugar de las rondas normales. En los eventos los niveles llegan en las rondas 40, 60, 80, 100 y 120 con bloons hechos para ellos; con otras rondas de aparición, esas rondas se mueven con los niveles. Solo en Estándar, ya que en Avanzado los niveles tienen jefes distintos."
+  "CustomBossChallenge-BossEventRoundsInfo": "Marca para jugar las rondas de los eventos de jefe oficiales de este jefe en lugar de las rondas normales. En los eventos los niveles llegan en las rondas 40, 60, 80, 100 y 120 con bloons hechos para ellos; con otras rondas de aparición, esas rondas se mueven con los niveles. En Avanzado cada nivel llega en la ronda hecha para su propio jefe, y las demás rondas siguen al jefe del primer nivel."
 }

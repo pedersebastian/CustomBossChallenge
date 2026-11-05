@@ -68,4 +68,25 @@ public class BossRoundsMathTests
 
     private static void AssertPermutation(int[] sources) =>
         Assert.Equal(Enumerable.Range(1, sources.Length), sources.OrderBy(round => round));
+
+    [Fact]
+    public void Every_tier_plays_its_event_round_on_its_spawn_round()
+    {
+        var tiers = BossRoundsMath.TierEventRounds([30, 50, 70, 90, 110], Rounds);
+        Assert.Equal([(30, 1, 40), (50, 2, 60), (70, 3, 80), (90, 4, 100), (110, 5, 120)], tiers);
+        var sources = BossRoundsMath.Sources([30, 50, 70, 90, 110], Rounds);
+        Assert.All(tiers, tier => Assert.Equal(tier.EventRound, sources[tier.Round - 1]));
+    }
+
+    [Fact]
+    public void Only_tiers_that_exist_play_an_event_round() =>
+        Assert.Equal([(25, 1, 40)], BossRoundsMath.TierEventRounds([25], Rounds));
+
+    [Fact]
+    public void Tiers_past_the_last_round_and_above_5_play_no_event_round()
+    {
+        var tiers = BossRoundsMath.TierEventRounds([40, 60, 80, 100, 150, 160, 180], Rounds);
+        Assert.Equal([1, 2, 3, 4], tiers.Select(tier => tier.Tier));
+        Assert.Empty(BossRoundsMath.TierEventRounds([40, 60], 30));
+    }
 }

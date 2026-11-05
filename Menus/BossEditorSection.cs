@@ -68,7 +68,7 @@ public sealed class BossEditorSection
     public ModHelperCheckbox Elite { get; private set; } = null!;
 
     /// <summary>
-    /// Boss Event Rounds (#80), only in Standard: the rounds of the official boss events, moved with the tiers
+    /// Boss Event Rounds (#80, #84): the rounds of the official boss events, moved with the tiers
     /// </summary>
     public ModHelperCheckbox BossEventRounds { get; private set; } = null!;
     public GameObject BossEventRoundsRow { get; private set; } = null!;
@@ -1309,8 +1309,6 @@ public sealed class BossEditorSection
         SkullCount.Row.SetActive(!options.Mixed && options.SkullMode == Config.SkullMode.EvenlySpaced);
         customSkullsRow.SetActive(!options.Mixed && options.SkullMode == Config.SkullMode.Custom);
         Skulls.Row.SetActive(!options.Mixed);
-        // The event rounds are a boss's own, so they need one boss for every tier
-        BossEventRoundsRow.SetActive(!options.Mixed);
         ShowSpawnRounds();
         Strip.Show(options, Editor.dcm);
         Skulls.Show(options);

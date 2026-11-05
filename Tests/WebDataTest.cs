@@ -229,7 +229,7 @@ public class WebDataTest : CustomBossTest
                 SetupCode.Pack("{\"o\":{\"Tiers\":7,\"SkullMode\":\"EvenlySpaced\",\"SkullCount\":2,\"TierBosses\":" +
                                "\"Lych#4,BloonariusElite#0,Random#60%;30%,Vortex,DreadbloonElite#25;75%;junk,Phayze#99,Blastapopoulos#x\"}," +
                                "\"c\":{}}", SetupCode.Version3Prefix),
-                // Boss Event Rounds, moved to other spawn rounds, and kept but not used in Advanced Mode
+                // Boss Event Rounds, moved to other spawn rounds, and in Advanced Mode with each tier's own round
                 SetupCode.Pack("{\"o\":{\"Boss\":\"Vortex\",\"BossEventRounds\":true,\"SpawnRounds\":\"30, 50\"},\"c\":{}}",
                     SetupCode.Version4Prefix),
                 SetupCode.Pack("{\"o\":{\"BossEventRounds\":true,\"TierBosses\":\"Lych,Vortex\"},\"c\":{}}",

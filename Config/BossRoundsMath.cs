@@ -42,6 +42,17 @@ public static class BossRoundsMath
     }
 
     /// <summary>
+    /// Every tier that plays an event round, with the round it arrives on and the event round made for it, after
+    /// <see cref="Sources"/> moved them: tiers 1-5 whose spawn round and event round are both in the game. In Advanced
+    /// Mode (#84) each of these rounds comes from the tier's own boss.
+    /// </summary>
+    public static (int Round, int Tier, int EventRound)[] TierEventRounds(int[] spawnRounds, int roundCount) =>
+        EventRounds.Zip(spawnRounds, (from, to) => (From: from, To: to))
+            .Select((move, i) => (Round: move.To, Tier: i + 1, EventRound: move.From))
+            .Where(tier => tier.Round >= 1 && tier.Round <= roundCount && tier.EventRound <= roundCount)
+            .ToArray();
+
+    /// <summary>
     /// Whether <paramref name="sources"/> leaves every round where it is
     /// </summary>
     public static bool IsIdentity(IReadOnlyList<int> sources) => sources.Select((source, i) => source == i + 1).All(same => same);

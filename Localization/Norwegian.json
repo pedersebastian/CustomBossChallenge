@@ -113,5 +113,5 @@
   "CustomBossChallenge-ModeStandard": "Standard",
   "CustomBossChallenge-ModeAdvanced": "Avansert",
   "CustomBossChallenge-BossEventRounds": "Boss-event-runder",
-  "CustomBossChallenge-BossEventRoundsInfo": "Huk av for å spille rundene fra de offisielle boss-eventene for denne bossen i stedet for de vanlige rundene. I eventene kommer nivåene på runde 40, 60, 80, 100 og 120 med bloons laget for dem; med andre Spawn-runder flyttes de rundene med nivåene. Bare i Standard, siden nivåene har ulike bosser i Avansert."
+  "CustomBossChallenge-BossEventRoundsInfo": "Huk av for å spille rundene fra de offisielle boss-eventene for denne bossen i stedet for de vanlige rundene. I eventene kommer nivåene på runde 40, 60, 80, 100 og 120 med bloons laget for dem; med andre Spawn-runder flyttes de rundene med nivåene. I Avansert kommer hvert nivå på runden laget for sin egen boss, og de andre rundene følger bossen på første nivå."
 }

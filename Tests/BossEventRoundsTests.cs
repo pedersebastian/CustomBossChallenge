@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
@@ -15,8 +16,8 @@ using static CustomBossChallenge.Tests.TestUtils;
 namespace CustomBossChallenge.Tests;
 
 /// <summary>
-/// Boss Event Rounds (#80): the boss events' own rounds, moved to the tiers' Spawn Rounds, only with one boss for every
-/// tier, and the game's own round sets stay as they are
+/// Boss Event Rounds (#80): the boss events' own rounds, moved to the tiers' Spawn Rounds, and in Advanced Mode (#84)
+/// every tier's round from its own boss; the game's own round sets stay as they are
 /// </summary>
 public class BossEventRoundsGameTest : CustomBossTest
 {
@@ -36,31 +37,79 @@ public class BossEventRoundsGameTest : CustomBossTest
         yield return Play(new BossOptions(), chimps);
         AssertRounds(defaults, "Without Boss Event Rounds");
 
+        // Every boss's rounds as the game merges them, and the same from our own conversion for Advanced Mode
+        var merged = new Dictionary<BossType, string[]>();
+        var defaultRounds = GameData.Instance.RoundSetByName("DefaultRoundSet").rounds;
+        foreach (var boss in Enum.GetValues<BossType>())
+        {
+            yield return Play(new BossOptions {Boss = boss, BossEventRounds = true}, chimps);
+            var game = InGame.instance.GetGameModel().roundSet.rounds;
+            merged[boss] = Rounds(InGame.instance.GetGameModel().roundSet);
+            var set = BossOptions.BossEventRoundSet(boss);
+            foreach (var info in GameData.Instance.MergeableRoundSetByName(set).rounds)
+            {
+                var round = info.roundNumber;
+                AssertEquals(Exact(BossEventRounds.RoundOf(set, round, defaultRounds[round - 1])!), Exact(game[round - 1]),
+                    $"Round {round} of {set}, converted like the game merges it");
+            }
+        }
+
         // On in CHIMPS, the boss's rounds where the event has them
-        var on = new BossOptions {BossEventRounds = true};
-        yield return Play(on, chimps);
-        var events = Rounds(InGame.instance.GetGameModel().roundSet);
+        var events = merged[BossType.Bloonarius];
         Assert(events[39] != defaults[39], $"Round 40 is the default one: {events[39]}");
         AssertEquals(events[40], defaults[40], "Round 41 is no boss round");
+        var on = new BossOptions {BossEventRounds = true};
+        yield return Play(on, chimps);
         Assert(!InGameData.CurrentGame.dcModel.roundSets.Contains("lych"), "Only the boss's own round set");
 
         // Moved with the tiers, also after a restart
         var moved = on with {SpawnRounds = "30, 50, 70, 90, 110"};
-        var expected = BossRoundsMath.Sources(moved.EffectiveSpawnRounds, events.Length).Select(source => events[source - 1]).ToArray();
+        var expected = Moved(events, moved);
         yield return Play(moved, chimps);
         AssertRounds(expected, "Rounds moved to the spawn rounds");
         AssertEquals(Rounds(InGame.instance.GetGameModel().roundSet)[29], events[39], "Round 30 is the event's round 40");
         yield return Restart();
         AssertRounds(expected, "Rounds after a restart");
 
-        // Advanced Mode keeps the setting but plays the default rounds
-        yield return Play(on with {TierBosses = "Lych,Vortex"}, BaseDcm());
-        AssertRounds(defaults, "Advanced Mode");
+        // Advanced Mode: each tier arrives on its own boss's round, the other rounds follow the first tier's boss
+        // (tier 2 gets a boss whose round 60 differs from Lych's, so the test sees where it comes from)
+        var second = Enum.GetValues<BossType>().First(boss => merged[boss][59] != merged[BossType.Lych][59]);
+        var advanced = on with {Tiers = 3, SpawnRounds = "30, 50, 70", TierBosses = $"Lych,{second}Elite,Bloonarius"};
+        expected = Moved(merged[BossType.Lych], advanced);
+        expected[49] = merged[second][59];
+        expected[69] = merged[BossType.Bloonarius][79];
+        yield return Play(advanced, chimps);
+        AssertRounds(expected, $"Advanced Mode, each tier with its own boss's round ({second} on tier 2)");
+
+        // Vortex first brings its extra rounds along
+        yield return Play(on with {Tiers = 2, TierBosses = "Vortex,Lych"}, BaseDcm());
+        var vortexFirst = Rounds(InGame.instance.GetGameModel().roundSet);
+        AssertEquals(vortexFirst[4], merged[BossType.Vortex][4], "Round 5 follows Vortex on tier 1");
+        Assert(vortexFirst[4].Contains("Yellow"), $"Vortex's round 5 has its Yellow bloons: {vortexFirst[4]}");
+        AssertEquals(vortexFirst[59], merged[BossType.Lych][59], "Tier 2 arrives on Lych's round 60");
+
+        // A Random tier plays the round of the boss it got, also after a restart
+        var random = BossGameLauncher.Resolve(on with {Tiers = 2, TierBosses = "Lych,Random"});
+        Assert(!random.HasRandom, "Random tiers get their boss when the game starts");
+        yield return Play(random, chimps);
+        var picked = random.BossOf(2).Boss;
+        AssertEquals(Rounds(InGame.instance.GetGameModel().roundSet)[59], merged[picked][59],
+            $"The Random tier plays the round of {picked}");
+        yield return Restart();
+        AssertEquals(Rounds(InGame.instance.GetGameModel().roundSet)[59], merged[picked][59], "The same round after a restart");
 
         yield return ToMainMenu();
         AssertEquals(string.Join("|", Rounds(GameData.Instance.RoundSetByName("DefaultRoundSet"))), string.Join("|", defaults),
             "The game's own default rounds");
     }
+
+    /// <summary>The rounds of a boss's event set, moved to the given options' spawn rounds</summary>
+    private static string[] Moved(string[] rounds, BossOptions options) =>
+        BossRoundsMath.Sources(options.EffectiveSpawnRounds, rounds.Length).Select(source => rounds[source - 1]).ToArray();
+
+    /// <summary>A round's bloons with their exact times</summary>
+    private static string Exact(RoundModel round) =>
+        string.Join(" ", round.groups.Select(g => $"{g.count}x{g.bloon}@{g.start:R}-{g.end:R}"));
 
     private IEnumerator Play(BossOptions options, Il2CppAssets.Scripts.Models.ServerEvents.DailyChallengeModel dcm)
     {
@@ -117,13 +166,28 @@ public class BossEventRoundsContinueTest : ContinueTestBase
         AssertCustomGame(options);
         AssertEquals(string.Join("|", BossEventRoundsGameTest.Rounds(InGame.instance.GetGameModel().roundSet)),
             string.Join("|", rounds), "Rounds of the continued game");
+
+        // Advanced Mode, with every tier's own round
+        var mixed = options with {TierBosses = "Vortex,Lych,Phayze"};
+        yield return CloseGame();
+        yield return StartCustomGame(mixed, Challenge(28).Build());
+        rounds = BossEventRoundsGameTest.Rounds(InGame.instance.GetGameModel().roundSet);
+        yield return PlayRound();
+        game = AssertNotNull(Store.TryLoad(), "Round 29 of the Advanced game was not saved");
+        AssertEquals(game.Options, mixed, "Advanced options in the file");
+        yield return CloseGame();
+        BossGameLauncher.Continue(game);
+        yield return WaitForLoadedGame();
+        AssertCustomGame(mixed);
+        AssertEquals(string.Join("|", BossEventRoundsGameTest.Rounds(InGame.instance.GetGameModel().roundSet)),
+            string.Join("|", rounds), "Rounds of the continued Advanced game");
         yield return ToMainMenu();
     }
 }
 
 /// <summary>
-/// The Boss Event Rounds tick in the Boss Creator: right under Spawn Rounds, only in Standard, with Undo, the keyboard,
-/// the reset and a version 4 code
+/// The Boss Event Rounds tick in the Boss Creator: right under Spawn Rounds, in Standard and Advanced Mode, with Undo,
+/// the keyboard, the reset and a version 4 code
 /// </summary>
 public class BossEventRoundsCreatorTest : CustomBossTest
 {
@@ -182,13 +246,16 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         Assert(Menus.BossEditorSection.Summary(read, section.Editor.dcm).Contains(Menus.Texts.BossEventRounds.T()),
             "The pasted code's summary mentions Boss Event Rounds");
 
-        // Advanced hides the tick and keeps its value for Standard; codes don't need version 4 there
+        // Advanced Mode shows the tick too, still right under Spawn Rounds, and plays it (#84)
         section.SetAdvanced(true);
         yield return null;
-        Assert(!row.activeInHierarchy, "Advanced hides the tick");
-        Assert(BossMode.Options.BossEventRounds && !BossMode.Options.UsesBossEventRounds, "Advanced keeps but doesn't use it");
-        Assert(SetupCode.Encode(BossMode.Options, section.Editor.dcm).StartsWith(SetupCode.Version3Prefix),
-            "Advanced with the tick kept is a version 3 code");
+        Assert(row.activeInHierarchy && section.BossEventRounds.Toggle.isOn, "Advanced shows the tick, still on");
+        AssertEquals(row.transform.GetSiblingIndex(), spawnRounds.GetSiblingIndex() + 1, "Under Spawn Rounds in Advanced");
+        Assert(BossMode.Options.Mixed && BossMode.Options.UsesBossEventRounds, "Advanced plays the event rounds");
+        var mixedCode = SetupCode.Encode(BossMode.Options, section.Editor.dcm);
+        Assert(mixedCode.StartsWith(SetupCode.Version4Prefix), $"Advanced with the tick is a version 4 code: {mixedCode}");
+        Assert(SetupCode.TryDecode(mixedCode, out var mixedRead, out _, out problem), $"The Advanced code reads back: {problem}");
+        AssertEquals(mixedRead, BossMode.Options, "Advanced options read back from the code");
         section.SetAdvanced(false);
         yield return null;
         Assert(row.activeInHierarchy && section.BossEventRounds.Toggle.isOn, "Standard shows the tick again, still on");

@@ -54,7 +54,7 @@ let ``Codes use version 2, 3 and 4 exactly when they need it, and only character
         let code = encode setup
         let mixed = not (isNull setup.Options["TierBosses"])
         let perTier = setup.Options.Value<int>("SpeedPerTier") <> 0 || setup.Options.Value<int>("HealthPerTier") <> 0
-        let eventRounds = setup.Options.Value<bool>("BossEventRounds") && not mixed
+        let eventRounds = setup.Options.Value<bool>("BossEventRounds")
         (code.StartsWith(CodeFormat.Version4Prefix) = eventRounds |@ "version 4")
         .&. (code.StartsWith(CodeFormat.Version3Prefix) = (mixed && not eventRounds) |@ "version 3")
         .&. (code.StartsWith(CodeFormat.Version2Prefix) = (perTier && not mixed && not eventRounds) |@ "version 2")

@@ -165,8 +165,8 @@ export const effectiveSpawnRounds = (options: BossOptions): number[] => spawnRou
 /** Whether the tiers can have different bosses */
 export const isMixed = (options: BossOptions): boolean => options.TierBosses != null;
 
-/** BossOptions.UsesBossEventRounds: the event rounds are only played with one boss for every tier */
-export const usesBossEventRounds = (options: BossOptions): boolean => options.BossEventRounds && !isMixed(options);
+/** BossOptions.UsesBossEventRounds: the event rounds are played in Standard and in Advanced Mode (#84) */
+export const usesBossEventRounds = (options: BossOptions): boolean => options.BossEventRounds;
 
 /** What a tier was set to: the setup's boss (boss null), a boss of its own, or Random (BossOptions.EntryOf) */
 export const entryOf = (options: BossOptions, tier: number): TierBoss =>

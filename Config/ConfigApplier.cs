@@ -52,7 +52,7 @@ public static class ConfigApplier
         if (options.UsesBossEventRounds)
         {
             var roundSets = dcm.roundSets ??= new Il2CppSystem.Collections.Generic.List<string>();
-            var name = BossOptions.BossEventRoundSet(options.Boss);
+            var name = options.BaseEventRoundSet;
             if (!roundSets.Contains(name)) roundSets.Add(name);
         }
 
