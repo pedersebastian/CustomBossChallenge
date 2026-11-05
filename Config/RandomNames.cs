@@ -38,8 +38,18 @@ public sealed record NameTraits
 /// </summary>
 public static class RandomNames
 {
-    /// <summary>Same as ChallengeLimits.MaxNameLength, which every name the rules can make fits in</summary>
-    public const int MaxLength = 60;
+    /// <summary>
+    /// The game's challenge name field holds 40 characters, so every name the rules can make fits in it (and in
+    /// ChallengeLimits.MaxNameLength)
+    /// </summary>
+    public const int MaxLength = 40;
+
+    /// <summary>
+    /// Besides ASCII letters and digits, the only characters the game's name field keeps when the name is put into it:
+    /// it drops others like '-', ':' or '(' and turns 'Å' into 'A', so a name using them would no longer match its
+    /// rule. RandomNamesFieldTest checks every name against the real field.
+    /// </summary>
+    public const string FieldPunctuation = " !?;/#%',.";
 
     /// <summary>From how far off the normal 100 % a boss speed or health counts as striking</summary>
     public const int High = 250;
@@ -63,9 +73,9 @@ public static class RandomNames
         new(t => t.BossSpeed >= High && t.Tiers == 1, "Blink and It's Gone", "Gone in a Flash"),
         new(t => t.Tiers >= ManyTiers && t.HealthPerTier >= ToughPerTier, "The Long Haul", "It Just Keeps Going"),
         new(t => t.AllFortified && t.Elite, "Armoured and Angry", "Elite and Armoured"),
-        new(t => t.NoSkulls, "Skull-Free Diet", "No Skulls Attached"),
+        new(t => t.NoSkulls, "No Skulls Allowed", "No Skulls Attached"),
         new(t => t.BossSpeed >= High, "Turbo {0}", "{0} in a Hurry"),
-        new(t => t.BossHealth >= High, "Thick-Skinned {0}", "{0} the Unbreakable"),
+        new(t => t.BossHealth >= High, "Heavyweight {0}", "{0} the Unbreakable"),
         new(t => t.BossSpeed <= Low, "Sleepy {0}", "{0} in Slow Motion"),
         new(t => t.BossHealth <= Low, "Paper {0}", "Fragile {0}"),
         new(t => t.Tiers == 1, "One and Done", "Just the One"),
@@ -107,6 +117,7 @@ public static class RandomNames
             .SelectMany(name => name.Contains("{0}") ? bosses.Select(boss => Fill(name, boss, ""))
                 : name.Contains("{1}") ? TierBossMath.Bosses.Select(boss => Fill(name, "", boss))
                 : [name])
+            .Where(name => name.Length <= MaxLength)
             .ToHashSet();
     });
 
@@ -121,6 +132,8 @@ public static class RandomNames
             var names = rule.Names
                 .Where(name => !name.Contains("{0}") || traits.Boss.Length > 0)
                 .Select(name => Fill(name, traits.Boss, traits.SameBoss ?? ""))
+                // e.g. "Blastapopoulos, Blastapopoulos, Blastapopoulos...", which the name field would cut off
+                .Where(name => name.Length <= MaxLength)
                 .ToList();
             if (names.Count > 0) return names;
         }

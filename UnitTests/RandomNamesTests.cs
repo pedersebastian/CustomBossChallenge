@@ -26,7 +26,7 @@ public class RandomNamesTests
     [InlineData(400, 50, 5, "Fast and Fragile", "Paper Rocket")]
     [InlineData(400, 100, 1, "Blink and It's Gone", "Gone in a Flash")]
     [InlineData(300, 100, 5, "Turbo Lych", "Lych in a Hurry")]
-    [InlineData(100, 300, 5, "Thick-Skinned Lych", "Lych the Unbreakable")]
+    [InlineData(100, 300, 5, "Heavyweight Lych", "Lych the Unbreakable")]
     [InlineData(50, 100, 5, "Sleepy Lych", "Lych in Slow Motion")]
     [InlineData(100, 50, 5, "Paper Lych", "Fragile Lych")]
     [InlineData(100, 100, 1, "One and Done", "Just the One")]
@@ -49,7 +49,7 @@ public class RandomNamesTests
 
     [Fact]
     public void Skulls_off_is_a_skull_free_diet() =>
-        Assert.Contains(Name(Lych with {NoSkulls = true}), new[] {"Skull-Free Diet", "No Skulls Attached"});
+        Assert.Contains(Name(Lych with {NoSkulls = true}), new[] {"No Skulls Allowed", "No Skulls Attached"});
 
     [Fact]
     public void The_same_boss_on_every_tier_repeats_it() =>
@@ -84,8 +84,8 @@ public class RandomNamesTests
         Assert.True(RandomNames.Fits("The Unkillable Snail", all with {SameBoss = null}));
         Assert.True(RandomNames.Fits("The Long Haul", all with {SameBoss = null, BossSpeed = 100}));
         Assert.True(RandomNames.Fits("Armoured and Angry", all with {SameBoss = null, BossSpeed = 100, Tiers = 5}));
-        Assert.True(RandomNames.Fits("Skull-Free Diet", all with {SameBoss = null, BossSpeed = 100, Tiers = 5, Elite = false}));
-        Assert.True(RandomNames.Fits("Thick-Skinned Elite Lych",
+        Assert.True(RandomNames.Fits("No Skulls Allowed", all with {SameBoss = null, BossSpeed = 100, Tiers = 5, Elite = false}));
+        Assert.True(RandomNames.Fits("Heavyweight Elite Lych",
             all with {SameBoss = null, BossSpeed = 100, Tiers = 5, Elite = false, NoSkulls = false}));
         Assert.False(RandomNames.Fits("Hard Shell", all));
     }
@@ -109,6 +109,15 @@ public class RandomNamesTests
     }
 
     [Fact]
+    public void A_name_too_long_for_the_name_field_is_left_out()
+    {
+        var traits = new NameTraits {Boss = "Blastapopoulos", SameBoss = "Blastapopoulos", Tiers = 5};
+        var names = Enumerable.Range(0, 50).Select(seed => Name(traits, seed)).Distinct().ToList();
+        Assert.Equal(new[] {"Blastapopoulos on Repeat", "Nothing but Blastapopoulos"}, names.Order());
+        Assert.False(RandomNames.IsGenerated("Blastapopoulos, Blastapopoulos, Blastapopoulos..."));
+    }
+
+    [Fact]
     public void Every_name_is_generated_and_fits_a_challenge_name()
     {
         var names = RandomNames.AllNames.ToList();
@@ -120,7 +129,8 @@ public class RandomNamesTests
             Assert.True(RandomNames.IsGenerated(name), name);
             Assert.InRange(name.Length, 1, RandomNames.MaxLength);
             Assert.Equal(name.Trim(), name);
-            Assert.All(name, c => Assert.True(c < 128 && !char.IsControl(c), $"'{c}' in {name}"));
+            Assert.All(name, c => Assert.True(char.IsAsciiLetterOrDigit(c) || RandomNames.FieldPunctuation.Contains(c),
+                $"'{c}' in {name}, which the game's name field drops"));
         });
     }
 
