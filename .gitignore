@@ -37,6 +37,10 @@ Generated\ Files/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
+# except the in-game test report, which a release needs (see CONTRIBUTING.md)
+!/TestResults/
+/TestResults/*
+!/TestResults/ingame.json
 [Bb]uild[Ll]og.*
 
 # NUNIT

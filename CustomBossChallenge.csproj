@@ -31,6 +31,50 @@
                           Condition="'$(Configuration)' == 'Debug'" />
     </ItemGroup>
 
+    <!-- Debug builds, which the in-game tests run on, know which code they were built from, so the tests can write it to
+         TestResults/ingame.json for Check-Release.ps1 (see CONTRIBUTING.md). Release builds don't carry the author's
+         folder or commit. -->
+    <Target Name="EmbedTestedSource" BeforeTargets="GetAssemblyAttributes" Condition="'$(Configuration)' == 'Debug'">
+        <PropertyGroup>
+            <PowerShell Condition="'$(OS)' == 'Windows_NT'">powershell -NoProfile -ExecutionPolicy Bypass</PowerShell>
+            <PowerShell Condition="'$(OS)' != 'Windows_NT'">pwsh -NoProfile</PowerShell>
+        </PropertyGroup>
+        <Exec Command="$(PowerShell) -File &quot;$(MSBuildProjectDirectory)/.github/scripts/Get-SourceHash.ps1&quot; -Root &quot;$(MSBuildProjectDirectory)&quot;"
+              ConsoleToMSBuild="true" StandardOutputImportance="low">
+            <Output TaskParameter="ConsoleOutput" PropertyName="TestedSourceHash" />
+        </Exec>
+        <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" ContinueOnError="true"
+              WorkingDirectory="$(MSBuildProjectDirectory)">
+            <Output TaskParameter="ConsoleOutput" PropertyName="TestedCommit" />
+        </Exec>
+        <Exec Command="git status --porcelain" ConsoleToMSBuild="true" StandardOutputImportance="low" ContinueOnError="true"
+              WorkingDirectory="$(MSBuildProjectDirectory)">
+            <Output TaskParameter="ConsoleOutput" PropertyName="TestedChanges" />
+        </Exec>
+        <PropertyGroup>
+            <TestedDirty>false</TestedDirty>
+            <TestedDirty Condition="'$(TestedChanges)' != ''">true</TestedDirty>
+        </PropertyGroup>
+        <ItemGroup>
+            <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+                <_Parameter1>CBC.SourceHash</_Parameter1>
+                <_Parameter2>$(TestedSourceHash)</_Parameter2>
+            </AssemblyAttribute>
+            <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+                <_Parameter1>CBC.Commit</_Parameter1>
+                <_Parameter2>$(TestedCommit)</_Parameter2>
+            </AssemblyAttribute>
+            <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+                <_Parameter1>CBC.Dirty</_Parameter1>
+                <_Parameter2>$(TestedDirty)</_Parameter2>
+            </AssemblyAttribute>
+            <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+                <_Parameter1>CBC.RepoRoot</_Parameter1>
+                <_Parameter2>$(MSBuildProjectDirectory)</_Parameter2>
+            </AssemblyAttribute>
+        </ItemGroup>
+    </Target>
+
     <!-- The Unity project only builds the shader bundle (see CONTRIBUTING.md); Bundles\tierlook.bundle, which it makes,
          is built in like every *.bundle -->
     <ItemGroup>

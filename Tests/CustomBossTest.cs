@@ -21,10 +21,13 @@ public abstract class CustomBossTest : ModTest
 
     public sealed override IEnumerator Test()
     {
+        TestRunReport.Watch();
+
         // CBC_TESTS=RetryTest,ContinueTest runs only those tests, the others pass right away
         var only = System.Environment.GetEnvironmentVariable("CBC_TESTS");
         if (!string.IsNullOrWhiteSpace(only) && !only.Split(',').Select(name => name.Trim()).Contains(GetType().Name))
         {
+            TestRunReport.Skip(Name, "not in CBC_TESTS");
             yield break;
         }
 
@@ -53,6 +56,16 @@ public abstract class CustomBossTest : ModTest
     protected abstract IEnumerator Run();
 
     protected void Log(string message) => ModHelper.Msg<CustomBossChallenge>($"{Name}: {message}");
+
+    /// <summary>
+    /// The test passes without checking what it normally checks, so the run doesn't count for a release
+    /// (<see cref="TestRunReport"/>)
+    /// </summary>
+    protected void Skip(string reason)
+    {
+        Log($"skipped: {reason}");
+        TestRunReport.Skip(Name, reason);
+    }
 
     /// <summary>
     /// Every tier in <paramref name="match"/> has the speed and health Speed and Health per Tier give it, worked out
