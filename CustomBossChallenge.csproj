@@ -8,6 +8,8 @@
         <LangVersion>preview</LangVersion>
         <Optimize>False</Optimize>
         <DebugType>embedded</DebugType>
+        <!-- build.yml is our own (it checks before it releases, see CONTRIBUTING.md), so Mod Helper must not write it again -->
+        <GenerateActionsWorkflow>false</GenerateActionsWorkflow>
     </PropertyGroup>
     <ItemGroup>
         <Content Include=".github\workflows\build.yml" />

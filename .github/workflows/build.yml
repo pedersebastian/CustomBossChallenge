@@ -1,6 +1,10 @@
-# This workflow file is automatically updated by Mod Helper via btd6.targets using info from your project and ModHelperData
-# If you don't want a GitHub actions workflow, you can delete this file and it won't be regenerated
-# If you don't want Mod Helper to overwrite any manual changes to this file, set <GenerateActionsWorkflow>false</GenerateActionsWorkflow>
+# Builds the mod on every push, and releases it for a tag (or a run by hand with a tag): to Thunderstore and as a GitHub
+# release. Mod Helper wrote the first version of this file; GenerateActionsWorkflow is false in the csproj, so it no
+# longer writes it again, and the changes here are kept:
+# - a release runs checks.yml first and is only built, published and released when every check passes;
+# - everything the build downloads is pinned. MelonLoader and Mod Helper are the minimum versions thunderstore.toml
+#   promises, so the DLL is built against what it says it needs; the game's assemblies are the ci-dependencies commit
+#   below. The job summary and the release notes say what was used. See CONTRIBUTING.md for when to bump them.
 name: Build
 
 on:
@@ -28,21 +32,49 @@ env:
   MOD_HELPER_NAME: Btd6ModHelper
   MOD_HELPER_REPO: gurrenm3/BTD-Mod-Helper
 
+  # The game's assemblies to build against: a commit of doombubbles/btd6-ci-dependencies ("Update for v57.2")
+  CI_DEPENDENCIES_REF: 44ebfc0bb0c779557b4db25442dcba90ddc96de8
+
   RELEASE_TAG: ${{ inputs.tag || (startsWith(github.ref, 'refs/tags/') && github.ref_name) || '' }}
   IS_RELEASE: ${{ startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.tag != '') }}
   RELEASE_DESC: ${{ inputs.description || '' }}
 
 jobs:
+  # Only for a release; a job's if can't read env, so this is IS_RELEASE written out
+  checks:
+    name: Checks
+    if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.tag != '')
+    permissions:
+      contents: read
+    uses: ./.github/workflows/checks.yml
+    with:
+      tag: ${{ inputs.tag || github.ref_name }}
+
   build:
+    # Runs when the checks passed, or were skipped because this isn't a release
+    needs: checks
+    if: ${{ !failure() && !cancelled() }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
 
     steps:
       - name: Clone Repo
-        uses: actions/checkout@master
+        uses: actions/checkout@v7
         with:
           path: ${{ env.PROJECT_NAME }}
+
+      - name: Read the minimum MelonLoader and Mod Helper from thunderstore.toml
+        working-directory: ${{ env.PROJECT_NAME }}
+        run: |
+          melonloader=$(sed -n 's/^LavaGang-MelonLoader *= *"\([^"]*\)".*/\1/p' thunderstore.toml)
+          modhelper=$(sed -n 's/^doombubbles-Btd6ModHelper *= *"\([^"]*\)".*/\1/p' thunderstore.toml)
+          if [ -z "$melonloader" ] || [ -z "$modhelper" ]; then
+            echo "::error file=thunderstore.toml::no LavaGang-MelonLoader or doombubbles-Btd6ModHelper version found"
+            exit 1
+          fi
+          echo "MELONLOADER_VERSION=$melonloader" >> "$GITHUB_ENV"
+          echo "MOD_HELPER_VERSION=$modhelper" >> "$GITHUB_ENV"
 
       - name: Download MelonLoader Release
         uses: robinraju/release-downloader@v1.13
@@ -50,19 +82,19 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: LavaGang/MelonLoader
           fileName: MelonLoader.x64.zip
-          latest: true
+          tag: v${{ env.MELONLOADER_VERSION }}
           extract: true
           extract-path: ${{ env.BLOONSTD6 }}
 
       - name: Clone Dependencies Repo
-        uses: actions/checkout@master
+        uses: actions/checkout@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: doombubbles/btd6-ci-dependencies
-          ref: main
+          ref: ${{ env.CI_DEPENDENCIES_REF }}
           path: ${{ env.BLOONSTD6 }}/MelonLoader/Il2CppAssemblies
 
-      - name: Download Latest Mod Helper
+      - name: Download Mod Helper
         uses: robinraju/release-downloader@v1.13
         if: env.MOD_HELPER_BRANCH == ''
         with:
@@ -70,7 +102,7 @@ jobs:
           repository: ${{ env.MOD_HELPER_REPO }}
           fileName: ${{ env.MOD_HELPER_NAME }}.dll
           out-file-path: ${{ env.BLOONSTD6 }}/Mods/
-          latest: true
+          tag: ${{ env.MOD_HELPER_VERSION }}
 
       - name: Download Specific Mod Helper
         uses: dawidd6/action-download-artifact@v6
@@ -89,7 +121,7 @@ jobs:
           if [ "$RUNNER_OS" == "Windows" ]; then
             choco install -y wget
           fi
-          wget https://raw.githubusercontent.com/${{ env.MOD_HELPER_REPO }}/master/BloonsTD6%20Mod%20Helper/btd6.targets
+          wget "https://raw.githubusercontent.com/${{ env.MOD_HELPER_REPO }}/${{ env.MOD_HELPER_VERSION }}/BloonsTD6%20Mod%20Helper/btd6.targets"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -98,6 +130,23 @@ jobs:
 
       - name: Build
         run: dotnet build -c Release -p:BloonsTD6="../${{ env.BLOONSTD6 }}" "${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
+
+      - name: Say what the mod was built with
+        env:
+          DEPENDENCIES_PATH: ${{ env.BLOONSTD6 }}/MelonLoader/Il2CppAssemblies
+        run: |
+          game=$(git -C "$DEPENDENCIES_PATH" log -1 --format=%s)
+          sha=$(git -C "$DEPENDENCIES_PATH" rev-parse --short HEAD)
+          {
+            echo "### Built with"
+            echo ""
+            echo "| What | Version |"
+            echo "|---|---|"
+            echo "| MelonLoader | $MELONLOADER_VERSION |"
+            echo "| Mod Helper (and btd6.targets) | $MOD_HELPER_VERSION |"
+            echo "| Game assemblies (btd6-ci-dependencies) | $sha: $game |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "BUILT_WITH=Built with MelonLoader $MELONLOADER_VERSION and Mod Helper $MOD_HELPER_VERSION, against the game's assemblies from btd6-ci-dependencies $sha ($game)." >> "$GITHUB_ENV"
 
       - name: Upload Mod DLL
         uses: actions/upload-artifact@v7
@@ -262,6 +311,10 @@ jobs:
           tag_name: ${{ env.RELEASE_TAG }}
           target_commitish: ${{ env.RELEASE_SHA || github.sha }}
           files: ${{ env.BLOONSTD6 }}/Mods/${{ env.DLL_NAME }}
-          body: ${{ steps.changelog_read.outputs.changes || steps.changelog_rotate.outputs.release-notes || env.RELEASE_DESC }}
+          body: |
+            ${{ steps.changelog_read.outputs.changes || steps.changelog_rotate.outputs.release-notes || env.RELEASE_DESC }}
+
+            ---
+            ${{ env.BUILT_WITH }}
           fail_on_unmatched_files: true
           draft: ${{ env.ACT == 'true' }}
