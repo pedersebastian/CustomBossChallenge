@@ -142,6 +142,11 @@ public class MixedBossGameTest : CustomBossTest
         var highestTier = 0;
         (float At, int Tier, BossType Boss)? presentation = null;
         var presented = 0;
+        // After a defeat the map keeps the beaten boss's effects until the next round starts, then shows the next one's
+        var defeated = 0;
+        (int Round, int Tier)? beaten = null;
+        float? nextRoundAt = null;
+        var early = 0;
         var skulls = Array.Empty<float>();
         var passed = 0;
         var start = Time.realtimeSinceStartup;
@@ -184,6 +189,31 @@ public class MixedBossGameTest : CustomBossTest
                 presented++;
             }
 
+            if (CustomBossState.HighestDefeatedTier > defeated && CustomBossState.HighestDefeatedTier < options.Tiers)
+            {
+                defeated = CustomBossState.HighestDefeatedTier;
+                beaten = (InGame.instance.bridge.GetCurrentRound(), defeated);
+                nextRoundAt = null;
+                var beatenBoss = options.BossOf(defeated).Boss.ToString();
+                Assert(Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(beatenBoss)),
+                    $"Right after tier {defeated} is beaten the map keeps {beatenBoss}'s effects: {BossPresentationTest.Names()}");
+            }
+            if (beaten is var (round, beatenTier) && InGame.instance.bridge.GetCurrentRound() > round)
+            {
+                nextRoundAt ??= Time.realtimeSinceStartup + 1;
+                if (Time.realtimeSinceStartup >= nextRoundAt)
+                {
+                    beaten = null;
+                    var next = options.BossOf(beatenTier + 1).Boss.ToString();
+                    var effects = BossPresentationTest.Names();
+                    Log($"tier {beatenTier} beaten on round {round + 1}, round {InGame.instance.bridge.GetCurrentRound() + 1}: {effects}" +
+                        (manager.CurrentBoss == null ? ", next boss not here yet" : ""));
+                    Assert(Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(next)),
+                        $"The round after tier {beatenTier} was beaten shows {next}'s effects: {effects}");
+                    if (manager.CurrentBoss == null) early++;
+                }
+            }
+
             // The boss uses each skull right where the tier puts it: the game holds its health there for the skull
             // effect. Several skulls can go at once when a hit takes more than the gap between them.
             var current = manager.CurrentBoss;
@@ -205,6 +235,7 @@ public class MixedBossGameTest : CustomBossTest
         AssertEquals(highestTier, options.Tiers, "Victory must come with the last chosen tier");
         AssertEquals(passed, skulls.Length, $"Tier {highestTier} used every one of its skulls");
         Assert(presented >= options.Tiers - 1, $"The map effects were checked for {presented} tiers");
+        Assert(early > 0, "The next boss's effects never came before the boss itself");
         yield return ToMainMenu();
         AssertEquals(Visuals.BossHud.Lineup, null, "The line-up is gone outside the game");
     }

@@ -39,8 +39,9 @@ public static class MixedBosses
     }
 
     /// <summary>
-    /// The tier whose boss's music and map effects the game shows (#85): the one alive, or else the last one that
-    /// arrived; between bosses the map stays the one of the boss just beaten
+    /// The tier whose boss's map effects a match shows when it is loaded or restarted, or a boss is beaten (#85): the
+    /// one alive, or else the last one beaten. The next boss's effects come when the next round starts, see
+    /// <see cref="OnRoundStart"/>.
     /// </summary>
     public static int PresentedTier(BossBloonManager manager, BossOptions options)
     {
@@ -81,8 +82,28 @@ public static class MixedBosses
     internal static void AfterSpawn(BossBloonManager manager, int tier)
     {
         if (MixedOptions is not { } options) return;
-        Visuals.BossPresentation.ShowMapEffects(options.BossOf(tier).Boss);
+        Present(options, tier);
         Spawned?.Invoke(tier);
+    }
+
+    /// <summary>The tier whose boss's map effects are shown now, or 0 before a custom game with tier bosses</summary>
+    public static int Presented { get; private set; }
+
+    private static void Present(BossOptions options, int tier)
+    {
+        Presented = tier;
+        Visuals.BossPresentation.ShowMapEffects(options.BossOf(tier).Boss);
+    }
+
+    /// <summary>
+    /// A round has started: once a boss is beaten, the map shows the next boss's effects from the next round on, even
+    /// when that boss comes rounds later (#85)
+    /// </summary>
+    internal static void OnRoundStart()
+    {
+        if (MixedOptions is not { } options) return;
+        var manager = InGame.instance?.bridge?.Simulation?.map?.spawner?.bossBloonManager;
+        if (manager != null) Present(options, ShownTier(manager, options));
     }
 
     /// <summary>
@@ -91,18 +112,18 @@ public static class MixedBosses
     /// </summary>
     internal static void KeepPresentation()
     {
-        if (MixedOptions is not { } options) return;
-        var manager = InGame.instance?.bridge?.Simulation?.map?.spawner?.bossBloonManager;
-        if (manager != null) Visuals.BossPresentation.ShowMapEffects(options.BossOf(PresentedTier(manager, options)).Boss);
+        if (MixedOptions is { } options && Presented > 0) Visuals.BossPresentation.ShowMapEffects(options.BossOf(Presented).Boss);
     }
 
     /// <summary>
-    /// Puts the type back to the boss alive or the next one, after a defeat, a restart or loading a saved round
+    /// Puts the type back to the boss alive or the next one, after a defeat, a restart or loading a saved round. A
+    /// restart or a loaded round also shows the map effects of the boss alive or beaten last; a defeat keeps them until
+    /// the next round starts.
     /// </summary>
-    internal static void Sync(BossBloonManager manager)
+    internal static void Sync(BossBloonManager manager, bool loaded = true)
     {
         if (MixedOptions is not { } options) return;
         SetType(manager.sim?.model, options, ShownTier(manager, options));
-        Visuals.BossPresentation.ShowMapEffects(options.BossOf(PresentedTier(manager, options)).Boss);
+        if (loaded) Present(options, PresentedTier(manager, options));
     }
 }
