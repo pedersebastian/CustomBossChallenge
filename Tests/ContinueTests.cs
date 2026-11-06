@@ -237,7 +237,23 @@ public class ContinueStoreTest : ContinueTestBase
                 // Not broken: the newer mod can still continue it, so it stays where it is
                 AssertEquals(load.Problem, ContinueProblem.TooNew, $"Problem with {what}");
                 Assert(store.Exists, "A file from a newer version must be kept");
+
+                // Deleting (a game won or replaced) leaves it alone too (#107)
                 store.Delete();
+                AssertEquals(File.ReadAllText(store.FilePath), broken, "Deleting must leave a file from a newer version alone");
+
+                // A new game in this version keeps it aside, and still gets continued itself
+                store.Save(options, dcm, new[] {new RoundSnapshot(30, 1, json)});
+                AssertEquals(File.ReadAllText(store.NewerPath), broken, $"A file from a newer version must be kept as {store.NewerPath}");
+                AssertEquals(store.Load().Problem, ContinueProblem.None, "The new game after keeping the newer one aside");
+                File.Delete(store.FilePath);
+
+                // Once this version can read the kept file and there is no other game, it is taken back
+                File.WriteAllText(store.NewerPath, file);
+                AssertEquals(store.Load().Problem, ContinueProblem.None, $"A readable {store.NewerPath} must be taken back");
+                Assert(!File.Exists(store.NewerPath), $"{store.NewerPath} must be moved back");
+                AssertEquals(File.ReadAllText(store.FilePath), file, "The game taken back");
+                File.Delete(store.FilePath);
                 continue;
             }
 

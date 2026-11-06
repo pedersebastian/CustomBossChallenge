@@ -5,8 +5,9 @@ name: Checks
 
 on:
   push:
+    # '**' also matches branch names with a /, which '*' doesn't
     branches:
-      - '*'
+      - '**'
   pull_request:
   workflow_dispatch:
   workflow_call:

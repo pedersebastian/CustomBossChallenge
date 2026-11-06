@@ -197,6 +197,10 @@ powershell -ExecutionPolicy Bypass -File .github/scripts/Check-Localization.ps1
 powershell -ExecutionPolicy Bypass -File .github/scripts/Check-Release.ps1 -Tag 2.3.0
 ```
 
+`.github/workflows/build.yml` builds the mod itself, against the game's assemblies, on every push and every pull
+request, so a change that breaks the mod build fails before it is merged. Only a tag (or a run by hand with a `tag`)
+publishes anything.
+
 ### Releases
 
 `.github/workflows/build.yml` builds the mod on every push. For a release (a tag like `2.10.0`, or running the
