@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "Carregar este exemplo? Sua configuração atual será substituída.",
   "CustomBossChallenge-SetupSaved": "Salva como {0}.",
   "CustomBossChallenge-TooManySetups": "Você pode ter até {0} configurações salvas. Exclua uma para salvar uma nova.",
+  "CustomBossChallenge-SetupsTooNew": "Suas configurações salvas são de uma versão mais nova do Custom Boss Challenge. Atualize o mod para usá-las.",
   "CustomBossChallenge-SetupFileError": "Não foi possível alterar as configurações salvas. Verifique se é possível gravar em UserData/CustomBossChallenge.",
   "CustomBossChallenge-SetupUnreadable": "Esta configuração salva está danificada e não pode ser carregada. Você pode excluí-la.",
   "CustomBossChallenge-ShareCode": "Código de compartilhamento",

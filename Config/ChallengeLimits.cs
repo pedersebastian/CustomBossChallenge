@@ -12,9 +12,8 @@ namespace CustomBossChallenge.Config;
 /// Keeps a challenge read from a shared code or a file within values the game can play. The Challenge Editor's own
 /// controls never go outside these limits; a hand made code could, and could then hang or crash the game.
 /// </summary>
-public static class ChallengeLimits
+public static partial class ChallengeLimits
 {
-    public const int MaxNameLength = 60;
     public const float MinMultiplier = 0.01f;
     public const float MaxMultiplier = 100;
     public const float MinBossSpeed = 0.1f;
@@ -93,17 +92,6 @@ public static class ChallengeLimits
 
 
     /// <summary>
-    /// The boss options <see cref="BossOptions.Sanitized"/> changed, e.g. "Tiers 50 -> 10"
-    /// </summary>
-    public static List<string> OptionChanges(BossOptions before, BossOptions after) =>
-        typeof(BossOptions).GetProperties()
-            .Where(property => property.CanWrite)
-            .Select(property => (property.Name, Before: property.GetValue(before), After: property.GetValue(after)))
-            .Where(change => !Equals(change.Before, change.After))
-            .Select(change => $"{change.Name} {change.Before} -> {change.After}")
-            .ToList();
-
-    /// <summary>
     /// Writes what was brought into range to the log, so a shared setup that looks different can be explained
     /// </summary>
     public static void Report(string source, List<string> changes)
@@ -111,16 +99,6 @@ public static class ChallengeLimits
         if (changes.Count == 0) return;
         ModHelper.Msg<CustomBossChallenge>($"{source}: brought into range: {string.Join(", ", changes)}");
     }
-    /// <summary>
-    /// A name without line breaks or other control characters, and not longer than <see cref="MaxNameLength"/>
-    /// </summary>
-    public static string CleanName(string? name, string fallback)
-    {
-        var clean = new string((name ?? "").Where(c => !char.IsControl(c)).ToArray()).Trim();
-        if (clean.Length > MaxNameLength) clean = clean[..MaxNameLength].TrimEnd();
-        return clean.Length > 0 ? clean : fallback;
-    }
-
     private static bool IsKnownMap(string? map)
     {
         if (string.IsNullOrEmpty(map)) return false;

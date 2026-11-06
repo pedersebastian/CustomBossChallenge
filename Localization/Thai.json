@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "โหลดตัวอย่างนี้ไหม? การตั้งค่าปัจจุบันของคุณจะถูกแทนที่",
   "CustomBossChallenge-SetupSaved": "บันทึกเป็น {0} แล้ว",
   "CustomBossChallenge-TooManySetups": "คุณเก็บการตั้งค่าได้สูงสุด {0} รายการ ลบหนึ่งรายการเพื่อบันทึกรายการใหม่",
+  "CustomBossChallenge-SetupsTooNew": "การตั้งค่าที่บันทึกไว้ของคุณมาจาก Custom Boss Challenge เวอร์ชันที่ใหม่กว่า อัปเดตม็อดเพื่อใช้งาน",
   "CustomBossChallenge-SetupFileError": "ไม่สามารถเปลี่ยนการตั้งค่าที่บันทึกไว้ได้ ตรวจสอบว่าสามารถเขียนลงใน UserData/CustomBossChallenge ได้",
   "CustomBossChallenge-SetupUnreadable": "การตั้งค่าที่บันทึกไว้นี้เสียหายและโหลดไม่ได้ คุณสามารถลบได้",
   "CustomBossChallenge-ShareCode": "โค้ดแชร์",

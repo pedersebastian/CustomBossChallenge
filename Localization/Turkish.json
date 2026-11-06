@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "Bu örnek yüklensin mi? Mevcut kurulumun değiştirilecek.",
   "CustomBossChallenge-SetupSaved": "{0} olarak kaydedildi.",
   "CustomBossChallenge-TooManySetups": "En fazla {0} kayıtlı ayar tutabilirsin. Yenisini kaydetmek için birini sil.",
+  "CustomBossChallenge-SetupsTooNew": "Kayıtlı kurulumların Custom Boss Challenge'ın daha yeni bir sürümünden. Kullanmak için modu güncelle.",
   "CustomBossChallenge-SetupFileError": "Kayıtlı kurulumlar değiştirilemedi. UserData/CustomBossChallenge klasörüne yazılabildiğini kontrol edin.",
   "CustomBossChallenge-SetupUnreadable": "Bu kayıtlı kurulum bozuk ve yüklenemiyor. Silebilirsiniz.",
   "CustomBossChallenge-ShareCode": "Paylaşım Kodu",

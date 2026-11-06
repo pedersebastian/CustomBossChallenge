@@ -95,6 +95,19 @@ public class SavedSetupsStoreTest : CustomBossTest
             Assert(store.Delete("Many 00"), "Deleting over the limit");
             AssertEquals(store.All.Count, SavedSetupsStore.MaxSetups + 4, "Writing the file must not drop setups over the limit");
 
+            // A file from a newer version of the mod is left alone: nothing shown, written, deleted or copied (#63)
+            var newerFile = "{\"Version\":99,\"Setups\":[{\"Name\":\"Many 01\",\"Code\":\"" + code + "\",\"Folder\":\"New\"}]}";
+            File.WriteAllText(store.FilePath, newerFile);
+            Assert(store.IsTooNew, "A version 99 file is too new");
+            AssertEquals(store.All.Count, 0, "A file from a newer version shows no setups");
+            Assert(!store.Contains("Many 01"), "Its setups aren't found");
+            Assert(!store.TryLoad("Many 01", out _, out _, out _), "Its setups don't load");
+            AssertEquals(store.Save(lych, lychDcm), SavedSetupsStore.SaveResult.TooNew, "Saving over a file from a newer version");
+            Assert(!store.Delete("Many 01"), "Deleting from a file from a newer version");
+            AssertEquals(File.ReadAllText(store.FilePath), newerFile, "A file from a newer version must not be changed");
+            AssertEquals(Directory.GetFiles(Path.GetDirectoryName(store.FilePath)!, "*.broken").Length, 0,
+                "A file from a newer version isn't broken");
+
             // An unreadable file is kept aside, so saving a new setup can't throw the old ones away for good, and a
             // later, different breakage doesn't replace that copy
             var folder = Path.GetDirectoryName(store.FilePath)!;

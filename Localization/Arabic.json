@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "تحميل هذا المثال؟ سيتم استبدال إعدادك الحالي.",
   "CustomBossChallenge-SetupSaved": "تم الحفظ باسم {0}.",
   "CustomBossChallenge-TooManySetups": "يمكنك الاحتفاظ بما يصل إلى {0} من الإعدادات المحفوظة. احذف واحدًا لحفظ إعداد جديد.",
+  "CustomBossChallenge-SetupsTooNew": "إعداداتك المحفوظة من إصدار أحدث من Custom Boss Challenge. حدّث التعديل لاستخدامها.",
   "CustomBossChallenge-SetupFileError": "تعذّر تغيير الإعدادات المحفوظة. تأكد من إمكانية الكتابة في UserData/CustomBossChallenge.",
   "CustomBossChallenge-SetupUnreadable": "هذا الإعداد المحفوظ تالف ولا يمكن تحميله. يمكنك حذفه.",
   "CustomBossChallenge-ShareCode": "رمز المشاركة",

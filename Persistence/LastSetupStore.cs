@@ -1,50 +1,74 @@
 using System;
 using System.IO;
+using System.Linq;
 using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using MelonLoader.Utils;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace CustomBossChallenge.Persistence;
 
 /// <summary>
-/// Remembers the last Boss Creator setup (boss options + the editor's challenge model) in the mod's own file
+/// Remembers the last Boss Creator setup (boss options + the editor's challenge model) in the mod's own file. The
+/// file's format is in <see cref="LastSetupFormat"/>.
 /// </summary>
 public sealed class LastSetupStore
 {
-    public const int Version = 2;
+    public const int Version = LastSetupFormat.Version;
 
     public static readonly LastSetupStore Default =
         new(Path.Combine(MelonEnvironment.UserDataDirectory, "CustomBossChallenge", "LastSetup.json"));
 
-    private static readonly JsonSerializerSettings JsonSettings = new()
-    {
-        Formatting = Formatting.Indented,
-        Converters = {new StringEnumConverter()}
-    };
-
     public string FilePath { get; }
+
+    /// <summary>
+    /// A file from a newer version stays in place; say so in the log only once
+    /// </summary>
+    private bool toldTooNew;
 
     public LastSetupStore(string filePath) => FilePath = filePath;
 
-    private sealed class SetupFile
+    /// <summary>
+    /// Whether the file comes from a newer version of the mod, which this version neither reads nor overwrites
+    /// </summary>
+    public bool IsTooNew
     {
-        public int Version { get; set; }
-        public BossOptions? Options { get; set; }
-        public string? Challenge { get; set; }
-    }
-
-    public void Save(BossOptions options, DailyChallengeModel dcm)
-    {
-        var file = new SetupFile {Version = Version, Options = options, Challenge = DcmJson.Serialize(dcm)};
-        SafeFile.WriteAllText(FilePath, JsonConvert.SerializeObject(file, JsonSettings));
+        get
+        {
+            try
+            {
+                return File.Exists(FilePath) && LastSetupFormat.Read(File.ReadAllText(FilePath)).Problem == FormatProblem.TooNew;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 
     /// <summary>
-    /// Loads the saved setup. Returns false (and logs a warning for a broken file) when there is nothing usable.
+    /// Saves the setup, unless the file comes from a newer version of the mod
+    /// </summary>
+    public void Save(BossOptions options, DailyChallengeModel dcm)
+    {
+        if (IsTooNew)
+        {
+            TellTooNew();
+            return;
+        }
+        SafeFile.WriteAllText(FilePath, LastSetupFormat.Write(options, DcmJson.Serialize(dcm)));
+    }
+
+    private void TellTooNew()
+    {
+        if (!toldTooNew) ModHelper.Warning<CustomBossChallenge>($"Keeping {FilePath} from a newer version of the mod");
+        toldTooNew = true;
+    }
+
+    /// <summary>
+    /// Loads the saved setup. Returns false (and logs a warning for a broken file or one from a newer version of the
+    /// mod) when there is nothing usable.
     /// </summary>
     public bool TryLoad(out BossOptions options, out DailyChallengeModel? dcm)
     {
@@ -54,14 +78,19 @@ public sealed class LastSetupStore
 
         try
         {
-            var file = JsonConvert.DeserializeObject<SetupFile>(File.ReadAllText(FilePath), JsonSettings);
-            if (file?.Options == null || string.IsNullOrEmpty(file.Challenge)) throw new InvalidDataException("Incomplete setup");
+            var read = LastSetupFormat.Read(File.ReadAllText(FilePath));
+            if (read.Problem == FormatProblem.TooNew)
+            {
+                TellTooNew();
+                return false;
+            }
+            var file = read.Value ?? throw new InvalidDataException(read.Error);
 
-            options = file.Options.Sanitized();
-            var changes = ChallengeLimits.OptionChanges(file.Options, options);
             dcm = DcmJson.Deserialize(file.Challenge);
             if (dcm == null) return false;
 
+            options = file.Options;
+            var changes = read.Changes.ToList();
             changes.AddRange(ChallengeLimits.Sanitize(dcm, BossMode.DefaultDcm(options)));
             ChallengeLimits.Report($"Boss Creator setup {FilePath}", changes);
             return true;

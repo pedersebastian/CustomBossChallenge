@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Setups from a newer version of the mod are kept**: an older version no longer overwrites the last Boss Creator
+  setup or the saved setups that a newer version wrote. The saved setups list stays empty, and saving shows that the
+  setups come from a newer version.
+
 ## [2.10.0] - 2026-11-06
 
 ### Added

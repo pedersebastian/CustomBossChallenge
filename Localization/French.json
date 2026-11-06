@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "Charger cet exemple ? Votre configuration actuelle sera remplacée.",
   "CustomBossChallenge-SetupSaved": "Enregistrée sous {0}.",
   "CustomBossChallenge-TooManySetups": "Tu peux garder jusqu'à {0} configurations enregistrées. Supprimes-en une pour en enregistrer une nouvelle.",
+  "CustomBossChallenge-SetupsTooNew": "Vos configurations enregistrées proviennent d'une version plus récente de Custom Boss Challenge. Mettez le mod à jour pour les utiliser.",
   "CustomBossChallenge-SetupFileError": "Les configurations enregistrées n'ont pas pu être modifiées. Vérifiez que UserData/CustomBossChallenge est accessible en écriture.",
   "CustomBossChallenge-SetupUnreadable": "Cette configuration enregistrée est endommagée et ne peut pas être chargée. Vous pouvez la supprimer.",
   "CustomBossChallenge-ShareCode": "Code de partage",

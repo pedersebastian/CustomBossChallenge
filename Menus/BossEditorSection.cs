@@ -661,6 +661,12 @@ public sealed class BossEditorSection
             return;
         }
 
+        if (result == SavedSetupsStore.SaveResult.TooNew)
+        {
+            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.SetupsTooNew.T(), null));
+            return;
+        }
+
         if (result == SavedSetupsStore.SaveResult.Full)
         {
             PopupScreen.instance.SafelyQueue(screen =>

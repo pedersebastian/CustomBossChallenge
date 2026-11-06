@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "この例を読み込みますか？現在のセットアップは置き換えられます。",
   "CustomBossChallenge-SetupSaved": "{0} として保存しました。",
   "CustomBossChallenge-TooManySetups": "保存できる設定は最大 {0} 個です。新しく保存するには、どれかを削除してください。",
+  "CustomBossChallenge-SetupsTooNew": "保存した設定は Custom Boss Challenge の新しいバージョンのものです。使うにはMODを更新してください。",
   "CustomBossChallenge-SetupFileError": "保存した設定を変更できませんでした。UserData/CustomBossChallenge に書き込めるか確認してください。",
   "CustomBossChallenge-SetupUnreadable": "この保存した設定は破損しているため読み込めません。削除できます。",
   "CustomBossChallenge-ShareCode": "共有コード",

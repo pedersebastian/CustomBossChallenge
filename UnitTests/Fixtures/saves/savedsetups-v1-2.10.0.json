@@ -1,0 +1,41 @@
+{
+  "Version": 1,
+  "Setups": [
+    {
+      "Name": "Custom Lych",
+      "Code": "CBC2:ZZJRa4MwEID_yjj2KEVNrJrHjsIGLZRufyA16RSiERO3SvG_72JHu2Mvku9yd37h7goWxBU21jkQsJuqGiLYmsZrEH4YdQSvWhpfH_Tw0egBBMvmCKpQ4-23HrDqCs-Y3i4nHj6tvIBIMC1J7xgHLAmmMcXkjuEXKa1NGcWM4ppiTrGgSDUY1WAPjQWpBqMa7PHeBTPyBEatGLVi1IpRK06tOLXi1IpTK_7XasZAK3sc7sZYq6bDqJTRDqesmvO5qUbjJ7zcSjdhrLUKBw9vbW_7Xp6MxtgJ67q9xXRcgGXKrtda7bGy6c2yFMkqKUKxPL3_v-I8gnpZokd8aRPy8RCv1mWwdF4O_jgGObw0zVc4JMH-srtDJV0NoiiLPILBjp3CaBmB7tTxRnlYvE624Rkvo_O2ffrdaodmINacxWWeZLfGBznIT9uF3vP8Aw",
+      "Saved": "2026-10-23T14:08:23.1380759Z"
+    },
+    {
+      "Name": "Custom Dreadbloon",
+      "Code": "CBC2:ZZLdasMwDIVfZYhdhpLETvNz2a2wwQql2wu4tbsEnDjYztZS8u6TXWgnemN8JEv-hM4FDDQXWBnnoIFXq4Tca2MGSGCtO6-g8XZSCbwpoX27VfarUxYaVswJHEKlN7_KYu0FnvF5H288HL04QZPhsyy_yTTImsg8pTK7yfBFTmtzRmVB5ZLKksqKSorBKAa7Y0RJMRjFYPd5oyzICIxSMUrFKBWjVJxScUrFKRWnVPw_1YyBXoy44hVuV563k5RaOdyy7I7H7jBpf8bkWrgzxnojcfHw3o9mHMVeK4xFV2wMPkcDxC27USm5wcpu1NEU2SKrQrHYfz6mOMce6LKHVL5gZQJt9Nc9Hn8IrfCSLpZ1GMB5Yf1uCtyY1N1PuGRhsNPHTRyEa6Gp6gqbWjMNEqN1AmqQu6sqgycH0YcJXybnTf9EbO-QD5olZ2ldZsW1_VZY8W2G8MM8_wE",
+      "Saved": "2026-10-23T14:09:14.0405527Z"
+    },
+    {
+      "Name": "Custom Elite Phayze",
+      "Code": "CBC1:VZJNasMwEEavEoYuTbF-kjRaphS6aCCkJ1AsJRGVLCPJbVLju3fslpLZmHnjz5qHRwNEUANsY86gYH_Rt28LFbx4Vyyokno7VtBMkRK_bMLQAA_4LswV49Mz6CuoGnNsQ5AzijTMBUVJcUlxRXFN8Yki1RA1RWolqIagGoJqCKohqIagGoJqSKohqYakP0dSK3lvNWIj6A7XtdVet820L-NOJ9f0vtyw_aqTwV6IBlcIz941Hxn56GNsdxGj7m-RIerje2et2eGXrvPYB8Ue6zVOyEWncui9nZPefU4FY3yafX27w0bnC5ac13UFKfatAcWXFdjWHH5pxfG8VofZps8lhsV8vxb_1y2jAyghWS3khq_nGXud9Dm2OIaP4w8",
+      "Saved": "2026-10-23T14:34:32.1918293Z"
+    },
+    {
+      "Name": "Custom Elite Diamondback",
+      "Code": "CBC2:XZLNbsMgDIBfJbJ25JDwkzU57ufWSlO3F2AFrVEDVIFslaK8-wyd1nmHRP6w0QfYCwToF3gIMUIPT4N2wZt3fTgBg-dxSBb6NM2WwetpHsddMLgAj3NMwWHFNSipvL2tWaXwk4pVXGH-bbATJgRuP1trXuyUV6DnamVwyOIUvkrJAncocyW6zz-nL9DXWNZ0BHn9izxjQ7OcoqAoKbYUqZdvCIqbtyAVCSoSVCQUReoV1Cv-een1JT2GpNeXt2PkF5Z_j7HigtNnbNMuBL_V3gz-A3sUk57Sfh5teftx-MxBI-tcfdn-oJLYLx2P-Oiyw9QUZm9QwsB6s79CK9HgtbtNSFUmqKJTFXEQoN90ije8a_i6fgM",
+      "Saved": "2026-10-29T18:23:16.1426656Z"
+    },
+    {
+      "Name": "",
+      "Code": "CBC2:ZZJRa4MwEID_yjj2KEVNrJrHjsIGLZRufyA16RSiERO3SvG_72JHu2Mvku9yd37h7goWxBU21jkQsJuqGiLYmsZrEH4YdQSvWhpfH_Tw0egBBMvmCKpQ4-23HrDqCs-Y3i4nHj6tvIBIMC1J7xgHLAmmMcXkjuEXKa1NGcWM4ppiTrGgSDUY1WAPjQWpBqMa7PHeBTPyBEatGLVi1IpRK06tOLXi1IpTK_7XasZAK3sc7sZYq6bDqJTRDqesmvO5qUbjJ7zcSjdhrLUKBw9vbW_7Xp6MxtgJ67q9xXRcgGXKrtda7bGy6c2yFMkqKUKxPL3_v-I8gnpZokd8aRPy8RCv1mWwdF4O_jgGObw0zVc4JMH-srtDJV0NoiiLPILBjp3CaBmB7tTxRnlYvE624Rkvo_O2ffrdaodmINacxWWeZLfGBznIT9uF3vP8Aw",
+      "Saved": "2026-10-30T10:00:00Z"
+    },
+    {
+      "Name": "Broken",
+      "Code": "  ",
+      "Saved": "2026-10-30T10:00:00Z"
+    },
+    {
+      "Name": "custom lych\n",
+      "Code": "CBC1:VZJNasMwEEavEoYuTbF-kjRaphS6aCCkJ1AsJRGVLCPJbVLju3fslpLZmHnjz5qHRwNEUANsY86gYH_Rt28LFbx4Vyyokno7VtBMkRK_bMLQAA_4LswV49Mz6CuoGnNsQ5AzijTMBUVJcUlxRXFN8Yki1RA1RWolqIagGoJqCKohqIagGoJqSKohqYakP0dSK3lvNWIj6A7XtdVet820L-NOJ9f0vtyw_aqTwV6IBlcIz941Hxn56GNsdxGj7m-RIerje2et2eGXrvPYB8Ue6zVOyEWncui9nZPefU4FY3yafX27w0bnC5ac13UFKfatAcWXFdjWHH5pxfG8VofZps8lhsV8vxb_1y2jAyghWS3khq_nGXud9Dm2OIaP4w8",
+      "Saved": "2026-10-30T10:00:00Z"
+    },
+    null
+  ]
+}
