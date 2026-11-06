@@ -31,6 +31,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Lych". A setup without a striking trait keeps the default name, and a name the player typed is never replaced.
   Changing the boss afterwards still updates the name. The names are English only for now.
 
+### Fixed
+
+- **Bloons spawned by a boss get All Camo, All Regrow and All Fortified** (#90): Bloonarius's and Diamondback's
+  bloons, Elite or not and in every tier, now follow the modifiers like the rounds' bloons do. Bloons without such a
+  variant (Lych's minis, Dreadbloon's rocks) stay as they are, and the bloon health and speed sliders already reached
+  them. The game's own Boss Challenge is unchanged.
+
 ## [2.9.0] - 2026-11-03
 
 ### Added

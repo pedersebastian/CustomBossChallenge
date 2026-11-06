@@ -23,7 +23,8 @@ where you can read a share code and see the whole setup without the game, or
 - **The real Challenge Editor** with everything it normally has: map, difficulty, game mode, starting cash, lives
   and rounds, special conditions, tower restrictions, bloon sliders and modifiers.
 - **All Fortified** among the editor's own modifiers, next to All Camo and All Regrow. The game has the rule but
-  the vanilla editor doesn't offer it; it is only added in the Boss Creator.
+  the vanilla editor doesn't offer it; it is only added in the Boss Creator. All three modifiers also reach the bloons
+  a boss spawns, like Bloonarius's.
 - **Boss section** at the top of the editor:
   - Pick any boss (Bloonarius, Lych, Vortex, Dreadbloon, Phayze, Blastapopoulos, Diamondback) and toggle **Elite**.
   - **Advanced Mode**: choose the boss of every tier, for example Bloonarius on tier 1 and Lych on tier 2, Elite or
