@@ -24,9 +24,6 @@ updates:
 
   - package-ecosystem: github-actions
     directory: /
-    # Mod Helper writes build.yml again whenever the mod is built, so changes to it wouldn't last
-    exclude-paths:
-      - .github/workflows/build.yml
     schedule:
       interval: weekly
     groups:
