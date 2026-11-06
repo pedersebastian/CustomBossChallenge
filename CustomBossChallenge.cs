@@ -7,6 +7,7 @@ using CustomBossChallenge.Config;
 using Il2CppAssets.Scripts.Models;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using UnityEngine;
 
 [assembly: MelonInfo(typeof(CustomBossChallenge.CustomBossChallenge), ModHelperData.Name, ModHelperData.Version, ModHelperData.RepoOwner)]
 [assembly: MelonGame("Ninja Kiwi", "BloonsTD6")]
@@ -38,7 +39,14 @@ public class CustomBossChallenge : BloonsTD6Mod
         Menus.BossCreatorKeys.Update();
         Visuals.TierLookApplier.Update();
         Visuals.BossHud.Update();
+        if (Time.realtimeSinceStartup >= nextPresentationCheck)
+        {
+            nextPresentationCheck = Time.realtimeSinceStartup + Visuals.BossPresentation.CheckInterval;
+            Patches.MixedBosses.KeepPresentation();
+        }
     }
+
+    private float nextPresentationCheck;
 
     public override void OnNewGameModel(GameModel result)
     {

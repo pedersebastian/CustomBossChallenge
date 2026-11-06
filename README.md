@@ -123,7 +123,9 @@ In the game, each tier spawns its own boss with all its abilities, and the boss 
 its health bar extras (Lych's regrow, Blastapopoulos' heat, Diamondback's tail, the armour bars) and, between
 bosses, the one coming next. A banner names every boss as it arrives, and the **Bosses** line-up on the left shows
 the whole order: defeated tiers greyed out with a tick, the boss alive framed in yellow. Click **Bosses** to fold it
-away; it stays folded in later games. Tiers above 5 are made from tier 5 of their own boss. Try the **Boss
+away; it stays folded in later games. The boss music and the map's boss effects (the ambient effects and the ones
+along the track) change with every boss that arrives, and stay those of the boss just beaten until the next one
+comes. Tiers above 5 are made from tier 5 of their own boss. Try the **Boss
 Gauntlet** example: all seven bosses, one after the other.
 
 With **Boss Event Rounds** ticked, every tier arrives on the round the official events made for its own boss, for
@@ -256,7 +258,6 @@ The Boss Creator setup is stored in `BloonsTD6/UserData/CustomBossChallenge/Last
   on their own PC, so everyone would need the mod and the same setup, or the games would get out of sync. A co-op
   Boss Challenge is always a normal one, with the game's own bosses, even if you were in the Boss Creator before.
   This is not a bug.
-- In **Advanced Mode**, the map's music and its boss decorations stay those of the first tier's boss.
 - Tiers above 5 use tier 5's model and abilities; only their look and their health differ (see
   [Tiers above 5](#tiers-above-5)). The glow uses a shader built for the game's Unity version; if a BTD6 update moves
   to a Unity version it doesn't work with, the glow falls back to a simpler one made from the game's own shaders until

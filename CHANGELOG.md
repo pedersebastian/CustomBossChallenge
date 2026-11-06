@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Boss effects per tier** (#85): in Advanced Mode the map's boss effects, the ambient ones and those along the
+  track, change to each boss as it arrives, and are put back after a restart or when a game is continued. The boss
+  music already followed each boss.
 - **Boss Event Rounds** (#80): a new tick under Spawn Rounds plays the rounds of the official boss events for
   the boss instead of the normal rounds, in every game mode, CHIMPS included. When the tiers spawn on other rounds
   than 40, 60, 80, 100 and 120, the event's boss rounds move with them. In Advanced Mode (#84) every tier arrives

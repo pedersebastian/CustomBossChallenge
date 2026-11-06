@@ -140,6 +140,8 @@ public class MixedBossGameTest : CustomBossTest
         InGame.instance.bridge.SetFastForward(true);
 
         var highestTier = 0;
+        (float At, int Tier, BossType Boss)? presentation = null;
+        var presented = 0;
         var skulls = Array.Empty<float>();
         var passed = 0;
         var start = Time.realtimeSinceStartup;
@@ -159,6 +161,7 @@ public class MixedBossGameTest : CustomBossTest
                 AssertEquals(InGameData.CurrentGame.bossData.bossBloon, boss, $"Boss data during tier {highestTier}");
                 Log($"tier {highestTier}: {manager.CurrentBoss.bloonModel.id}");
                 CheckHud(options, highestTier, boss, elite);
+                presentation = (Time.realtimeSinceStartup + 1, highestTier, boss);
 
                 // The boss that spawned has the tier's own health and speed (AssertScaledTiers checked the models);
                 // Phayze speeds itself up, so a boss may be faster but never slower
@@ -168,6 +171,17 @@ public class MixedBossGameTest : CustomBossTest
                 Assert(spawned.speed >= model.speed * 0.999f, $"Tier {highestTier} moves at {spawned.speed}, its tier {model.speed}");
                 skulls = SkullModifier.GetSkulls(model)!.OrderByDescending(p => p).ToArray();
                 passed = 0;
+            }
+
+            // The map's boss effects and the music follow the boss that arrived (#85), once they had a moment to load
+            if (presentation is var (at, tier, presentedBoss) && Time.realtimeSinceStartup >= at)
+            {
+                presentation = null;
+                var effects = Visuals.BossPresentation.MapEffects;
+                Log($"tier {tier}: map effects {string.Join(", ", effects)}, music {Visuals.BossPresentation.MusicPlaying}");
+                Assert(effects.Length > 0 && effects.All(effect => effect.StartsWith(presentedBoss.ToString())),
+                    $"Tier {tier}'s map effects are {presentedBoss}'s: {string.Join(", ", effects)}");
+                presented++;
             }
 
             // The boss uses each skull right where the tier puts it: the game holds its health there for the skull
@@ -190,6 +204,7 @@ public class MixedBossGameTest : CustomBossTest
 
         AssertEquals(highestTier, options.Tiers, "Victory must come with the last chosen tier");
         AssertEquals(passed, skulls.Length, $"Tier {highestTier} used every one of its skulls");
+        Assert(presented >= options.Tiers - 1, $"The map effects were checked for {presented} tiers");
         yield return ToMainMenu();
         AssertEquals(Visuals.BossHud.Lineup, null, "The line-up is gone outside the game");
     }

@@ -39,6 +39,19 @@ public static class MixedBosses
     }
 
     /// <summary>
+    /// The tier whose boss's music and map effects the game shows (#85): the one alive, or else the last one that
+    /// arrived; between bosses the map stays the one of the boss just beaten
+    /// </summary>
+    public static int PresentedTier(BossBloonManager manager, BossOptions options)
+    {
+        var alive = manager.CurrentBoss;
+        var tier = alive != null && TierMath.TierOf(alive.bloonModel.id) is > 0 and var own
+            ? own
+            : CustomBossState.HighestDefeatedTier;
+        return Math.Clamp(tier, TierMath.MinTiers, TierMath.ClampTiers(options.Tiers));
+    }
+
+    /// <summary>
     /// Makes the game model and the game's boss data say the boss of <paramref name="tier"/>
     /// </summary>
     public static void SetType(GameModel? model, BossOptions options, int tier)
@@ -67,7 +80,20 @@ public static class MixedBosses
 
     internal static void AfterSpawn(BossBloonManager manager, int tier)
     {
-        if (MixedOptions != null) Spawned?.Invoke(tier);
+        if (MixedOptions is not { } options) return;
+        Visuals.BossPresentation.ShowMapEffects(options.BossOf(tier).Boss);
+        Spawned?.Invoke(tier);
+    }
+
+    /// <summary>
+    /// Keeps the map's boss effects those of the boss shown, also when the game adds its own a moment after the map
+    /// loads, as it does when a game is continued
+    /// </summary>
+    internal static void KeepPresentation()
+    {
+        if (MixedOptions is not { } options) return;
+        var manager = InGame.instance?.bridge?.Simulation?.map?.spawner?.bossBloonManager;
+        if (manager != null) Visuals.BossPresentation.ShowMapEffects(options.BossOf(PresentedTier(manager, options)).Boss);
     }
 
     /// <summary>
@@ -75,6 +101,8 @@ public static class MixedBosses
     /// </summary>
     internal static void Sync(BossBloonManager manager)
     {
-        if (MixedOptions is { } options) SetType(manager.sim?.model, options, ShownTier(manager, options));
+        if (MixedOptions is not { } options) return;
+        SetType(manager.sim?.model, options, ShownTier(manager, options));
+        Visuals.BossPresentation.ShowMapEffects(options.BossOf(PresentedTier(manager, options)).Boss);
     }
 }
