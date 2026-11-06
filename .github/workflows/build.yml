@@ -1,6 +1,6 @@
-# Builds the mod on every push, and releases it for a tag (or a run by hand with a tag): to Thunderstore and as a GitHub
-# release. Mod Helper wrote the first version of this file; GenerateActionsWorkflow is false in the csproj, so it no
-# longer writes it again, and the changes here are kept:
+# Builds the mod on every push and pull request, and releases it for a tag (or a run by hand with a tag): to
+# Thunderstore and as a GitHub release. Mod Helper wrote the first version of this file; GenerateActionsWorkflow is
+# false in the csproj, so it no longer writes it again, and the changes here are kept:
 # - a release runs checks.yml first and is only built, published and released when every check passes;
 # - everything the build downloads is pinned. MelonLoader and Mod Helper are the minimum versions thunderstore.toml
 #   promises, so the DLL is built against what it says it needs; the game's assemblies are the ci-dependencies commit
@@ -9,10 +9,13 @@ name: Build
 
 on:
   push:
+    # '**' also matches branch names with a /, which '*' doesn't
     branches:
-      - '*'
+      - '**'
     tags:
       - '*'
+  # Never a release: IS_RELEASE is false, so nothing is published
+  pull_request:
   workflow_dispatch:
     inputs:
       tag:

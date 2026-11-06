@@ -79,16 +79,81 @@ public sealed class ContinueStore
     public string BrokenPath => Path.ChangeExtension(FilePath, ".broken.json");
 
     /// <summary>
+    /// Where a file from a newer version of the mod is kept while this version writes a game of its own, so the newer
+    /// game isn't lost. <see cref="Load"/> moves it back once it can be read and there is no other game.
+    /// </summary>
+    public string NewerPath => Path.ChangeExtension(FilePath, ".newer.json");
+
+    /// <summary>
     /// A file from a newer version stays in place; say so in the log only once
     /// </summary>
     private bool toldTooNew;
+
+    /// <summary>
+    /// The file on disk was written or read by this version in this session, so it isn't one from a newer version and
+    /// doesn't have to be read again before every save
+    /// </summary>
+    private bool ownFile;
 
     public ContinueStore(string filePath) => FilePath = filePath;
 
     public bool Exists => File.Exists(FilePath);
 
-    public void Save(BossOptions options, DailyChallengeModel dcm, IEnumerable<RoundSnapshot> snapshots) =>
+    /// <summary>
+    /// Writes the game. A file from a newer version of the mod is moved to <see cref="NewerPath"/> first.
+    /// </summary>
+    public void Save(BossOptions options, DailyChallengeModel dcm, IEnumerable<RoundSnapshot> snapshots)
+    {
+        if (!ownFile && IsTooNewOnDisk())
+        {
+            File.Move(FilePath, NewerPath, true);
+            ModHelper.Warning<CustomBossChallenge>($"Keeping {FilePath} from a newer version of the mod as {NewerPath}");
+        }
+
         SafeFile.WriteAllText(FilePath, ContinueFormat.Write(options, DcmJson.Serialize(dcm), snapshots));
+        ownFile = true;
+    }
+
+    /// <summary>
+    /// Whether the file comes from a newer version of the mod. A file that can't be read now, e.g. because it is
+    /// locked, counts as one too, so it is never written over or deleted unseen.
+    /// </summary>
+    private bool IsTooNewOnDisk()
+    {
+        if (!File.Exists(FilePath)) return false;
+        try
+        {
+            return ContinueFormat.Read(File.ReadAllText(FilePath)).Problem == FormatProblem.TooNew;
+        }
+        catch (Exception)
+        {
+            return true;
+        }
+    }
+
+    private void TellTooNew()
+    {
+        if (!toldTooNew) ModHelper.Warning<CustomBossChallenge>($"Keeping {FilePath} from a newer version of the mod");
+        toldTooNew = true;
+    }
+
+    /// <summary>
+    /// Moves a game kept at <see cref="NewerPath"/> back once this version can read it and there is no other game
+    /// </summary>
+    private void TakeBackNewer()
+    {
+        if (File.Exists(FilePath) || !File.Exists(NewerPath)) return;
+        try
+        {
+            if (ContinueFormat.Read(File.ReadAllText(NewerPath)).Problem == FormatProblem.TooNew) return;
+            File.Move(NewerPath, FilePath);
+            ModHelper.Msg<CustomBossChallenge>($"Took the unfinished custom game back from {NewerPath}");
+        }
+        catch (Exception e)
+        {
+            ModHelper.Warning<CustomBossChallenge>($"Could not take back {NewerPath}: {e.Message}");
+        }
+    }
 
     /// <summary>
     /// Loads the saved game, or null when there is nothing to continue. See <see cref="Load"/>.
@@ -101,6 +166,8 @@ public sealed class ContinueStore
     /// </summary>
     public ContinueLoad Load()
     {
+        TakeBackNewer();
+        ownFile = false;
         if (!File.Exists(FilePath)) return new ContinueLoad(ContinueProblem.Missing);
 
         LostGame? lost = null;
@@ -109,8 +176,7 @@ public sealed class ContinueStore
             var read = ContinueFormat.Read(File.ReadAllText(FilePath));
             if (read.Problem == FormatProblem.TooNew)
             {
-                if (!toldTooNew) ModHelper.Warning<CustomBossChallenge>($"Keeping {FilePath} from a newer version of the mod");
-                toldTooNew = true;
+                TellTooNew();
                 return new ContinueLoad(ContinueProblem.TooNew);
             }
             var file = read.Value ?? throw new InvalidDataException(read.Error);
@@ -134,6 +200,7 @@ public sealed class ContinueStore
                 snapshots.Add((snapshot, save));
             }
 
+            ownFile = true;
             return new ContinueLoad(ContinueProblem.None, new ContinueGame(options, dcm, snapshots));
         }
         catch (Exception e)
@@ -160,8 +227,18 @@ public sealed class ContinueStore
         }
     }
 
+    /// <summary>
+    /// Deletes the game, but never a file from a newer version of the mod
+    /// </summary>
     public void Delete()
     {
+        if (!ownFile && IsTooNewOnDisk())
+        {
+            TellTooNew();
+            return;
+        }
+
         if (File.Exists(FilePath)) File.Delete(FilePath);
+        ownFile = false;
     }
 }
