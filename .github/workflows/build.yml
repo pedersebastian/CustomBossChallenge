@@ -105,7 +105,7 @@ jobs:
           tag: ${{ env.MOD_HELPER_VERSION }}
 
       - name: Download Specific Mod Helper
-        uses: dawidd6/action-download-artifact@v6
+        uses: dawidd6/action-download-artifact@v28
         if: env.MOD_HELPER_BRANCH != ''
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
