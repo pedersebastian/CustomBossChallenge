@@ -203,7 +203,9 @@ internal static class InGame_RoundStart
     [HarmonyPostfix]
     internal static void Postfix()
     {
-        if (CustomBossState.IsActive) CustomBossState.OnRoundStart();
+        if (!CustomBossState.IsActive) return;
+        CustomBossState.OnRoundStart();
+        MixedBosses.OnRoundStart();
     }
 }
 

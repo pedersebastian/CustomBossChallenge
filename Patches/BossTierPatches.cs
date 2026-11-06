@@ -110,7 +110,7 @@ internal static class BossBloonManager_BloonDestroyed
     internal static void Postfix(BossBloonManager __instance, Il2CppSystem.Object obj)
     {
         BossVictoryPatches.TrackDefeat(__instance, obj);
-        MixedBosses.Sync(__instance);
+        MixedBosses.Sync(__instance, loaded: false);
     }
 }
 

@@ -88,6 +88,16 @@ public class TierBossMathTests
     }
 
     [Fact]
+    public void Random_tiers_are_remembered_by_number()
+    {
+        Assert.Equal("2,5", TierBossMath.RandomTiers("Lych,Random,,Vortex,RandomElite@120/80,Random", 5));
+        Assert.Null(TierBossMath.RandomTiers("Lych,,Vortex", 3));
+        Assert.Null(TierBossMath.RandomTiers(null, 3));
+        Assert.Equal([2, 5], TierBossMath.ParseTierList(" 2, 5 ,x,0,11"));
+        Assert.Empty(TierBossMath.ParseTierList(null));
+    }
+
+    [Fact]
     public void Each_tier_keeps_its_speed_and_health()
     {
         var tier = TierBossMath.Entry("Lych,VortexElite@150/250", 2);

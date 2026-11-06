@@ -45,6 +45,8 @@ public class MixedBossModelTest : CustomBossTest
         AssertEquals(resolved.BossId(1), "Lych1", "Resolving keeps chosen bosses");
         AssertEquals(resolved.BossId(2), "VortexElite2", "Resolving fills in the setup's boss");
         Assert(resolved.BossId(3).EndsWith("3") && !resolved.BossId(3).Contains("Elite"), $"Random keeps its Elite: {resolved.BossId(3)}");
+        AssertEquals(resolved.RandomTiers, "3", "Resolving remembers which tiers were Random");
+        Assert(resolved.WasRandom(3) && !resolved.WasRandom(1), "Only tier 3 was Random");
         AssertEquals(new BossOptions().ResolveRandom(new System.Random(1)), new BossOptions(), "A single boss setup stays as it is");
 
         // Each tier's own speed and health go on top of Speed per Tier and Health per Tier
@@ -110,18 +112,19 @@ public class MixedBossGameTest : CustomBossTest
     protected override IEnumerator Run()
     {
         // The strong test tower can't damage Dreadbloon, so it isn't in the line-up. Some tiers have speed, health and
-        // skulls of their own.
+        // skulls of their own. Tier 4 was Random, so the game picked its boss and keeps it a secret until it arrives.
         var options = new BossOptions
         {
             Tiers = 6, HealthPerTier = 10, SpawnRounds = "40,43,46,49,52,55",
-            TierBosses = "Lych#2,@150/80,Diamondback@60/150#60%;30%,VortexElite,Phayze@200/100,Blastapopoulos#0"
+            TierBosses = "Lych#2,@150/80,Diamondback@60/150#60%;30%,VortexElite,Phayze@200/100,Blastapopoulos#0",
+            RandomTiers = "4"
         };
         var dcm = BaseDcm();
         dcm.startRules.round = 39;
         dcm.startRules.lives = dcm.startRules.maxLives = 5000;
         dcm.bloonModifiers.healthMultipliers.boss = 0.05f;
         dcm.disableMK = true;
-        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, BossGameLauncher.Resolve(options)));
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
 
         var gameModel = InGame.instance.GetGameModel();
         Assert(ExtraTiers.HasAllTiers(gameModel, options), "The match is missing boss tier models");
@@ -140,6 +143,14 @@ public class MixedBossGameTest : CustomBossTest
         InGame.instance.bridge.SetFastForward(true);
 
         var highestTier = 0;
+        (float At, int Tier, BossType Boss)? presentation = null;
+        var presented = 0;
+        // After a defeat the map keeps the beaten boss's effects until the next round starts, then shows the next one's
+        var defeated = 0;
+        (int Round, int Tier)? beaten = null;
+        float? nextRoundAt = null;
+        var early = 0;
+        var secretKept = 0;
         var skulls = Array.Empty<float>();
         var passed = 0;
         var start = Time.realtimeSinceStartup;
@@ -159,6 +170,7 @@ public class MixedBossGameTest : CustomBossTest
                 AssertEquals(InGameData.CurrentGame.bossData.bossBloon, boss, $"Boss data during tier {highestTier}");
                 Log($"tier {highestTier}: {manager.CurrentBoss.bloonModel.id}");
                 CheckHud(options, highestTier, boss, elite);
+                presentation = (Time.realtimeSinceStartup + 1, highestTier, boss);
 
                 // The boss that spawned has the tier's own health and speed (AssertScaledTiers checked the models);
                 // Phayze speeds itself up, so a boss may be faster but never slower
@@ -168,6 +180,45 @@ public class MixedBossGameTest : CustomBossTest
                 Assert(spawned.speed >= model.speed * 0.999f, $"Tier {highestTier} moves at {spawned.speed}, its tier {model.speed}");
                 skulls = SkullModifier.GetSkulls(model)!.OrderByDescending(p => p).ToArray();
                 passed = 0;
+            }
+
+            // The map's boss effects and the music follow the boss that arrived (#85), once they had a moment to load
+            if (presentation is var (at, tier, presentedBoss) && Time.realtimeSinceStartup >= at)
+            {
+                presentation = null;
+                var effects = Visuals.BossPresentation.MapEffects;
+                Log($"tier {tier}: map effects {string.Join(", ", effects)}, music {Visuals.BossPresentation.MusicPlaying}");
+                Assert(effects.Length > 0 && effects.All(effect => effect.StartsWith(presentedBoss.ToString())),
+                    $"Tier {tier}'s map effects are {presentedBoss}'s: {string.Join(", ", effects)}");
+                presented++;
+            }
+
+            if (CustomBossState.HighestDefeatedTier > defeated && CustomBossState.HighestDefeatedTier < options.Tiers)
+            {
+                defeated = CustomBossState.HighestDefeatedTier;
+                beaten = (InGame.instance.bridge.GetCurrentRound(), defeated);
+                nextRoundAt = null;
+                var beatenBoss = options.BossOf(defeated).Boss.ToString();
+                Assert(Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(beatenBoss)),
+                    $"Right after tier {defeated} is beaten the map keeps {beatenBoss}'s effects: {BossPresentationTest.Names()}");
+            }
+            if (beaten is var (round, beatenTier) && InGame.instance.bridge.GetCurrentRound() > round)
+            {
+                nextRoundAt ??= Time.realtimeSinceStartup + 1;
+                if (Time.realtimeSinceStartup >= nextRoundAt)
+                {
+                    beaten = null;
+                    // A Random boss keeps its secret: the map keeps the beaten boss's effects until it arrives
+                    var secret = options.WasRandom(beatenTier + 1) && manager.CurrentBoss == null;
+                    var next = options.BossOf(secret ? beatenTier : beatenTier + 1).Boss.ToString();
+                    var effects = BossPresentationTest.Names();
+                    Log($"tier {beatenTier} beaten on round {round + 1}, round {InGame.instance.bridge.GetCurrentRound() + 1}: {effects}" +
+                        (manager.CurrentBoss == null ? ", next boss not here yet" : ""));
+                    Assert(Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(next)),
+                        $"The round after tier {beatenTier} was beaten shows {next}'s effects: {effects}");
+                    if (manager.CurrentBoss == null && !secret) early++;
+                    if (secret) secretKept++;
+                }
             }
 
             // The boss uses each skull right where the tier puts it: the game holds its health there for the skull
@@ -190,6 +241,9 @@ public class MixedBossGameTest : CustomBossTest
 
         AssertEquals(highestTier, options.Tiers, "Victory must come with the last chosen tier");
         AssertEquals(passed, skulls.Length, $"Tier {highestTier} used every one of its skulls");
+        Assert(presented >= options.Tiers - 1, $"The map effects were checked for {presented} tiers");
+        Assert(early > 0, "The next boss's effects never came before the boss itself");
+        AssertEquals(secretKept, 1, "The Random tier's effects waited for its boss");
         yield return ToMainMenu();
         AssertEquals(Visuals.BossHud.Lineup, null, "The line-up is gone outside the game");
     }
@@ -217,6 +271,12 @@ public class MixedBossGameTest : CustomBossTest
             var cell = Visuals.BossHud.Cells[i];
             AssertEquals(cell.Tick.gameObject.activeSelf, i + 1 <= CustomBossState.HighestDefeatedTier, $"Tick of tier {i + 1} during tier {tier}");
             AssertEquals(cell.Frame.gameObject.activeSelf, i + 1 == tier, $"Frame of tier {i + 1} during tier {tier}");
+
+            // A Random tier still to come shows the die, with the Elite glow behind it when it is Elite
+            var secret = options.WasRandom(i + 1) && i + 1 > tier;
+            var glow = cell.Portrait.transform.parent.Find($"{Menus.BossEditorSection.EliteGlowName}{cell.Portrait.name}");
+            AssertEquals(glow != null && glow.gameObject.activeSelf, secret && options.BossOf(i + 1).Elite,
+                $"Die glow of tier {i + 1} during tier {tier}");
         }
     }
 }
