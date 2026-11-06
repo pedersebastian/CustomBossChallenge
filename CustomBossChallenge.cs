@@ -55,6 +55,8 @@ public class CustomBossChallenge : BloonsTD6Mod
         CustomBossState.OnMatchStart();
         var options = CustomBossState.ActiveOptions!;
         var tiers = ExtraTiers.Add(result, options);
+        // All Camo, All Regrow and All Fortified also for the bloons the bosses spawn, extra tiers included (#90)
+        var spawned = SpawnedBloonModifiers.Apply(result, InGameData.CurrentGame?.dcModel?.bloonModifiers);
 
         // If a game update removed boss models, play the tiers that exist instead of failing when one is missing
         var available = ExtraTiers.AvailableTiers(result, options);
@@ -86,6 +88,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         ModHelper.Msg<CustomBossChallenge>(
             $"Custom {options.BossId(options.Tiers)}: added {tiers} extra tiers, scaled {scaled} tiers " +
             $"(speed {options.SpeedPerTier:+0;-0} %, health {options.HealthPerTier:+0;-0} % per tier), changed skulls of {skulls} boss models, " +
-            $"spawn rounds {TierMath.FormatRounds(options.EffectiveSpawnRounds)}, boss event rounds {eventRounds}");
+            $"spawn rounds {TierMath.FormatRounds(options.EffectiveSpawnRounds)}, boss event rounds {eventRounds}, " +
+            $"modified {spawned} bloons the bosses spawn");
     }
 }
