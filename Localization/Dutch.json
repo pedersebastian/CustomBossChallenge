@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "Dit voorbeeld laden? Je huidige opstelling wordt vervangen.",
   "CustomBossChallenge-SetupSaved": "Opgeslagen als {0}.",
   "CustomBossChallenge-TooManySetups": "Je kunt tot {0} instellingen opslaan. Verwijder er een om een nieuwe op te slaan.",
+  "CustomBossChallenge-SetupsTooNew": "Je opgeslagen opstellingen komen uit een nieuwere versie van Custom Boss Challenge. Werk de mod bij om ze te gebruiken.",
   "CustomBossChallenge-SetupFileError": "De opgeslagen opstellingen konden niet worden gewijzigd. Controleer of er naar UserData/CustomBossChallenge kan worden geschreven.",
   "CustomBossChallenge-SetupUnreadable": "Deze opgeslagen opstelling is beschadigd en kan niet worden geladen. Je kunt hem verwijderen.",
   "CustomBossChallenge-ShareCode": "Deelcode",

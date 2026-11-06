@@ -43,7 +43,7 @@ picks bosses).
 ### Unit tests
 
 The logic that doesn't need the game (tier, spawn round and skull math, the keyboard shortcut rules, the names Random gives a
-setup, the share code format and writing the mod's files) has xUnit tests in `UnitTests/`. Those source files are built on their own in
+setup, the share code format, and the formats of the mod's files) has xUnit tests in `UnitTests/`. Those source files are built on their own in
 `Shared/`, so the tests build and run in seconds without BTD6:
 
 ```
@@ -51,6 +51,15 @@ dotnet test --project UnitTests
 ```
 
 Keep the files in `Shared/` free of the game's types (`Il2Cpp...`, `BTD_Mod_Helper`), or the project won't build.
+The one exception is `Shared/BossType.cs`, a stand-in for the game's `BossType` so that `BossOptions` builds there.
+`BossTypeTests` checks it against `web/src/data/game.json`, so when the game adds a boss, update `game.json` first and
+then the stand-in.
+
+**Save files.** `SaveFormatTests` reads `Continue.json`, `LastSetup.json` and `SavedSetups.json` from every released
+file version, from `UnitTests/Fixtures/saves/`. They are read through `ContinueFormat`, `LastSetupFormat` and
+`SavedSetupsFormat`, which don't need the game. When you raise a file's `Version`, first add a fixture of the old
+version to that folder, written by the released mod. The test fails when a version has no fixture. A file from a newer
+version of the mod is never read, overwritten or moved.
 
 ### Property tests
 

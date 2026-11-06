@@ -8,18 +8,8 @@ using CustomBossChallenge.Creator;
 using Il2CppAssets.Scripts.Models.Profile;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using MelonLoader.Utils;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace CustomBossChallenge.Persistence;
-
-/// <summary>
-/// A snapshot of a custom game, taken at the end of a round
-/// </summary>
-/// <param name="Round">The round it resumes on, as the player counts rounds</param>
-/// <param name="DefeatedTiers">The boss tiers defeated by then</param>
-/// <param name="Json">The map save as JSON, see <see cref="MapSaveJson"/></param>
-public sealed record RoundSnapshot(int Round, int DefeatedTiers, string Json);
 
 /// <summary>
 /// A custom game that can be continued: the rules it was started with and its snapshots
@@ -63,31 +53,23 @@ public sealed record ContinueLoad(ContinueProblem Problem, ContinueGame? Game = 
 /// <summary>
 /// Keeps the custom game being played in the mod's own file, so it can be continued after the game was closed or
 /// crashed. Custom games never write map saves, so the player's own Boss Challenge saves stay untouched.
+/// <br/>
+/// The file's format and versions are in <see cref="ContinueFormat"/>; this finds the file and turns the challenge
+/// and the map saves into the game's types.
 /// </summary>
 public sealed class ContinueStore
 {
-    /// <summary>
-    /// The newest file version this reads. Games with a different boss per tier are written as version 2 and games
-    /// with Boss Event Rounds as version 3, so older versions of the mod, which would play them with one boss or the
-    /// default rounds, leave them alone; other games stay version 1.
-    /// </summary>
-    public const int Version = 3;
+    /// <inheritdoc cref="ContinueFormat.Version"/>
+    public const int Version = ContinueFormat.Version;
 
-    public const int MixedVersion = 2;
+    public const int MixedVersion = ContinueFormat.MixedVersion;
 
-    public const int SingleBossVersion = 1;
+    public const int SingleBossVersion = ContinueFormat.SingleBossVersion;
 
-    public static int VersionFor(BossOptions options) =>
-        options.UsesBossEventRounds ? Version : options.Mixed ? MixedVersion : SingleBossVersion;
+    public static int VersionFor(BossOptions options) => ContinueFormat.VersionFor(options);
 
     public static readonly ContinueStore Default =
         new(Path.Combine(MelonEnvironment.UserDataDirectory, "CustomBossChallenge", "Continue.json"));
-
-    private static readonly JsonSerializerSettings JsonSettings = new()
-    {
-        Formatting = Formatting.Indented,
-        Converters = {new StringEnumConverter()}
-    };
 
     public string FilePath { get; }
 
@@ -103,25 +85,10 @@ public sealed class ContinueStore
 
     public ContinueStore(string filePath) => FilePath = filePath;
 
-    private sealed class ContinueFile
-    {
-        public int Version { get; set; }
-        public BossOptions? Options { get; set; }
-        public string? Challenge { get; set; }
-        public List<RoundSnapshot>? Snapshots { get; set; }
-    }
-
     public bool Exists => File.Exists(FilePath);
 
-    public void Save(BossOptions options, DailyChallengeModel dcm, IEnumerable<RoundSnapshot> snapshots)
-    {
-        var file = new ContinueFile
-        {
-            Version = VersionFor(options), Options = options, Challenge = DcmJson.Serialize(dcm),
-            Snapshots = snapshots.OrderBy(snapshot => snapshot.Round).ToList()
-        };
-        SafeFile.WriteAllText(FilePath, JsonConvert.SerializeObject(file, JsonSettings));
-    }
+    public void Save(BossOptions options, DailyChallengeModel dcm, IEnumerable<RoundSnapshot> snapshots) =>
+        SafeFile.WriteAllText(FilePath, ContinueFormat.Write(options, DcmJson.Serialize(dcm), snapshots));
 
     /// <summary>
     /// Loads the saved game, or null when there is nothing to continue. See <see cref="Load"/>.
@@ -139,30 +106,22 @@ public sealed class ContinueStore
         LostGame? lost = null;
         try
         {
-            var file = JsonConvert.DeserializeObject<ContinueFile>(File.ReadAllText(FilePath), JsonSettings);
-            if (file?.Version > Version)
+            var read = ContinueFormat.Read(File.ReadAllText(FilePath));
+            if (read.Problem == FormatProblem.TooNew)
             {
                 if (!toldTooNew) ModHelper.Warning<CustomBossChallenge>($"Keeping {FilePath} from a newer version of the mod");
                 toldTooNew = true;
                 return new ContinueLoad(ContinueProblem.TooNew);
             }
-            if (file == null || file.Version < SingleBossVersion)
-            {
-                throw new InvalidDataException($"Version {file?.Version}, expected {SingleBossVersion}-{Version}");
-            }
-            if (file.Options == null || string.IsNullOrEmpty(file.Challenge))
-            {
-                throw new InvalidDataException("Incomplete game");
-            }
+            var file = read.Value ?? throw new InvalidDataException(read.Error);
 
-            var options = file.Options.Sanitized();
-            var changes = ChallengeLimits.OptionChanges(file.Options, options);
+            var options = file.Options;
+            var changes = read.Changes.ToList();
             var dcm = DcmJson.Deserialize(file.Challenge) ?? throw new InvalidDataException("No challenge");
             changes.AddRange(ChallengeLimits.Sanitize(dcm, BossMode.DefaultDcm(options)));
             ChallengeLimits.Report($"Unfinished custom game {FilePath}", changes);
 
-            if (file.Snapshots is not {Count: > 0}) throw new InvalidDataException("Incomplete game");
-            lost = new LostGame(options, dcm, file.Snapshots.Max(snapshot => snapshot.Round));
+            lost = new LostGame(options, dcm, file.LastRound);
 
             var snapshots = new List<(RoundSnapshot, MapSaveDataModel)>();
             foreach (var snapshot in file.Snapshots)
@@ -172,7 +131,7 @@ public sealed class ContinueStore
                 {
                     throw new InvalidDataException($"The save for round {snapshot.Round} can't be used by this game version");
                 }
-                snapshots.Add((snapshot with {DefeatedTiers = Math.Clamp(snapshot.DefeatedTiers, 0, options.Tiers)}, save));
+                snapshots.Add((snapshot, save));
             }
 
             return new ContinueLoad(ContinueProblem.None, new ContinueGame(options, dcm, snapshots));

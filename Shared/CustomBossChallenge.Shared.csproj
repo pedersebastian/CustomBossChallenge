@@ -1,6 +1,6 @@
 <!-- The mod's files that don't use the game, built on their own so the unit tests (UnitTests/) and property tests
      (PropertyTests/) can use them without the game. Keep these files free of the game's types (Il2Cpp..., BTD_Mod_Helper),
-     or this project won't build. -->
+     or this project won't build. BossType.cs stands in for the game's enum, so BossOptions builds here too. -->
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -11,7 +11,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="..\Config\BossOptions.cs" Link="Mod\BossOptions.cs" />
         <Compile Include="..\Config\BossRoundsMath.cs" Link="Mod\BossRoundsMath.cs" />
+        <Compile Include="..\Config\ChallengeLimits.Options.cs" Link="Mod\ChallengeLimits.Options.cs" />
         <Compile Include="..\Config\KeyboardShortcuts.cs" Link="Mod\KeyboardShortcuts.cs" />
         <Compile Include="..\Config\RandomNames.cs" Link="Mod\RandomNames.cs" />
         <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />
@@ -20,7 +22,11 @@
         <Compile Include="..\Config\TierBossMath.cs" Link="Mod\TierBossMath.cs" />
         <Compile Include="..\Config\UndoHistory.cs" Link="Mod\UndoHistory.cs" />
         <Compile Include="..\Persistence\CodeFormat.cs" Link="Mod\CodeFormat.cs" />
+        <Compile Include="..\Persistence\ContinueFormat.cs" Link="Mod\ContinueFormat.cs" />
+        <Compile Include="..\Persistence\FormatRead.cs" Link="Mod\FormatRead.cs" />
+        <Compile Include="..\Persistence\LastSetupFormat.cs" Link="Mod\LastSetupFormat.cs" />
         <Compile Include="..\Persistence\SafeFile.cs" Link="Mod\SafeFile.cs" />
+        <Compile Include="..\Persistence\SavedSetupsFormat.cs" Link="Mod\SavedSetupsFormat.cs" />
     </ItemGroup>
     <ItemGroup>
         <!-- The game has its own copy; this only has to be the same major version -->

@@ -68,10 +68,10 @@ public class PersistenceTest : CustomBossTest
             AssertEquals(AssertNotNull(DcmJson.Deserialize(oldChallenge), "Old challenge")!.maxParagons, ParagonMath.NoLimit,
                 "Max paragons of an old setup");
 
-            // A hand edited or future file: values out of range are brought back into range, unknown fields ignored
+            // A hand edited file: values out of range are brought back into range, unknown fields ignored
             var challenge = Newtonsoft.Json.JsonConvert.SerializeObject(DcmJson.Serialize(dcm));
             File.WriteAllText(store.FilePath,
-                $"{{\"Version\": 99, \"Future\": true, \"Challenge\": {challenge}, \"Options\": {{\"Boss\": 99, " +
+                $"{{\"Version\": 2, \"Future\": true, \"Challenge\": {challenge}, \"Options\": {{\"Boss\": 99, " +
                 "\"SkullMode\": 42, \"SkullCount\": 500, \"CustomSkulls\": null, \"Tiers\": 50, \"SpeedPerTier\": 999, \"ExtraTierHealth\": -3}}");
             Assert(store.TryLoad(out var odd, out var oddDcm), "A file with odd values must still load");
             AssertNotNull(oddDcm, "Challenge of a file with odd values");
@@ -89,6 +89,16 @@ public class PersistenceTest : CustomBossTest
                 Assert(store.TryLoad(out var migrated, out _), $"A setup with Extra Tier Health {old} must load");
                 AssertEquals(migrated, new BossOptions {Tiers = 7, HealthPerTier = perTier}, $"Extra Tier Health {old}");
             }
+
+            // A file from a newer version of the mod is neither loaded nor overwritten (#63)
+            var future = $"{{\"Version\": 99, \"Challenge\": {challenge}, \"Options\": {{\"Boss\": \"Lych\"}}}}";
+            File.WriteAllText(store.FilePath, future);
+            Assert(store.IsTooNew, "A version 99 file is too new");
+            Assert(!store.TryLoad(out var newer, out var newerDcm), "A file from a newer version must not load");
+            AssertEquals(newer, new BossOptions(), "Defaults for a file from a newer version");
+            AssertEquals(newerDcm, null, "No challenge for a file from a newer version");
+            store.Save(options, dcm);
+            AssertEquals(File.ReadAllText(store.FilePath), future, "A file from a newer version must not be overwritten");
 
             File.WriteAllText(store.FilePath, "{\"Version\": 2, \"Options\": {\"Boss\": \"Lych\"}}");
             Assert(!store.TryLoad(out var incomplete, out var incompleteDcm), "A file without a challenge must not load");

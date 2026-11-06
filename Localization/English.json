@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "Load this example? Your current setup will be replaced.",
   "CustomBossChallenge-SetupSaved": "Saved as {0}.",
   "CustomBossChallenge-TooManySetups": "You can keep up to {0} saved setups. Delete one to save a new one.",
+  "CustomBossChallenge-SetupsTooNew": "Your saved setups come from a newer version of Custom Boss Challenge. Update the mod to use them.",
   "CustomBossChallenge-SetupFileError": "The saved setups couldn't be changed. Check that UserData/CustomBossChallenge can be written to.",
   "CustomBossChallenge-SetupUnreadable": "This saved setup is damaged and can't be loaded. You can delete it.",
   "CustomBossChallenge-ShareCode": "Share Code",

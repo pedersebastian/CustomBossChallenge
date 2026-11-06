@@ -148,6 +148,8 @@ public static class Texts
     public static readonly string SetupSaved = Key(nameof(SetupSaved), "Saved as {0}.");
     public static readonly string TooManySetups = Key(nameof(TooManySetups),
         "You can keep up to {0} saved setups. Delete one to save a new one.");
+    public static readonly string SetupsTooNew = Key(nameof(SetupsTooNew),
+        "Your saved setups come from a newer version of Custom Boss Challenge. Update the mod to use them.");
     public static readonly string SetupFileError = Key(nameof(SetupFileError),
         "The saved setups couldn't be changed. Check that UserData/CustomBossChallenge can be written to.");
     public static readonly string SetupUnreadable = Key(nameof(SetupUnreadable),
