@@ -53,6 +53,24 @@ public static class MixedBosses
     }
 
     /// <summary>
+    /// The highest tier whose boss has arrived: the one alive, or else the last one beaten; 0 before the first
+    /// </summary>
+    public static int ArrivedTier(BossBloonManager manager)
+    {
+        var alive = manager.CurrentBoss;
+        return alive != null && TierMath.TierOf(alive.bloonModel.id) is > 0 and var own
+            ? Math.Max(own, CustomBossState.HighestDefeatedTier)
+            : CustomBossState.HighestDefeatedTier;
+    }
+
+    /// <summary>
+    /// Whether the boss of <paramref name="tier"/> is still a secret: the game picked it at random, and it hasn't
+    /// arrived yet. Its portraits show a die, and the map keeps the effects of the boss before it until it arrives.
+    /// </summary>
+    public static bool IsSecret(BossBloonManager manager, BossOptions options, int tier) =>
+        options.WasRandom(tier) && tier > ArrivedTier(manager);
+
+    /// <summary>
     /// Makes the game model and the game's boss data say the boss of <paramref name="tier"/>
     /// </summary>
     public static void SetType(GameModel? model, BossOptions options, int tier)
@@ -97,13 +115,15 @@ public static class MixedBosses
 
     /// <summary>
     /// A round has started: once a boss is beaten, the map shows the next boss's effects from the next round on, even
-    /// when that boss comes rounds later (#85)
+    /// when that boss comes rounds later (#85). A boss the game picked at random keeps its secret until it arrives.
     /// </summary>
     internal static void OnRoundStart()
     {
         if (MixedOptions is not { } options) return;
         var manager = InGame.instance?.bridge?.Simulation?.map?.spawner?.bossBloonManager;
-        if (manager != null) Present(options, ShownTier(manager, options));
+        if (manager == null) return;
+        var next = ShownTier(manager, options);
+        Present(options, IsSecret(manager, options, next) ? PresentedTier(manager, options) : next);
     }
 
     /// <summary>

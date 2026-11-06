@@ -50,6 +50,16 @@ public sealed record BossOptions
     public bool Mixed => TierBosses != null;
 
     /// <summary>
+    /// The tiers that were Random before <see cref="ResolveRandom"/> picked their bosses, like "2,5", or null. The game
+    /// keeps those bosses a secret until they arrive.
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string? RandomTiers { get; init; }
+
+    /// <summary>Whether the game picked the boss of <paramref name="tier"/> at random when it started</summary>
+    public bool WasRandom(int tier) => System.Array.IndexOf(TierBossMath.ParseTierList(RandomTiers), tier) >= 0;
+
+    /// <summary>
     /// The boss events' own rounds instead of the default ones (#80), moved to the tiers' Spawn Rounds. In Advanced
     /// Mode (#84) the rounds follow the first tier's boss, and every tier arrives on the round made for its own boss.
     /// </summary>
@@ -106,7 +116,8 @@ public sealed record BossOptions
                 ? TierMath.HealthPerTierFromExtraTierHealth(legacy)
                 : HealthPerTier),
             ExtraTierHealth = null,
-            TierBosses = TierBossMath.Normalize(TierBosses)
+            TierBosses = TierBossMath.Normalize(TierBosses),
+            RandomTiers = TierBossMath.ParseTierList(RandomTiers) is {Length: > 0} random ? string.Join(",", random) : null
         };
     }
 
@@ -149,11 +160,16 @@ public sealed record BossOptions
     public bool HasRandom => Mixed && TierBossMath.HasRandom(TierBosses, Tiers);
 
     /// <summary>
-    /// These options with a concrete boss for every tier: Random tiers get a boss picked by <paramref name="random"/>.
+    /// These options with a concrete boss for every tier: Random tiers get a boss picked by <paramref name="random"/>,
+    /// and <see cref="RandomTiers"/> remembers which they were.
     /// Options without different bosses per tier come back as they are.
     /// </summary>
     public BossOptions ResolveRandom(System.Random random) => Mixed
-        ? this with {TierBosses = TierBossMath.Resolve(TierBosses, Boss.ToString(), Elite, Tiers, random.Next)}
+        ? this with
+        {
+            TierBosses = TierBossMath.Resolve(TierBosses, Boss.ToString(), Elite, Tiers, random.Next),
+            RandomTiers = TierBossMath.RandomTiers(TierBosses, Tiers)
+        }
         : this;
 
     /// <summary>

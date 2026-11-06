@@ -251,4 +251,20 @@ public static class TierBossMath
     /// Whether any of the first <paramref name="tiers"/> tiers is Random
     /// </summary>
     public static bool HasRandom(string? list, int tiers) => Parse(list).Take(tiers).Any(tier => tier.IsRandom);
+
+    /// <summary>
+    /// The Random tiers among the first <paramref name="tiers"/>, like "2,5", or null when there are none
+    /// </summary>
+    public static string? RandomTiers(string? list, int tiers)
+    {
+        var random = Parse(list).Take(tiers).Select((tier, i) => (tier, number: i + 1))
+            .Where(entry => entry.tier.IsRandom).Select(entry => entry.number).ToArray();
+        return random.Length > 0 ? string.Join(",", random) : null;
+    }
+
+    /// <summary>The tier numbers in a list like "2,5"; anything else is left out</summary>
+    public static int[] ParseTierList(string? list) => string.IsNullOrWhiteSpace(list)
+        ? []
+        : list.Split(',').Select(token => int.TryParse(token.Trim(), out var tier) ? tier : 0)
+            .Where(tier => tier is >= 1 and <= TierMath.MaxTiers).ToArray();
 }

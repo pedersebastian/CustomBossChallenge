@@ -102,7 +102,8 @@ where you can read a share code and see the whole setup without the game, or
 Pick the **Advanced** tab at the top of the Boss section, next to **Standard**, to mix bosses in one game (#28). The
 Boss Type is hidden and every tier starts with the boss it had; the cards in the **Tier Preview** right below become
 buttons, each with a small pencil. Click one to pick that tier's boss from every boss, **Elite** or not, or **Random** for a surprise that is
-picked when the game starts (and stays the same through restarts, retries and Continue). With the keyboard, the
+picked when the game starts (and stays the same through restarts, retries and Continue). In the game a Random
+tier stays a die in the boss line-up and the boss panel until its boss arrives. With the keyboard, the
 arrows step a card's boss, Enter opens the picker and Delete puts the tier back to the boss it started with.
 Going back to **Standard** brings the Boss Type back and keeps your choices, so **Advanced** brings them back too.
 
@@ -125,7 +126,8 @@ bosses, the one coming next. A banner names every boss as it arrives, and the **
 the whole order: defeated tiers greyed out with a tick, the boss alive framed in yellow. Click **Bosses** to fold it
 away; it stays folded in later games. The boss music follows every boss that arrives. The map's boss effects (the
 ambient effects and the ones along the track) stay those of a boss until it is beaten, and show the next boss's from
-the round after, so a boss beaten on round 72 brings the next one's effects when round 73 starts. Tiers above 5 are made from tier 5 of their own boss. Try the **Boss
+the round after, so a boss beaten on round 72 brings the next one's effects when round 73 starts. A Random tier's boss
+keeps its secret: its effects wait until it arrives. Tiers above 5 are made from tier 5 of their own boss. Try the **Boss
 Gauntlet** example: all seven bosses, one after the other.
 
 With **Boss Event Rounds** ticked, every tier arrives on the round the official events made for its own boss, for

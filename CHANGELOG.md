@@ -11,9 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Random tiers stay a secret in the game**: the boss line-up and the boss panel show a die for a Random tier until
+  its boss arrives, instead of the boss the game picked for it.
 - **Boss effects per tier** (#85): in Advanced Mode the map's boss effects, the ambient ones and those along the
   track, change to the next boss's when the round after a boss is beaten starts, and are put back after a restart
-  or when a game is continued. The boss music already followed each boss.
+  or when a game is continued. A Random tier's effects wait until its boss arrives. The boss music already followed
+  each boss.
 - **Boss Event Rounds** (#80): a new tick under Spawn Rounds plays the rounds of the official boss events for
   the boss instead of the normal rounds, in every game mode, CHIMPS included. When the tiers spawn on other rounds
   than 40, 60, 80, 100 and 120, the event's boss rounds move with them. In Advanced Mode (#84) every tier arrives

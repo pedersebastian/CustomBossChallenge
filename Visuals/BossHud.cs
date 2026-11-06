@@ -101,7 +101,8 @@ public static class BossHud
     private static BossBloonManager? Manager => InGame.instance?.bridge?.Simulation?.map?.spawner?.bossBloonManager;
 
     /// <summary>
-    /// The boss panel shows the portrait of the tier's boss: the one alive, or between bosses the next one
+    /// The boss panel shows the portrait of the tier's boss: the one alive, or between bosses the next one, or a die
+    /// while that one is a secret
     /// </summary>
     public static void ShowPortraits(BossUI ui)
     {
@@ -109,9 +110,10 @@ public static class BossHud
         var manager = Manager;
         if (options == null || manager == null) return;
 
-        var (boss, _) = options.BossOf(MixedBosses.ShownTier(manager, options));
-        if (ui.bossImg != null) ui.bossImg.SetSprite(HudIcon(boss));
-        if (ui.arriveBossImg != null) ui.arriveBossImg.SetSprite(HudIcon(boss));
+        var tier = MixedBosses.ShownTier(manager, options);
+        var icon = MixedBosses.IsSecret(manager, options, tier) ? VanillaSprites.RandomIcon : HudIcon(options.BossOf(tier).Boss);
+        if (ui.bossImg != null) ui.bossImg.SetSprite(icon);
+        if (ui.arriveBossImg != null) ui.arriveBossImg.SetSprite(icon);
     }
 
     /// <summary>
@@ -218,7 +220,9 @@ public static class BossHud
 
             var (boss, elite) = options.BossOf(tier);
             var defeated = tier <= CustomBossState.HighestDefeatedTier;
-            cellParts.Portrait.Image.SetSprite(BossEditorSection.Portrait(boss, elite));
+            var secret = MixedBosses.IsSecret(manager, options, tier);
+            cellParts.Portrait.Image.SetSprite(secret ? VanillaSprites.RandomIcon : BossEditorSection.Portrait(boss, elite));
+            BossEditorSection.ShowEliteGlow(cellParts.Portrait, secret && elite);
             cellParts.Portrait.Image.color = defeated ? Defeated : Color.white;
             cellParts.Tick.gameObject.SetActive(defeated);
             cellParts.Frame.gameObject.SetActive(tier == alive);
