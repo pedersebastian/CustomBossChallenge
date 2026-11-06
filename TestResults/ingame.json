@@ -1,0 +1,11 @@
+{
+  "modVersion": "2.10.0",
+  "gameVersion": "57.4",
+  "commit": "913833bd2b344d75e71a54d6296b8c1462106b45",
+  "dirty": true,
+  "sourceHash": "e7a2c363614cff54f71225ee0588b70be2e3e7f76daf7de56251b57cf49f6589",
+  "passed": 57,
+  "failed": [],
+  "skipped": {},
+  "finished": "2026-11-06T16:23:36Z"
+}
