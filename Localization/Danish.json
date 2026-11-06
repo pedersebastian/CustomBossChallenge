@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "Bosser",
   "CustomBossChallenge-TierArrives": "Niveau {0}: {1}",
   "CustomBossChallenge-ModeStandard": "Standard",
-  "CustomBossChallenge-ModeAdvanced": "Avanceret"
+  "CustomBossChallenge-ModeAdvanced": "Avanceret",
+  "CustomBossChallenge-BossEventRounds": "Boss-event-runder",
+  "CustomBossChallenge-BossEventRoundsInfo": "Sæt kryds for at spille runderne fra de officielle boss-events for denne boss i stedet for de normale runder. I events kommer niveauerne på runde 40, 60, 80, 100 og 120 med bloons lavet til dem; med andre spawn-runder flytter de runder med niveauerne. I Avanceret kommer hvert niveau på runden lavet til dets egen boss, og de andre runder følger bossen på første niveau."
 }

@@ -2,7 +2,16 @@
 
 import { GAME } from "../data/types";
 import type { Challenge } from "../code/decode";
-import { effectiveSpawnRounds, entryOf, isMixed, tierBossName, tierSkullMode, type BossOptions, type SkullMode } from "../code/options";
+import {
+  effectiveSpawnRounds,
+  entryOf,
+  isMixed,
+  tierBossName,
+  tierSkullMode,
+  usesBossEventRounds,
+  type BossOptions,
+  type SkullMode,
+} from "../code/options";
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
 import { clampTiers, endRound } from "../math/tiers";
@@ -72,6 +81,7 @@ export function compareRows(a: Setup, b: Setup): Row[] {
   add("Tiers", "Speed per Tier", (s) => perTier(s.options.SpeedPerTier));
   add("Tiers", "Health per Tier", (s) => perTier(s.options.HealthPerTier));
   add("Tiers", "Spawn rounds", (s) => effectiveSpawnRounds(s.options).join(", "));
+  add("Tiers", "Boss Event Rounds", (s) => yesNo(usesBossEventRounds(s.options)));
   // With Advanced Mode on either side, each tier's boss
   if (isMixed(a.options) || isMixed(b.options)) {
     add("Tiers", "Advanced Mode", (s) => yesNo(isMixed(s.options)));

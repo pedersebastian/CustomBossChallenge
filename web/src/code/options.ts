@@ -29,6 +29,8 @@ export interface BossOptions {
   SpawnRounds: string | null;
   /** The boss of each tier in Advanced Mode, or null for the same boss on every tier (codes from 2.9, CBC3) */
   TierBosses?: string | null;
+  /** The boss events' own rounds, only with one boss for every tier (codes from 2.10, CBC4) */
+  BossEventRounds: boolean;
   /** Codes from before 2.3; sanitize turns it into HealthPerTier */
   ExtraTierHealth?: number | null;
 }
@@ -55,6 +57,7 @@ export function optionsJson(options: BossOptions): JsonObject {
   };
   if (options.ExtraTierHealth != null) json.ExtraTierHealth = options.ExtraTierHealth;
   if (options.TierBosses != null) json.TierBosses = options.TierBosses;
+  json.BossEventRounds = options.BossEventRounds;
   return json;
 }
 
@@ -107,6 +110,7 @@ export function readOptions(json: JsonObject): RawOptions {
     SpawnRounds: toNullableString(get("SpawnRounds"), "SpawnRounds"),
     ExtraTierHealth: get("ExtraTierHealth") === null ? null : toInt(get("ExtraTierHealth"), "ExtraTierHealth"),
     TierBosses: toNullableString(get("TierBosses"), "TierBosses"),
+    BossEventRounds: boolean(get("BossEventRounds"), "BossEventRounds"),
   };
 }
 
@@ -130,6 +134,7 @@ export function sanitize(raw: RawOptions): BossOptions {
     ),
     SpawnRounds: raw.SpawnRounds,
     TierBosses: normalizeTierBosses(raw.TierBosses),
+    BossEventRounds: raw.BossEventRounds,
     ExtraTierHealth: null,
   };
 }
@@ -159,6 +164,9 @@ export const effectiveSpawnRounds = (options: BossOptions): number[] => spawnRou
 
 /** Whether the tiers can have different bosses */
 export const isMixed = (options: BossOptions): boolean => options.TierBosses != null;
+
+/** BossOptions.UsesBossEventRounds: the event rounds are played in Standard and in Advanced Mode (#84) */
+export const usesBossEventRounds = (options: BossOptions): boolean => options.BossEventRounds;
 
 /** What a tier was set to: the setup's boss (boss null), a boss of its own, or Random (BossOptions.EntryOf) */
 export const entryOf = (options: BossOptions, tier: number): TierBoss =>

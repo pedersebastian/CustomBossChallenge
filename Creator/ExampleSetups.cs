@@ -36,7 +36,8 @@ public static class ExampleSetups
             new BossOptions {Boss = BossType.Lych, Elite = true, Tiers = 10, HealthPerTier = 30}, _ => { }),
         Example("SpeedDemonVortex", "Speed Demon Vortex",
             "Vortex gets 40 % faster every tier, with three evenly spaced skulls.",
-            new BossOptions {Boss = BossType.Vortex, SpeedPerTier = 40, SkullMode = SkullMode.EvenlySpaced, SkullCount = 3},
+            new BossOptions {Boss = BossType.Vortex, SpeedPerTier = 40, SkullMode = SkullMode.EvenlySpaced, SkullCount = 3,
+                BossEventRounds = true},
             _ => { }),
         Example("GlassCannon", "Glass Cannon",
             "One Bloonarius at three times the speed and a tenth of the health. Blink and it's gone.",
@@ -54,9 +55,9 @@ public static class ExampleSetups
             }),
         Example("SpeedrunDreadbloon", "Speedrun Dreadbloon",
             "All five tiers by round 40: a new Dreadbloon every five rounds from round 20.",
-            new BossOptions {Boss = BossType.Dreadbloon, SpawnRounds = "20, 25, 30, 35, 40"}, _ => { }),
+            new BossOptions {Boss = BossType.Dreadbloon, SpawnRounds = "20, 25, 30, 35, 40", BossEventRounds = true}, _ => { }),
         Example("ParagonBan", "Paragon Ban", "Elite Blastapopoulos on Infernal, Hard, and not a single paragon allowed.",
-            new BossOptions {Boss = BossType.Blastapopoulos, Elite = true}, dcm =>
+            new BossOptions {Boss = BossType.Blastapopoulos, Elite = true, BossEventRounds = true}, dcm =>
             {
                 dcm.maxParagons = 0;
                 dcm.difficulty = "Hard";

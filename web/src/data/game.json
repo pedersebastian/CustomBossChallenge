@@ -589,7 +589,8 @@
     "Tiers": 5,
     "SpeedPerTier": 0,
     "HealthPerTier": 0,
-    "SpawnRounds": null
+    "SpawnRounds": null,
+    "BossEventRounds": false
   },
   "bosses": {
     "Bloonarius": {

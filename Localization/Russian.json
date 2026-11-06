@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "Боссы",
   "CustomBossChallenge-TierArrives": "Уровень {0}: {1}",
   "CustomBossChallenge-ModeStandard": "Обычный",
-  "CustomBossChallenge-ModeAdvanced": "Расширенный"
+  "CustomBossChallenge-ModeAdvanced": "Расширенный",
+  "CustomBossChallenge-BossEventRounds": "Раунды босс-событий",
+  "CustomBossChallenge-BossEventRoundsInfo": "Отметьте, чтобы играть раунды официальных босс-событий для этого босса вместо обычных раундов. В событиях уровни появляются на раундах 40, 60, 80, 100 и 120 с блунами, созданными для них; при других раундах появления эти раунды сдвигаются вместе с уровнями. В Продвинутом режиме каждый уровень появляется в раунде, созданном для его собственного босса, а остальные раунды берутся от босса первого уровня."
 }

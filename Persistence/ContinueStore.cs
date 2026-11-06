@@ -67,14 +67,18 @@ public sealed record ContinueLoad(ContinueProblem Problem, ContinueGame? Game = 
 public sealed class ContinueStore
 {
     /// <summary>
-    /// The newest file version this reads. Games with a different boss per tier are written as version 2, so older
-    /// versions of the mod, which would play them with one boss, leave them alone; other games stay version 1.
+    /// The newest file version this reads. Games with a different boss per tier are written as version 2 and games
+    /// with Boss Event Rounds as version 3, so older versions of the mod, which would play them with one boss or the
+    /// default rounds, leave them alone; other games stay version 1.
     /// </summary>
-    public const int Version = 2;
+    public const int Version = 3;
+
+    public const int MixedVersion = 2;
 
     public const int SingleBossVersion = 1;
 
-    public static int VersionFor(BossOptions options) => options.Mixed ? Version : SingleBossVersion;
+    public static int VersionFor(BossOptions options) =>
+        options.UsesBossEventRounds ? Version : options.Mixed ? MixedVersion : SingleBossVersion;
 
     public static readonly ContinueStore Default =
         new(Path.Combine(MelonEnvironment.UserDataDirectory, "CustomBossChallenge", "Continue.json"));

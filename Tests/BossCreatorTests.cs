@@ -102,7 +102,7 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 18, "Info buttons in the boss section");
+        AssertEquals(infoButtons, 19, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;

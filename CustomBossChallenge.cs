@@ -70,6 +70,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         var scaled = TierScaling.Apply(result, options, bossHealth);
         var skulls = options.Mixed ? SkullModifier.ApplyTiers(result, options) : SkullModifier.Apply(result, options.SkullPercents);
         result.bossSpawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
+        var eventRounds = options.UsesBossEventRounds ? BossEventRounds.Apply(result, options) : "off";
         Patches.MixedBosses.SetType(result, options, 1);
         var bossData = InGameData.CurrentGame?.bossData;
         if (bossData != null) bossData.spawnRounds = new Il2CppStructArray<int>(options.GameSpawnRounds);
@@ -77,6 +78,6 @@ public class CustomBossChallenge : BloonsTD6Mod
         ModHelper.Msg<CustomBossChallenge>(
             $"Custom {options.BossId(options.Tiers)}: added {tiers} extra tiers, scaled {scaled} tiers " +
             $"(speed {options.SpeedPerTier:+0;-0} %, health {options.HealthPerTier:+0;-0} % per tier), changed skulls of {skulls} boss models, " +
-            $"spawn rounds {TierMath.FormatRounds(options.EffectiveSpawnRounds)}");
+            $"spawn rounds {TierMath.FormatRounds(options.EffectiveSpawnRounds)}, boss event rounds {eventRounds}");
     }
 }

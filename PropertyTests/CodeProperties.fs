@@ -49,13 +49,15 @@ let ``Encoding a code's setup again gives the same code`` () =
     |> check
 
 [<Fact>]
-let ``Codes use version 2 and 3 exactly when they need it, and only characters chats leave alone`` () =
+let ``Codes use version 2, 3 and 4 exactly when they need it, and only characters chats leave alone`` () =
     Prop.forAll setups (fun setup ->
         let code = encode setup
         let mixed = not (isNull setup.Options["TierBosses"])
         let perTier = setup.Options.Value<int>("SpeedPerTier") <> 0 || setup.Options.Value<int>("HealthPerTier") <> 0
-        (code.StartsWith(CodeFormat.Version3Prefix) = mixed |@ "version 3")
-        .&. (code.StartsWith(CodeFormat.Version2Prefix) = (perTier && not mixed) |@ "version 2")
+        let eventRounds = setup.Options.Value<bool>("BossEventRounds")
+        (code.StartsWith(CodeFormat.Version4Prefix) = eventRounds |@ "version 4")
+        .&. (code.StartsWith(CodeFormat.Version3Prefix) = (mixed && not eventRounds) |@ "version 3")
+        .&. (code.StartsWith(CodeFormat.Version2Prefix) = (perTier && not mixed && not eventRounds) |@ "version 2")
         .&. (code.Length <= CodeFormat.MaxLength |@ "too long to be read")
         .&. (code[CodeFormat.PrefixLength ..] |> Seq.forall (fun c -> System.Char.IsAsciiLetterOrDigit c || c = '-' || c = '_')
              |@ code))
@@ -91,3 +93,22 @@ let ``Null, empty and blank codes are refused`` () =
         let loaded, _, problem, _ = CodeFormat.TryUnpack(code)
         Assert.False(loaded)
         Assert.Equal(CodeProblem.Invalid, problem)
+
+[<Fact>]
+let ``Boss Event Rounds play every round once, wherever the tiers spawn`` () =
+    let rounds =
+        gen {
+            let! tiers = Gen.choose (TierMath.MinTiers, TierMath.MaxTiers)
+            let! custom = spawnRounds
+            let! count = Gen.elements [ 140; 100; 50 ]
+            let text = if custom.Type = JTokenType.Null then null else custom.Value<string>()
+            return TierMath.SpawnRounds(tiers, text), count
+        }
+    Prop.forAll (Arb.fromGen rounds) (fun (spawn, count) ->
+        let sources = BossRoundsMath.Sources(spawn, count)
+        let moved =
+            Seq.zip BossRoundsMath.EventRounds spawn
+            |> Seq.forall (fun (from, to') -> to' > count || from > count || sources[to' - 1] = from)
+        (Array.sort sources = [| 1..count |] |@ $"not every round once: {sources}")
+        .&. (moved |@ "a tier doesn't get its event round"))
+    |> check

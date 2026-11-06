@@ -98,6 +98,7 @@ let options: Gen<JObject> =
         let! health = Gen.frequency [ 2, Gen.constant 0; 1, Gen.choose (TierMath.MinHealthPerTier, TierMath.MaxHealthPerTier) ]
         let! rounds = spawnRounds
         let! perTier = tierBosses
+        let! eventRounds = Gen.frequency [ 3, Gen.constant false; 1, Gen.constant true ]
         let json =
             JObject(
                 JProperty("Boss", boss),
@@ -108,7 +109,8 @@ let options: Gen<JObject> =
                 JProperty("Tiers", tiers),
                 JProperty("SpeedPerTier", speed),
                 JProperty("HealthPerTier", health),
-                JProperty("SpawnRounds", rounds)
+                JProperty("SpawnRounds", rounds),
+                JProperty("BossEventRounds", eventRounds)
             )
         perTier |> Option.iter (fun list -> json["TierBosses"] <- JValue list)
         return json
@@ -204,8 +206,12 @@ let setups = Arb.fromGenShrink (setup, shrink)
 
 // ---- Encoding and reading, like SetupCode without the game ----
 
+let private mixed (options: JObject) =
+    not (isNull options["TierBosses"]) && options["TierBosses"].Type <> JTokenType.Null
+
 let prefix (options: JObject) =
-    if not (isNull options["TierBosses"]) && options["TierBosses"].Type <> JTokenType.Null then CodeFormat.Version3Prefix
+    if options.Value<bool>("BossEventRounds") then CodeFormat.Version4Prefix
+    elif mixed options then CodeFormat.Version3Prefix
     elif options.Value<int>("SpeedPerTier") <> 0 || options.Value<int>("HealthPerTier") <> 0
     then CodeFormat.Version2Prefix
     else CodeFormat.Prefix

@@ -39,6 +39,10 @@ where you can read a share code and see the whole setup without the game, or
     and ×5.
   - **Spawn Rounds** for every tier (default 40, 60, 80, 100, 120, then every 20 rounds), set evenly with the
     **First Boss Round** and **Rounds Between Tiers** sliders or typed one by one.
+  - **Boss Event Rounds** (#80): play the rounds of the official boss events for your boss instead of the normal
+    rounds, in every game mode, CHIMPS included. In the events the tiers arrive on rounds 40, 60, 80, 100 and 120
+    with bloons made for them; with other Spawn Rounds those rounds move with the tiers. In Advanced Mode (#84)
+    every tier arrives on the round made for its own boss.
   - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health
     percentages. Works for every boss and Elite tier (Lych uses its ethereal thresholds).
   - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
@@ -122,6 +126,10 @@ the whole order: defeated tiers greyed out with a tick, the boss alive framed in
 away; it stays folded in later games. Tiers above 5 are made from tier 5 of their own boss. Try the **Boss
 Gauntlet** example: all seven bosses, one after the other.
 
+With **Boss Event Rounds** ticked, every tier arrives on the round the official events made for its own boss, for
+example Lych's round 60 when Lych is tier 2. All the other rounds follow the first tier's boss, so with Vortex or
+Dreadbloon on tier 1 their extra rounds come along.
+
 ![A boss arriving](docs/boss-arrival.jpg)
 
 ![The line-up of bosses](docs/boss-lineup.jpg)
@@ -159,7 +167,8 @@ It shows the Tier Preview, skulls and rules like the Boss Creator does.
 A code is only data: it can't run anything, and custom games are always unranked and never touch your records.
 Codes are checked before they load, so values outside what the game can play are brought back into range.
 
-Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, or `CBC3:` when they use Advanced Mode,
+Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, `CBC3:` when they use Advanced Mode, or
+`CBC4:` when they use Boss Event Rounds,
 so that older versions of the mod ask for an update instead of loading them without those settings. They only contain what differs from a new
 setup, so they are usually a few hundred characters. A new, unchanged setup gives a code like this one:
 
@@ -196,6 +205,7 @@ CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg
 | First Boss Round | 1–200 | 40 | Fills in Spawn Rounds together with Rounds Between Tiers. |
 | Rounds Between Tiers | 1–50 | 20 | Fills in Spawn Rounds; 1 sends a new tier every round. |
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
+| Boss Event Rounds | on / off | off | The official boss events' rounds for the boss, moved with the tiers when Spawn Rounds differ from 40, 60, 80, 100, 120. In Advanced Mode each tier's round comes from its own boss. |
 | Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | In Advanced, set per tier in its picker, with the count and the list below. |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
 | Skull Health % | comma separated % (1–99) | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. Use a point for decimals (`33.5`). The field shows the list as it is used: sorted, duplicates merged, invalid values dropped. |

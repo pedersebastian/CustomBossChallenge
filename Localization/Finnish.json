@@ -111,5 +111,7 @@
   "CustomBossChallenge-BossLineup": "Pomot",
   "CustomBossChallenge-TierArrives": "Taso {0}: {1}",
   "CustomBossChallenge-ModeStandard": "Tavallinen",
-  "CustomBossChallenge-ModeAdvanced": "Edistynyt"
+  "CustomBossChallenge-ModeAdvanced": "Edistynyt",
+  "CustomBossChallenge-BossEventRounds": "Bossitapahtuman kierrokset",
+  "CustomBossChallenge-BossEventRoundsInfo": "Valitse pelataksesi tämän bossin virallisten bossitapahtumien kierrokset tavallisten kierrosten sijaan. Tapahtumissa tasot saapuvat kierroksilla 40, 60, 80, 100 ja 120 niille tehtyjen bloonien kanssa; muilla ilmestymiskierroksilla nämä kierrokset siirtyvät tasojen mukana. Edistyneessä tilassa jokainen taso saapuu omalle bossilleen tehdyllä kierroksella, ja muut kierrokset seuraavat ensimmäisen tason bossia."
 }

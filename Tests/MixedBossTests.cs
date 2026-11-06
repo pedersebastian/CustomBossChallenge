@@ -88,7 +88,7 @@ public class MixedBossCodeTest : CustomBossTest
         var store = new ContinueStore(System.IO.Path.Combine(TempFolder, "Mixed", "Continue.json"));
         var resolved = options.ResolveRandom(new System.Random(7));
         store.Save(resolved, dcm, new[] {new RoundSnapshot(35, 1, "not json")});
-        Assert(System.IO.File.ReadAllText(store.FilePath).Contains($"\"Version\": {ContinueStore.Version}"),
+        Assert(System.IO.File.ReadAllText(store.FilePath).Contains($"\"Version\": {ContinueStore.MixedVersion}"),
             "A game with bosses per tier is saved as version 2");
         var load = store.Load();
         AssertEquals(load.Lost?.Options ?? load.Game?.Options, resolved, "Bosses per tier after reading the file back");
