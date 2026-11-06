@@ -180,7 +180,7 @@ jobs:
       - name: Rotate changelog Unreleased section to ${{ env.RELEASE_TAG }}
         id: changelog_rotate
         if: env.IS_RELEASE == 'true' && steps.changelog_check.outputs.has_section != 'true' && env.ACT != 'true'
-        uses: baynezy/ChangeLogger.Action@1.2.4.10
+        uses: baynezy/ChangeLogger.Action@1.2.7.13
         with:
           tag: ${{ env.RELEASE_TAG }}
           log-path: ${{ env.PROJECT_NAME }}/CHANGELOG.md
