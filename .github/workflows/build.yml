@@ -124,7 +124,7 @@ jobs:
           wget "https://raw.githubusercontent.com/${{ env.MOD_HELPER_REPO }}/${{ env.MOD_HELPER_VERSION }}/BloonsTD6%20Mod%20Helper/btd6.targets"
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
 
