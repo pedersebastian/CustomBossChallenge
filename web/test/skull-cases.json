@@ -1,0 +1,32 @@
+{
+  "comment": "A custom skull as the player types it, and as the Boss Creator shows it back. The first 21 are the three-decimal values where the website used to round differently from .NET (#113); the full scan of 1.000-99.000 matched after the fix. Read by web/test/math.test.ts and UnitTests/SkullMathTests.cs, so the website and the mod agree.",
+  "cases": [
+    { "text": "2.125", "shown": "2.13" },
+    { "text": "10.125", "shown": "10.13" },
+    { "text": "17.125", "shown": "17.13" },
+    { "text": "17.375", "shown": "17.37" },
+    { "text": "20.125", "shown": "20.13" },
+    { "text": "20.375", "shown": "20.37" },
+    { "text": "25.375", "shown": "25.37" },
+    { "text": "31.125", "shown": "31.13" },
+    { "text": "31.375", "shown": "31.37" },
+    { "text": "37.125", "shown": "37.13" },
+    { "text": "37.875", "shown": "37.87" },
+    { "text": "53.375", "shown": "53.37" },
+    { "text": "53.875", "shown": "53.87" },
+    { "text": "58.625", "shown": "58.63" },
+    { "text": "59.125", "shown": "59.13" },
+    { "text": "65.875", "shown": "65.87" },
+    { "text": "66.375", "shown": "66.37" },
+    { "text": "71.125", "shown": "71.13" },
+    { "text": "71.625", "shown": "71.63" },
+    { "text": "78.375", "shown": "78.37" },
+    { "text": "78.875", "shown": "78.87" },
+    { "text": "50", "shown": "50" },
+    { "text": "33.333", "shown": "33.33" },
+    { "text": "12.5", "shown": "12.5" },
+    { "text": "1.005", "shown": "1" },
+    { "text": "11.005", "shown": "11.01" },
+    { "text": "99", "shown": "99" }
+  ]
+}

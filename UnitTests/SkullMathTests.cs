@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using CustomBossChallenge.Config;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace CustomBossChallenge.UnitTests;
@@ -8,6 +12,24 @@ namespace CustomBossChallenge.UnitTests;
 /// </summary>
 public class SkullMathTests
 {
+    /// <summary>
+    /// The custom skulls the website reads from the same file (web/test/skull-cases.json), so both round alike
+    /// </summary>
+    public static IEnumerable<object[]> ShownCases()
+    {
+        var folder = new DirectoryInfo(AppContext.BaseDirectory);
+        while (folder != null && !File.Exists(Path.Combine(folder.FullName, "web", "test", "skull-cases.json"))) folder = folder.Parent;
+        if (folder == null) throw new FileNotFoundException("web/test/skull-cases.json not found above " + AppContext.BaseDirectory);
+
+        var file = JObject.Parse(File.ReadAllText(Path.Combine(folder.FullName, "web", "test", "skull-cases.json")));
+        foreach (var entry in (JArray) file["cases"]!) yield return [(string) entry["text"]!, (string) entry["shown"]!];
+    }
+
+    [Theory]
+    [MemberData(nameof(ShownCases))]
+    public void A_custom_skull_shows_like_on_the_website(string text, string shown) =>
+        Assert.Equal(shown, SkullMath.NormalizeCustom(text, "-"));
+
     [Theory]
     [InlineData(3, new[] {0.75f, 0.5f, 0.25f})]
     [InlineData(4, new[] {0.8f, 0.6f, 0.4f, 0.2f})]

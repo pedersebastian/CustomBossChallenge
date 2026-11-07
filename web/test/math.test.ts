@@ -5,6 +5,7 @@ import { evenlySpaced, formatCustom, formatPercent, normalizeCustom, parseCustom
 import { endRound, formatHealth, healthPerTierFromExtraTierHealth, spawnRounds } from "../src/math/tiers";
 import { roundHalfEven } from "../src/math/dotnet";
 import { FOLLOWS, normalizeTierBosses, tierEntry, tierPercents } from "../src/math/tierBosses";
+import skullCases from "./skull-cases.json";
 
 const f = (values: number[]) => values.map(Math.fround);
 const show = (rounds: number[]) => rounds.join(", ");
@@ -88,6 +89,11 @@ describe("tiers", () => {
 });
 
 describe("rounding like .NET", () => {
+  // The same cases as UnitTests/SkullMathTests.cs, from skull-cases.json
+  it.each(skullCases.cases.map((c) => [c.text, c.shown]))("a custom skull of %s shows as %s", (text, shown) =>
+    expect(normalizeCustom(text, "-")).toBe(shown),
+  );
+
   // .NET rounds the shortest text of a double, so 1.45 (stored as 1.4499999…) still gives 1.5, like Phayze's tier 5
   it.each([
     [1_450_000, "1.5M"],
