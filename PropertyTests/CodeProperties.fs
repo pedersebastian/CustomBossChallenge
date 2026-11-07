@@ -69,8 +69,10 @@ let ``Broken codes are refused without throwing`` () =
     Prop.forAll (Arb.fromGen junk) (fun code ->
         let loaded, payload, problem, _ = CodeFormat.TryUnpack(code)
         let trimmed = code.Trim()
-        let known = CodeFormat.KnownPrefixes |> Array.exists trimmed.StartsWith
-        let tooNew = not known && trimmed.Length > 4 && trimmed.StartsWith("CBC") && System.Char.IsDigit trimmed[3]
+        // Ordinal and ASCII digits, like CodeFormat (#113): compared by culture, control characters are ignored
+        let starts (prefix: string) = trimmed.StartsWith(prefix, System.StringComparison.Ordinal)
+        let known = CodeFormat.KnownPrefixes |> Array.exists starts
+        let tooNew = not known && trimmed.Length > 4 && starts "CBC" && System.Char.IsAsciiDigit trimmed[3]
         if loaded then
             // A damaged code can still be a readable one; then it is a JSON object, like every code
             (problem = CodeProblem.None && known && not (isNull payload)) |@ $"loaded {code}"
