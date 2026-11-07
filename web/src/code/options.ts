@@ -15,6 +15,9 @@ import { FOLLOWS, normalizeTierBosses, tierEntry, tierPercents, type TierBoss } 
 export const SKULL_MODES = ["Vanilla", "EvenlySpaced", "Custom"] as const;
 export type SkullMode = (typeof SKULL_MODES)[number];
 
+/** The skull modes as the Boss Creator names them (Texts.SkullsVanilla, SkullsEvenlySpaced, SkullsCustom) (#114) */
+export const SKULL_MODE_NAMES: Record<SkullMode, string> = { Vanilla: "Vanilla", EvenlySpaced: "Evenly Spaced", Custom: "Custom %" };
+
 export const BOSSES = Object.keys(GAME.bosses);
 
 export interface BossOptions {
@@ -29,7 +32,7 @@ export interface BossOptions {
   SpawnRounds: string | null;
   /** The boss of each tier in Advanced Mode, or null for the same boss on every tier (codes from 2.9, CBC3) */
   TierBosses?: string | null;
-  /** The boss events' own rounds, only with one boss for every tier (codes from 2.10, CBC4) */
+  /** The boss events' own rounds, in Standard and in Advanced Mode (codes from 2.10, CBC4) */
   BossEventRounds: boolean;
   /** Codes from before 2.3; sanitize turns it into HealthPerTier */
   ExtraTierHealth?: number | null;

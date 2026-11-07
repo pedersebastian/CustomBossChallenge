@@ -6,6 +6,7 @@ import {
   effectiveSpawnRounds,
   entryOf,
   isMixed,
+  SKULL_MODE_NAMES,
   tierBossName,
   tierSkullMode,
   usesBossEventRounds,
@@ -42,8 +43,7 @@ const yesNo = (value: boolean): string => (value ? "Yes" : "No");
 const towerLimit = (value: number | undefined): string =>
   value === undefined ? "Default" : value === 0 ? "Not allowed" : value < 0 ? "No limit" : `Max ${value}`;
 
-const skullModeText = (mode: SkullMode): string =>
-  mode === "Vanilla" ? "Boss's own" : mode === "EvenlySpaced" ? "Evenly spaced" : "Custom";
+const skullModeText = (mode: SkullMode): string => SKULL_MODE_NAMES[mode];
 
 function skullText(options: BossOptions): string {
   // In Advanced Mode each tier has its own skulls, shown per tier
@@ -55,7 +55,7 @@ function skullText(options: BossOptions): string {
   return `${skullModeText(options.SkullMode)}: ${percents.length === 0 ? "none" : percents.map(formatPercent).join(", ")}`;
 }
 
-/** A tier's own skulls in Advanced Mode, e.g. "Evenly spaced: 80%, 60%, 40%, 20%" */
+/** A tier's own skulls in Advanced Mode, e.g. "Evenly Spaced: 80%, 60%, 40%, 20%" */
 function tierSkullText(options: BossOptions, tier: number): string {
   const percents = tierSkulls(options, tier);
   const list = percents === null ? "?" : percents.length === 0 ? "none" : percents.map(formatPercent).join(", ");
