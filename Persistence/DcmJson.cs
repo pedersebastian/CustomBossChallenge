@@ -27,14 +27,23 @@ public static class DcmJson
     }
 
     /// <summary>
-    /// Reads a challenge from JSON that may come from someone else, so type names and references are removed first
+    /// Reads a challenge from JSON that may come from someone else, so type names and references are removed first.
+    /// The polymorphic models are never part of a setup, so they are cleared, whether the JSON comes from a code,
+    /// LastSetup.json or Continue.json.
     /// </summary>
     public static DailyChallengeModel? Deserialize(string json)
     {
         var token = JToken.Parse(json);
         RemoveMetadata(token);
-        return JsonConvert.DeserializeObject<DailyChallengeModel>(token.ToString(Newtonsoft.Json.Formatting.None),
+        var dcm = JsonConvert.DeserializeObject<DailyChallengeModel>(token.ToString(Newtonsoft.Json.Formatting.None),
             ReadSettings);
+        if (dcm != null)
+        {
+            dcm.customMapModel = null;
+            dcm.simulationBehaviorsMod = null;
+        }
+
+        return dcm;
     }
 
     /// <summary>

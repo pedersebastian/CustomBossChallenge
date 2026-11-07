@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
@@ -172,6 +174,159 @@ public static class CodeFormat
                 return JToken.DeepEquals(value, defaults) ? null : value.DeepClone();
         }
     }
+
+    /// <summary>
+    /// What a code may set in the challenge: the settings of the game's Challenge Editor and the Boss Creator, each with
+    /// the JSON type it must have ("text", "int", "float" or "bool"). A list has one item: the fields of its entries,
+    /// with "$key" naming the field that tells the entries apart, which a code can't change. Everything else in a code
+    /// is ignored (#108), so the fields the game adds later, and those no player can set, keep their defaults.
+    /// <br/>
+    /// When the game's Challenge Editor gets a new setting, add it here and run WebDataTest, which gives the website
+    /// the same list.
+    /// </summary>
+    public static readonly JObject ChallengeFields = JObject.Parse("""
+        {
+          "name": "text", "map": "text", "difficulty": "text", "mode": "text",
+          "startRules": {"cash": "int", "lives": "int", "maxLives": "int", "round": "int", "endRound": "int"},
+          "bloonModifiers": {
+            "speedMultiplier": "float", "moabSpeedMultiplier": "float", "bossSpeedMultiplier": "float",
+            "regrowRateMultiplier": "float",
+            "healthMultipliers": {"bloons": "float", "moabs": "float", "boss": "float"},
+            "allCamo": "bool", "allRegen": "bool", "allFortified": "bool"
+          },
+          "towers": [{
+            "$key": "tower", "max": "int", "path1NumBlockedTiers": "int", "path2NumBlockedTiers": "int",
+            "path3NumBlockedTiers": "int", "restrictParagon": "bool"
+          }],
+          "maxTowers": "int", "maxParagons": "int", "leastCashUsed": "int", "leastTiersUsed": "int", "seed": "int",
+          "removeableCostMultiplier": "float", "abilityCooldownReductionMultiplier": "float",
+          "disableMK": "bool", "disableSelling": "bool", "disablePowers": "bool", "noContinues": "bool",
+          "disableDoubleCash": "bool", "disableFastTrack": "bool", "noInstaReward": "bool",
+          "displayIncludedTowers": "bool"
+        }
+        """);
+
+    /// <summary>
+    /// The part of a challenge <see cref="Diff"/> that <see cref="ChallengeFields"/> allows, with the right types. Every
+    /// part left out is added to <paramref name="dropped"/> by its path, e.g. "cashModifiers" or "towers[3].tower",
+    /// for the log. A whole list, as a code holds when the game's list has changed length since, becomes changes to the
+    /// entries of <paramref name="defaults"/> with the same key; entries it doesn't have are left out.
+    /// </summary>
+    public static JObject FilterChallenge(JObject diff, JObject defaults, List<string> dropped) =>
+        FilterObject(diff, ChallengeFields, defaults, "", dropped);
+
+    private static JObject FilterObject(JObject diff, JObject fields, JToken? defaults, string path, List<string> dropped)
+    {
+        var kept = new JObject();
+        foreach (var (name, value) in diff)
+        {
+            var at = path.Length == 0 ? name : $"{path}.{name}";
+            var field = name.StartsWith('$') ? null : fields[name];
+            var before = dropped.Count;
+            var filtered = value == null || field == null ? null : Filter(value, field, defaults?[name], at, dropped);
+            if (filtered != null) kept[name] = filtered;
+            // Name what was left out, unless a part of it already says what; an empty object changes nothing
+            else if (field == null || (dropped.Count == before && value is not JObject {HasValues: false})) dropped.Add(at);
+        }
+
+        return kept;
+    }
+
+    private static JToken? Filter(JToken value, JToken field, JToken? defaults, string path, List<string> dropped)
+    {
+        switch (field)
+        {
+            case JObject fields:
+                if (value is not JObject obj) return null;
+                var inner = FilterObject(obj, fields, defaults, path, dropped);
+                return inner.HasValues ? inner : null;
+            case JArray {Count: 1} list when list[0] is JObject entry:
+                return FilterList(value, entry, defaults as JArray, path, dropped);
+            default:
+                return Typed(value, (string?) field);
+        }
+    }
+
+    private static JToken? FilterList(JToken value, JObject entry, JArray? defaults, string path, List<string> dropped)
+    {
+        var key = (string?) entry["$key"];
+        var items = new JObject();
+        void Add(int index, JObject change, string at)
+        {
+            var inner = FilterObject(change, entry, defaults?[index], at, dropped);
+            if (inner.HasValues) items[index.ToString(CultureInfo.InvariantCulture)] = inner;
+        }
+
+        if (value is JObject {Count: 1} diff && diff[ItemsKey] is JObject changes)
+        {
+            foreach (var (index, change) in changes)
+            {
+                var at = $"{path}[{index}]";
+                if (change is JObject changed && int.TryParse(index, NumberStyles.None, CultureInfo.InvariantCulture, out var i) &&
+                    i < (defaults?.Count ?? 0) && index == i.ToString(CultureInfo.InvariantCulture))
+                {
+                    Add(i, changed, at);
+                }
+                else dropped.Add(at);
+            }
+        }
+        else if (value is JArray whole && key != null && defaults != null)
+        {
+            for (var n = 0; n < whole.Count; n++)
+            {
+                var at = $"{path}[{n}]";
+                var id = whole[n] is JObject item && item[key] is {Type: JTokenType.String} token ? (string?) token : null;
+                var i = id == null ? -1 : defaults.ToList().FindIndex(standard => (string?) standard[key] == id);
+                if (i < 0)
+                {
+                    dropped.Add(at);
+                    continue;
+                }
+
+                // The entry's key says which entry it is; only its settings are changes
+                var change = (JObject) whole[n].DeepClone();
+                change.Remove(key);
+                foreach (var name in change.Properties().Select(property => property.Name).ToList())
+                {
+                    if (JToken.DeepEquals(change[name], defaults[i][name])) change.Remove(name);
+                }
+                Add(i, change, at);
+            }
+        }
+        else return null;
+
+        return items.HasValues ? new JObject {[ItemsKey] = items} : null;
+    }
+
+    /// <summary>
+    /// The value as the JSON type the field has, or null when it isn't one. Numbers are read the way JavaScript
+    /// reads them, so the website keeps the same ones: 5.0 is a whole number, and 1e30 a float.
+    /// </summary>
+    private static JToken? Typed(JToken value, string? type)
+    {
+        double? number = value switch
+        {
+            JValue {Value: System.Numerics.BigInteger big} => (double) big,
+            {Type: JTokenType.Integer or JTokenType.Float} => value.Value<double>(),
+            _ => null
+        };
+        return type switch
+        {
+            "text" when value.Type == JTokenType.String => value.DeepClone(),
+            "bool" when value.Type == JTokenType.Boolean => value.DeepClone(),
+            "int" when number is >= int.MinValue and <= int.MaxValue && Math.Floor(number.Value) == number.Value =>
+                new JValue((int) number.Value),
+            "float" when number is { } finite && double.IsFinite(finite) => value.Type == JTokenType.Integer && IsInt(value)
+                ? value.DeepClone()
+                : new JValue(finite),
+            _ => null
+        };
+    }
+
+    /// <summary>A whole number the game can read as an int; larger ones are kept as BigInteger</summary>
+    private static bool IsInt(JToken value) =>
+        value is JValue {Type: JTokenType.Integer, Value: var number} &&
+        number switch {long l => l is >= int.MinValue and <= int.MaxValue, int => true, _ => false};
 
     /// <summary>
     /// Puts a <see cref="Diff"/> back on top of the defaults it was made against

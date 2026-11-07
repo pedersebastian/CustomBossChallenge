@@ -592,6 +592,58 @@
     "SpawnRounds": null,
     "BossEventRounds": false
   },
+  "challengeFields": {
+    "name": "text",
+    "map": "text",
+    "difficulty": "text",
+    "mode": "text",
+    "startRules": {
+      "cash": "int",
+      "lives": "int",
+      "maxLives": "int",
+      "round": "int",
+      "endRound": "int"
+    },
+    "bloonModifiers": {
+      "speedMultiplier": "float",
+      "moabSpeedMultiplier": "float",
+      "bossSpeedMultiplier": "float",
+      "regrowRateMultiplier": "float",
+      "healthMultipliers": {
+        "bloons": "float",
+        "moabs": "float",
+        "boss": "float"
+      },
+      "allCamo": "bool",
+      "allRegen": "bool",
+      "allFortified": "bool"
+    },
+    "towers": [
+      {
+        "$key": "tower",
+        "max": "int",
+        "path1NumBlockedTiers": "int",
+        "path2NumBlockedTiers": "int",
+        "path3NumBlockedTiers": "int",
+        "restrictParagon": "bool"
+      }
+    ],
+    "maxTowers": "int",
+    "maxParagons": "int",
+    "leastCashUsed": "int",
+    "leastTiersUsed": "int",
+    "seed": "int",
+    "removeableCostMultiplier": "float",
+    "abilityCooldownReductionMultiplier": "float",
+    "disableMK": "bool",
+    "disableSelling": "bool",
+    "disablePowers": "bool",
+    "noContinues": "bool",
+    "disableDoubleCash": "bool",
+    "disableFastTrack": "bool",
+    "noInstaReward": "bool",
+    "displayIncludedTowers": "bool"
+  },
   "bosses": {
     "Bloonarius": {
       "normal": [
@@ -1587,6 +1639,8 @@
     "maxCash": 100000000,
     "maxLives": 1000000,
     "maxRevives": 100,
-    "maxTowerCount": 1000
+    "maxTowerCount": 1000,
+    "maxTiersUsed": 100000,
+    "maxBlockedTiers": 5
   }
 }

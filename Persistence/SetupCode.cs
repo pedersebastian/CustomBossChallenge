@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
@@ -89,15 +90,18 @@ public static class SetupCode
             if (raw == null) return false;
             var decoded = raw.Sanitized();
 
+            // Only what the Challenge Editor and the Boss Creator can set, with the right types (#108)
             var challenge = ChallengeJson(DailyChallengeModel.CreateDefaultEditorModel());
-            if (payload["c"] is JObject challengeDiff) CodeFormat.Apply(challenge, challengeDiff);
+            var ignored = new List<string>();
+            if (payload["c"] is JObject challengeDiff)
+            {
+                CodeFormat.Apply(challenge, CodeFormat.FilterChallenge(challengeDiff, (JObject) challenge.DeepClone(), ignored));
+            }
             var model = DcmJson.Deserialize(challenge.ToString(Formatting.None));
             if (model == null) return false;
 
-            // Same rule as saved setups: polymorphic models are never part of a setup
-            model.customMapModel = null;
-            model.simulationBehaviorsMod = null;
             var changes = ChallengeLimits.OptionChanges(raw, decoded);
+            if (ignored.Count > 0) changes.Add($"ignored {string.Join(", ", ignored)}");
             changes.AddRange(ChallengeLimits.Sanitize(model, BossMode.DefaultDcm(decoded)));
             ChallengeLimits.Report(source, changes);
 

@@ -68,7 +68,15 @@ Share codes are also tested with random data, in F# with [FsCheck](https://fsche
 
 - a code reads back as exactly the setup it was made from, and encoding that setup again gives the same code;
 - codes use `CBC2:` only when they need it, and only characters chat apps leave alone;
-- broken codes (cut short, changed, junk, too big once unpacked) are refused as `Invalid` or `TooNew` and never throw.
+- broken codes (cut short, changed, junk, too big once unpacked) are refused as `Invalid` or `TooNew` and never throw;
+- a hand made challenge only keeps the fields `CodeFormat.ChallengeFields` allows, with their types, and nothing the
+  Boss Creator makes is ever left out.
+
+**What a code may set.** `CodeFormat.ChallengeFields` lists the challenge fields a code may set: the settings of the
+game's Challenge Editor and the Boss Creator, each with its JSON type. Everything else in a code is ignored and named in
+the log, so a code can't set what no player can (#108). When the game's Challenge Editor gets a new setting, add it
+there, give it a range in `ChallengeLimits.Sanitize`, and run `WebDataTest` so the website gets the same list.
+`MaliciousCodeTest` checks in-game that the examples and Random only use fields on the list.
 
 ```
 dotnet test --project PropertyTests

@@ -24,6 +24,10 @@ public static partial class ChallengeLimits
     public const int MaxLives = 1_000_000;
     public const int MaxRevives = 100;
     public const int MaxTowerCount = 1000;
+    public const int MaxTiersUsed = 100_000;
+
+    /// <summary>A path has five upgrade tiers, which can all be blocked</summary>
+    public const int MaxBlockedTiers = 5;
 
     public static readonly string[] Difficulties = {"Easy", "Medium", "Hard"};
 
@@ -74,6 +78,9 @@ public static partial class ChallengeLimits
         rules.endRound = OrDefault(changes, "end round", rules.endRound, 1, TierMath.MaxRound + TierMath.RoundsBetweenTiers);
 
         dcm.maxTowers = OrDefault(changes, "max towers", dcm.maxTowers, 0, MaxTowerCount);
+        dcm.maxParagons = OrDefault(changes, "max paragons", dcm.maxParagons, 0, MaxTowerCount);
+        dcm.leastCashUsed = OrDefault(changes, "least cash", dcm.leastCashUsed, 0, MaxCash);
+        dcm.leastTiersUsed = OrDefault(changes, "least tiers", dcm.leastTiersUsed, 0, MaxTiersUsed);
         dcm.maxPowers = OrDefault(changes, "max powers", dcm.maxPowers, 0, MaxTowerCount);
         dcm.removeableCostMultiplier =
             Clamp(changes, "removable cost", dcm.removeableCostMultiplier, 0, MaxMultiplier);
@@ -84,6 +91,9 @@ public static partial class ChallengeLimits
             foreach (var tower in dcm.towers)
             {
                 tower.max = OrDefault(changes, $"{tower.tower} limit", tower.max, 0, MaxTowerCount);
+                tower.path1NumBlockedTiers = Range(changes, $"{tower.tower} path 1", tower.path1NumBlockedTiers, 0, MaxBlockedTiers);
+                tower.path2NumBlockedTiers = Range(changes, $"{tower.tower} path 2", tower.path2NumBlockedTiers, 0, MaxBlockedTiers);
+                tower.path3NumBlockedTiers = Range(changes, $"{tower.tower} path 3", tower.path3NumBlockedTiers, 0, MaxBlockedTiers);
             }
         }
 
@@ -124,6 +134,16 @@ public static partial class ChallengeLimits
             changes.Add($"{what} {value.ToString(CultureInfo.InvariantCulture)} -> {clamped.ToString(CultureInfo.InvariantCulture)}");
         }
 
+        return clamped;
+    }
+
+    /// <summary>
+    /// A value within the limits
+    /// </summary>
+    private static int Range(List<string> changes, string what, int value, int min, int max)
+    {
+        var clamped = Math.Clamp(value, min, max);
+        if (clamped != value) changes.Add($"{what} {value} -> {clamped}");
         return clamped;
     }
 
