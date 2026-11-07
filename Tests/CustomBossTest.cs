@@ -43,6 +43,8 @@ public abstract class CustomBossTest : ModTest
         Creator.BossMode.Store = new Persistence.LastSetupStore(System.IO.Path.Combine(TempFolder, "LastSetup.json"));
         Creator.BossMode.Saved = new Persistence.SavedSetupsStore(System.IO.Path.Combine(TempFolder, "SavedSetups.json"));
         Creator.BossMode.ToldAboutNewerFiles = true;
+        CustomBossRetries.FailNextSnapshot = false;
+        CustomBossChallenge.FailNextUpdate = null;
 
         // The time each test takes is logged, to see which tests make the suite slow
         Log("starting");

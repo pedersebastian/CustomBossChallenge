@@ -75,3 +75,30 @@ public class TierStarsTest : CustomBossTest
         yield return ToMainMenu();
     }
 }
+
+/// <summary>
+/// A round whose snapshot can't be written doesn't stop the later rounds from being saved for Continue (#112)
+/// </summary>
+public class FailedSnapshotTest : ContinueTestBase
+{
+    protected override IEnumerator Run()
+    {
+        var options = new BossOptions {Tiers = 3, SpawnRounds = "40, 43, 46"};
+        yield return StartCustomGame(options, Challenge(20).Build());
+        NoAutoPlay();
+        yield return PlayRound();
+        AssertEquals(AssertNotNull(Store.TryLoad(), "The game after round 21").Latest.Snapshot.Round, 21, "Saved round");
+
+        CustomBossRetries.FailNextSnapshot = true;
+        yield return PlayRound();
+        Assert(!CustomBossRetries.FailNextSnapshot, "The snapshot of round 22 was taken");
+        Assert(CustomBossRetries.HasLastRound(22), "A round whose JSON failed can still be retried in this session");
+        AssertEquals(AssertNotNull(Store.TryLoad(), "The game after round 22").Latest.Snapshot.Round, 21,
+            "A round whose JSON failed isn't in the file");
+
+        yield return PlayRound();
+        AssertEquals(AssertNotNull(Store.TryLoad(), "The game after round 23").Latest.Snapshot.Round, 23,
+            "The rounds after a failed snapshot are still saved");
+        yield return ToMainMenu();
+    }
+}

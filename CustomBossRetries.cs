@@ -30,6 +30,11 @@ public static class CustomBossRetries
     /// </summary>
     private static readonly Dictionary<int, (MapSaveDataModel Save, RoundSnapshot Snapshot)> Saves = new();
 
+    /// <summary>
+    /// Tests only: the next snapshot can't be written, as when the game's JSON library fails on a map save
+    /// </summary>
+    internal static bool FailNextSnapshot { get; set; }
+
     public static void OnRoundEnd(InGame game, int highestCompletedRound)
     {
         // The round the last tier is defeated on ends after the win, which leaves nothing to retry or continue
@@ -42,6 +47,11 @@ public static class CustomBossRetries
         string json;
         try
         {
+            if (FailNextSnapshot)
+            {
+                FailNextSnapshot = false;
+                throw new InvalidOperationException("test");
+            }
             json = MapSaveJson.Serialize(save);
         }
         catch (Exception e)
@@ -66,11 +76,16 @@ public static class CustomBossRetries
     private static void Persist(BossOptions options)
     {
         var dcm = InGameData.CurrentGame?.dcModel;
-        if (dcm == null || Saves.Values.Any(entry => entry.Snapshot.Json == "")) return;
+        if (dcm == null) return;
+
+        // A round whose map save couldn't be written as JSON can still be retried in this session, but isn't in the
+        // file; the rounds before and after it are, so one failed round doesn't stop saving for good (#112)
+        var written = Saves.Values.Select(entry => entry.Snapshot).Where(snapshot => snapshot.Json != "").ToList();
+        if (written.Count == 0) return;
 
         try
         {
-            Store.Save(options, dcm, Saves.Values.Select(entry => entry.Snapshot));
+            Store.Save(options, dcm, written);
         }
         catch (Exception e)
         {
