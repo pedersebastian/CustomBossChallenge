@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   setup or a code; the Tier Preview follows every change, and **Copy code** gives a code the mod loads exactly as
   shown. What the page doesn't edit yet, like the map, the rules or Advanced Mode's tier bosses, stays as it was in the
   code. **Edit** under a code on the main page opens it there, and **Compare with the original** shows what changed.
+- **Advanced Mode in the Studio** (#95): the Standard and Advanced tabs work like the Boss Creator's, so every tier
+  starts from Standard's boss, speed, health and skulls, and switching back brings them back. Each tier gets its own
+  boss, Elite or Random, speed, health and skulls. Put a boss on a tier by dragging it there, by tapping the tier and
+  then the boss (on a phone too), or with the arrow keys on the tier's card; Delete makes a tier follow the setup's
+  boss again.
 
 ## [2.10.2] - 2026-11-07
 

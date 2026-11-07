@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest";
 import { evenlySpaced, formatCustom, formatPercent, normalizeCustom, parseCustom } from "../src/math/skulls";
 import { endRound, formatHealth, healthPerTierFromExtraTierHealth, spawnRounds } from "../src/math/tiers";
 import { roundHalfEven } from "../src/math/dotnet";
-import { FOLLOWS, normalizeTierBosses, tierEntry, tierPercents } from "../src/math/tierBosses";
+import { FOLLOWS, normalizeTierBosses, parseTierBosses, resolveTiers, stepTier, tierEntry, tierPercents, withTier } from "../src/math/tierBosses";
+import tierBossCases from "./tier-boss-cases.json";
 import skullCases from "./skull-cases.json";
 import { isUnlimited, paragonsText } from "../src/math/paragons";
 import { GAME } from "../src/data/types";
@@ -155,4 +156,25 @@ describe("max paragons", () => {
   ])("%d of 14 paragons shows as %s", (max, shown) => expect(paragonsText(max, 14)).toBe(shown));
 
   it("knows how many paragons the game has", () => expect(isUnlimited(GAME.limits.paragons)).toBe(true));
+});
+
+describe("changing a tier's boss like the Boss Creator", () => {
+  // The same cases as UnitTests/TierBossMathTests.cs, from tier-boss-cases.json (#95)
+  const tierOf = (token: string) => parseTierBosses(token)[0] ?? FOLLOWS;
+  const tokenOf = (token: string) => (token === "" ? "" : withTier(null, 1, tierOf(token)));
+
+  it.each(tierBossCases.with.map((c) => [c.list, c.tier, c.boss, c.expected] as const))("With(%j, %i, %j) = %j", (list, tier, boss, expected) =>
+    expect(withTier(list, tier, tierOf(boss))).toBe(expected),
+  );
+
+  it.each(tierBossCases.step.map((c) => [c.tier, c.setupBoss, c.setupElite, c.direction, c.expected] as const))(
+    "Step(%j, %s, %s, %i) = %j",
+    (tier, boss, elite, direction, expected) => expect(withTier(null, 1, stepTier(tierOf(tier), boss, elite, direction))).toBe(tokenOf(expected)),
+  );
+
+  it.each(tierBossCases.resolve.map((c) => [c.list, c.boss, c.elite, c.tiers, c.pick, c.standard, c.expected] as const))(
+    "Resolve(%j, %s, %s, %i, pick %i, %j) = %j",
+    (list, boss, elite, tiers, pick, standard, expected) =>
+      expect(resolveTiers(list, boss, elite, tiers, () => pick, tierOf(standard))).toBe(expected),
+  );
 });

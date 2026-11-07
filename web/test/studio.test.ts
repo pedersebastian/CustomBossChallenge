@@ -6,6 +6,7 @@ import { NO_LIMIT, fromSlider, toSlider } from "../src/math/paragons";
 import { GAME } from "../src/data/types";
 import { effectiveSpawnRounds } from "../src/code/options";
 import * as edit from "../src/studio/state";
+import { FOLLOWS } from "../src/math/tierBosses";
 
 const fresh = edit.newSetup;
 
@@ -92,5 +93,89 @@ describe("edit functions", () => {
     expect(edit.resetBoss(setup).options).toMatchObject({ Boss: "Bloonarius", Elite: false });
     expect(edit.paragonSlider(edit.setParagonSlider(fresh(), GAME.limits.paragons))).toBe(GAME.limits.paragons);
     expect(edit.setParagonSlider(fresh(), GAME.limits.paragons).challenge.maxParagons).toBe(NO_LIMIT);
+  });
+});
+
+describe("Advanced Mode (#95)", () => {
+  /** Lych Elite at 150 % speed, 80 % health and 4 skulls in Standard */
+  const standard = () =>
+    [
+      (s: edit.StudioSetup) => edit.setBoss(s, "Lych"),
+      (s: edit.StudioSetup) => edit.setElite(s, true),
+      (s: edit.StudioSetup) => edit.setBossSpeed(s, 150),
+      (s: edit.StudioSetup) => edit.setBossHealth(s, 80),
+      (s: edit.StudioSetup) => edit.setSkullMode(s, "EvenlySpaced"),
+      (s: edit.StudioSetup) => edit.setSkullCount(s, 4),
+    ].reduce((s, change) => change(s), fresh());
+
+  it("starts every tier from Standard's boss and values, which go back to normal", () => {
+    const { setup, memory } = edit.setAdvanced(standard(), true, edit.NO_MEMORY);
+    expect(setup.options.TierBosses).toBe(Array(10).fill("LychElite@150/80#4").join(","));
+    expect(edit.bossSpeed(setup)).toBe(100);
+    expect(edit.bossHealth(setup)).toBe(100);
+    expect(setup.options.SkullMode).toBe("Vanilla");
+    expect(memory.standardValues).toMatchObject({ speed: 150, health: 80, skulls: "EvenlySpaced", skullCount: 4 });
+  });
+
+  it("brings Standard's values back, and forgets tiers that were never changed", () => {
+    const on = edit.setAdvanced(standard(), true, edit.NO_MEMORY);
+    const off = edit.setAdvanced(on.setup, false, on.memory);
+    expect(off.setup.options.TierBosses).toBeNull();
+    expect(edit.bossSpeed(off.setup)).toBe(150);
+    expect(edit.bossHealth(off.setup)).toBe(80);
+    expect(off.setup.options).toMatchObject({ SkullMode: "EvenlySpaced", SkullCount: 4 });
+    expect(off.memory.lastTierBosses).toBeNull();
+  });
+
+  it("remembers changed tiers for going back to Advanced", () => {
+    const on = edit.setAdvanced(standard(), true, edit.NO_MEMORY);
+    const changed = edit.pickTierBoss(on.setup, 2, "Vortex");
+    const off = edit.setAdvanced(changed, false, on.memory);
+    expect(off.memory.lastTierBosses).toBe(changed.options.TierBosses);
+    const back = edit.setAdvanced(off.setup, true, off.memory);
+    expect(back.setup.options.TierBosses).toBe(changed.options.TierBosses);
+  });
+
+  it("does nothing when the tab is already on", () => {
+    const setup = standard();
+    expect(edit.setAdvanced(setup, false, edit.NO_MEMORY).setup).toBe(setup);
+  });
+
+  it("picks, steps and resets a tier's boss, keeping its own values", () => {
+    const on = edit.setAdvanced(standard(), true, edit.NO_MEMORY).setup;
+    const picked = edit.pickTierBoss(on, 3, "Random");
+    expect(edit.shownTier(picked, 3)).toMatchObject({ boss: "Random", elite: true, speed: 150, health: 80, skulls: "EvenlySpaced" });
+    expect(edit.shownTier(edit.stepTierBoss(picked, 3, 1), 3).boss).toBe("Bloonarius");
+    expect(edit.shownTier(edit.stepTierBoss(picked, 3, -1), 3).boss).toBe("Diamondback");
+    // A tier that follows the setup shows the setup's boss
+    const follows = edit.setTierBoss(picked, 3, FOLLOWS);
+    expect(edit.shownTier(follows, 3)).toMatchObject({ boss: "Lych", elite: true, speed: 100 });
+  });
+
+  it("keeps a tier's values in range", () => {
+    const on = edit.setAdvanced(fresh(), true, edit.NO_MEMORY).setup;
+    expect(edit.shownTier(edit.setTierSpeed(on, 1, 4999), 1).speed).toBe(1000);
+    expect(edit.shownTier(edit.setTierHealth(on, 1, 3), 1).health).toBe(10);
+    expect(edit.shownTier(edit.setTierHealth(on, 1, 255), 1).health).toBe(260);
+    // The count is only kept in the token with Evenly Spaced skulls, like in the mod
+    const spaced = edit.setTierSkullMode(on, 1, "EvenlySpaced");
+    expect(edit.shownTier(edit.setTierSkullCount(spaced, 1, 30), 1).skullCount).toBe(10);
+    const custom = edit.setTierCustomSkulls(edit.setTierSkullMode(on, 1, "Custom"), 1, "90, 45");
+    expect(edit.shownTier(custom, 1).customSkulls).toBe("90, 45");
+    expect(edit.shownTier(edit.setTierCustomSkulls(custom, 1, "junk"), 1).customSkulls).toBe("90, 45");
+    expect(edit.shownTier(edit.resetTierSkulls(custom, 1), 1).skulls).toBe("Vanilla");
+  });
+
+  it("changes no tier in Standard", () => {
+    const setup = fresh();
+    expect(edit.pickTierBoss(setup, 2, "Lych")).toBe(setup);
+  });
+
+  it("resets every tier back to a new Standard setup with Standard's old values", () => {
+    const on = edit.setAdvanced(standard(), true, edit.NO_MEMORY);
+    const { setup, memory } = edit.resetAllTiers(edit.pickTierBoss(on.setup, 1, "Phayze"), on.memory);
+    expect(setup.options).toMatchObject({ Boss: "Bloonarius", Elite: false, TierBosses: null, SkullMode: "EvenlySpaced" });
+    expect(edit.bossSpeed(setup)).toBe(150);
+    expect(memory).toEqual(edit.NO_MEMORY);
   });
 });

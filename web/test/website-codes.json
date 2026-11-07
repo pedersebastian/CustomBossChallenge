@@ -384,6 +384,60 @@
       }
     },
     {
+      "name": "advanced from standard",
+      "code": "CBC3:q1bKV7KqVnLKLy5WslLyqUzOUNJRCslMLQKJpMLEHAxNDfQNDQx0BoKjVKujlKxkVV1bCwA",
+      "options": {
+        "Boss": "Lych",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "TierBosses": "Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100",
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "advanced, every kind of tier",
+      "code": "CBC3:q1bKV7KqVgrJTC0qVrIy0wGznPKLi1OLlayUwvKLSlIrXHMyS1J1ghLzUvJzHYyNDPQNLS0NoHyInFNOfn5eYlFmabGyOTLH0lTV2thYz1jV2lQVqgFJmiBTqVZHKVnJqrq2FgA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 6,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "TierBosses": "VortexElite,Random@320/1990,RandomElite,Bloonarius#7,Bloonarius#95%;33.3%;5%,Random,Bloonarius,Bloonarius,Bloonarius,Bloonarius",
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "advanced with event rounds and spread rounds",
+      "code": "CBC4:tY47CgIxFEW38rj1Ld74N-XAdFbqBoYx4IDkSTJRJGTvksIl2FxOczi3wOAKLs_xHc6Wwy3BYaWUtVI2StkqZaeUvVIOSjkqpdM2nYK4zj72lpJv3ukz3dk_zMIY55z-hSBacnj5sPw-LzH7SkxwpdYv",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": "20, 30, 40, 50, 60, 70, 80, 90, 100, 110",
+        "TierBosses": "Lych,Bloonarius,Bloonarius,Bloonarius,Bloonarius,Bloonarius,Bloonarius,Bloonarius,Bloonarius,Bloonarius",
+        "BossEventRounds": true
+      },
+      "challenge": {}
+    },
+    {
       "name": "everything",
       "code": "CBC4:RY_BTsMwEER_xZrzqoqTmqQ-gipxiRRRfsAlhkS4dhXbLRD535ENlNtqZnb0ZoWDXHHvvIfEMKnPLw3C3sxBQ4YlasLhPRrTu1FD4iH64E6g36NY-bOriG0rEJ5nvXjIjnA4az0OeskKpCA8amXCdFNqkTPqap9ctGMuaQQx0RBrObFuR4xXLTFeC2J82xDjd5wYb7Oxa0EFen_RNvwVZNxEeMmLjsY527txfv0BWnF03hemPpown02B4JuaMBWwf_kWh6w2XUqEk_oY1KLenPWQIqVv",
       "options": {

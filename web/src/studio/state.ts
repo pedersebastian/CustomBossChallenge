@@ -3,8 +3,21 @@
 // towers, Advanced Mode's tier bosses) stays as it was in the code.
 
 import { GAME, type Json, type JsonObject } from "../data/types";
-import { defaultOptions, effectiveSpawnRounds, type BossOptions, type SkullMode } from "../code/options";
+import { defaultOptions, effectiveSpawnRounds, entryOf, isMixed, type BossOptions, type SkullMode } from "../code/options";
+import {
+  FOLLOWS,
+  MAX_HEALTH,
+  MAX_SPEED,
+  MIN_HEALTH,
+  MIN_SPEED,
+  clampValue,
+  resolveTiers,
+  stepTier,
+  withTier,
+  type TierBoss,
+} from "../math/tierBosses";
 import { DEFAULT_COUNT, DEFAULT_CUSTOM, MAX_SKULLS, normalizeCustom } from "../math/skulls";
+import { MAX_TIERS } from "../math/tiers";
 import { clamp } from "../math/dotnet";
 import { NO_LIMIT, fromSlider, toSlider } from "../math/paragons";
 import {
@@ -143,3 +156,115 @@ export const setCustomSkulls = (setup: StudioSetup, text: string): StudioSetup =
 
 export const resetSkulls = (setup: StudioSetup): StudioSetup =>
   withOptions(setup, { SkullMode: "Vanilla", SkullCount: DEFAULT_COUNT, CustomSkulls: DEFAULT_CUSTOM });
+
+// ---------- Advanced Mode: a boss per tier (#95) ----------
+
+/**
+ * What the Boss Creator remembers while switching between Standard and Advanced (BossEditorSection's lastTierBosses
+ * and standardValues): the tier bosses to come back to, and Standard's speed, health and skulls
+ */
+export interface AdvancedMemory {
+  lastTierBosses: string | null;
+  standardValues: TierBoss | null;
+}
+
+export const NO_MEMORY: AdvancedMemory = { lastTierBosses: null, standardValues: null };
+
+/** What a tier is now, with the setup's boss and Elite filled in for a tier that follows it (TierBossPicker.Shown) */
+export function shownTier(setup: StudioSetup, tier: number): TierBoss {
+  const entry = entryOf(setup.options, tier);
+  return entry.boss === null ? { ...entry, boss: setup.options.Boss, elite: setup.options.Elite } : entry;
+}
+
+/** Gives a tier its own boss, or makes it follow the setup's with FOLLOWS (BossEditorSection.SetTierBoss) */
+export const setTierBoss = (setup: StudioSetup, tier: number, boss: TierBoss): StudioSetup =>
+  isMixed(setup.options) ? withOptions(setup, { TierBosses: withTier(setup.options.TierBosses, tier, boss) }) : setup;
+
+/** A boss or Random for a tier, keeping its Elite, speed, health and skulls (TierBossPicker.Pick) */
+export const pickTierBoss = (setup: StudioSetup, tier: number, choice: string): StudioSetup =>
+  setTierBoss(setup, tier, { ...shownTier(setup, tier), boss: choice });
+
+/** The next or previous boss of a tier, as the arrows do on the Tier Preview (BossEditorSection.StepTierBoss) */
+export const stepTierBoss = (setup: StudioSetup, tier: number, direction: number): StudioSetup =>
+  setTierBoss(setup, tier, stepTier(entryOf(setup.options, tier), setup.options.Boss, setup.options.Elite, direction));
+
+const changeTier = (setup: StudioSetup, tier: number, change: Partial<TierBoss>): StudioSetup =>
+  setTierBoss(setup, tier, { ...shownTier(setup, tier), ...change });
+
+export const setTierElite = (setup: StudioSetup, tier: number, elite: boolean): StudioSetup => changeTier(setup, tier, { elite });
+
+export const setTierSpeed = (setup: StudioSetup, tier: number, percent: number): StudioSetup =>
+  changeTier(setup, tier, { speed: clampValue(percent, MIN_SPEED, MAX_SPEED) });
+
+export const setTierHealth = (setup: StudioSetup, tier: number, percent: number): StudioSetup =>
+  changeTier(setup, tier, { health: clampValue(percent, MIN_HEALTH, MAX_HEALTH) });
+
+export const setTierSkullMode = (setup: StudioSetup, tier: number, skulls: SkullMode): StudioSetup => changeTier(setup, tier, { skulls });
+
+export const setTierSkullCount = (setup: StudioSetup, tier: number, count: number): StudioSetup =>
+  changeTier(setup, tier, { skullCount: clamp(Math.round(count), 0, MAX_SKULLS) });
+
+/** A tier's Custom % as typed: what was understood, or its skulls as they were when nothing in it is valid */
+export const setTierCustomSkulls = (setup: StudioSetup, tier: number, text: string): StudioSetup =>
+  changeTier(setup, tier, { customSkulls: normalizeCustom(text, shownTier(setup, tier).customSkulls) });
+
+export const resetTierSkulls = (setup: StudioSetup, tier: number): StudioSetup =>
+  changeTier(setup, tier, { skulls: "Vanilla", skullCount: DEFAULT_COUNT, customSkulls: DEFAULT_CUSTOM });
+
+/** Standard's Boss Speed, Boss Health and skulls, as a tier's own values */
+const standardOf = (setup: StudioSetup): TierBoss => ({
+  ...FOLLOWS,
+  speed: bossSpeed(setup),
+  health: bossHealth(setup),
+  skulls: setup.options.SkullMode,
+  skullCount: setup.options.SkullCount,
+  customSkulls: setup.options.CustomSkulls,
+});
+
+/** Standard's speed, health and skulls set from a tier's (BossEditorSection.SetBossValues) */
+const setBossValues = (setup: StudioSetup, values: TierBoss): StudioSetup =>
+  setBossHealth(
+    setBossSpeed(
+      withOptions(setup, { SkullMode: values.skulls, SkullCount: values.skullCount, CustomSkulls: values.customSkulls }),
+      values.speed,
+    ),
+    values.health,
+  );
+
+/** What every tier starts with in Advanced Mode: Standard's boss, Elite, speed, health and skulls */
+const startingTierBosses = (options: BossOptions, values: TierBoss): string =>
+  resolveTiers(null, options.Boss, options.Elite, MAX_TIERS, () => 0, values);
+
+/**
+ * The Advanced (on) or Standard tab (BossEditorSection.SetAdvanced). Advanced starts every tier from Standard's boss,
+ * Elite, speed, health and skulls, which then stay at 100 % and Vanilla; Standard brings them back, and keeps the
+ * tiers' bosses for going back to Advanced when they were changed.
+ */
+export function setAdvanced(setup: StudioSetup, on: boolean, memory: AdvancedMemory): { setup: StudioSetup; memory: AdvancedMemory } {
+  if (on === isMixed(setup.options)) return { setup, memory };
+  const current = standardOf(setup);
+  const standard = on ? current : (memory.standardValues ?? FOLLOWS);
+  const lastTierBosses = on
+    ? memory.lastTierBosses
+    : setup.options.TierBosses === startingTierBosses(setup.options, standard)
+      ? null
+      : (setup.options.TierBosses ?? null);
+  const switched = withOptions(setup, {
+    TierBosses: on ? (lastTierBosses ?? startingTierBosses(setup.options, standard)) : null,
+  });
+  return {
+    setup: setBossValues(switched, on ? FOLLOWS : standard),
+    memory: { lastTierBosses, standardValues: on ? current : null },
+  };
+}
+
+/**
+ * Back to a new setup's boss: Bloonarius, not Elite, the same for every tier, with Standard's speed, health and skulls
+ * as they were before Advanced (BossEditorSection.ResetBoss)
+ */
+export function resetAllTiers(setup: StudioSetup, memory: AdvancedMemory): { setup: StudioSetup; memory: AdvancedMemory } {
+  const defaults = defaultOptions();
+  if (!isMixed(setup.options)) return { setup: resetBoss(setup), memory: NO_MEMORY };
+  const standard = setBossValues(setup, memory.standardValues ?? FOLLOWS);
+  return { setup: withOptions(standard, { Boss: defaults.Boss, Elite: defaults.Elite, TierBosses: null }), memory: NO_MEMORY };
+}

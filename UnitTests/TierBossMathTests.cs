@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using CustomBossChallenge.Config;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace CustomBossChallenge.UnitTests;
@@ -9,6 +13,48 @@ namespace CustomBossChallenge.UnitTests;
 /// </summary>
 public class TierBossMathTests
 {
+    /// <summary>
+    /// How a tier's boss is changed, from web/test/tier-boss-cases.json, which the website's Studio tests read too (#95)
+    /// </summary>
+    private static JObject SharedCases()
+    {
+        var folder = new DirectoryInfo(AppContext.BaseDirectory);
+        while (folder != null && !File.Exists(Path.Combine(folder.FullName, "web", "test", "tier-boss-cases.json"))) folder = folder.Parent;
+        if (folder == null) throw new FileNotFoundException("web/test/tier-boss-cases.json not found above " + AppContext.BaseDirectory);
+        return JObject.Parse(File.ReadAllText(Path.Combine(folder.FullName, "web", "test", "tier-boss-cases.json")));
+    }
+
+    private static TierBoss TierOf(string token) => TierBossMath.Parse(token) is [var first, ..] ? first : TierBoss.Follows;
+
+    public static IEnumerable<object?[]> WithCases() => ((JArray) SharedCases()["with"]!).Select(c =>
+        new object?[] {(string?) c["list"], (int) c["tier"]!, (string) c["boss"]!, (string) c["expected"]!});
+
+    public static IEnumerable<object[]> StepCases() => ((JArray) SharedCases()["step"]!).Select(c =>
+        new object[] {(string) c["tier"]!, (string) c["setupBoss"]!, (bool) c["setupElite"]!, (int) c["direction"]!, (string) c["expected"]!});
+
+    public static IEnumerable<object?[]> ResolveCases() => ((JArray) SharedCases()["resolve"]!).Select(c =>
+        new object?[]
+        {
+            (string?) c["list"], (string) c["boss"]!, (bool) c["elite"]!, (int) c["tiers"]!, (int) c["pick"]!,
+            (string) c["standard"]!, (string) c["expected"]!
+        });
+
+    [Theory]
+    [MemberData(nameof(WithCases))]
+    public void With_changes_a_tier_like_the_website(string? list, int tier, string boss, string expected) =>
+        Assert.Equal(expected, TierBossMath.With(list, tier, TierOf(boss)));
+
+    [Theory]
+    [MemberData(nameof(StepCases))]
+    public void Step_steps_a_tier_like_the_website(string tier, string setupBoss, bool setupElite, int direction, string expected) =>
+        Assert.Equal(TierOf(expected).ToString(), TierBossMath.Step(TierOf(tier), setupBoss, setupElite, direction).ToString());
+
+    [Theory]
+    [MemberData(nameof(ResolveCases))]
+    public void Resolve_fills_in_tiers_like_the_website(string? list, string boss, bool elite, int tiers, int pick, string standard,
+        string expected) =>
+        Assert.Equal(expected, TierBossMath.Resolve(list, boss, elite, tiers, _ => pick, TierOf(standard)));
+
     [Theory]
     [InlineData("Lych,,RandomElite,VortexElite", "Lych,,RandomElite,VortexElite")]
     [InlineData(" lych , VORTEXelite ", "Lych,VortexElite")]

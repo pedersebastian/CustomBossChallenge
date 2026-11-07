@@ -1229,3 +1229,131 @@ input:focus-visible {
 .studio-output h2 {
   margin-top: 0;
 }
+
+/* Studio's Advanced Mode (#95): the mode tabs, the bosses to drag, a card per tier and the chosen tier's values.
+   Pressed and selected states have a tick or a thick outline as well as a colour, and focus is always visible. */
+.studio-row-title {
+  margin: 0;
+  font-weight: 800;
+}
+
+.studio-help {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.studio-tabs,
+.studio-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.studio-tab,
+.studio-chip {
+  font: inherit;
+  font-weight: 800;
+  color: var(--text);
+  background: var(--card);
+  border: 3px solid var(--outline);
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.studio-chip {
+  cursor: grab;
+  touch-action: manipulation;
+}
+
+.studio-tab[aria-pressed="true"],
+.studio-chip[aria-pressed="true"] {
+  background: var(--sea);
+  border-color: #ffd84d;
+}
+
+.studio-tab[aria-pressed="true"]::before,
+.studio-chip[aria-pressed="true"]::before {
+  content: "✓ ";
+}
+
+.studio-tab:focus-visible,
+.studio-chip:focus-visible,
+.studio-tier:focus-visible {
+  outline: 3px solid #ffd84d;
+  outline-offset: 2px;
+}
+
+.studio-advanced {
+  display: grid;
+  gap: 10px;
+}
+
+.studio-advanced[hidden] {
+  display: none;
+}
+
+.studio-tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.studio-tier {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  background: var(--card);
+  border: 3px solid var(--outline);
+  border-radius: 12px;
+  padding: 8px;
+  cursor: pointer;
+  min-height: 92px;
+}
+
+.studio-tier[hidden] {
+  display: none;
+}
+
+.studio-tier[aria-pressed="true"] {
+  border-color: #ffd84d;
+  box-shadow: inset 0 0 0 2px #ffd84d;
+}
+
+.studio-tier.drop-target {
+  border-style: dashed;
+  border-color: #ffd84d;
+  background: var(--sea);
+}
+
+.studio-tier-number {
+  font-weight: 800;
+}
+
+.studio-tier-round,
+.studio-tier-values {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.studio-tier-boss {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.studio-tier-panel {
+  display: grid;
+  gap: 10px;
+  border: 3px solid var(--outline);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--sea-end);
+}
+
+.studio-tier-heading {
+  margin: 0;
+}

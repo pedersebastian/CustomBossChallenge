@@ -33,7 +33,8 @@ afterEach(() => {
 });
 
 const rowOf = (label: string): HTMLElement => {
-  const row = [...form.querySelectorAll<HTMLElement>(".studio-row")].find((r) => r.querySelector("label")?.textContent === label);
+  // The Standard rows, not the chosen tier's own in Advanced Mode
+  const row = [...form.querySelectorAll<HTMLElement>(":scope > .studio-row")].find((r) => r.querySelector("label")?.textContent === label);
   if (!row) throw new Error(`No row ${label}`);
   return row;
 };
@@ -71,7 +72,7 @@ describe("the Studio page", () => {
     expect(read.challenge).toEqual(original.challenge);
     expect(rowOf("Boss").hidden).toBe(true);
     expect(rowOf("Skulls").hidden).toBe(true);
-    expect(form.querySelector(".note")?.hasAttribute("hidden")).toBe(false);
+    expect(form.querySelector<HTMLElement>(".studio-advanced")?.hidden).toBe(false);
     // Nothing changed yet, so there is nothing to compare
     expect(button("Compare with the original").hidden).toBe(true);
   });
@@ -108,5 +109,86 @@ describe("the Studio page", () => {
     button("Copy code").click();
     await vi.waitFor(() => expect(writeText).toHaveBeenCalledWith(studio.code()));
     expect(studio.code().startsWith("CBC1:")).toBe(true);
+  });
+
+  const tab = (name: string): HTMLButtonElement =>
+    [...form.querySelectorAll<HTMLButtonElement>(".studio-tab")].find((b) => b.textContent === name)!;
+  const card = (tier: number): HTMLElement => form.querySelector<HTMLElement>(`.studio-tier[data-tier="${tier}"]`)!;
+  const chip = (boss: string): HTMLElement => form.querySelector<HTMLElement>(`.studio-chip[data-boss="${boss}"]`)!;
+  const tierBosses = async (): Promise<string | null | undefined> => {
+    await studio.flush();
+    const read = await decode(studio.code());
+    if (!read.ok) throw new Error(read.reason);
+    return read.options.TierBosses;
+  };
+
+  it("switches to Advanced and back with the mode tabs (#95)", async () => {
+    await studio.load(newSetup(), null);
+    const advanced = form.querySelector<HTMLElement>(".studio-advanced")!;
+    expect(advanced.hidden).toBe(true);
+    expect(tab("Standard").getAttribute("aria-pressed")).toBe("true");
+    tab("Advanced").click();
+    expect(advanced.hidden).toBe(false);
+    expect(tab("Advanced").getAttribute("aria-pressed")).toBe("true");
+    expect(rowOf("Boss").hidden).toBe(true);
+    expect(studio.code().startsWith("CBC")).toBe(true);
+    await studio.flush();
+    expect(studio.code().startsWith("CBC3:")).toBe(true);
+    expect([...form.querySelectorAll(".studio-tier")].filter((c) => !(c as HTMLElement).hidden)).toHaveLength(5);
+    tab("Standard").click();
+    expect(advanced.hidden).toBe(true);
+    expect(await tierBosses()).toBeNull();
+  });
+
+  it("puts a dropped boss on a tier", async () => {
+    await studio.load(newSetup(), null);
+    tab("Advanced").click();
+    const data = new Map<string, string>();
+    const transfer = { setData: (type: string, value: string) => data.set(type, value), getData: (type: string) => data.get(type) ?? "" };
+    const drag = (type: string, target: HTMLElement) => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      Object.defineProperty(event, "dataTransfer", { value: transfer });
+      target.dispatchEvent(event);
+    };
+    drag("dragstart", chip("Phayze"));
+    drag("dragover", card(2));
+    expect(card(2).classList.contains("drop-target")).toBe(true);
+    drag("drop", card(2));
+    expect(card(2).classList.contains("drop-target")).toBe(false);
+    expect((await tierBosses())?.split(",")[1]).toBe("Phayze");
+    expect(card(2).getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("gives a tapped tier the boss tapped next, on a phone too", async () => {
+    await studio.load(newSetup(), null);
+    tab("Advanced").click();
+    card(4).click();
+    chip("Random").click();
+    expect((await tierBosses())?.split(",")[3]).toBe("Random");
+    expect(chip("Random").getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("steps a tier's boss with the arrows and lets Delete make it follow the setup", async () => {
+    await studio.load(newSetup(), null);
+    tab("Advanced").click();
+    card(1).dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    expect((await tierBosses())?.split(",")[0]).toBe("Lych");
+    card(1).dispatchEvent(new KeyboardEvent("keydown", { key: "Delete", bubbles: true }));
+    expect((await tierBosses())?.split(",")[0]).toBe("");
+    expect(card(1).getAttribute("aria-label")).toContain("Bloonarius");
+  });
+
+  it("edits the chosen tier's own values in its panel", async () => {
+    await studio.load(newSetup(), null);
+    tab("Advanced").click();
+    card(3).click();
+    const panel = form.querySelector<HTMLElement>(".studio-tier-panel")!;
+    expect(panel.querySelector("h3")?.textContent).toBe("Tier 3: Bloonarius");
+    const speed = [...panel.querySelectorAll<HTMLElement>(".studio-row")].find((r) => r.querySelector("label")?.textContent === "Speed")!;
+    const input = speed.querySelector("input")!;
+    input.value = "250";
+    input.dispatchEvent(new Event("input"));
+    expect((await tierBosses())?.split(",")[2]).toBe("Bloonarius@250/100");
+    expect(card(3).querySelector(".studio-tier-values")?.textContent).toBe("250%/100%");
   });
 });
