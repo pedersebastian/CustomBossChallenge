@@ -4,7 +4,7 @@
 import { GAME, type Json, type JsonObject } from "../data/types";
 import { clamp, float } from "../math/dotnet";
 import { MAX_ROUND } from "../math/tiers";
-import { OptionTypeError, defaultName, defaultOptions, optionsJson, readOptions, sanitize, type BossOptions } from "./options";
+import { OptionTypeError, defaultName, defaultOptions, optionsJson, readOptions, sanitize, typedOptions, type BossOptions } from "./options";
 
 export const PREFIX = "CBC1:";
 export const VERSION2_PREFIX = "CBC2:";
@@ -207,6 +207,39 @@ export const LINK_KEY = "code=";
  * also %-encoded or wrapped in &lt;…&gt; as Discord does). Text without a code in a link comes back trimmed, so decode
  * still says what's wrong with it. Same rules as CodeFormat.ExtractCode in the mod.
  */
+/**
+ * Uri.UnescapeDataString, which the mod uses: every %XX that makes a valid UTF-8 character is decoded, and every other
+ * % is left as it is. decodeURIComponent instead gives up on the whole text at the first bad one (#113).
+ */
+export function unescapeDataString(text: string): string {
+  const utf8 = new TextDecoder("utf-8", { fatal: true });
+  return text.replace(/(?:%[0-9A-Fa-f]{2})+/g, (run) => {
+    const bytes = run.slice(1).split("%").map((hex) => parseInt(hex, 16));
+    let result = "";
+    for (let i = 0; i < bytes.length; ) {
+      const lead = bytes[i];
+      const length = lead < 0x80 ? 1 : lead >= 0xc2 && lead < 0xe0 ? 2 : lead >= 0xe0 && lead < 0xf0 ? 3 : lead >= 0xf0 && lead < 0xf5 ? 4 : 0;
+      let decoded: string | null = null;
+      if (length > 0 && i + length <= bytes.length) {
+        try {
+          decoded = utf8.decode(new Uint8Array(bytes.slice(i, i + length)));
+        } catch {
+          decoded = null;
+        }
+      }
+      if (decoded === null) {
+        // Not a character: kept as the text it was
+        result += run.slice(i * 3, i * 3 + 3);
+        i++;
+      } else {
+        result += decoded;
+        i += length;
+      }
+    }
+    return result;
+  });
+}
+
 export function extractCode(text: string | null | undefined): string {
   let trimmed = (text ?? "").trim();
   if (trimmed.startsWith("<") && trimmed.endsWith(">")) trimmed = trimmed.slice(1, -1).trim();
@@ -215,11 +248,7 @@ export function extractCode(text: string | null | undefined): string {
 
   let fragment = trimmed.slice(hash + 1);
   if (fragment.startsWith(LINK_KEY)) fragment = fragment.slice(LINK_KEY.length);
-  try {
-    fragment = decodeURIComponent(fragment).trim();
-  } catch {
-    return trimmed;
-  }
+  fragment = unescapeDataString(fragment).trim();
   return fragment.startsWith("CBC") ? fragment : trimmed;
 }
 
@@ -240,7 +269,7 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
     if (!isObject(payload)) return fail("Invalid", "The code is damaged.");
 
     const optionsJsonValue = optionsJson(defaultOptions());
-    if (isObject(payload.o)) apply(optionsJsonValue, payload.o);
+    if (isObject(payload.o)) apply(optionsJsonValue, typedOptions(payload.o));
     const options = sanitize(readOptions(optionsJsonValue));
 
     const challengeJson = clone(GAME.defaultChallenge);

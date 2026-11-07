@@ -1,5 +1,5 @@
 {
-  "comment": "Text people paste or open, and the code found in it. Read by web/test/link.test.ts and UnitTests/CodeFormatTests.cs, so the website and the mod's Paste agree.",
+  "comment": "Text people paste or open, and the code found in it. Read by web/test/link.test.ts and UnitTests/CodeFormatTests.cs, so the website and the mod's Paste agree. A %-escape that isn't valid UTF-8 stays as it is, like Uri.UnescapeDataString (#113).",
   "cases": [
     { "text": "CBC2:q1bKV7Kq", "code": "CBC2:q1bKV7Kq" },
     { "text": "  CBC1:abc-_123\n", "code": "CBC1:abc-_123" },
@@ -14,6 +14,17 @@
     { "text": "#codes", "code": "#codes" },
     { "text": "https://example.com/", "code": "https://example.com/" },
     { "text": "#code=%E0%A4%A", "code": "#code=%E0%A4%A" },
+    { "text": "#code=CBC2:q1bKV7Kq%", "code": "CBC2:q1bKV7Kq%" },
+    { "text": "#code=CBC2:q1bKV7Kq%G1", "code": "CBC2:q1bKV7Kq%G1" },
+    { "text": "#code=CBC2%E0%A4q1bKV7Kq", "code": "CBC2%E0%A4q1bKV7Kq" },
+    { "text": "https://x.io/#code=CBC2%3Aq1bKV7Kq%FF", "code": "CBC2:q1bKV7Kq%FF" },
+    { "text": "https://x.io/#code=CBC2%3Aq1bKV7Kq%zz", "code": "CBC2:q1bKV7Kq%zz" },
+    { "text": "#code=CBC2:q1bKV7Kq%C3%A6", "code": "CBC2:q1bKV7Kq\u00e6" },
+    { "text": "https://x.io/#code=%00CBC2:q1bKV7Kq", "code": "https://x.io/#code=%00CBC2:q1bKV7Kq" },
+    { "text": "#code=CBC2:q1bKV7Kq%C0%80", "code": "CBC2:q1bKV7Kq%C0%80" },
+    { "text": "#code=CBC2:q1bKV7Kq%ED%A0%80", "code": "CBC2:q1bKV7Kq%ED%A0%80" },
+    { "text": "#code=CBC2:q1bKV7Kq%F0%9F%98%80", "code": "CBC2:q1bKV7Kq\ud83d\ude00" },
+    { "text": "#code=CBC2:q1bKV7Kq%e2%82%ac", "code": "CBC2:q1bKV7Kq\u20ac" },
     { "text": "", "code": "" },
     { "text": "   ", "code": "" }
   ]

@@ -85,7 +85,7 @@ public static class SetupCode
         try
         {
             var optionsJson = OptionsJson(new BossOptions());
-            if (payload["o"] is JObject optionsDiff) CodeFormat.Apply(optionsJson, optionsDiff);
+            if (payload["o"] is JObject optionsDiff) CodeFormat.Apply(optionsJson, CodeFormat.TypedOptions(optionsDiff));
             var raw = optionsJson.ToObject<BossOptions>(OptionsSerializer);
             if (raw == null) return false;
             var decoded = raw.Sanitized();

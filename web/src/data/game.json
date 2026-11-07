@@ -1641,6 +1641,7 @@
     "maxRevives": 100,
     "maxTowerCount": 1000,
     "maxTiersUsed": 100000,
-    "maxBlockedTiers": 5
+    "maxBlockedTiers": 5,
+    "paragons": 14
   }
 }

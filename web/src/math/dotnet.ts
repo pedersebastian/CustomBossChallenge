@@ -1,15 +1,17 @@
 // .NET number behaviour the mod's C# relies on, so the website gives exactly the same numbers
 
-/** C# Math.Round(value, digits): halfway values go to the even neighbour */
+/**
+ * C# Math.Round(value, digits): like .NET, the value is scaled by 10^digits, the scaled double is rounded exactly, with
+ * only a true .5 going to the even neighbour, and scaled back. No tolerance: a skull of 2.125 % is 0.02125, and
+ * 0.02125 * 10000 is 212.50000000000003, which .NET rounds up to 2.13 %; a tolerance that called it halfway gave 2.12 %
+ * (#113).
+ */
 export function roundHalfEven(value: number, digits = 0): number {
   const factor = 10 ** digits;
   const scaled = value * factor;
   const floor = Math.floor(scaled);
   const diff = scaled - floor;
-  const epsilon = 1e-9 * Math.max(1, Math.abs(scaled));
-  let rounded: number;
-  if (Math.abs(diff - 0.5) <= epsilon) rounded = floor % 2 === 0 ? floor : floor + 1;
-  else rounded = Math.round(scaled);
+  const rounded = diff === 0.5 ? (floor % 2 === 0 ? floor : floor + 1) : Math.round(scaled);
   return rounded / factor;
 }
 

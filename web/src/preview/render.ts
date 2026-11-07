@@ -1,7 +1,8 @@
 // Shows a decoded setup the way the Boss Creator would: the boss, the Tier Preview, the skulls and the rules
 
 import { GAME } from "../data/types";
-import { h } from "../dom";
+import { announce, h } from "../dom";
+import { paragonsText } from "../math/paragons";
 import { playProblem, type Challenge } from "../code/decode";
 import { bossOf, effectiveSpawnRounds, isMixed, tierBossName, tierSkullMode, type BossOptions } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
@@ -63,14 +64,19 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
   // With a boss per tier the bosses' own skulls differ between tiers, so the skulls follow the card pointed at or
   // focused, like the Boss Creator's Skull Preview
   let skullBlock = renderSkulls(options);
+  let shownTier = 1;
   root.append(skullBlock, renderRules(options, challenge, rounds));
   if (isMixed(options)) {
     root.querySelectorAll<HTMLElement>(".tier").forEach((card, i) => {
-      const show = (): void => {
-        const next = renderSkulls(options, i + 1);
+      const show = (event: Event): void => {
+        if (i + 1 === shownTier) return;
+        shownTier = i + 1;
+        const next = renderSkulls(options, shownTier);
         skullBlock.querySelectorAll(".skull-bar").forEach((bar) => skullBars.unobserve(bar));
         skullBlock.replaceWith(next);
         skullBlock = next;
+        // The block changes away from the focus, so a keyboard user is told what it shows now (#113)
+        if (event.type === "focus") announce(skullSummary(next));
       };
       card.addEventListener("mouseenter", show);
       card.addEventListener("focus", show);
@@ -178,6 +184,13 @@ function renderSkulls(options: BossOptions, shownTier = 1): HTMLElement {
   );
 }
 
+/** What a skull block shows, in one line: its heading and the skulls, e.g. "Skulls (custom, tier 3). Health bar …" */
+export function skullSummary(block: HTMLElement): string {
+  const title = block.querySelector("h4")?.textContent ?? "";
+  const detail = block.querySelector(".skull-bar")?.getAttribute("aria-label") ?? block.querySelector("p")?.textContent ?? "";
+  return `${title}. ${detail}`;
+}
+
 /** One observer for every skull bar; releaseSetup stops watching the bars of a setup that is taken away */
 const skullBars = new ResizeObserver((entries) => {
   for (const entry of entries) layOutSkullLabels(entry.target as HTMLElement);
@@ -221,7 +234,7 @@ function renderRules(options: BossOptions, challenge: Challenge, rounds: number[
   rows.push(["Boss Health", percent(challenge.bossHealth)]);
   if (options.SpeedPerTier !== 0) rows.push(["Speed per Tier", `${options.SpeedPerTier > 0 ? "+" : ""}${options.SpeedPerTier} %`]);
   if (options.HealthPerTier !== 0) rows.push(["Health per Tier", `${options.HealthPerTier > 0 ? "+" : ""}${options.HealthPerTier} %`]);
-  rows.push(["Max Paragons", challenge.maxParagons < 0 ? "Unlimited" : challenge.maxParagons === 0 ? "None" : String(challenge.maxParagons)]);
+  rows.push(["Max Paragons", paragonsText(challenge.maxParagons)]);
   rows.push(["Starting cash", startValue(challenge.cash)]);
   rows.push(["Lives", startValue(challenge.lives)]);
   if (challenge.maxLives >= 0) rows.push(["Max lives", startValue(challenge.maxLives)]);

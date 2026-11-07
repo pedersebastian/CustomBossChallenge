@@ -43,10 +43,18 @@ function logAxis(values: number[]): Axis {
   return { y: (value) => TOP + (1 - (Math.log10(value) - low) / (high - low)) * (HEIGHT - TOP - BOTTOM), ticks };
 }
 
-/** From 0 up, in a round step */
-function linearAxis(values: number[]): Axis {
+/** The smallest round step (1, 2, 2.5 or 5 times a power of ten, at least 0.25) that needs at most 6 of them up to max */
+export function roundStep(max: number): number {
+  for (let power = 10 ** Math.floor(Math.log10(Math.max(max, 1e-9) / 6)); ; power *= 10) {
+    const step = [1, 2, 2.5, 5].map((factor) => factor * power).find((candidate) => candidate >= 0.25 && max / candidate <= 6);
+    if (step !== undefined) return step;
+  }
+}
+
+/** From 0 up, in a round step; at most 7 ticks however fast a setup gets (#113) */
+export function linearAxis(values: number[]): Axis {
   const max = Math.max(...values, 1) * 1.1;
-  const step = [0.25, 0.5, 1, 2, 5].find((candidate) => max / candidate <= 6) ?? 5;
+  const step = roundStep(max);
   const high = Math.ceil(max / step) * step;
   const ticks = [];
   for (let value = 0; value <= high + 1e-9; value += step) ticks.push({ value, label: `×${formatDecimals(value, 2)}` });

@@ -23,6 +23,8 @@ export class KonamiTracker {
 const COLOURS = ["#e8282b", "#2f7fe0", "#5ac02c", "#ffd21f", "#ff6fae", "#2b2b2b", "#f4f4f4", "#a06cd5", "#8bd3e6"];
 const BLOONS = 14;
 const MESSAGE_TIME = 2500;
+/** Longer than the slowest bloon takes to rise and pop (0.8 s delay, 3.6 s rising, 0.25 s pop) */
+export const PARTY_TIME = 6000;
 
 let partying = false;
 
@@ -44,6 +46,14 @@ function party(): void {
 
   const sky = h("div", { class: "bloon-party", "aria-hidden": "true" });
   let left = BLOONS;
+  // Ends the party once; also when reduced motion is turned on while it runs, which hides the bloons, so their
+  // animations never end (#113)
+  const end = (): void => {
+    if (!sky.isConnected) return;
+    sky.remove();
+    partying = false;
+  };
+  setTimeout(end, PARTY_TIME);
   for (let i = 0; i < BLOONS; i++) {
     const bloon = h("span", { class: "party-bloon" });
     bloon.style.left = `${4 + Math.random() * 88}%`;
@@ -59,10 +69,7 @@ function party(): void {
         return;
       }
       bloon.remove();
-      if (--left === 0) {
-        sky.remove();
-        partying = false;
-      }
+      if (--left === 0) end();
     });
     sky.append(bloon);
   }
