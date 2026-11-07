@@ -13,6 +13,7 @@ import {
   type SkullMode,
 } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
+import { paragonsText } from "../math/paragons";
 import { formatPercent } from "../math/skulls";
 import { clampTiers, endRound } from "../math/tiers";
 import { skulls, tierCards, tierSkulls, type TierCard } from "../preview/compute";
@@ -38,7 +39,6 @@ const percent = (multiplier: number): string => `${formatDecimals(multiplier * 1
 const perTier = (value: number): string => (value === 0 ? "Off" : `${value > 0 ? "+" : ""}${value} %`);
 const startValue = (value: number): string => (value < 0 ? "Default" : value.toLocaleString("en"));
 const yesNo = (value: boolean): string => (value ? "Yes" : "No");
-const paragons = (value: number): string => (value < 0 ? "Unlimited" : value === 0 ? "None" : String(value));
 const towerLimit = (value: number | undefined): string =>
   value === undefined ? "Default" : value === 0 ? "Not allowed" : value < 0 ? "No limit" : `Max ${value}`;
 
@@ -114,7 +114,7 @@ export function compareRows(a: Setup, b: Setup): Row[] {
   add("Bloons", "All Regrow", (s) => yesNo(s.challenge.allRegen));
   add("Bloons", "All Fortified", (s) => yesNo(s.challenge.allFortified));
 
-  add("Rules", "Max Paragons", (s) => paragons(s.challenge.maxParagons));
+  add("Rules", "Max Paragons", (s) => paragonsText(s.challenge.maxParagons));
   add("Rules", "Max towers", (s) => (s.challenge.maxTowers < 0 ? "Default" : String(s.challenge.maxTowers)));
   add("Rules", "No Monkey Knowledge", (s) => yesNo(s.challenge.disableMK));
   add("Rules", "No Selling", (s) => yesNo(s.challenge.disableSelling));

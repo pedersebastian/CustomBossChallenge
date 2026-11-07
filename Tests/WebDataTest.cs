@@ -146,7 +146,8 @@ public class WebDataTest : CustomBossTest
                 ["maxRevives"] = ChallengeLimits.MaxRevives,
                 ["maxTowerCount"] = ChallengeLimits.MaxTowerCount,
                 ["maxTiersUsed"] = ChallengeLimits.MaxTiersUsed,
-                ["maxBlockedTiers"] = ChallengeLimits.MaxBlockedTiers
+                ["maxBlockedTiers"] = ChallengeLimits.MaxBlockedTiers,
+                ["paragons"] = ParagonMath.Available
             }
         };
     }

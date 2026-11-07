@@ -28,6 +28,6 @@ function read(diff: JsonObject): Record<string, Json> | "error" {
 
 describe("options of every JSON type, like the mod", () => {
   it.each(cases.cases.map((c) => [JSON.stringify(c.o), c.o, c.options]))("%s", (_, o, expected) =>
-    expect(read(o as JsonObject)).toEqual(expected),
+    expect(read(o as unknown as JsonObject)).toEqual(expected),
   );
 });

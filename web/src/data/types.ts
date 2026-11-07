@@ -43,6 +43,8 @@ export interface GameData {
     maxTowerCount: number;
     maxTiersUsed: number;
     maxBlockedTiers: number;
+    /** How many different paragons the game has (ParagonMath.Available): a Max Paragons of this or more is no limit */
+    paragons: number;
   };
 }
 

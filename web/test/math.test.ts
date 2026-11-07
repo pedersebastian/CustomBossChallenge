@@ -6,6 +6,8 @@ import { endRound, formatHealth, healthPerTierFromExtraTierHealth, spawnRounds }
 import { roundHalfEven } from "../src/math/dotnet";
 import { FOLLOWS, normalizeTierBosses, tierEntry, tierPercents } from "../src/math/tierBosses";
 import skullCases from "./skull-cases.json";
+import { isUnlimited, paragonsText } from "../src/math/paragons";
+import { GAME } from "../src/data/types";
 
 const f = (values: number[]) => values.map(Math.fround);
 const show = (rounds: number[]) => rounds.join(", ");
@@ -139,4 +141,18 @@ describe("tier bosses", () => {
     expect(tierPercents(tierEntry("Lych", 1))).toBeNull();
     expect(tierPercents(tierEntry("Lych#0", 1))).toEqual([]);
   });
+});
+
+// ParagonMath.IsUnlimited (Tests/OptionsTests.cs, ParagonMathTest): a limit of every paragon or more limits nothing (#113)
+describe("max paragons", () => {
+  it.each([
+    [-1, "Unlimited"],
+    [0, "None"],
+    [1, "1"],
+    [13, "13"],
+    [14, "Unlimited"],
+    [1000, "Unlimited"],
+  ])("%d of 14 paragons shows as %s", (max, shown) => expect(paragonsText(max, 14)).toBe(shown));
+
+  it("knows how many paragons the game has", () => expect(isUnlimited(GAME.limits.paragons)).toBe(true));
 });
