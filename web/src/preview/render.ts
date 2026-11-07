@@ -4,7 +4,7 @@ import { GAME } from "../data/types";
 import { announce, h } from "../dom";
 import { paragonsText } from "../math/paragons";
 import { playProblem, type Challenge } from "../code/decode";
-import { bossOf, effectiveSpawnRounds, isMixed, tierBossName, tierSkullMode, type BossOptions } from "../code/options";
+import { SKULL_MODE_NAMES, bossOf, effectiveSpawnRounds, isMixed, tierBossName, tierSkullMode, type BossOptions } from "../code/options";
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
 import { clampTiers, endRound, formatHealth, maxModelHealth } from "../math/tiers";
@@ -171,7 +171,7 @@ function renderSkulls(options: BossOptions, shownTier = 1): HTMLElement {
 
   // In Advanced Mode each tier has its own skulls
   const own = isMixed(options) ? tierSkullMode(options, tier ?? 1) : options.SkullMode;
-  const mode = own === "Vanilla" ? "the boss's own skulls" : own === "EvenlySpaced" ? "evenly spaced" : "custom";
+  const mode = SKULL_MODE_NAMES[own];
   return h(
     "div",
     { class: "block" },

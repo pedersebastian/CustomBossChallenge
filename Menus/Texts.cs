@@ -19,13 +19,15 @@ public static class Texts
     public static readonly string BossTypeInfo = Key(nameof(BossTypeInfo),
         "Choose which boss to fight. Tick Elite to fight the much stronger Elite version of the boss. Ctrl+Z undoes " +
         "your last change to the boss options or the Challenge Editor rules, also a pasted, loaded or random setup, " +
-        "and Ctrl+Y redoes it. Delete puts the option in the yellow frame back to its default.");
+        "and Ctrl+Y or Ctrl+Shift+Z redoes it. Delete or Backspace puts the option in the yellow frame back to its " +
+        "default.");
 
     public static readonly string DifferentBosses = Key(nameof(DifferentBosses), "Advanced Mode");
     public static readonly string DifferentBossesInfo = Key(nameof(DifferentBossesInfo),
-        "Pick the Advanced tab to choose the boss of every tier yourself, for example Bloonarius on tier 1 and Lych " +
-        "on tier 2. Every tier starts with the Boss Type, which is hidden meanwhile. Click a tier in the Tier Preview " +
-        "to choose its boss, Elite or not, or Random for a surprise that is picked when the game starts.");
+        "Pick the Advanced tab to give every tier a boss of its own, for example Bloonarius on tier 1 and Lych on " +
+        "tier 2. Click a tier in the Tier Preview to choose its boss, Elite or not, or Random for a surprise that is " +
+        "picked when the game starts. Each tier also gets its own Boss Speed, Boss Health and Skulls there, and " +
+        "starts as the Boss Type, which is hidden in Advanced.");
     public static readonly string ModeStandard = Key(nameof(ModeStandard), "Standard");
     public static readonly string ModeAdvanced = Key(nameof(ModeAdvanced), "Advanced");
     public static readonly string TierBossTitle = Key(nameof(TierBossTitle), "Boss for Tier {0}");
@@ -53,7 +55,8 @@ public static class Texts
 
     public static readonly string BossTiers = Key(nameof(BossTiers), "Boss Tiers");
     public static readonly string BossTiersInfo = Key(nameof(BossTiersInfo),
-        "How many tiers of the boss you have to defeat, from 1 to 10. Each tier is stronger than the one before. " +
+        "How many tiers of the boss you have to defeat, from 1 to 10. Each tier is usually stronger than the one " +
+        "before, unless Speed or Health per Tier is below 0. " +
         "You win when the last tier is defeated. Tiers above 5 are copies of tier 5 with more health.");
 
     public static readonly string SpeedPerTier = Key(nameof(SpeedPerTier), "Speed per Tier");
@@ -63,7 +66,8 @@ public static class Texts
     public static readonly string HealthPerTier = Key(nameof(HealthPerTier), "Health per Tier");
     public static readonly string HealthPerTierInfo = Key(nameof(HealthPerTierInfo),
         "Adds this share of the normal health for every tier after the first, on top of the game's own steps: " +
-        "+100 % makes tier 2 ×2, tier 3 ×3 and so on. Tiers above 5 already get +50 % each. 0 % keeps the normal health.");
+        "+100 % makes tier 2 ×2, tier 3 ×3 and so on. Each tier above 5 already has ×1.5 the health of the one " +
+        "before, so tier 7 has ×2.25 of tier 5. 0 % keeps the normal health.");
     public static readonly string TierPreview = Key(nameof(TierPreview), "Tier Preview");
     public static readonly string TierPreviewInfo = Key(nameof(TierPreviewInfo),
         "Every tier with the round it arrives on, its speed compared to the normal game and its health. Orange is " +
@@ -131,10 +135,10 @@ public static class Texts
 
     public static readonly string SavedSetups = Key(nameof(SavedSetups), "Saved Setups");
     public static readonly string SavedSetupsInfo = Key(nameof(SavedSetupsInfo),
-        "Keeps your favorite setups in the game. Save stores this whole setup under the challenge's name; a saved " +
-        "setup with the same name is replaced. Pick one in the list and press Load to play it again, or Delete to " +
-        "remove it. The list also has a few examples to try: load one, change it and save it as your own. Examples " +
-        "can't be deleted.");
+        "Keeps your favourite setups in the game. Save stores this whole setup under the challenge's name; if a " +
+        "saved setup already has that name, you are asked before it is replaced. Pick one in the list and press " +
+        "Load to play it again, or Delete to remove it. The list also has a few examples to try: load one, change " +
+        "it and save it as your own. Examples can't be deleted.");
     public static readonly string SaveSetup = Key(nameof(SaveSetup), "Save");
     public static readonly string DeleteSetup = Key(nameof(DeleteSetup), "Delete");
     public static readonly string OverwriteSetupQuestion = Key(nameof(OverwriteSetupQuestion), "Replace the saved setup {0}?");
@@ -165,13 +169,13 @@ public static class Texts
     public static readonly string PasteCode = Key(nameof(PasteCode), "Paste");
     public static readonly string CodeCopied = Key(nameof(CodeCopied),
         "Code copied to the clipboard ({0} characters). Paste it anywhere to share this boss.");
-    public static readonly string CopyLink = Key(nameof(CopyLink), "Copy link");
+    public static readonly string CopyLink = Key(nameof(CopyLink), "Copy Link");
     public static readonly string LinkCopied = Key(nameof(LinkCopied),
         "Link copied. It opens this setup on the Custom Boss Challenge website, and Paste reads it too.");
     public static readonly string LoadCodeQuestion = Key(nameof(LoadCodeQuestion),
         "Load this setup? Your current setup will be replaced.");
     public static readonly string CodeInvalid = Key(nameof(CodeInvalid),
-        "The clipboard doesn't contain a Boss Creator code. Copy the whole code, starting with CBC");
+        "The clipboard doesn't contain a Boss Creator code. Copy the whole code, starting with CBC.");
     public static readonly string CodeTooNew = Key(nameof(CodeTooNew),
         "This code comes from a newer version of Custom Boss Challenge. Update the mod to load it.");
     public static readonly string Load = Key(nameof(Load), "Load");

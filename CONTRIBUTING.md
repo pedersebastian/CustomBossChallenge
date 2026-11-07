@@ -1,4 +1,4 @@
-# Development
+# Contributing
 
 Technical notes for building and testing Custom Boss Challenge. For what the mod does and how to install it, see the
 [README](https://github.com/pedersebastian/CustomBossChallenge/blob/master/README.md).
@@ -67,7 +67,8 @@ Share codes are also tested with random data, in F# with [FsCheck](https://fsche
 `PropertyTests/`. Thousands of random setups the Boss Creator can make, and broken codes, check that:
 
 - a code reads back as exactly the setup it was made from, and encoding that setup again gives the same code;
-- codes use `CBC2:` only when they need it, and only characters chat apps leave alone;
+- codes use the oldest version that holds the setup (`CBC1:` to `CBC4:`), and only characters chat apps leave
+  alone;
 - broken codes (cut short, changed, junk, too big once unpacked) are refused as `Invalid` or `TooNew` and never throw;
 - a hand made challenge only keeps the fields `CodeFormat.ChallengeFields` allows, with their types, and nothing the
   Boss Creator makes is ever left out.
@@ -313,6 +314,16 @@ names) comes from the game, through the in-game test `WebDataTest`, into `web/sr
   the same list the Boss Creator shows, so they always load in the game.
 - `fixtures.json`: codes with what the mod reads from them; the website's tests must read them the same way.
 
+`game.json` also holds the game's limits, e.g. `limits.paragons`, how many paragons there are, so a Max Paragons of
+that many or more shows as Unlimited.
+
+Some cases are shared by the website's tests and the unit tests, in `web/test/`, so both sides read them alike:
+`link-cases.json` (the code in a pasted link, %-escapes included), `skull-cases.json` (custom skulls, rounded like
+.NET) and `option-cases.json` (a code's boss options of every JSON type, made with the mod's own `CodeFormat` and
+Json.NET). When the mod reads one of them differently, change both sides and the file. `web/test/dom.test.ts` runs
+in [happy-dom](https://github.com/capricorn86/happy-dom) and covers what needs a page: the copy buttons, what screen
+readers are told and links within the page.
+
 `WebDataTest` checks that these files still match the game and the mod. Only Debug builds carry them, so a Release
 build skips the check. After a game update or a change to the code
 format, Tier Preview, the tier look or the examples, write them again by running the in-game tests with the
@@ -350,7 +361,7 @@ form; to change a file yourself:
    - Keep placeholders like `{0}`. The game puts a number or name there, e.g. `{0} tiers` becomes `7 tiers`.
    - Keep the quotes and the comma at the end of the line. Use `\"` for a quote inside a text.
    - Keep the game's own words where it has them, e.g. its names for Elite, tiers and the Challenge Editor.
-3. Describe what you changed and propose the change. The **Translations** check below runs on the pull request and
+3. Describe what you changed and propose the change. The **Translations** check above runs on the pull request and
    says if a key, placeholder or comma went missing.
 
 New texts are added to `Menus/Texts.cs` (with the English text) and to every file in `Localization/`, at the same

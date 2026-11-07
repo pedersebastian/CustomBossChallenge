@@ -33,8 +33,9 @@ where you can read a share code and see the whole setup without the game, or
     it is harder than the normal game and blue with ▼ where it is easier.
   - **Boss Speed** and **Boss Health** sliders, using the game's own boss multipliers (the same ones Ninja Kiwi uses
     for weekly events such as "Vortex at 150% speed").
-  - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5 with +50 % health per tier, each with a look of
-    its own (see [Tiers above 5](#tiers-above-5)). With fewer than 5 tiers, beating the last one wins the game.
+  - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5, each with ×1.5 the health of the tier before
+    (tier 7 has ×2.25 of tier 5, tier 10 ×7.59), and a look of its own (see [Tiers above 5](#tiers-above-5)). With
+    fewer than 5 tiers, beating the last one wins the game.
   - **Speed per Tier** and **Health per Tier**: make every tier faster and tougher than the one before it, on top of
     the game's own steps (or easier, below 0). The steps add up evenly: +100 % health makes tiers 2-5 ×2, ×3, ×4
     and ×5.
@@ -69,8 +70,9 @@ where you can read a share code and see the whole setup without the game, or
 - **Share Code**: copy a whole setup as a short text code and paste codes others share.
 - Your **last setup is remembered** between sessions.
 - **Keyboard**: Ctrl+C and Ctrl+V copy and paste a share code, Ctrl+S saves the setup, Ctrl+Enter plays, Ctrl+Z
-  undoes and Ctrl+Y (or Ctrl+Shift+Z) redoes (Cmd on a Mac). Tab and Shift+Tab (or the up and down arrows) move a yellow frame through the Boss section: every boss, Elite,
-  every slider, the text fields, the lists and the buttons, up to Play. Left and right change what has the frame
+  undoes and Ctrl+Y (or Ctrl+Shift+Z) redoes (Cmd on a Mac). Tab and Shift+Tab move a yellow frame through the Boss section: every boss, Elite,
+  every slider, the text fields, the lists and the buttons, up to Play. Once something has the frame, the up and
+  down arrows move it too. Left and right change what has the frame
   (a slider step or the next option in a list), Enter or Space press it, which also picks a boss, and Delete or
   Backspace put it back to its default. In a text field, Enter
   applies the value and moves on, and Esc cancels the edit instead of leaving the Boss Creator; while you type,
@@ -141,7 +143,7 @@ Dreadbloon on tier 1 their extra rounds come along.
 
 ## Saved setups
 
-The **Saved Setups** row keeps your favorite setups in the game, so you can switch between them without share codes:
+The **Saved Setups** row keeps your favourite setups in the game, so you can switch between them without share codes:
 
 - **Save** stores the whole setup, boss options and every Challenge Editor rule, under the challenge's name. Saving
   a name you already have asks before replacing it.
@@ -170,10 +172,12 @@ To look at a code without the game, paste it on the [website](https://pedersebas
 It shows the Tier Preview, skulls and rules like the Boss Creator does.
 
 A code is only data: it can't run anything, and custom games are always unranked and never touch your records.
-Codes are checked before they load, so values outside what the game can play are brought back into range.
+Codes are checked before they load: values outside what the game can play are brought back into range, settings a
+player can't make in the Challenge Editor or the Boss Creator are ignored, and a code with a value of the wrong type
+(or `NaN` or `Infinity`) doesn't load at all.
 
 Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, `CBC3:` when they use Advanced Mode, or
-`CBC4:` when they use Boss Event Rounds,
+`CBC4:` when they use Boss Event Rounds; a setup that uses several of them gets the highest,
 so that older versions of the mod ask for an update instead of loading them without those settings. They only contain what differs from a new
 setup, so they are usually a few hundred characters. A new, unchanged setup gives a code like this one:
 
@@ -206,14 +210,14 @@ CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
 | Boss Tiers | 1–10 | 5 | The game is won when the last tier is defeated. |
 | Speed per Tier | −10 to +50 % | 0 % | This share of a tier's normal speed is added for every tier after the first: +20 % makes tier 3 ×1.4. Capped at ×5. |
-| Health per Tier | −10 to +200 % | 0 % | This share of a tier's normal health is added for every tier after the first: +100 % makes tier 5 ×5. Tiers above 5 already get +50 % each. |
+| Health per Tier | −10 to +200 % | 0 % | This share of a tier's normal health is added for every tier after the first: +100 % makes tier 5 ×5. Each tier above 5 already has ×1.5 the health of the tier before. |
 | First Boss Round | 1–200 | 40 | Fills in Spawn Rounds together with Rounds Between Tiers. |
 | Rounds Between Tiers | 1–50 | 20 | Fills in Spawn Rounds; 1 sends a new tier every round. |
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
 | Boss Event Rounds | on / off | off | The official boss events' rounds for the boss, moved with the tiers when Spawn Rounds differ from 40, 60, 80, 100, 120. In Advanced Mode each tier's round comes from its own boss. |
 | Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | In Advanced, set per tier in its picker, with the count and the list below. |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
-| Skull Health % | comma separated % (1–99) | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. Use a point for decimals (`33.5`). The field shows the list as it is used: sorted, duplicates merged, invalid values dropped. |
+| Skulls at Boss HP % | comma separated % (1–99) | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. Use a point for decimals (`33.5`). The field shows the list as it is used: sorted, duplicates merged, invalid values dropped. |
 
 ![Tier Preview](docs/tier-preview.jpg)
 
