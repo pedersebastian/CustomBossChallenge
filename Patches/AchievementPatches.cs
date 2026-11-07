@@ -30,7 +30,8 @@ internal static class AchievementPatches
 
     /// <summary>
     /// Only while the custom game itself runs: after leaving it, progress made elsewhere (e.g. in the store) counts as
-    /// usual, even though the game still remembers the custom challenge until the next game
+    /// usual. The game already forgets the challenge when the match is destroyed (InGameData.OnDestroyGame), so
+    /// <see cref="CustomBossState.IsActive"/> is false in the menus (MenuGuardTest, #109); the match check is a backstop.
     /// </summary>
     internal static bool Blocked => CustomBossState.IsActive && InGame.instance != null;
 

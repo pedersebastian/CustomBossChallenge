@@ -226,10 +226,13 @@ internal static class InGame_RunRestart
 [GuardPatch]
 internal static class Btd6Player_SetBossChallengeRecord
 {
+    /// <summary>Whether a boss record may be saved now</summary>
+    internal static bool Allowed => !CustomBossState.IsActive;
+
     [HarmonyPrefix]
     internal static bool Prefix(BossType bossType, BossScoreComponents score)
     {
-        if (!CustomBossState.IsActive) return true;
+        if (Allowed) return true;
 
         ModHelper.Msg<CustomBossChallenge>($"Not saving a {bossType} record for a custom boss challenge");
         return false;

@@ -23,6 +23,9 @@ public static class MixedBosses
     /// </summary>
     public static event Action<int>? Spawned;
 
+    /// <summary>The options of the custom game with a boss per tier being played, or null</summary>
+    internal static BossOptions? Options => MixedOptions;
+
     private static BossOptions? MixedOptions =>
         CustomBossState.IsActive && CustomBossState.ActiveOptions is {Mixed: true} options ? options : null;
 
