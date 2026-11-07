@@ -65,6 +65,27 @@ public static class BossMode
         }
 
         Enter(options, dcm);
+        TellAboutNewerFiles();
+    }
+
+    /// <summary>
+    /// Whether the player was told this session that the setup files come from a newer version of the mod
+    /// </summary>
+    internal static bool ToldAboutNewerFiles { get; set; }
+
+    /// <summary>
+    /// The last setup and the saved setups of a newer version of the mod are kept as they are but not used, so the
+    /// player is told once per session why the Boss Creator starts from the defaults or the list is empty (#110)
+    /// </summary>
+    /// <returns>Whether the popup was shown</returns>
+    internal static bool TellAboutNewerFiles()
+    {
+        if (ToldAboutNewerFiles || !(Store.IsTooNew || Saved.IsTooNew)) return false;
+
+        ToldAboutNewerFiles = true;
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.SafelyQueue(screen =>
+            screen.ShowOkPopup(Menus.Texts.T(Menus.Texts.NewerSetupFiles), null));
+        return true;
     }
 
     /// <summary>

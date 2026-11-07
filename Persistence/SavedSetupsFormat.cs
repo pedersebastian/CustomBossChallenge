@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CustomBossChallenge.Config;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CustomBossChallenge.Persistence;
 
@@ -33,6 +34,8 @@ public static class SavedSetupsFormat
         public List<SavedSetup?>? Setups { get; set; }
     }
 
+    private static readonly JsonSerializer Serializer = JsonSerializer.Create(FormatJson.Plain);
+
     public static string Write(IEnumerable<SavedSetup> setups) =>
         JsonConvert.SerializeObject(new FileJson {Version = Version, Setups = setups.ToList<SavedSetup?>()},
             FormatJson.Plain);
@@ -43,22 +46,49 @@ public static class SavedSetupsFormat
     /// </summary>
     public static FormatRead<List<SavedSetup>> Read(string text)
     {
-        FileJson? file;
+        // Each setup is read on its own, so one damaged setup doesn't hide the others (#110); only a file that isn't
+        // JSON, or whose setups aren't a list, can't be read at all
+        JObject? file;
         try
         {
-            file = JsonConvert.DeserializeObject<FileJson>(text, FormatJson.Plain);
+            file = JsonConvert.DeserializeObject<JToken>(text, FormatJson.Plain) switch
+            {
+                null => null,
+                JObject obj => obj,
+                _ => throw new JsonSerializationException("Not an object")
+            };
         }
         catch (Exception e)
         {
             return FormatRead<List<SavedSetup>>.Invalid(e.Message);
         }
 
-        if (file?.Version > Version) return FormatRead<List<SavedSetup>>.TooNew(file.Version);
+        var version = file?["Version"] is JValue {Type: JTokenType.Integer, Value: var number}
+            ? number switch {long l => l, int i => i, System.Numerics.BigInteger big => big > 0 ? long.MaxValue : 0, _ => 0}
+            : 0;
+        if (version > Version) return FormatRead<List<SavedSetup>>.TooNew((int) Math.Min(version, int.MaxValue));
+
+        var entries = file?["Setups"];
+        if (entries is not (null or JArray or {Type: JTokenType.Null}))
+        {
+            return FormatRead<List<SavedSetup>>.Invalid("The setups aren't a list");
+        }
 
         var setups = new List<SavedSetup>();
         var changes = new List<string>();
-        foreach (var setup in file?.Setups ?? [])
+        foreach (var entry in entries as JArray ?? [])
         {
+            SavedSetup? setup;
+            try
+            {
+                setup = entry.ToObject<SavedSetup?>(Serializer);
+            }
+            catch (Exception)
+            {
+                changes.Add("a damaged saved setup was left out");
+                continue;
+            }
+
             // The name is cleaned first, so names that only differ in what cleaning removes count as the same
             var name = setup == null ? "" : ChallengeLimits.CleanName(setup.Name, "");
             if (setup == null || name.Length == 0 || string.IsNullOrWhiteSpace(setup.Code) ||

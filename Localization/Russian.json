@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "Загрузить этот пример? Текущие настройки будут заменены.",
   "CustomBossChallenge-SetupSaved": "Сохранено как {0}.",
   "CustomBossChallenge-TooManySetups": "Можно хранить до {0} сохранённых настроек. Удалите одну, чтобы сохранить новую.",
+  "CustomBossChallenge-NewerSetupFiles": "Ваши настройки Boss Creator созданы в более новой версии Custom Boss Challenge. Они сохранены как есть; обновите мод, чтобы их использовать.",
   "CustomBossChallenge-SetupsTooNew": "Ваши сохранённые настройки созданы в более новой версии Custom Boss Challenge. Обновите мод, чтобы их использовать.",
   "CustomBossChallenge-SetupFileError": "Не удалось изменить сохранённые настройки. Проверьте, что в UserData/CustomBossChallenge можно записывать.",
   "CustomBossChallenge-SetupUnreadable": "Эта сохранённая настройка повреждена и не может быть загружена. Её можно удалить.",

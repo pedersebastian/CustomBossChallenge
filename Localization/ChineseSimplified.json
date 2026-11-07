@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "载入这个示例？当前设置将被替换。",
   "CustomBossChallenge-SetupSaved": "已保存为 {0}。",
   "CustomBossChallenge-TooManySetups": "最多可以保存 {0} 个设置。请删除一个后再保存新的设置。",
+  "CustomBossChallenge-NewerSetupFiles": "你的 Boss Creator 设置来自更新版本的 Custom Boss Challenge。它们会原样保留；请更新模组后再使用。",
   "CustomBossChallenge-SetupsTooNew": "已保存的设置来自更新版本的 Custom Boss Challenge。请更新模组后再使用。",
   "CustomBossChallenge-SetupFileError": "无法更改已保存的设置。请检查 UserData/CustomBossChallenge 是否可写入。",
   "CustomBossChallenge-SetupUnreadable": "此已保存的设置已损坏，无法加载。你可以将其删除。",

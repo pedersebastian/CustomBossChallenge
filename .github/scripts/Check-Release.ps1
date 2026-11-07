@@ -53,6 +53,11 @@ if (-not (Test-Path $reportPath)) {
     if ($skipped.Count -gt 0) {
         Report $reportFile "$($skipped.Count) in-game test(s) skipped, so this wasn't a full run: $($skipped -join ', ')"
     }
+    # Tests that only run in runs of their own, like the crash test's two game starts, don't count either way
+    $onRequest = @($report.onRequest.PSObject.Properties | ForEach-Object { $_.Name })
+    if ($onRequest.Count -gt 0) {
+        Write-Host "Not part of a normal run, run on their own when needed: $($onRequest -join ', ')"
+    }
     if ($report.modVersion -ne $Tag) {
         Report $reportFile "the in-game tests ran on version $($report.modVersion), not $Tag; $rerun"
     }

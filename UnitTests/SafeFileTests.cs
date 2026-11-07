@@ -32,6 +32,16 @@ public sealed class SafeFileTests : IDisposable
     }
 
     [Fact]
+    public void Writes_the_whole_text_as_UTF8_without_a_byte_order_mark()
+    {
+        var text = "Ærlig talt: 漢字 " + new string('x', 200_000);
+        SafeFile.WriteAllText(FilePath, text);
+
+        Assert.Equal(text, File.ReadAllText(FilePath));
+        Assert.Equal(Encoding.UTF8.GetBytes(text), File.ReadAllBytes(FilePath));
+    }
+
+    [Fact]
     public void Shorter_text_replaces_longer_text_completely()
     {
         SafeFile.WriteAllText(FilePath, new string('x', 5000));

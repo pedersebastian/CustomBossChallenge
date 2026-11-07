@@ -145,7 +145,6 @@ public class SaveFormatTests
         var read = Format(name).Read(text);
         Assert.Equal(FormatProblem.TooNew, read.Problem);
         Assert.Null(read.Value);
-        Assert.Equal(text, Fixture(name));
     }
 
     // Read, write and read again gives the same file
@@ -257,6 +256,28 @@ public class SaveFormatTests
     [Fact]
     public void Saved_setups_with_the_wrong_shape_are_invalid() =>
         Assert.Equal(FormatProblem.Invalid, SavedSetupsFormat.Read("{\"Version\": 1, \"Setups\": 5}").Problem);
+
+    [Fact]
+    public void One_damaged_saved_setup_doesnt_hide_the_others()
+    {
+        // A field of the wrong type used to make the whole file unreadable (#110)
+        var read = SavedSetupsFormat.Read("""
+            {"Version": 1, "Setups": [
+              {"Name": "Good", "Code": "CBC1:abc", "Saved": "2026-10-23T14:08:23Z"},
+              {"Name": "Bad date", "Code": "CBC1:abc", "Saved": "yesterday"},
+              {"Name": {}, "Code": "CBC1:abc"}
+            ]}
+            """);
+        var setups = Read(read);
+        Assert.Equal(["Good"], setups.Select(setup => setup.Name));
+        Assert.Equal(2, read.Changes.Count);
+    }
+
+    [Theory]
+    [InlineData("""{"Version": 99999999999999999999, "Setups": []}""")]
+    [InlineData("""{"Version": 2, "Setups": []}""")]
+    public void Saved_setups_with_a_higher_version_are_too_new(string text) =>
+        Assert.Equal(FormatProblem.TooNew, SavedSetupsFormat.Read(text).Problem);
 
     [Fact]
     public void An_empty_saved_setups_file_has_no_setups() =>

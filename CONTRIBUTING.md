@@ -136,6 +136,11 @@ fingerprint of the mod's own code from `.github/scripts/Get-SourceHash.ps1`. It 
 `Localization/*.json` and `Bundles/*.bundle`, but not `Tests/`, `UnitTests/`, `PropertyTests/`, `web/`, `docs/`,
 `tools/` or `.github/`, so changing only those doesn't need a new run. A test is skipped when it passes without
 checking what it normally checks (`Skip`), e.g. tests left out by `CBC_TESTS`, or `WebDataTest` writing its files.
+`ContinueAfterCrashTest` needs two starts of the game (`CBC_CRASH_PHASE`, `CBC_CRASH_FOLDER`), so a normal run lists it
+under `onRequest` instead: not passed, but not keeping the run from counting for a release.
+
+Tests never touch the player's own files: `CustomBossTest` gives every test temporary stores for the unfinished
+game, the last setup and the saved setups, and puts the player's back afterwards.
 A release needs this report (see **Release version** below), so before tagging:
 
 1. Bump `Version` (and `WorksOnVersion`) in `ModHelperData.cs`.

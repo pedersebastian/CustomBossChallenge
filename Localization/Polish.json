@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "Wczytać ten przykład? Obecne ustawienia zostaną zastąpione.",
   "CustomBossChallenge-SetupSaved": "Zapisano jako {0}.",
   "CustomBossChallenge-TooManySetups": "Możesz mieć do {0} zapisanych ustawień. Usuń jedno, aby zapisać nowe.",
+  "CustomBossChallenge-NewerSetupFiles": "Twoje ustawienia Boss Creator pochodzą z nowszej wersji Custom Boss Challenge. Zostają zachowane bez zmian; zaktualizuj moda, aby z nich korzystać.",
   "CustomBossChallenge-SetupsTooNew": "Twoje zapisane ustawienia pochodzą z nowszej wersji Custom Boss Challenge. Zaktualizuj moda, aby z nich korzystać.",
   "CustomBossChallenge-SetupFileError": "Nie udało się zmienić zapisanych ustawień. Sprawdź, czy można zapisywać w UserData/CustomBossChallenge.",
   "CustomBossChallenge-SetupUnreadable": "To zapisane ustawienie jest uszkodzone i nie można go wczytać. Możesz je usunąć.",

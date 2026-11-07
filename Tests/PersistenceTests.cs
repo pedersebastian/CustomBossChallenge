@@ -126,3 +126,36 @@ public class PersistenceTest : CustomBossTest
         yield break;
     }
 }
+
+/// <summary>
+/// A last setup or saved setups from a newer version of the mod are kept but not used, and the Boss Creator says so
+/// once per session (#110)
+/// </summary>
+public class NewerFilesNoticeTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        // The test base gives every test empty stores of its own
+        Creator.BossMode.ToldAboutNewerFiles = false;
+        Assert(!Creator.BossMode.TellAboutNewerFiles(), "Nothing to tell without files from a newer version");
+
+        Directory.CreateDirectory(Path.GetDirectoryName(Creator.BossMode.Saved.FilePath)!);
+        const string newer = "{\"Version\": 99, \"Setups\": []}";
+        File.WriteAllText(Creator.BossMode.Saved.FilePath, newer);
+        Assert(Creator.BossMode.TellAboutNewerFiles(), "Saved setups from a newer version are told about");
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
+        yield return WaitForPopup(found => popup = found);
+        Assert(popup!.body.text.Contains(Menus.Texts.T(Menus.Texts.NewerSetupFiles)), $"Popup: {popup.body.text}");
+        yield return ClosePopup(popup, true);
+        Assert(!Creator.BossMode.TellAboutNewerFiles(), "Told only once per session");
+        AssertEquals(File.ReadAllText(Creator.BossMode.Saved.FilePath), newer, "The newer file is kept as it was");
+
+        // A last setup from a newer version is told about too
+        File.Delete(Creator.BossMode.Saved.FilePath);
+        File.WriteAllText(Creator.BossMode.Store.FilePath, "{\"Version\": 99}");
+        Creator.BossMode.ToldAboutNewerFiles = false;
+        Assert(Creator.BossMode.TellAboutNewerFiles(), "A last setup from a newer version is told about");
+        yield return WaitForPopup(found => popup = found);
+        yield return ClosePopup(popup!, true);
+    }
+}

@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Share codes can only set what a player can** (#108): a code now only sets the Challenge Editor's and the Boss
   Creator's own settings, with the right types and within range. Anything else in a hand made code, like cash
   modifiers, round sets or power limits, is ignored, and the game log says what. The website reads codes the same way.
+- **One damaged saved setup no longer hides the others**: a setup with a broken value is left out, and the rest of
+  the saved setups still show.
+- **The Boss Creator says when your setups come from a newer version**: once per session, instead of silently
+  starting from the defaults or showing an empty list. The files are kept as they are.
 - **Files can't bring in other game objects**: the challenge in `LastSetup.json` and `Continue.json` is read without
   custom maps or simulation behaviours, as codes already were, and a map save in `Continue.json` may only name the
   game's own types.

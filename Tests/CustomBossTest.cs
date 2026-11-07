@@ -31,11 +31,18 @@ public abstract class CustomBossTest : ModTest
             yield break;
         }
 
-        // Tests play custom games, which must never replace or delete the player's unfinished one. A failing test
-        // leaves the temporary store in place, which is fine: every test gets its own.
+        // Tests play custom games and use the Boss Creator, which must never touch the player's own files: their
+        // unfinished game, last setup or saved setups (#110). Every test gets temporary stores of its own, and the
+        // popup about newer files is left to the tests that look for it.
         var store = CustomBossRetries.Store;
+        var lastSetup = Creator.BossMode.Store;
+        var savedSetups = Creator.BossMode.Saved;
+        var toldAboutNewerFiles = Creator.BossMode.ToldAboutNewerFiles;
         TempFolder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "CustomBossChallengeTest-" + Guid.NewGuid().ToString("N"));
         CustomBossRetries.Store = new Persistence.ContinueStore(System.IO.Path.Combine(TempFolder, "Continue.json"));
+        Creator.BossMode.Store = new Persistence.LastSetupStore(System.IO.Path.Combine(TempFolder, "LastSetup.json"));
+        Creator.BossMode.Saved = new Persistence.SavedSetupsStore(System.IO.Path.Combine(TempFolder, "SavedSetups.json"));
+        Creator.BossMode.ToldAboutNewerFiles = true;
 
         // The time each test takes is logged, to see which tests make the suite slow
         Log("starting");
@@ -45,11 +52,15 @@ public abstract class CustomBossTest : ModTest
         Log($"done in {UnityEngine.Time.realtimeSinceStartup - started:0}s");
 
         CustomBossRetries.Store = store;
+        Creator.BossMode.Store = lastSetup;
+        Creator.BossMode.Saved = savedSetups;
+        Creator.BossMode.ToldAboutNewerFiles = toldAboutNewerFiles;
         if (System.IO.Directory.Exists(TempFolder)) System.IO.Directory.Delete(TempFolder, true);
     }
 
     /// <summary>
-    /// A folder of this test's own, deleted when it is done; <see cref="CustomBossRetries.Store"/> writes into it
+    /// A folder of this test's own, deleted when it is done; <see cref="CustomBossRetries.Store"/>,
+    /// <see cref="Creator.BossMode.Store"/> and <see cref="Creator.BossMode.Saved"/> write into it
     /// </summary>
     protected string TempFolder { get; private set; } = "";
 

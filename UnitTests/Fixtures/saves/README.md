@@ -18,5 +18,6 @@ The challenges and the share codes are the mod's own JSON and codes, which these
 tested elsewhere (`CodeFormatTests`, the property tests and the in-game tests). The map saves of `Continue.json` need
 the game, so they are stand-ins here; `ContinueTests` checks real ones in-game.
 
-**When you raise a file's `Version`:** first add a fixture of the old version, written by the released mod, to this
-folder. `SaveFormatTests` fails when a version has no fixture.
+**When you raise a file's `Version`:** first add a fixture of the old version to this folder: a file written by the
+released mod when one is at hand, or else one written by hand to that release's code (`git show <tag>:Persistence/…`),
+as the table above says for each. `SaveFormatTests` fails when a version has no fixture.
