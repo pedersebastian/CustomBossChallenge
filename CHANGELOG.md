@@ -11,10 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Setups from a newer version of the mod are kept**: an older version no longer overwrites the last Boss Creator
-  setup or the saved setups that a newer version wrote. The saved setups list stays empty, and saving shows that the
-  setups come from a newer version.
-- **Unfinished games from a newer version of the mod are kept**: playing a custom game in an older version no longer
+- **Setups from a newer version of the mod are kept** (#107, #110): an older version no longer overwrites the last
+  Boss Creator setup or the saved setups that a newer version wrote. The Boss Creator says so once per session, the
+  saved setups list stays empty, and the files are kept as they are.
+- **Unfinished games from a newer version of the mod are kept** (#107): playing a custom game in an older version no longer
   overwrites or deletes the unfinished game a newer version left. It is kept as `Continue.newer.json` and is picked
   up again by a version that can continue it.
 - **Share codes can only set what a player can** (#108): a code now only sets the Challenge Editor's and the Boss
@@ -24,20 +24,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   type, like `5.5` for a number of tiers or `"1"` for a boss, or that holds `NaN` or `Infinity`, can't be read on
   either, where the mod used to guess. Links with a broken `%` escape open the same code on both. The website also
   rounds custom skulls like the game and shows a Max Paragons of every paragon as Unlimited.
-- **An unfinished game keeps saving after a round that couldn't be saved**: the rounds after it are still saved for
+- **An unfinished game keeps saving after a round that couldn't be saved** (#112): the rounds after it are still saved for
   Continue, and that round can still be retried in the same session.
-- **Boss Speed and Boss Health show in Advanced Mode when they still apply**: a code or an older setup can set them,
+- **Boss Speed and Boss Health show in Advanced Mode when they still apply** (#112): a code or an older setup can set them,
   and they apply on top of the tiers' own speed and health, so their rows now stay until they are back at 100 %.
-- **Fewer tiers end the game sooner**: when a game update leaves the game without a later tier's model, the game now
+- **Fewer tiers end the game sooner** (#112): when a game update leaves the game without a later tier's model, the game now
   ends after the last tier it has.
-- **One part of the boss display failing no longer stops the others** for the rest of the match, and is logged once.
-- **One damaged saved setup no longer hides the others**: a setup with a broken value is left out, and the rest of
+- **One part of the boss display failing no longer stops the others** (#112) for the rest of the match, and is logged once.
+- **One damaged saved setup no longer hides the others** (#110): a setup with a broken value is left out, and the rest of
   the saved setups still show.
-- **The Boss Creator says when your setups come from a newer version**: once per session, instead of silently
-  starting from the defaults or showing an empty list. The files are kept as they are.
-- **Files can't bring in other game objects**: the challenge in `LastSetup.json` and `Continue.json` is read without
+- **Files can't bring in other game objects** (#110): the challenge in `LastSetup.json` and `Continue.json` is read without
   custom maps or simulation behaviours, as codes already were, and a map save in `Continue.json` may only name the
   game's own types.
+- **Texts** (#114): the help for Health per Tier says that tiers above 5 compound (×1.5 of the tier before, tier 7 ×2.25),
+  Saved Setups says that a setup with the same name is only replaced after asking, and the Norwegian, Danish and
+  Swedish texts no longer have English words left in them.
 
 ## [2.10.0] - 2026-11-06
 
@@ -215,7 +216,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.5.0] - 2026-10-23
 
-
 ### Added
 
 - **Saved Setups**: keep up to 50 favorite setups in the game, by the challenge's name, and load or delete them from
@@ -392,3 +392,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [2.1.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.0.2...2.1.0
 [2.0.2]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.0.0...2.0.2
 [2.0.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/35e49dabca58e55918fa44ceb775b53ed06d84f2...2.0.0
+[1.0.0]: https://github.com/pedersebastian/CustomBossChallenge/tree/35e49dabca58e55918fa44ceb775b53ed06d84f2

@@ -5,7 +5,7 @@ description = "Boss Creator: the Challenge Editor with boss options. Any boss or
 websiteUrl = "https://github.com/pedersebastian/CustomBossChallenge" # Optional project URL shown on Thunderstore. Your GitHub repository is a good default.
 
 # Thunderstore package dependencies use the format Namespace-PackageName = "version".
-# Versions listed are minimums, not exact requirements, so it's ok if you don't change these frequenty
+# Versions listed are minimums, not exact requirements, so it's ok if you don't change these frequently
 [package.dependencies]
 LavaGang-MelonLoader = "0.7.2"
 doombubbles-Btd6ModHelper = "3.6.9"

@@ -64,7 +64,7 @@ public readonly record struct KeyContext(bool BossCreatorOpen, bool FieldFocused
 /// Pure rules for the Boss Creator's keyboard. Shortcuts only work while no text field has the keyboard, so copy and
 /// paste in the fields stay normal. Tab moves through the Boss section's controls, and once one of them has the
 /// keyboard, the arrows change it or move on, Enter or Space press it, and Delete or Backspace reset it. Ctrl+Z undoes
-/// a change to the boss options, and Ctrl+Y or Ctrl+Shift+Z redoes it.
+/// a change to the boss options or the Challenge Editor rules, and Ctrl+Y or Ctrl+Shift+Z redoes it.
 /// </summary>
 public static class KeyboardShortcuts
 {
