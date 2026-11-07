@@ -62,6 +62,14 @@ public class PersistenceTest : CustomBossTest
             AssertEquals(limited!.bloonModifiers.bossSpeedMultiplier, ChallengeLimits.MaxBossSpeed, "Boss speed from a file");
             AssertEquals(limited.startRules.endRound, TierMath.MaxRound + TierMath.RoundsBetweenTiers, "End round from a file");
 
+            // The polymorphic models are never read from a file (#108)
+            var withModels = Newtonsoft.Json.Linq.JObject.Parse(DcmJson.Serialize(dcm));
+            withModels["simulationBehaviorsMod"] = new Newtonsoft.Json.Linq.JObject();
+            withModels["customMapModel"] = new Newtonsoft.Json.Linq.JObject();
+            var modelsDcm = DcmJson.Deserialize(withModels.ToString());
+            AssertEquals(modelsDcm?.simulationBehaviorsMod, null, "Simulation behaviours from a file");
+            AssertEquals(modelsDcm?.customMapModel, null, "Custom map from a file");
+
             // Setups saved before Max Paragons existed have no limit
             var oldChallenge = System.Text.RegularExpressions.Regex.Replace(DcmJson.Serialize(dcm), "\"maxParagons\":-?[0-9]+,?", "");
             Assert(!oldChallenge.Contains("maxParagons"), "The old challenge still has max paragons");

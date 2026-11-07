@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using CustomBossChallenge.Config;
+using CustomBossChallenge.Creator;
 using CustomBossChallenge.Persistence;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Models.ServerEvents;
@@ -167,7 +168,8 @@ public class MaliciousCodeTest : CustomBossTest
         var defaults = DailyChallengeModel.CreateDefaultEditorModel();
         var modifiers = dcm!.bloonModifiers;
         AssertEquals(modifiers.bossSpeedMultiplier, ChallengeLimits.MaxBossSpeed, "Boss speed");
-        AssertEquals(modifiers.speedMultiplier, ChallengeLimits.MinMultiplier, "NaN bloon speed");
+        // NaN isn't a number a code may hold, so it is ignored (#108)
+        AssertEquals(modifiers.speedMultiplier, defaults.bloonModifiers.speedMultiplier, "NaN bloon speed");
         AssertEquals(modifiers.moabSpeedMultiplier, ChallengeLimits.MinMultiplier, "Negative MOAB speed");
         AssertEquals(modifiers.healthMultipliers.boss, ChallengeLimits.MinBossHealth, "Boss health");
         AssertEquals(modifiers.healthMultipliers.moabs, ChallengeLimits.MaxMultiplier, "MOAB health");
@@ -175,7 +177,8 @@ public class MaliciousCodeTest : CustomBossTest
         AssertEquals(dcm.startRules.lives, 1, "Lives");
         AssertEquals(dcm.startRules.round, -1, "A negative start round means default");
         AssertEquals(dcm.startRules.endRound, TierMath.MaxRound + TierMath.RoundsBetweenTiers, "End round");
-        AssertEquals(dcm.startRules.revives, ChallengeLimits.MaxRevives, "Revives");
+        // The Challenge Editor has no revives, so a code can't set them (#108)
+        AssertEquals(dcm.startRules.revives, defaults.startRules.revives, "Revives");
         AssertEquals(dcm.maxTowers, ChallengeLimits.MaxTowerCount, "Max towers");
         AssertEquals(dcm.abilityCooldownReductionMultiplier, 0f, "Cooldown multiplier");
         AssertEquals(dcm.map, defaults.map, "Unknown map");
@@ -183,6 +186,54 @@ public class MaliciousCodeTest : CustomBossTest
         AssertEquals(dcm.mode, defaults.mode, "Unknown mode");
         Assert(dcm.name.Length <= ChallengeLimits.MaxNameLength && dcm.name.StartsWith("Linebreak and"),
             $"Name without control characters and cut to length: '{dcm.name}'");
+
+        // Only what the Challenge Editor and the Boss Creator can set is read from a code (#108)
+        var hostile = SetupCode.Pack("{\"o\":{},\"c\":{" +
+            "\"cashModifiers\":{\"popCashMultiplier\":0,\"roundCashMultiplier\":1e30,\"towerCashMultiplier\":NaN}," +
+            "\"roundSets\":[\"NoSuchRounds\",\"bloonarius\"],\"powers\":{\"$items\":{\"0\":{\"max\":99999}}},\"maxPowers\":7," +
+            "\"rewards\":\"anything\",\"temporaryUnlockedTowers\":[\"SuperMonkey\"],\"disableTowerXp\":true," +
+            "\"disableHeroBoosting\":true,\"disableSaves\":false,\"numberOfPlayers\":4,\"id\":5," +
+            "\"startRules\":null,\"bloonModifiers\":{\"healthMultipliers\":null,\"allCamo\":\"yes\"}," +
+            "\"towers\":{\"$items\":{\"1\":{\"tower\":\"SuperMonkey\",\"max\":3,\"path1NumBlockedTiers\":40}}}," +
+            "\"maxParagons\":50000,\"leastCashUsed\":-77,\"leastTiersUsed\":2000000,\"noInstaReward\":false}}");
+        Assert(SetupCode.TryDecode(hostile, out _, out var hostileDcm, out var hostileProblem),
+            $"A code with fields no player can set must still load: {hostileProblem}");
+        var cash = hostileDcm!.cashModifiers;
+        AssertEquals((cash.popCashMultiplier, cash.roundCashMultiplier, cash.towerCashMultiplier),
+            (defaults.cashModifiers.popCashMultiplier, defaults.cashModifiers.roundCashMultiplier, defaults.cashModifiers.towerCashMultiplier),
+            "Cash modifiers stay at the defaults");
+        AssertEquals(hostileDcm.roundSets?.Count ?? 0, defaults.roundSets?.Count ?? 0, "Round sets stay at the defaults");
+        AssertEquals(hostileDcm.powers[0].max, defaults.powers[0].max, "Power limits stay at the defaults");
+        AssertEquals(hostileDcm.maxPowers, defaults.maxPowers, "Max powers");
+        AssertEquals(hostileDcm.rewards, defaults.rewards, "Rewards");
+        AssertEquals(hostileDcm.temporaryUnlockedTowers?.Count ?? 0, 0, "Unlocked towers");
+        Assert(!hostileDcm.disableTowerXp && !hostileDcm.disableHeroBoosting, "Tower XP and hero boosting");
+        AssertEquals(hostileDcm.numberOfPlayers, defaults.numberOfPlayers, "Players");
+        AssertNotNull(hostileDcm.startRules, "Start rules of null are the defaults");
+        AssertNotNull(hostileDcm.bloonModifiers.healthMultipliers, "Health multipliers of null are the defaults");
+        Assert(!hostileDcm.bloonModifiers.allCamo, "A text where true or false belongs is ignored");
+        AssertEquals(hostileDcm.towers[1].tower, defaults.towers[1].tower, "A code can't change which tower an entry is");
+        AssertEquals(hostileDcm.towers[1].max, 3, "The tower's limit still applies");
+        AssertEquals(hostileDcm.towers[1].path1NumBlockedTiers, ChallengeLimits.MaxBlockedTiers, "Blocked tiers");
+        AssertEquals(hostileDcm.maxParagons, ChallengeLimits.MaxTowerCount, "Max paragons");
+        AssertEquals(hostileDcm.leastCashUsed, -1, "A negative least cash means none");
+        AssertEquals(hostileDcm.leastTiersUsed, ChallengeLimits.MaxTiersUsed, "Least tiers");
+        Assert(!hostileDcm.noInstaReward, "Insta reward, which the editor has, still applies");
+
+        // Nothing the mod writes is ever ignored: the examples and random setups only use fields a code may set
+        foreach (var example in ExampleSetups.All)
+        {
+            var (exampleOptions, exampleDcm) = ExampleSetups.Build(example);
+            AssertEquals(string.Join(", ", IgnoredFields(SetupCode.Encode(exampleOptions, exampleDcm))), "",
+                $"Ignored fields of the example {example.Name}");
+        }
+        for (var i = 0; i < 50; i++)
+        {
+            var random = CustomEditorDcm();
+            var randomOptions = BossRandomizer.Randomize(random, Menus.BossEditorSection.UnsupportedModes, i % 2 == 1);
+            AssertEquals(string.Join(", ", IgnoredFields(SetupCode.Encode(randomOptions, random))), "",
+                "Ignored fields of a random setup");
+        }
 
         // What was brought into range is reported for the log, and normal setups report nothing
         AssertEquals(ChallengeLimits.Sanitize(CustomEditorDcm(), defaults).Count, 0, "Changes to a normal setup");
@@ -211,5 +262,18 @@ public class MaliciousCodeTest : CustomBossTest
         Assert(!SetupCode.TryDecode(deep, out _, out _, out var deepProblem), "A deeply nested code must not load");
         AssertEquals(deepProblem, CodeProblem.Invalid, "Problem of a deeply nested code");
         yield break;
+    }
+
+    /// <summary>
+    /// The challenge fields in a code that the mod ignores (#108)
+    /// </summary>
+    public static System.Collections.Generic.List<string> IgnoredFields(string code)
+    {
+        var ignored = new System.Collections.Generic.List<string>();
+        if (CodeFormat.TryUnpack(code, out var payload, out _, out _) && payload["c"] is Newtonsoft.Json.Linq.JObject diff)
+        {
+            CodeFormat.FilterChallenge(diff, SetupCode.ChallengeJson(DailyChallengeModel.CreateDefaultEditorModel()), ignored);
+        }
+        return ignored;
     }
 }

@@ -80,6 +80,99 @@ export function apply(target: Json, diff: Json): Json {
   return clone(diff);
 }
 
+const isInt = (value: Json): boolean => typeof value === "number" && Number.isInteger(value) && value >= -2147483648 && value <= 2147483647;
+
+function hasType(value: Json, type: Json): boolean {
+  switch (type) {
+    case "text":
+      return typeof value === "string";
+    case "bool":
+      return typeof value === "boolean";
+    case "int":
+      return isInt(value);
+    case "float":
+      return typeof value === "number" && Number.isFinite(value);
+    default:
+      return false;
+  }
+}
+
+function filterObject(diff: JsonObject, fields: JsonObject, defaults: Json | undefined, path: string, dropped: string[]): JsonObject {
+  const kept: JsonObject = {};
+  for (const [name, value] of Object.entries(diff)) {
+    const at = path === "" ? name : `${path}.${name}`;
+    const field = name.startsWith("$") || !Object.prototype.hasOwnProperty.call(fields, name) ? undefined : fields[name];
+    const before = dropped.length;
+    const standard = isObject(defaults) ? defaults[name] : undefined;
+    const filtered = field === undefined || value === null ? undefined : filterValue(value, field, standard, at, dropped);
+    if (filtered !== undefined) kept[name] = filtered;
+    // Name what was left out, unless a part of it already says what; an empty object changes nothing
+    else if (field === undefined || (dropped.length === before && !(isObject(value) && Object.keys(value).length === 0))) dropped.push(at);
+  }
+  return kept;
+}
+
+function filterValue(value: Json, field: Json, defaults: Json | undefined, path: string, dropped: string[]): Json | undefined {
+  if (isObject(field)) {
+    if (!isObject(value)) return undefined;
+    const inner = filterObject(value, field, defaults, path, dropped);
+    return Object.keys(inner).length > 0 ? inner : undefined;
+  }
+  if (Array.isArray(field) && field.length === 1 && isObject(field[0])) {
+    return filterList(value, field[0], Array.isArray(defaults) ? defaults : undefined, path, dropped);
+  }
+  return hasType(value, field) ? clone(value) : undefined;
+}
+
+function filterList(value: Json, entry: JsonObject, defaults: Json[] | undefined, path: string, dropped: string[]): Json | undefined {
+  const key = typeof entry.$key === "string" ? entry.$key : undefined;
+  const items: JsonObject = {};
+  const add = (index: number, change: JsonObject, at: string) => {
+    const inner = filterObject(change, entry, defaults?.[index], at, dropped);
+    if (Object.keys(inner).length > 0) items[String(index)] = inner;
+  };
+
+  if (isObject(value) && Object.keys(value).length === 1 && isObject(value[ITEMS_KEY])) {
+    for (const [index, change] of Object.entries(value[ITEMS_KEY])) {
+      const at = `${path}[${index}]`;
+      const i = Number(index);
+      if (isObject(change) && /^\d+$/.test(index) && String(i) === index && i < (defaults?.length ?? 0)) add(i, change, at);
+      else dropped.push(at);
+    }
+  } else if (Array.isArray(value) && key !== undefined && defaults !== undefined) {
+    value.forEach((item, n) => {
+      const at = `${path}[${n}]`;
+      const id = isObject(item) && typeof item[key] === "string" ? item[key] : undefined;
+      const i = id === undefined ? -1 : defaults.findIndex((standard) => isObject(standard) && standard[key] === id);
+      if (i < 0 || !isObject(item)) {
+        dropped.push(at);
+        return;
+      }
+      // The entry's key says which entry it is; only its settings are changes
+      const standard = defaults[i];
+      const change: JsonObject = {};
+      for (const [name, setting] of Object.entries(item)) {
+        if (name === key) continue;
+        if (isObject(standard) && JSON.stringify(standard[name]) === JSON.stringify(setting)) continue;
+        change[name] = setting;
+      }
+      add(i, change, at);
+    });
+  } else {
+    return undefined;
+  }
+
+  return Object.keys(items).length > 0 ? { [ITEMS_KEY]: items } : undefined;
+}
+
+/**
+ * The part of a challenge diff that GAME.challengeFields allows, with the right types (CodeFormat.FilterChallenge):
+ * a code can only set what the Challenge Editor and the Boss Creator can (#108). The paths left out go to dropped.
+ */
+export function filterChallenge(diff: JsonObject, defaults: JsonObject, dropped: string[] = []): JsonObject {
+  return filterObject(diff, GAME.challengeFields, defaults, "", dropped);
+}
+
 function fromBase64Url(text: string): Uint8Array {
   const base64 = text.replace(/-/g, "+").replace(/_/g, "/");
   const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
@@ -151,7 +244,7 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
     const options = sanitize(readOptions(optionsJsonValue));
 
     const challengeJson = clone(GAME.defaultChallenge);
-    if (isObject(payload.c)) apply(challengeJson, payload.c);
+    if (isObject(payload.c)) apply(challengeJson, filterChallenge(payload.c, GAME.defaultChallenge));
     const challenge = readChallenge(challengeJson, options);
 
     return { ok: true, problem: "None", options, challenge, json: challengeJson };
@@ -240,7 +333,7 @@ function readChallenge(json: JsonObject, options: BossOptions): Challenge {
     allCamo: bool(modifiers.allCamo),
     allRegen: bool(modifiers.allRegen),
     allFortified: bool(modifiers.allFortified),
-    maxParagons: int(json.maxParagons, -1),
+    maxParagons: orDefault(int(json.maxParagons, -1), 0, limits.maxTowerCount),
     maxTowers: orDefault(int(json.maxTowers, -1), 0, limits.maxTowerCount),
     disableMK: bool(json.disableMK),
     disableSelling: bool(json.disableSelling),

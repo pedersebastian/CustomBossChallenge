@@ -226,6 +226,16 @@ public class ContinueStoreTest : ContinueTestBase
                      {
                          Version = ContinueStore.Version, Options = options, Challenge = DcmJson.Serialize(dcm),
                          Snapshots = new[] {new RoundSnapshot(35, 0, "not json")}
+                     })),
+                     // A map save may only name the game's own types (#108)
+                     ("foreign type in a map save", JsonConvert.SerializeObject(new
+                     {
+                         Version = ContinueStore.Version, Options = options, Challenge = DcmJson.Serialize(dcm),
+                         Snapshots = new[]
+                         {
+                             new RoundSnapshot(35, 0, json.Insert(json.IndexOf('{') + 1,
+                                 "\"$type\":\"System.Diagnostics.Process, System.Diagnostics.Process\","))
+                         }
                      }))
                  })
         {
@@ -264,7 +274,7 @@ public class ContinueStoreTest : ContinueTestBase
             AssertEquals(store.Load().Problem, ContinueProblem.Missing, $"A file with {what} must be read only once");
 
             // Only when the snapshots alone can't be used is the setup still there to play again
-            AssertEquals(load.Lost != null, what == "unusable map save", $"Setup of a file with {what}");
+            AssertEquals(load.Lost != null, what is "unusable map save" or "foreign type in a map save", $"Setup of a file with {what}");
         }
 
         File.WriteAllText(store.FilePath, JsonConvert.SerializeObject(new

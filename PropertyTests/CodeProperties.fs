@@ -5,6 +5,7 @@ module CustomBossChallenge.PropertyTests.CodeProperties
 open System.Text
 open FsCheck
 open FsCheck.FSharp
+open Newtonsoft.Json
 open Newtonsoft.Json.Linq
 open Xunit
 open CustomBossChallenge.Config
@@ -111,4 +112,54 @@ let ``Boss Event Rounds play every round once, wherever the tiers spawn`` () =
             |> Seq.forall (fun (from, to') -> to' > count || from > count || sources[to' - 1] = from)
         (Array.sort sources = [| 1..count |] |@ $"not every round once: {sources}")
         .&. (moved |@ "a tier doesn't get its event round"))
+    |> check
+
+/// Whether every part of a filtered diff is a field CodeFormat.ChallengeFields allows, with the type it has there
+let rec private onlyAllowed (diff: JToken) (fields: JToken) : bool =
+    match diff, fields with
+    | (:? JObject as obj), (:? JArray as list) ->
+        // A list becomes changes to its entries by index
+        obj.Count = 1
+        && (match obj[CodeFormat.ItemsKey] with
+            | :? JObject as items -> items.Properties() |> Seq.forall (fun item -> onlyAllowed item.Value list[0])
+            | _ -> false)
+    | (:? JObject as obj), (:? JObject as allowed) ->
+        obj.Properties()
+        |> Seq.forall (fun p -> not (p.Name.StartsWith "$") && not (isNull allowed[p.Name]) && onlyAllowed p.Value allowed[p.Name])
+    | value, (:? JValue as kind) ->
+        match string kind, value.Type with
+        | "text", JTokenType.String
+        | "bool", JTokenType.Boolean -> true
+        | "int", JTokenType.Integer -> value.Value<int64>() >= int64 System.Int32.MinValue && value.Value<int64>() <= int64 System.Int32.MaxValue
+        | "float", (JTokenType.Integer | JTokenType.Float) -> System.Double.IsFinite(value.Value<float>())
+        | _ -> false
+    | _ -> false
+
+[<Fact>]
+let ``A filtered challenge only has fields the Boss Creator can set, with their types`` () =
+    Prop.forAll hostileDiffs (fun diff ->
+        let filtered = CodeFormat.FilterChallenge(diff, Game.defaultChallenge (), ResizeArray())
+        onlyAllowed filtered CodeFormat.ChallengeFields |@ filtered.ToString(Formatting.None))
+    |> check
+
+[<Fact>]
+let ``The filter keeps everything a setup the Boss Creator makes`` () =
+    Prop.forAll setups (fun setup ->
+        let diff = CodeFormat.Diff(setup.Challenge, Game.defaultChallenge ())
+        match diff with
+        | :? JObject as d ->
+            let dropped = ResizeArray()
+            let filtered = CodeFormat.FilterChallenge(d, Game.defaultChallenge (), dropped)
+            let names = String.concat ", " dropped
+            (dropped.Count = 0 |@ $"dropped {names}")
+            .&. (JToken.DeepEquals(filtered, d) |@ filtered.ToString(Formatting.None))
+        | _ -> true |@ "no changes")
+    |> check
+
+[<Fact>]
+let ``Filtering twice changes nothing more`` () =
+    Prop.forAll hostileDiffs (fun diff ->
+        let once = CodeFormat.FilterChallenge(diff, Game.defaultChallenge (), ResizeArray())
+        let twice = CodeFormat.FilterChallenge(once, Game.defaultChallenge (), ResizeArray())
+        JToken.DeepEquals(once, twice) |@ once.ToString(Formatting.None))
     |> check

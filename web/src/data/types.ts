@@ -19,6 +19,8 @@ export interface GameData {
   /** The challenge share codes are made against, without the player's name and seed */
   defaultChallenge: JsonObject;
   defaultOptions: JsonObject;
+  /** What a code may set in the challenge, with the JSON type of each field (CodeFormat.ChallengeFields) */
+  challengeFields: JsonObject;
   bosses: Record<string, { normal: BossTier[]; elite: BossTier[] }>;
   maps: Record<string, string>;
   towers: Record<string, string>;
@@ -39,6 +41,8 @@ export interface GameData {
     maxLives: number;
     maxRevives: number;
     maxTowerCount: number;
+    maxTiersUsed: number;
+    maxBlockedTiers: number;
   };
 }
 

@@ -230,7 +230,9 @@ let decode code =
         | :? JObject as diff -> CodeFormat.Apply(options, diff) |> ignore
         | _ -> ()
         match payload["c"] with
-        | :? JObject as diff -> CodeFormat.Apply(challenge, diff) |> ignore
+        | :? JObject as diff ->
+            let filtered = CodeFormat.FilterChallenge(diff, Game.defaultChallenge (), ResizeArray())
+            CodeFormat.Apply(challenge, filtered) |> ignore
         | _ -> ()
         Some { Options = options; Challenge = challenge }
     | _ -> None
@@ -267,3 +269,41 @@ let junk: Gen<string> =
               let! c = base64Url
               return code[.. index - 1] + string c + code[index + 1 ..]
           } ]
+
+// ---- Hostile challenge diffs ----
+
+/// Any JSON value, of every type a hand made code could hold
+let rec private anyJson depth : Gen<JToken> =
+    let leaf =
+        Gen.oneof
+            [ Gen.constant (JValue.CreateNull() :> JToken)
+              Gen.elements [ true; false ] |> Gen.map (fun b -> JValue b :> JToken)
+              Gen.elements [ 0.0; -1.0; 5.0; 2.5; 1e30; -1e30; nan; infinity; -infinity ] |> Gen.map (fun d -> JValue d :> JToken)
+              Gen.elements [ 0L; -1L; 7L; 2147483648L; -2147483649L; System.Int64.MaxValue ] |> Gen.map (fun l -> JValue l :> JToken)
+              Gen.elements [ ""; "x"; "Logs"; "NaN"; "__proto__"; "SuperMonkey" ] |> Gen.map (fun t -> JValue t :> JToken) ]
+    if depth <= 0 then leaf
+    else
+        Gen.frequency
+            [ 4, leaf
+              1, Gen.listOfLength 2 (anyJson (depth - 1)) |> Gen.map (fun items -> JArray(items) :> JToken)
+              1, hostileObject (depth - 1) ]
+
+/// An object with keys the challenge has, keys it doesn't, and keys that are tricks
+and hostileObject depth : Gen<JToken> =
+    gen {
+        let keys =
+            [ "name"; "map"; "maxParagons"; "seed"; "startRules"; "cash"; "revives"; "bloonModifiers"; "healthMultipliers"
+              "boss"; "allCamo"; "towers"; "max"; "tower"; "isHero"; "$items"; "0"; "1"; "99"; "cashModifiers"
+              "roundSets"; "powers"; "$type"; "__proto__"; "customMapModel" ]
+        let! count = Gen.choose (0, 4)
+        let! names = Gen.listOfLength count (Gen.elements keys)
+        let! values = Gen.listOfLength count (anyJson depth)
+        let o = JObject()
+        for name, value in List.zip names values do
+            o[name] <- value
+        return o :> JToken
+    }
+
+/// A challenge diff a hand made code could hold
+let hostileDiffs =
+    Arb.fromGen (hostileObject 3 |> Gen.map (fun t -> t :?> JObject))

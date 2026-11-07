@@ -123,6 +123,7 @@ public class WebDataTest : CustomBossTest
             ["gameVersion"] = UnityEngine.Application.version,
             ["defaultChallenge"] = Neutral(SetupCode.ChallengeJson(defaults)),
             ["defaultOptions"] = SetupCode.OptionsJson(new BossOptions()),
+            ["challengeFields"] = CodeFormat.ChallengeFields.DeepClone(),
             ["bosses"] = bosses,
             ["maps"] = maps,
             ["towers"] = new JObject(defaults.towers.ToArray().Select(tower => new JProperty(tower.tower, tower.tower.T()))),
@@ -143,7 +144,9 @@ public class WebDataTest : CustomBossTest
                 ["maxCash"] = ChallengeLimits.MaxCash,
                 ["maxLives"] = ChallengeLimits.MaxLives,
                 ["maxRevives"] = ChallengeLimits.MaxRevives,
-                ["maxTowerCount"] = ChallengeLimits.MaxTowerCount
+                ["maxTowerCount"] = ChallengeLimits.MaxTowerCount,
+                ["maxTiersUsed"] = ChallengeLimits.MaxTiersUsed,
+                ["maxBlockedTiers"] = ChallengeLimits.MaxBlockedTiers
             }
         };
     }
@@ -233,7 +236,20 @@ public class WebDataTest : CustomBossTest
                 SetupCode.Pack("{\"o\":{\"Boss\":\"Vortex\",\"BossEventRounds\":true,\"SpawnRounds\":\"30, 50\"},\"c\":{}}",
                     SetupCode.Version4Prefix),
                 SetupCode.Pack("{\"o\":{\"BossEventRounds\":true,\"TierBosses\":\"Lych,Vortex\"},\"c\":{}}",
-                    SetupCode.Version4Prefix)
+                    SetupCode.Version4Prefix),
+                // Fields no player can set, wrong types, null and tricks, which the website must ignore like the mod
+                // does (#108). NaN is left out: JSON.parse can't read it, so the website calls such a code damaged,
+                // while the mod ignores the value; MaliciousCodeTest covers it in the game.
+                SetupCode.Pack("{\"o\":{},\"c\":{\"cashModifiers\":{\"popCashMultiplier\":0},\"roundSets\":[\"x\"]," +
+                               "\"powers\":{\"$items\":{\"0\":{\"max\":99}}},\"__proto__\":{\"map\":\"Logs\"}," +
+                               "\"$type\":\"Nope\",\"startRules\":null,\"map\":3,\"maxTowers\":2.5," +
+                               "\"bloonModifiers\":{\"speedMultiplier\":-0.5,\"moabSpeedMultiplier\":\"2\",\"bossSpeedMultiplier\":1e30," +
+                               "\"healthMultipliers\":null,\"allCamo\":1,\"allRegen\":true}}}"),
+                SetupCode.Pack("{\"o\":{},\"c\":{\"maxParagons\":5.0,\"disableMK\":\"true\",\"disableSelling\":true," +
+                               "\"towers\":{\"$items\":{\"1\":{\"tower\":\"SuperMonkey\",\"max\":3},\"01\":{\"max\":7}," +
+                               "\"9999\":{\"max\":1}}},\"startRules\":{\"cash\":99999999999,\"lives\":12.0,\"round\":\"5\"}}}"),
+                SetupCode.Pack("{\"o\":{},\"c\":{\"maxParagons\":40000,\"towers\":[{\"tower\":\"DartMonkey\",\"max\":4}," +
+                               "{\"tower\":\"NoSuchTower\",\"max\":2},{\"max\":9},7]}}")
             })
             .Distinct()
             .ToList();

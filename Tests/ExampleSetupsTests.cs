@@ -117,6 +117,17 @@ public class ExampleSetupsTest : CustomBossTest
             AssertEquals(editor!.chalName.text, ExampleSetups.All[0].Name, "The example's name is loaded");
             if (randomly) editor.Randomize();
             else section.BossButtons[BossType.Vortex].Button.onClick.Invoke();
+            if (randomly)
+            {
+                // The game's own Random only touches fields a code may hold (#108)
+                for (var i = 0; i < 20; i++)
+                {
+                    editor.Randomize();
+                    editor.ApplyUiSettingsToDCM();
+                    AssertEquals(string.Join(", ", MaliciousCodeTest.IgnoredFields(SetupCode.Encode(BossMode.Options, editor.dcm))), "",
+                        "Ignored fields after Random");
+                }
+            }
             // Random gives a name that describes the setup when something about it stands out
             var name = editor.chalName.text;
             Assert(name == BossMode.DefaultName(BossMode.Options) ||

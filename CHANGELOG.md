@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Unfinished games from a newer version of the mod are kept**: playing a custom game in an older version no longer
   overwrites or deletes the unfinished game a newer version left. It is kept as `Continue.newer.json` and is picked
   up again by a version that can continue it.
+- **Share codes can only set what a player can** (#108): a code now only sets the Challenge Editor's and the Boss
+  Creator's own settings, with the right types and within range. Anything else in a hand made code, like cash
+  modifiers, round sets or power limits, is ignored, and the game log says what. The website reads codes the same way.
+- **Files can't bring in other game objects**: the challenge in `LastSetup.json` and `Continue.json` is read without
+  custom maps or simulation behaviours, as codes already were, and a map save in `Continue.json` may only name the
+  game's own types.
 
 ## [2.10.0] - 2026-11-06
 
