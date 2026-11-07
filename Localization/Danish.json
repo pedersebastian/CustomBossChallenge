@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "Indlæs dette eksempel? Din nuværende opsætning bliver erstattet.",
   "CustomBossChallenge-SetupSaved": "Gemt som {0}.",
   "CustomBossChallenge-TooManySetups": "Du kan have op til {0} gemte opsætninger. Slet en for at gemme en ny.",
+  "CustomBossChallenge-NewerSetupFiles": "Dine Boss Creator-opsætninger kommer fra en nyere version af Custom Boss Challenge. De gemmes, som de er; opdater modden for at bruge dem.",
   "CustomBossChallenge-SetupsTooNew": "Dine gemte opsætninger kommer fra en nyere version af Custom Boss Challenge. Opdater modden for at bruge dem.",
   "CustomBossChallenge-SetupFileError": "De gemte opsætninger kunne ikke ændres. Tjek, at der kan skrives i UserData/CustomBossChallenge.",
   "CustomBossChallenge-SetupUnreadable": "Denne gemte opsætning er beskadiget og kan ikke indlæses. Du kan slette den.",

@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "Laste inn dette eksempelet? Det nåværende oppsettet ditt blir erstattet.",
   "CustomBossChallenge-SetupSaved": "Lagret som {0}.",
   "CustomBossChallenge-TooManySetups": "Du kan ha opptil {0} lagrede oppsett. Slett ett for å lagre et nytt.",
+  "CustomBossChallenge-NewerSetupFiles": "Boss Creator-oppsettene dine kommer fra en nyere versjon av Custom Boss Challenge. De blir tatt vare på som de er; oppdater modden for å bruke dem.",
   "CustomBossChallenge-SetupsTooNew": "De lagrede oppsettene dine kommer fra en nyere versjon av Custom Boss Challenge. Oppdater modden for å bruke dem.",
   "CustomBossChallenge-SetupFileError": "De lagrede oppsettene kunne ikke endres. Sjekk at det går an å skrive til UserData/CustomBossChallenge.",
   "CustomBossChallenge-SetupUnreadable": "Dette lagrede oppsettet er skadet og kan ikke lastes. Du kan slette det.",

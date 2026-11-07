@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "Ladataanko tämä esimerkki? Nykyinen asetelmasi korvataan.",
   "CustomBossChallenge-SetupSaved": "Tallennettu nimellä {0}.",
   "CustomBossChallenge-TooManySetups": "Voit säilyttää enintään {0} tallennettua asetusta. Poista yksi tallentaaksesi uuden.",
+  "CustomBossChallenge-NewerSetupFiles": "Boss Creator -asetuksesi ovat Custom Boss Challengen uudemmasta versiosta. Ne säilytetään sellaisinaan; päivitä modi käyttääksesi niitä.",
   "CustomBossChallenge-SetupsTooNew": "Tallennetut asetuksesi ovat Custom Boss Challengen uudemmasta versiosta. Päivitä modi käyttääksesi niitä.",
   "CustomBossChallenge-SetupFileError": "Tallennettuja asetuksia ei voitu muuttaa. Tarkista, että kansioon UserData/CustomBossChallenge voi kirjoittaa.",
   "CustomBossChallenge-SetupUnreadable": "Tämä tallennettu asetus on vioittunut, eikä sitä voi ladata. Voit poistaa sen.",

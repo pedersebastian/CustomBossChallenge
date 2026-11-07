@@ -306,8 +306,6 @@ public class UnusableContinueTest : ContinueTestBase
         var dcm = CustomBossState.Prepare(Challenge(20).Build(), options);
         var name = dcm.name[..^ConfigApplier.Marker.Length];
         var store = CustomBossRetries.Store;
-        var lastSetup = BossMode.Store;
-        BossMode.Store = new LastSetupStore(Path.Combine(TempFolder, "LastSetup.json"));
         try
         {
             // Map saves this version can't use: the player is told, and Load Setup opens the game's setup
@@ -341,7 +339,6 @@ public class UnusableContinueTest : ContinueTestBase
         }
         finally
         {
-            BossMode.Store = lastSetup;
             store.Delete();
         }
     }
@@ -546,7 +543,12 @@ public class ContinueAfterCrashTest : ContinueTestBase
     {
         var phase = System.Environment.GetEnvironmentVariable("CBC_CRASH_PHASE");
         var folder = System.Environment.GetEnvironmentVariable("CBC_CRASH_FOLDER");
-        if (string.IsNullOrEmpty(phase) || string.IsNullOrEmpty(folder)) yield break;
+        if (string.IsNullOrEmpty(phase) || string.IsNullOrEmpty(folder))
+        {
+            // It needs two starts of the game, so a normal run reports it as needing runs of its own, not as passed (#110)
+            TestRunReport.OnRequest(Name, "needs CBC_CRASH_PHASE and CBC_CRASH_FOLDER, see CONTRIBUTING.md");
+            yield break;
+        }
 
         CustomBossRetries.Store = new ContinueStore(Path.Combine(folder, "Continue.json"));
         var expectedFile = Path.Combine(folder, "Expected.txt");

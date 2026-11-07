@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "¿Cargar este ejemplo? Tu configuración actual será reemplazada.",
   "CustomBossChallenge-SetupSaved": "Guardada como {0}.",
   "CustomBossChallenge-TooManySetups": "Puedes tener hasta {0} configuraciones guardadas. Borra una para guardar una nueva.",
+  "CustomBossChallenge-NewerSetupFiles": "Tus configuraciones del Boss Creator son de una versión más reciente de Custom Boss Challenge. Se conservan tal cual; actualiza el mod para usarlas.",
   "CustomBossChallenge-SetupsTooNew": "Tus configuraciones guardadas son de una versión más reciente de Custom Boss Challenge. Actualiza el mod para usarlas.",
   "CustomBossChallenge-SetupFileError": "No se pudieron cambiar las configuraciones guardadas. Verifica que se pueda escribir en UserData/CustomBossChallenge.",
   "CustomBossChallenge-SetupUnreadable": "Esta configuración guardada está dañada y no se puede cargar. Puedes eliminarla.",

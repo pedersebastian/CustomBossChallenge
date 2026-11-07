@@ -47,7 +47,7 @@ public sealed class SavedSetupsStore
     /// <summary>
     /// The saved setups, sorted by name; none while the file comes from a newer version of the mod
     /// </summary>
-    public List<SavedSetup> All => Read().Setups.OrderBy(entry => entry.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
+    public List<SavedSetup> All => Read().Setups.OrderBy(setup => setup.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
 
     /// <summary>
     /// Whether the file comes from a newer version of the mod, which this version neither shows nor changes
@@ -60,22 +60,22 @@ public sealed class SavedSetupsStore
     public static string NameOf(BossOptions options, DailyChallengeModel dcm) =>
         ChallengeLimits.CleanName(dcm.name, BossMode.DefaultName(options));
 
-    public bool Contains(string name) => Read().Setups.Any(entry => Same(entry.Name, name));
+    public bool Contains(string name) => Read().Setups.Any(setup => SavedSetupsFormat.Same(setup.Name, name));
 
     /// <summary>
     /// Saves the setup under its challenge name, replacing a setup with the same name
     /// </summary>
     public SaveResult Save(BossOptions options, DailyChallengeModel dcm)
     {
-        var (entries, tooNew) = Read();
+        var (setups, tooNew) = Read();
         if (tooNew) return SaveResult.TooNew;
 
         var name = NameOf(options, dcm);
-        var replaced = entries.RemoveAll(entry => Same(entry.Name, name)) > 0;
-        if (!replaced && entries.Count >= MaxSetups) return SaveResult.Full;
+        var replaced = setups.RemoveAll(setup => SavedSetupsFormat.Same(setup.Name, name)) > 0;
+        if (!replaced && setups.Count >= MaxSetups) return SaveResult.Full;
 
-        entries.Add(new SavedSetup {Name = name, Code = SetupCode.Encode(options, dcm), Saved = DateTime.UtcNow});
-        Write(entries);
+        setups.Add(new SavedSetup {Name = name, Code = SetupCode.Encode(options, dcm), Saved = DateTime.UtcNow});
+        Write(setups);
         return replaced ? SaveResult.Replaced : SaveResult.Saved;
     }
 
@@ -85,8 +85,8 @@ public sealed class SavedSetupsStore
     /// </summary>
     public bool TryLoad(string name, out BossOptions options, out DailyChallengeModel? dcm, out CodeProblem problem)
     {
-        var entry = Read().Setups.FirstOrDefault(entry => Same(entry.Name, name));
-        if (entry != null) return SetupCode.TryDecode(entry.Code, out options, out dcm, out problem, $"Saved setup '{entry.Name}'");
+        var saved = Read().Setups.FirstOrDefault(setup => SavedSetupsFormat.Same(setup.Name, name));
+        if (saved != null) return SetupCode.TryDecode(saved.Code, out options, out dcm, out problem, $"Saved setup '{saved.Name}'");
 
         options = new BossOptions();
         dcm = null;
@@ -99,14 +99,12 @@ public sealed class SavedSetupsStore
     /// </summary>
     public bool Delete(string name)
     {
-        var (entries, tooNew) = Read();
-        if (tooNew || entries.RemoveAll(entry => Same(entry.Name, name)) == 0) return false;
+        var (setups, tooNew) = Read();
+        if (tooNew || setups.RemoveAll(setup => SavedSetupsFormat.Same(setup.Name, name)) == 0) return false;
 
-        Write(entries);
+        Write(setups);
         return true;
     }
-
-    private static bool Same(string a, string b) => SavedSetupsFormat.Same(a, b);
 
     private (List<SavedSetup> Setups, bool TooNew) Read()
     {
@@ -155,5 +153,5 @@ public sealed class SavedSetupsStore
         }
     }
 
-    private void Write(List<SavedSetup> entries) => SafeFile.WriteAllText(FilePath, SavedSetupsFormat.Write(entries));
+    private void Write(List<SavedSetup> setups) => SafeFile.WriteAllText(FilePath, SavedSetupsFormat.Write(setups));
 }

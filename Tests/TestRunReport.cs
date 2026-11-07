@@ -25,6 +25,7 @@ public static class TestRunReport
     public const string RelativePath = "TestResults/ingame.json";
 
     private static readonly SortedDictionary<string, string> Skipped = new(StringComparer.Ordinal);
+    private static readonly SortedDictionary<string, string> NeedsOwnRun = new(StringComparer.Ordinal);
     private static bool watching;
 
     /// <summary>
@@ -41,6 +42,12 @@ public static class TestRunReport
     /// A test that didn't check what it normally checks; a run with skipped tests doesn't count for a release
     /// </summary>
     public static void Skip(string test, string reason) => Skipped[test] = reason;
+
+    /// <summary>
+    /// A test that only runs when asked, in runs of its own (e.g. the two game starts of a crash). It isn't counted
+    /// as passed, and doesn't keep a normal run from counting for a release.
+    /// </summary>
+    public static void OnRequest(string test, string reason) => NeedsOwnRun[test] = reason;
 
     private static void Write()
     {
@@ -71,9 +78,10 @@ public static class TestRunReport
                 ["commit"] = metadata.GetValueOrDefault("CBC.Commit", ""),
                 ["dirty"] = metadata.GetValueOrDefault("CBC.Dirty", "") == "true",
                 ["sourceHash"] = metadata.GetValueOrDefault("CBC.SourceHash", ""),
-                ["passed"] = tests.Count(test => test.Suceeded && !Skipped.ContainsKey(test.Name)),
+                ["passed"] = tests.Count(test => test.Suceeded && !Skipped.ContainsKey(test.Name) && !NeedsOwnRun.ContainsKey(test.Name)),
                 ["failed"] = new JArray(tests.Where(test => test.Failed).Select(test => (object) test.Name)),
                 ["skipped"] = new JObject(Skipped.Select(skip => new JProperty(skip.Key, skip.Value))),
+                ["onRequest"] = new JObject(NeedsOwnRun.Select(test => new JProperty(test.Key, test.Value))),
                 ["finished"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
             };
 

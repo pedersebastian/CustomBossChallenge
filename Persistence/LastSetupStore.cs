@@ -32,30 +32,47 @@ public sealed class LastSetupStore
     /// <summary>
     /// Whether the file comes from a newer version of the mod, which this version neither reads nor overwrites
     /// </summary>
-    public bool IsTooNew
+    public bool IsTooNew => Check() == FileState.TooNew;
+
+    private enum FileState
     {
-        get
+        /// <summary>No file, or one this version can write over: its own, or a damaged one</summary>
+        Writable,
+
+        TooNew,
+
+        /// <summary>The file couldn't be read just now, e.g. because it is locked, so it isn't known which it is</summary>
+        Unknown
+    }
+
+    private FileState Check()
+    {
+        if (!File.Exists(FilePath)) return FileState.Writable;
+        try
         {
-            try
-            {
-                return File.Exists(FilePath) && LastSetupFormat.Read(File.ReadAllText(FilePath)).Problem == FormatProblem.TooNew;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return LastSetupFormat.Read(File.ReadAllText(FilePath)).Problem == FormatProblem.TooNew
+                ? FileState.TooNew
+                : FileState.Writable;
+        }
+        catch (Exception)
+        {
+            return FileState.Unknown;
         }
     }
 
     /// <summary>
-    /// Saves the setup, unless the file comes from a newer version of the mod
+    /// Saves the setup, unless the file comes from a newer version of the mod or couldn't be read to find out (#110)
     /// </summary>
     public void Save(BossOptions options, DailyChallengeModel dcm)
     {
-        if (IsTooNew)
+        switch (Check())
         {
-            TellTooNew();
-            return;
+            case FileState.TooNew:
+                TellTooNew();
+                return;
+            case FileState.Unknown:
+                ModHelper.Warning<CustomBossChallenge>($"Not saving the Boss Creator setup: {FilePath} can't be read right now");
+                return;
         }
         SafeFile.WriteAllText(FilePath, LastSetupFormat.Write(options, DcmJson.Serialize(dcm)));
     }

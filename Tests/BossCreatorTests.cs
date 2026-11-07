@@ -31,11 +31,7 @@ public class BossCreatorTest : CustomBossTest
 
     protected override IEnumerator Run()
     {
-        folder = Path.Combine(Path.GetTempPath(), "CustomBossChallengeTest-" + Guid.NewGuid().ToString("N"));
-        var store = BossMode.Store;
-        var saved = BossMode.Saved;
-        BossMode.Store = new LastSetupStore(Path.Combine(folder, "LastSetup.json"));
-        BossMode.Saved = new SavedSetupsStore(Path.Combine(folder, "SavedSetups.json"));
+        folder = TempFolder;
         try
         {
             yield return EditSetup();
@@ -47,10 +43,7 @@ public class BossCreatorTest : CustomBossTest
         }
         finally
         {
-            BossMode.Store = store;
-            BossMode.Saved = saved;
             Menus.Clipboard.Reset();
-            if (Directory.Exists(folder)) Directory.Delete(folder, true);
         }
     }
 

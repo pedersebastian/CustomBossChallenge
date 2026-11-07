@@ -36,19 +36,7 @@ public class ExampleSetupsTest : CustomBossTest
         Assert(ExampleSetups.All.Count(example => example.Options.UsesBossEventRounds) >= 3,
             "Some examples play the boss events' own rounds");
 
-        var store = BossMode.Store;
-        var saved = BossMode.Saved;
-        BossMode.Store = new LastSetupStore(Path.Combine(TempFolder, "LastSetup.json"));
-        BossMode.Saved = new SavedSetupsStore(Path.Combine(TempFolder, "SavedSetups.json"));
-        try
-        {
-            yield return InTheList();
-        }
-        finally
-        {
-            BossMode.Store = store;
-            BossMode.Saved = saved;
-        }
+        yield return InTheList();
     }
 
     private IEnumerator InTheList()

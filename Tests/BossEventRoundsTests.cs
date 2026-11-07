@@ -193,21 +193,7 @@ public class BossEventRoundsCreatorTest : CustomBossTest
 {
     protected override IEnumerator Run()
     {
-        var folder = System.IO.Path.Combine(TempFolder, "Creator");
-        var store = BossMode.Store;
-        var saved = BossMode.Saved;
-        BossMode.Store = new LastSetupStore(System.IO.Path.Combine(folder, "LastSetup.json"));
-        BossMode.Saved = new SavedSetupsStore(System.IO.Path.Combine(folder, "SavedSetups.json"));
-        try
-        {
-            yield return Edit();
-        }
-        finally
-        {
-            BossMode.Store = store;
-            BossMode.Saved = saved;
-        }
-
+        yield return Edit();
         yield return ToMainMenu();
     }
 

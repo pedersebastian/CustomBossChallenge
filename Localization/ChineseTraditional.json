@@ -66,6 +66,7 @@
   "CustomBossChallenge-LoadExampleQuestion": "載入這個範例？目前的設定將被取代。",
   "CustomBossChallenge-SetupSaved": "已儲存為 {0}。",
   "CustomBossChallenge-TooManySetups": "最多可以儲存 {0} 個設定。請刪除一個後再儲存新的設定。",
+  "CustomBossChallenge-NewerSetupFiles": "你的 Boss Creator 設定來自較新版本的 Custom Boss Challenge。它們會原樣保留；請更新模組後再使用。",
   "CustomBossChallenge-SetupsTooNew": "已儲存的設定來自較新版本的 Custom Boss Challenge。請更新模組後再使用。",
   "CustomBossChallenge-SetupFileError": "無法變更已儲存的設定。請檢查 UserData/CustomBossChallenge 是否可寫入。",
   "CustomBossChallenge-SetupUnreadable": "此已儲存的設定已損壞，無法載入。你可以將其刪除。",
