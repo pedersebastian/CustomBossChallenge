@@ -26,8 +26,13 @@ public static class TierStars
         var stars = ui.stars;
         if (stars == null || stars.Length == 0) return;
 
+        // The number goes next to the last star there is; a panel without any is left alone (#112)
+        Image? lastStar = null;
+        for (var i = stars.Length - 1; i >= 0 && lastStar == null; i--) lastStar = stars[i];
+        if (lastStar == null) return;
+
         var tier = CustomBossState.IsActive ? InGame.instance?.bridge?.Simulation?.map?.spawner?.bossBloonManager?.CurrentBossTier ?? 0 : 0;
-        var label = Label(ui, stars[stars.Length - 1], TierLook.HasLook(tier));
+        var label = Label(ui, lastStar, TierLook.HasLook(tier));
         if (!TierLook.HasLook(tier))
         {
             if (label == null) return;

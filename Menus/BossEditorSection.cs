@@ -1308,9 +1308,14 @@ public sealed class BossEditorSection
         var options = BossMode.Options;
         BossTypeRow.SetActive(!options.Mixed);
 
-        // In Advanced Mode every tier has its own speed, health and skulls, set in its picker
-        BossSpeed.Row.SetActive(!options.Mixed);
-        BossHealth.Row.SetActive(!options.Mixed);
+        // In Advanced Mode every tier has its own speed, health and skulls, set in its picker. Boss Speed and Boss
+        // Health still apply on top, so when a code or an older setup has them, their rows stay, for the player to
+        // see and reset; they are hidden again once both are back at 100 % (#112)
+        var modifiers = Editor.dcm?.bloonModifiers;
+        var bossSpeedSet = !Mathf.Approximately(modifiers?.bossSpeedMultiplier ?? 1, 1);
+        var bossHealthSet = !Mathf.Approximately(modifiers?.healthMultipliers?.boss ?? 1, 1);
+        BossSpeed.Row.SetActive(!options.Mixed || bossSpeedSet);
+        BossHealth.Row.SetActive(!options.Mixed || bossHealthSet);
         skullModeRow.SetActive(!options.Mixed);
         SkullCount.Row.SetActive(!options.Mixed && options.SkullMode == Config.SkullMode.EvenlySpaced);
         customSkullsRow.SetActive(!options.Mixed && options.SkullMode == Config.SkullMode.Custom);

@@ -218,6 +218,11 @@ public class TierLookTest : CustomBossTest
                     $"{name} tier {tier} has the colour of an earlier tier");
                 colors.Add(color);
 
+                // The head and every segment of Diamondback have the look of the same tier (#112)
+                var tracked = TierLookApplier.TrackedTiers();
+                Assert(tracked.Count > 0 && tracked.All(trackedTier => trackedTier == tier),
+                    $"{name} tier {tier}: the boss and its segments have the looks of tiers {string.Join(", ", tracked)}");
+
                 if (tier == 10) yield return CheckNoNewMaterials(name);
             }
 

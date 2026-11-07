@@ -93,6 +93,11 @@ public static class TierLookApplier
     private static int checks;
 
     private static readonly List<Tracked> Bosses = new();
+
+    /// <summary>
+    /// The tier each tracked boss and segment has its look for, for the tests
+    /// </summary>
+    internal static List<int> TrackedTiers() => Bosses.Select(boss => boss.Tier).ToList();
     private static readonly Dictionary<(string Boss, int Tier, IntPtr Texture), Material> Glows = new();
     private static readonly HashSet<IntPtr> GlowPointers = new();
     private static readonly Dictionary<(string Boss, int Tier), Material> Auras = new();
@@ -204,12 +209,13 @@ public static class TierLookApplier
             if (current != null) segmentSearchUntil = Time.unscaledTime + SegmentSearchTime;
         }
 
-        var tier = manager.CurrentBossTier;
+        // The boss's own model says its tier; the manager's count is only used for a model without one. The head and
+        // Diamondback's segments get the same tier, so they always look alike (#112).
+        var tier = current != null && TierMath.TierOf(current.bloonModel.id) is var own and > 0 ? own : manager.CurrentBossTier;
         if (current != null && TierLook.HasLook(tier))
         {
-            var ownTier = TierMath.TierOf(current.bloonModel.id) is var own and > 0 ? own : tier;
-            var boss = CustomBossState.ActiveOptions!.BossOf(ownTier).Boss.ToString();
-            Track(current, boss, ownTier);
+            var boss = CustomBossState.ActiveOptions!.BossOf(tier).Boss.ToString();
+            Track(current, boss, tier);
 
             // Diamondback's body is its segments, which share tier 5's models and spawn one after another
             if (Time.unscaledTime < segmentSearchUntil) TrackSegments(boss, tier);

@@ -141,6 +141,10 @@ under `onRequest` instead: not passed, but not keeping the run from counting for
 
 Tests never touch the player's own files: `CustomBossTest` gives every test temporary stores for the unfinished
 game, the last setup and the saved setups, and puts the player's back afterwards.
+
+Some failures can't be made to happen on purpose, so the mod has test hooks for them: `CustomBossChallenge.FailNextUpdate`
+(a frame update that throws) and `CustomBossRetries.FailNextSnapshot` (a round whose map save can't be written). They
+are internal, only tests set them, and `CustomBossTest` resets them before every test.
 A release needs this report (see **Release version** below), so before tagging:
 
 1. Bump `Version` (and `WorksOnVersion`) in `ModHelperData.cs`.

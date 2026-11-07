@@ -39,7 +39,9 @@ public static class BossEventRounds
         var sources = BossRoundsMath.Sources(options.EffectiveSpawnRounds, rounds.Length);
         var reordered = sources.Select(source => rounds[source - 1]).ToArray();
         var own = new List<string>();
-        var defaults = GameData.Instance.RoundSetByName("DefaultRoundSet")?.rounds;
+        // Each tier's own boss round goes over the match's own rounds as the game has them, before the first tier's
+        // boss rounds were merged in: AlternateBloonsRounds' for that mode, the default ones otherwise (#112)
+        var defaults = (GameData.Instance.RoundSetByName(set.name) ?? GameData.Instance.RoundSetByName("DefaultRoundSet"))?.rounds;
         if (options.Mixed && defaults != null)
         {
             foreach (var (round, tier, eventRound) in BossRoundsMath.TierEventRounds(options.EffectiveSpawnRounds, rounds.Length))

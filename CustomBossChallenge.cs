@@ -35,18 +35,63 @@ public class CustomBossChallenge : BloonsTD6Mod
 
     public override void OnUpdate()
     {
-        Menus.MainMenuButton.UpdatePosition();
-        Menus.BossCreatorKeys.Update();
-        Visuals.TierLookApplier.Update();
-        Visuals.BossHud.Update();
+        // Each part on its own, so one that throws doesn't stop the others for the rest of the match (#112)
+        Guarded("main menu button", Menus.MainMenuButton.UpdatePosition);
+        Guarded("Boss Creator keys", Menus.BossCreatorKeys.Update);
+        Guarded("tier look", Visuals.TierLookApplier.Update);
+        Guarded("boss panel", () =>
+        {
+            FailNextUpdate?.Invoke();
+            Visuals.BossHud.Update();
+        });
         if (Time.realtimeSinceStartup >= nextPresentationCheck)
         {
             nextPresentationCheck = Time.realtimeSinceStartup + Visuals.BossPresentation.CheckInterval;
-            Patches.MixedBosses.KeepPresentation();
+            Guarded("map effects", Patches.MixedBosses.KeepPresentation);
         }
     }
 
     private float nextPresentationCheck;
+
+    /// <summary>
+    /// Plays only the tiers the game has models for (see <see cref="CustomBossState.LimitTiers"/>), and ends the
+    /// match after the last of them instead of after the tiers it lacks (#112)
+    /// </summary>
+    /// <returns>The options the game is now played with</returns>
+    internal static BossOptions LimitTiers(GameModel model, int tiers)
+    {
+        var before = CustomBossState.ActiveOptions ?? new BossOptions();
+        var after = CustomBossState.LimitTiers(tiers);
+        var shift = TierMath.EndRound(after.EffectiveSpawnRounds) - TierMath.EndRound(before.EffectiveSpawnRounds);
+        if (shift == 0) return after;
+
+        model.endRound += shift;
+        var rules = InGameData.CurrentGame?.dcModel?.startRules;
+        if (rules != null) rules.endRound += shift;
+        return after;
+    }
+
+    /// <summary>
+    /// The parts of <see cref="OnUpdate"/> that threw this session, so each is logged once and not every frame
+    /// </summary>
+    internal static readonly System.Collections.Generic.HashSet<string> FailedUpdates = new();
+
+    /// <summary>
+    /// Tests only: runs before the boss panel's update, to make it throw
+    /// </summary>
+    internal static Action? FailNextUpdate { get; set; }
+
+    private static void Guarded(string part, Action update)
+    {
+        try
+        {
+            update();
+        }
+        catch (Exception e)
+        {
+            if (FailedUpdates.Add(part)) ModHelper.Warning<CustomBossChallenge>($"The {part} update failed: {e}");
+        }
+    }
 
     public override void OnNewGameModel(GameModel result)
     {
@@ -71,7 +116,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         {
             ModHelper.Warning<CustomBossChallenge>(
                 $"No model for {options.BossId(available + 1)}, playing {available} tiers instead of {options.Tiers}");
-            options = CustomBossState.LimitTiers(available);
+            options = LimitTiers(result, available);
         }
 
         // The game multiplies the tiers by Boss Health after this, so their health must leave room for it. Without the
