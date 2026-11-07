@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.1] - 2026-11-07
+
 ### Fixed
 
 - **Setups from a newer version of the mod are kept** (#107, #110): an older version no longer overwrites the last
@@ -376,7 +378,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety guards: only Boss Challenges are affected; custom games are always unranked, never saved and never update Boss Challenge records. The weekly Boss Event, co-op and all other modes are untouched.
 - In-game automated tests (Mod Helper `ModTest`) covering config application, skull math, all boss/Elite skulls, ranked/co-op guards, the Customize button and a game test comparing a vanilla and a custom Bloonarius challenge.
 
-[unreleased]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.10.0...HEAD
+[unreleased]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.10.1...HEAD
+[2.10.1]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.10.0...2.10.1
 [2.10.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.9.0...2.10.0
 [2.9.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.8.0...2.9.0
 [2.8.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.7.0...2.8.0
