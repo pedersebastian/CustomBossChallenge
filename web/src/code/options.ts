@@ -56,9 +56,10 @@ export function optionsJson(options: BossOptions): JsonObject {
     Tiers: options.Tiers,
     SpeedPerTier: options.SpeedPerTier,
     HealthPerTier: options.HealthPerTier,
-    SpawnRounds: options.SpawnRounds,
   };
+  // In the order BossOptions declares them, as Json.NET writes them; null ones are left out like in the mod
   if (options.ExtraTierHealth != null) json.ExtraTierHealth = options.ExtraTierHealth;
+  json.SpawnRounds = options.SpawnRounds;
   if (options.TierBosses != null) json.TierBosses = options.TierBosses;
   json.BossEventRounds = options.BossEventRounds;
   return json;
