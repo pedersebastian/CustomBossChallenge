@@ -99,17 +99,18 @@ public class SpawnedBloonGameTest : CustomBossTest
             yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, BossGameLauncher.Resolve(new BossOptions {Boss = BossType.Bloonarius})));
 
             // The test tower hurts the boss, which spawns its Ceramics at its first health trigger
-            var model = InGame.instance.GetGameModel();
+            var game = AssertNotNull(InGame.instance, "The game did not load")!;
+            var model = game.GetGameModel();
             ExtraTierGameTest.PlaceStrongTower(model.GetTowerFromId("DartMonkey"));
-            InGame.instance.bridge.Simulation.map.spawner.bossBloonManager.SpawnBoss(1, false);
-            InGame.instance.bridge.SetFastForward(true);
+            game.bridge.Simulation.map.spawner.bossBloonManager.SpawnBoss(1, false);
+            game.bridge.SetFastForward(true);
 
             var seen = new HashSet<string>();
             var start = Time.realtimeSinceStartup;
             while (!seen.Any(id => id.StartsWith("Ceramic")))
             {
                 if (Time.realtimeSinceStartup - start > TimeoutSeconds) Fail($"Bloonarius spawned no Ceramics, saw {string.Join(", ", seen)}");
-                foreach (var bloon in InGame.instance.GetBloons().ToArray())
+                foreach (var bloon in game.GetBloons().ToArray())
                 {
                     var bloonModel = bloon.bloonModel;
                     if (bloonModel.isBoss || !seen.Add(bloonModel.id)) continue;
@@ -117,7 +118,7 @@ public class SpawnedBloonGameTest : CustomBossTest
                     AssertEquals(bloonModel.isCamo, camo, $"{bloonModel.id} is camo with All Camo {(camo ? "on" : "off")}");
                 }
                 // The rounds keep the game going; their bloons follow All Camo too
-                if (!InGame.instance.bridge.AreRoundsActive()) InGame.instance.bridge.StartRound();
+                if (!game.bridge.AreRoundsActive()) game.bridge.StartRound();
                 yield return null;
             }
         }

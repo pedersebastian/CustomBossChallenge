@@ -155,7 +155,7 @@ public class BossEventRoundsContinueTest : ContinueTestBase
         Assert(System.IO.File.ReadAllText(Store.FilePath).Contains($"\"Version\": {ContinueStore.Version}"),
             "A game with Boss Event Rounds is saved as version 3");
 
-        var game = AssertNotNull(Store.TryLoad(), "Round 29 was not saved");
+        var game = AssertNotNull(Store.TryLoad(), "Round 29 was not saved")!;
         AssertEquals(game.Options, options, "Options in the file");
         Assert(!ConfigApplier.Unprepare(game.Dcm).roundSets.Contains("bloonarius"),
             "The round set is no part of the setup");
@@ -173,7 +173,7 @@ public class BossEventRoundsContinueTest : ContinueTestBase
         yield return StartCustomGame(mixed, Challenge(28).Build());
         rounds = BossEventRoundsGameTest.Rounds(InGame.instance.GetGameModel().roundSet);
         yield return PlayRound();
-        game = AssertNotNull(Store.TryLoad(), "Round 29 of the Advanced game was not saved");
+        game = AssertNotNull(Store.TryLoad(), "Round 29 of the Advanced game was not saved")!;
         AssertEquals(game.Options, mixed, "Advanced options in the file");
         yield return CloseGame();
         BossGameLauncher.Continue(game);

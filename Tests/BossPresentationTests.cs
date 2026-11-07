@@ -103,7 +103,7 @@ public class BossPresentationContinueTest : ContinueTestBase
         yield return CloseGame();
 
         Store.Save(options, dcm, new[] {new Persistence.RoundSnapshot(29, 2, json)});
-        var game = AssertNotNull(Store.TryLoad(), "The saved game did not load");
+        var game = AssertNotNull(Store.TryLoad(), "The saved game did not load")!;
         BossGameLauncher.Continue(game);
         yield return WaitForLoadedGame();
         yield return new WaitForSecondsRealtime(1.5f);
