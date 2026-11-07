@@ -70,7 +70,14 @@ function marker(side: Side, x: number, y: number, title: string): SVGElement {
     : s("rect", { x: x - POINT, y: y - POINT, width: POINT * 2, height: POINT * 2, class: "point b" }, label);
 }
 
-function chart(pairs: Pairs, title: string, value: (card: TierCard) => number | null, axisFor: (values: number[]) => Axis, text: (card: TierCard) => string): HTMLElement {
+function chart(
+  pairs: Pairs,
+  title: string,
+  value: (card: TierCard) => number | null,
+  axisFor: (values: number[]) => Axis,
+  text: (card: TierCard) => string,
+  sideName: (side: Side) => string,
+): HTMLElement {
   const values = pairs.flatMap((pair) => [pair.a, pair.b]).flatMap((card) => (card ? [value(card)] : [])).filter((v): v is number => v !== null && v > 0);
   // The chart itself is hidden from screen readers, so they are told where the values are
   const figure = h("figure", { class: "curve" }, h("figcaption", {}, title, h("span", { class: "sr-only" }, " (the values are in the table below)")));
@@ -100,7 +107,7 @@ function chart(pairs: Pairs, title: string, value: (card: TierCard) => number | 
       return card && v !== null && v > 0 ? [{ card, x: x(pair.tier), y: axis.y(v) }] : [];
     });
     if (points.length > 1) svg.append(s("polyline", { points: points.map((p) => `${p.x},${p.y}`).join(" "), class: `series ${side}` }));
-    for (const point of points) svg.append(marker(side, point.x, point.y, `${side.toUpperCase()}, tier ${point.card.tier}: ${text(point.card)}`));
+    for (const point of points) svg.append(marker(side, point.x, point.y, `${sideName(side)}, tier ${point.card.tier}: ${text(point.card)}`));
   }
 
   figure.append(svg);
@@ -117,22 +124,40 @@ function swatch(side: Side): SVGElement {
   );
 }
 
-export function renderCurves(pairs: Pairs, names: { a: string; b: string }): HTMLElement {
+/** How the chart is shown: the compare page's A and B, or one setup next to the normal game (#96) */
+export interface CurvesView {
+  title?: string;
+  heading?: "h2" | "h4";
+  /** Whether the two are called A and B; off, they go by their names */
+  letters?: boolean;
+  /** The table's row header for a tier, e.g. "T3 · Elite Lych" */
+  rowLabel?: (tier: number) => string;
+}
+
+export function renderCurves(pairs: Pairs, names: { a: string; b: string }, view: CurvesView = {}): HTMLElement {
+  const { title = "Tier curves", heading = "h2", letters = true, rowLabel = (tier: number) => `T${tier}` } = view;
+  const sideName = (side: Side): string => (letters ? side.toUpperCase() : names[side]);
+  const column = (side: Side, what: string): string => (letters ? `${side.toUpperCase()} ${what}` : `${what[0].toUpperCase()}${what.slice(1)}, ${names[side].toLowerCase()}`);
   const health = (card: TierCard): string => (card.capped ? `${card.health} (the game's limit)` : card.health);
   const speed = (card: TierCard): string => `×${formatDecimals(card.speed, 2)}`;
 
   const legend = h(
     "div",
     { class: "legend" },
-    h("span", {}, swatch("a"), h("strong", {}, "A"), ` ${names.a} (solid line, round points)`),
-    h("span", {}, swatch("b"), h("strong", {}, "B"), ` ${names.b} (dashed line, square points)`),
+    h("span", {}, swatch("a"), letters ? h("strong", {}, "A") : null, ` ${names.a} (solid line, round points)`),
+    h("span", {}, swatch("b"), letters ? h("strong", {}, "B") : null, ` ${names.b} (dashed line, square points)`),
   );
 
   const cell = (card: TierCard | null, read: (card: TierCard) => string): string => (card ? read(card) : "–");
   const table = h(
     "table",
     { class: "compare-table" },
-    h("thead", {}, h("tr", {}, h("th", { scope: "col" }, "Tier"), h("th", { scope: "col" }, "A round"), h("th", { scope: "col" }, "B round"), h("th", { scope: "col" }, "A health"), h("th", { scope: "col" }, "B health"), h("th", { scope: "col" }, "A speed"), h("th", { scope: "col" }, "B speed"))),
+    h("thead", {}, h(
+        "tr",
+        {},
+        h("th", { scope: "col" }, "Tier"),
+        ...(["round", "health", "speed"] as const).flatMap((what) => [h("th", { scope: "col" }, column("a", what)), h("th", { scope: "col" }, column("b", what))]),
+      )),
     h(
       "tbody",
       {},
@@ -140,7 +165,7 @@ export function renderCurves(pairs: Pairs, names: { a: string; b: string }): HTM
         h(
           "tr",
           {},
-          h("th", { scope: "row" }, `T${pair.tier}`),
+          h("th", { scope: "row" }, rowLabel(pair.tier)),
           h("td", {}, cell(pair.a, (c) => `R${c.round}`)),
           h("td", {}, cell(pair.b, (c) => `R${c.round}`)),
           h("td", {}, cell(pair.a, health)),
@@ -155,13 +180,13 @@ export function renderCurves(pairs: Pairs, names: { a: string; b: string }): HTM
   return h(
     "div",
     { class: "block" },
-    h("h2", {}, "Tier curves"),
+    h(heading, {}, title),
     legend,
     h(
       "div",
       { class: "curves" },
-      chart(pairs, "Boss health per tier", (card) => card.healthValue, logAxis, health),
-      chart(pairs, "Boss speed per tier, compared with the normal game", (card) => card.speed, linearAxis, speed),
+      chart(pairs, "Boss health per tier", (card) => card.healthValue, logAxis, health, sideName),
+      chart(pairs, "Boss speed per tier, compared with the normal game", (card) => card.speed, linearAxis, speed, sideName),
     ),
     h("details", { class: "towers" }, h("summary", {}, "The values as a table"), h("div", { class: "table-scroll" }, table)),
   );

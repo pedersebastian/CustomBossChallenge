@@ -8,7 +8,10 @@ import { SKULL_MODE_NAMES, bossOf, effectiveSpawnRounds, isMixed, tierBossName, 
 import { formatDecimals } from "../math/dotnet";
 import { formatPercent } from "../math/skulls";
 import { clampTiers, endRound, formatHealth, maxModelHealth } from "../math/tiers";
-import { skulls, tierCards } from "./compute";
+import { normalGame, skulls, tierCards } from "./compute";
+import { renderTimeline } from "./timeline";
+import { renderCurves } from "../compare/chart";
+import { tierPairs } from "../compare/diff";
 import { tierGlow, tierGlowStyle } from "./tierLook";
 
 /** Orange where a tier is harder than the normal game, blue where it is easier, like the in-game preview */
@@ -65,7 +68,7 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
   // focused, like the Boss Creator's Skull Preview
   let skullBlock = renderSkulls(options);
   let shownTier = 1;
-  root.append(skullBlock, renderRules(options, challenge, rounds));
+  root.append(renderTimeline(options, challenge), skullBlock, renderStrength(options, challenge), renderRules(options, challenge, rounds));
   if (isMixed(options)) {
     root.querySelectorAll<HTMLElement>(".tier").forEach((card, i) => {
       const show = (event: Event): void => {
@@ -83,6 +86,17 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
     });
   }
   return root;
+}
+
+/** How the boss gets stronger tier by tier, next to the normal game (#96); in Advanced Mode by the tier's boss */
+function renderStrength(options: BossOptions, challenge: Challenge): HTMLElement {
+  const pairs = tierPairs({ options, challenge }, normalGame(options, challenge));
+  return renderCurves(pairs, { a: "This setup", b: "The normal game" }, {
+    title: "Strength per tier",
+    heading: "h4",
+    letters: false,
+    rowLabel: (tier) => (isMixed(options) ? `T${tier} · ${tierBossName(options, tier)}` : `T${tier}`),
+  });
 }
 
 /** Long boss names may break where their parts meet on a narrow card, not anywhere: "Blasta-popoulos" */

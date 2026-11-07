@@ -1357,3 +1357,53 @@ input:focus-visible {
 .studio-tier-heading {
   margin: 0;
 }
+
+/* Timeline (#94): a bar from the first round to the game's end with a mark per tier; the labels stack in rows where
+   rounds are close (--row), and the same rounds are in the list under it */
+.timeline-bar {
+  position: relative;
+  height: 10px;
+  margin: 8px 14px 0;
+  border-radius: 5px;
+  background: var(--card);
+  border: 2px solid var(--outline);
+}
+
+.timeline-mark {
+  position: absolute;
+  top: -6px;
+  width: 0;
+}
+
+.timeline-mark::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 0;
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  background: #ffd84d;
+}
+
+.timeline-mark.start::before,
+.timeline-mark.end::before {
+  background: var(--text);
+}
+
+.timeline-label {
+  position: absolute;
+  top: calc(22px + var(--row, 0) * 40px);
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  line-height: 1.1;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.timeline-list {
+  margin: 0;
+  padding-left: 1.4em;
+  font-size: 0.92rem;
+}
