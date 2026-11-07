@@ -54,6 +54,24 @@ public class CustomBossChallenge : BloonsTD6Mod
     private float nextPresentationCheck;
 
     /// <summary>
+    /// Plays only the tiers the game has models for (see <see cref="CustomBossState.LimitTiers"/>), and ends the
+    /// match after the last of them instead of after the tiers it lacks (#112)
+    /// </summary>
+    /// <returns>The options the game is now played with</returns>
+    internal static BossOptions LimitTiers(GameModel model, int tiers)
+    {
+        var before = CustomBossState.ActiveOptions ?? new BossOptions();
+        var after = CustomBossState.LimitTiers(tiers);
+        var shift = TierMath.EndRound(after.EffectiveSpawnRounds) - TierMath.EndRound(before.EffectiveSpawnRounds);
+        if (shift == 0) return after;
+
+        model.endRound += shift;
+        var rules = InGameData.CurrentGame?.dcModel?.startRules;
+        if (rules != null) rules.endRound += shift;
+        return after;
+    }
+
+    /// <summary>
     /// The parts of <see cref="OnUpdate"/> that threw this session, so each is logged once and not every frame
     /// </summary>
     internal static readonly System.Collections.Generic.HashSet<string> FailedUpdates = new();
@@ -98,7 +116,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         {
             ModHelper.Warning<CustomBossChallenge>(
                 $"No model for {options.BossId(available + 1)}, playing {available} tiers instead of {options.Tiers}");
-            options = CustomBossState.LimitTiers(available);
+            options = LimitTiers(result, available);
         }
 
         // The game multiplies the tiers by Boss Health after this, so their health must leave room for it. Without the

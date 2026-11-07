@@ -102,3 +102,30 @@ public class FailedSnapshotTest : ContinueTestBase
         yield return ToMainMenu();
     }
 }
+
+/// <summary>
+/// When the game has no model for the later tiers, the match ends after the last tier it has, not after the ones it
+/// lacks (#112). A game model can't be made to lack a tier, so this calls the same code on a running match.
+/// </summary>
+public class LimitTiersTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        var options = new BossOptions {Tiers = 5, SpawnRounds = "40, 50, 60, 70, 80"};
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(CustomEditorDcm(), options));
+
+        var model = InGame.instance.GetGameModel();
+        var dcm = InGameData.CurrentGame.dcModel;
+        var modelEnd = model.endRound;
+        var dcmEnd = dcm.startRules.endRound;
+        Log($"End round of 5 tiers: game model {modelEnd}, challenge {dcmEnd}");
+
+        var limited = CustomBossChallenge.LimitTiers(model, 3);
+        AssertEquals(limited.Tiers, 3, "Tiers played");
+        var shift = TierMath.EndRound(limited.EffectiveSpawnRounds) - TierMath.EndRound(options.EffectiveSpawnRounds);
+        Assert(shift < 0, $"Three tiers end earlier than five: {shift}");
+        AssertEquals(model.endRound, modelEnd + shift, "The match ends after the last tier it has");
+        AssertEquals(dcm.startRules.endRound, dcmEnd + shift, "The challenge ends after the last tier it has");
+        yield return ToMainMenu();
+    }
+}
