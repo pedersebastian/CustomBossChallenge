@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
@@ -128,4 +129,42 @@ public class LimitTiersTest : CustomBossTest
         AssertEquals(dcm.startRules.endRound, dcmEnd + shift, "The challenge ends after the last tier it has");
         yield return ToMainMenu();
     }
+}
+
+/// <summary>
+/// In Advanced Mode with Boss Event Rounds, each tier's own boss round is merged over the match's own round set, so
+/// AlternateBloonsRounds is used for every tier, not only the first one's (#112)
+/// </summary>
+public class AlternateRoundsTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        var alternate = Il2CppAssets.Scripts.Data.GameData.Instance.RoundSetByName("AlternateRoundSet").rounds;
+        var checkedRounds = 0;
+        foreach (var boss in TierBossMath.Bosses)
+        {
+            if (boss == "Bloonarius") continue;
+            var options = new BossOptions {Tiers = 2, TierBosses = $"Bloonarius,{boss}", BossEventRounds = true};
+            var dcm = CustomEditorDcm();
+            dcm.mode = "AlternateBloonsRounds";
+            yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+
+            var rounds = InGame.instance.GetGameModel().roundSet.rounds;
+            foreach (var (round, tier, eventRound) in BossRoundsMath.TierEventRounds(options.EffectiveSpawnRounds, rounds.Length))
+            {
+                var set = BossOptions.BossEventRoundSet(options.BossOf(tier).Boss);
+                if (set == options.BaseEventRoundSet || eventRound > alternate.Length) continue;
+                var expected = BossEventRounds.RoundOf(set, eventRound, alternate[eventRound - 1]);
+                if (expected == null) continue;
+                AssertEquals(Groups(rounds[round - 1]), Groups(expected),
+                    $"Round {round} of tier {tier} ({boss}) is its event round {eventRound} over the alternate rounds");
+                checkedRounds++;
+            }
+            yield return ToMainMenu();
+        }
+        Assert(checkedRounds > 0, "No tier had a round of its own boss");
+    }
+
+    private static string Groups(Il2CppAssets.Scripts.Models.Rounds.RoundModel round) =>
+        string.Join(";", round.groups.ToArray().Select(group => $"{group.bloon}x{group.count}@{group.start}-{group.end}"));
 }
