@@ -202,3 +202,65 @@ public class AdvancedBossValuesTest : ContinueTestBase
         yield return ToMainMenu();
     }
 }
+
+/// <summary>
+/// Open question from #112: do the bloons Lych spawns count as bosses? They must not, or they would get a tier look
+/// or count as a defeated tier.
+/// </summary>
+public class LychMinionsTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        var options = new BossOptions {Boss = Il2CppAssets.Scripts.Data.Boss.BossType.Lych, Tiers = 10};
+        yield return TierLookScene.Start(options, data => LoadIntoGame(data));
+        var model = InGame.instance.GetGameModel();
+        var found = new System.Collections.Generic.List<string>();
+        foreach (var elite in new[] {false, true})
+        {
+            for (var tier = 1; tier <= 10; tier++)
+            {
+                var boss = model.GetBloon(BossOptions.BossIdOf(options.Boss, elite, tier));
+                if (boss == null) continue;
+                foreach (var id in SpawnedBloonModifiers.SpawnedIds(boss))
+                {
+                    var spawned = model.GetBloon(id);
+                    if (spawned == null) continue;
+                    found.Add($"{id}{(spawned.isBoss ? " boss" : "")}{(spawned.isBossSegment ? " segment" : "")}");
+                    Assert(!spawned.isBoss && !spawned.isBossSegment, $"{id}, spawned by {boss.id}, counts as a boss");
+                }
+            }
+        }
+        Log($"Bloons Lych spawns: {string.Join(", ", found.Distinct())}");
+        Assert(found.Count > 0, "Lych spawns no bloons");
+        yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// Open question from #112: does the game reuse a destroyed bloon's object for a new one? If it does, the tier look
+/// must still leave the old boss, and not stay on the new bloon.
+/// </summary>
+public class ReusedBloonTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        var options = new BossOptions {Boss = Il2CppAssets.Scripts.Data.Boss.BossType.Bloonarius, Tiers = 10};
+        yield return TierLookScene.Start(options, data => LoadIntoGame(data));
+
+        Il2CppAssets.Scripts.Simulation.Bloons.Bloon? first = null;
+        yield return TierLookScene.Spawn(options, 7, spawned => first = spawned);
+        yield return new WaitForSecondsRealtime(Visuals.TierLookApplier.CheckInterval * 3);
+        Assert(Visuals.TierLookApplier.Count > 0, "Tier 7 has the look");
+        var pointer = first!.Pointer;
+
+        // Right after removing it, a tier without a look; the game may hand it the old boss's object
+        TierLookScene.RemoveBosses();
+        Il2CppAssets.Scripts.Simulation.Bloons.Bloon? second = null;
+        yield return TierLookScene.Spawn(options, 1, spawned => second = spawned);
+        yield return new WaitForSecondsRealtime(Visuals.TierLookApplier.CheckInterval * 3);
+        Log($"The tier 1 boss {(second!.Pointer == pointer ? "reuses" : "doesn't reuse")} the tier 7 boss's object");
+        AssertEquals(Visuals.TierLookApplier.Count, 0, "Tier 1 has no look, even if it got the old boss's object");
+        Assert(TierLookScene.Graphics().All(graphic => TierLookScene.Glows(graphic).Count == 0), "Tier 1 has no glow");
+        yield return ToMainMenu();
+    }
+}
