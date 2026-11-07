@@ -302,7 +302,9 @@ Visits are counted with [GoatCounter](https://pedersebastian.goatcounter.com/) (
 
 The website must read codes exactly like the mod, so parts of the mod are ported to TypeScript: `SetupCode` reading
 (`web/src/code/decode.ts`) and writing (`encode.ts`, the same JSON as the mod; the deflated bytes may differ), `BossOptions.Sanitized` (`options.ts`), `TierMath` and `SkullMath` (`web/src/math/`) and
-the Tier Preview numbers (`web/src/preview/compute.ts`). Change them together with the C#. Besides the fixtures below,
+the Tier Preview numbers (`web/src/preview/compute.ts`, which also has `normalGame`, the setup the strength chart
+compares with). The timeline under the Tier Preview is `web/src/preview/timeline.ts`; its event rounds follow
+`BossRoundsMath.EventRounds`. Change them together with the C#. Besides the fixtures below,
 `web/test/generated.test.ts` reads the random codes from the property tests (see *Property tests*).
 
 What only the game knows (the default challenge codes are made against, boss health, speed and skulls, map and tower

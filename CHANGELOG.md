@@ -23,6 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   boss, Elite or Random, speed, health and skulls. Put a boss on a tier by dragging it there, by tapping the tier and
   then the boss (on a phone too), or with the arrow keys on the tier's card; Delete makes a tier follow the setup's
   boss again.
+- **Timeline of the tiers on the website** (#94): under the Tier Preview, a bar from the first round to the game's
+  end with a mark for each tier's spawn round, and the same rounds as a list. With Boss Event Rounds it says which
+  event round each tier plays.
+- **Strength per tier on the website** (#96): a chart of the boss's health and speed per tier next to the normal
+  game (the same bosses without any changes), with the values as a table; in Advanced Mode each row names the tier's
+  boss. Both follow the code on the main page and every change in the Studio.
 
 ## [2.10.2] - 2026-11-07
 

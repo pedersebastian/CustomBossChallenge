@@ -5,6 +5,7 @@ import type { Challenge } from "../code/decode";
 import { bossOf, effectiveSpawnRounds, entryOf, isMixed, skullPercents, tierSkullPercents, type BossOptions } from "../code/options";
 import { float } from "../math/dotnet";
 import { clampTiers, extraTierFactor, formatHealth, healthFactor, maxModelHealth, speedFactor, VANILLA_TIERS } from "../math/tiers";
+import { NORMAL, formatTierBosses, parseTierBosses } from "../math/tierBosses";
 
 export interface TierCard {
   tier: number;
@@ -103,4 +104,28 @@ export function tierSkulls(options: BossOptions, tier: number): number[] | null 
 function modelOf(options: BossOptions, modelTier: number, tier: number) {
   const { boss, elite } = bossOf(options, tier);
   return GAME.bosses[boss]?.[elite ? "elite" : "normal"]?.[modelTier - 1];
+}
+
+/**
+ * The same setup as the normal game would have it, to compare with (#96): the game's own spawn rounds, no Speed or
+ * Health per Tier, Boss Speed and Boss Health at 100 % and every Advanced tier at its normal speed and health, with the
+ * same bosses, Elite and Random.
+ * The normal game has 5 tiers, so the tiers after them have nothing to compare with.
+ */
+export function normalGame(options: BossOptions, challenge: Challenge): { options: BossOptions; challenge: Challenge } {
+  const tierBosses =
+    options.TierBosses == null
+      ? options.TierBosses
+      : formatTierBosses(parseTierBosses(options.TierBosses).map((tier) => ({ ...tier, speed: NORMAL, health: NORMAL })));
+  return {
+    options: {
+      ...options,
+      Tiers: Math.min(clampTiers(options.Tiers), VANILLA_TIERS),
+      SpawnRounds: null,
+      SpeedPerTier: 0,
+      HealthPerTier: 0,
+      TierBosses: tierBosses,
+    },
+    challenge: { ...challenge, bossSpeed: 1, bossHealth: 1 },
+  };
 }

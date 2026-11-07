@@ -60,6 +60,12 @@ export function spawnRounds(tiers: number, custom: string | null | undefined): n
   return result;
 }
 
+/**
+ * The rounds the boss events' own round sets are made for: with Boss Event Rounds, tier i plays the i-th of them, and
+ * tiers above 5 have none (BossRoundsMath.EventRounds)
+ */
+export const EVENT_ROUNDS = [40, 60, 80, 100, 120] as const;
+
 /** TierMath.FormatRounds: "40, 60, 80" */
 export const formatRounds = (rounds: number[]): string => rounds.join(", ");
 
