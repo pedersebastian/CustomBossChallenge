@@ -168,3 +168,37 @@ public class AlternateRoundsTest : CustomBossTest
     private static string Groups(Il2CppAssets.Scripts.Models.Rounds.RoundModel round) =>
         string.Join(";", round.groups.ToArray().Select(group => $"{group.bloon}x{group.count}@{group.start}-{group.end}"));
 }
+
+/// <summary>
+/// In Advanced Mode, a Boss Speed or Boss Health that still applies on top of the tiers' own (from a code or an older
+/// setup) shows its row, so the player can see and reset it (#112)
+/// </summary>
+public class AdvancedBossValuesTest : ContinueTestBase
+{
+    protected override IEnumerator Run()
+    {
+        ClickBossCreator();
+        yield return WaitForBossCreator();
+        var editor = UnityEngine.Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor.ChallengeEditor>();
+        var section = AssertNotNull(Menus.BossEditorSection.Current, "No boss section")!;
+        var options = new BossOptions {Tiers = 2, TierBosses = "Lych,Vortex"};
+
+        var dcm = BossMode.DefaultDcm(options);
+        BossMode.Replace(editor, options, dcm);
+        section.Relayout();
+        Assert(!section.BossSpeed.Row.activeSelf && !section.BossHealth.Row.activeSelf,
+            "Boss Speed and Boss Health are hidden in Advanced Mode at 100 %");
+
+        dcm = BossMode.DefaultDcm(options);
+        dcm.bloonModifiers.bossSpeedMultiplier = 2;
+        BossMode.Replace(editor, options, dcm);
+        section.Relayout();
+        Assert(section.BossSpeed.Row.activeSelf, "A Boss Speed of 200 % shows its row in Advanced Mode");
+        Assert(!section.BossHealth.Row.activeSelf, "Boss Health at 100 % stays hidden");
+
+        editor.dcm.bloonModifiers.bossSpeedMultiplier = 1;
+        section.Relayout();
+        Assert(!section.BossSpeed.Row.activeSelf, "Back at 100 %, Boss Speed is hidden again");
+        yield return ToMainMenu();
+    }
+}
