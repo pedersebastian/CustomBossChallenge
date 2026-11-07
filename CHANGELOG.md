@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Share codes can only set what a player can** (#108): a code now only sets the Challenge Editor's and the Boss
   Creator's own settings, with the right types and within range. Anything else in a hand made code, like cash
   modifiers, round sets or power limits, is ignored, and the game log says what. The website reads codes the same way.
+- **The mod and the website read every code the same way** (#113): a hand made code whose boss options have the wrong
+  type, like `5.5` for a number of tiers or `"1"` for a boss, or that holds `NaN` or `Infinity`, can't be read on
+  either, where the mod used to guess. Links with a broken `%` escape open the same code on both. The website also
+  rounds custom skulls like the game and shows a Max Paragons of every paragon as Unlimited.
 - **An unfinished game keeps saving after a round that couldn't be saved**: the rounds after it are still saved for
   Continue, and that round can still be retried in the same session.
 - **Boss Speed and Boss Health show in Advanced Mode when they still apply**: a code or an older setup can set them,
