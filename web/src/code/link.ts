@@ -21,6 +21,13 @@ export function linkTo(code: string, page = `${location.origin}${location.pathna
   return page + hashFor(code);
 }
 
+/** Whether the address's # links to a setup (#code=…, #CBC2:…) or a comparison (#a=…&b=…), which a link within the page must keep */
+export function keepsSetup(hash = location.hash): boolean {
+  if (codeFromHash(hash) !== null) return true;
+  const { a, b } = compareCodesFromHash(hash);
+  return a !== "" || b !== "";
+}
+
 /** The page that compares two setups (issue #35), next to the main page */
 export const COMPARE_PAGE = "compare.html";
 

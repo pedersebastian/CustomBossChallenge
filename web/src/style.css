@@ -11,6 +11,8 @@
   --text: #ffffff;
   --muted: #eaf3ff;
   --harder: #ff9e33;
+  /* --harder lightened for text on --panel-inner, where --harder only reaches 3.68:1 (#113) */
+  --harder-text: #ffc27a;
   --easier: #73ccff;
   --error: #ff6b6b;
   --green: #74d33c;
@@ -411,6 +413,11 @@ input:focus-visible {
 
 .harder {
   color: var(--harder);
+}
+
+/* A note on the setup's own background, which is lighter than the tier cards' */
+.note.harder {
+  color: var(--harder-text);
 }
 
 .easier {

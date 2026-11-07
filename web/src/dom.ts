@@ -48,9 +48,38 @@ export async function copyText(text: string): Promise<boolean> {
   }
 }
 
-/** Copies text and briefly says on the button whether it worked */
+/** The page's one live region: what it says, screen readers read out without moving the focus */
+let liveRegion: HTMLElement | null = null;
+
+/** Tells screen readers something that changed on the page, e.g. that copying worked (#113) */
+export function announce(message: string): void {
+  if (!liveRegion || !liveRegion.isConnected) {
+    liveRegion = h("p", { class: "sr-only", role: "status", "aria-live": "polite" });
+    document.body.append(liveRegion);
+  }
+  // Emptied first, so the same message twice in a row is read out again
+  liveRegion.textContent = "";
+  const region = liveRegion;
+  setTimeout(() => (region.textContent = message), 50);
+}
+
+/** How long a button says whether copying worked */
+export const FEEDBACK_TIME = 1500;
+
+/** Each button's own label and the timer that puts it back, so clicks close together can't leave it on "Copied!" */
+const feedback = new WeakMap<HTMLButtonElement, { label: string; timer?: ReturnType<typeof setTimeout> }>();
+
+/** Copies text, briefly says on the button whether it worked, and tells screen readers too */
 export async function copyWithFeedback(button: HTMLButtonElement, text: string, done = "Copied!"): Promise<void> {
-  const label = button.textContent;
-  button.textContent = (await copyText(text)) ? done : "Copy failed";
-  setTimeout(() => (button.textContent = label), 1500);
+  let state = feedback.get(button);
+  if (!state) {
+    state = { label: button.textContent ?? "" };
+    feedback.set(button, state);
+  }
+  const message = (await copyText(text)) ? done : "Copy failed";
+  button.textContent = message;
+  announce(message);
+  clearTimeout(state.timer);
+  const label = state.label;
+  state.timer = setTimeout(() => (button.textContent = label), FEEDBACK_TIME);
 }

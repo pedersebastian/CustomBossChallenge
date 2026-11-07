@@ -5,13 +5,8 @@ import { decode } from "../src/code/decode";
 import { compareCodesFromHash, compareHashFor, compareLinkTo } from "../src/code/link";
 import { compareRows, differences, tierPairs, verdict, type Setup } from "../src/compare/diff";
 import { EXAMPLES } from "../src/data/types";
+import { encode } from "./encode";
 
-/** A code for a payload, made the way the mod makes one: raw deflate in base64url after the prefix */
-async function encode(payload: object, prefix = "CBC2:"): Promise<string> {
-  const stream = new Blob([JSON.stringify(payload)]).stream().pipeThrough(new CompressionStream("deflate-raw"));
-  const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
-  return prefix + btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
 
 async function setup(code: string): Promise<Setup> {
   const result = await decode(code);
