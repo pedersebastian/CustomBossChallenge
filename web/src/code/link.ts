@@ -50,6 +50,14 @@ export function compareCodesFromHash(hash = location.hash): { a: string; b: stri
   return codes;
 }
 
+/** The page that makes and edits setups (#12), next to the main page */
+export const STUDIO_PAGE = "studio.html";
+
+/** A link that opens a code on the Studio page to edit it, from any page of the site */
+export function studioLinkTo(code: string, page = new URL(STUDIO_PAGE, location.href).href): string {
+  return page + hashFor(code);
+}
+
 /** A link to the comparison page, from any page of the site */
 export function compareLinkTo(a: string, b: string, page = new URL(COMPARE_PAGE, location.href).href): string {
   return page + compareHashFor(a, b);

@@ -88,6 +88,49 @@ public class CodeFormatTests
         Assert.True(JToken.DeepEquals(JToken.Parse(expected), JToken.Parse(actual)), $"{o}: expected {expected}, got {actual}");
     }
 
+    private static string WebFile(params string[] path)
+    {
+        var folder = new DirectoryInfo(AppContext.BaseDirectory);
+        while (folder != null && !File.Exists(Path.Combine([folder.FullName, "web", ..path]))) folder = folder.Parent;
+        if (folder == null) throw new FileNotFoundException($"web/{string.Join("/", path)} not found above " + AppContext.BaseDirectory);
+        return File.ReadAllText(Path.Combine([folder.FullName, "web", ..path]));
+    }
+
+    /// <summary>
+    /// Codes the website's Studio made (#12), from web/test/website-codes.json, which web/test/website-codes.test.ts
+    /// writes with the website's own encoder
+    /// </summary>
+    public static IEnumerable<object[]> WebsiteCodes()
+    {
+        var file = JObject.Parse(WebFile("test", "website-codes.json"));
+        foreach (var entry in (JArray) file["codes"]!)
+        {
+            yield return
+            [
+                (string) entry["name"]!, (string) entry["code"]!, entry["options"]!.ToString(Formatting.None),
+                entry["challenge"]!.ToString(Formatting.None)
+            ];
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(WebsiteCodes))]
+    public void Codes_made_on_the_website_load_in_the_mod_unchanged(string name, string code, string options, string challenge)
+    {
+        Assert.True(CodeFormat.TryUnpack(code, out var payload, out var problem, out var error), $"{name}: {problem} {error}");
+
+        // The options the website meant, after the mod's own typing and Sanitized
+        var read = Read((JObject?) payload["o"] ?? new JObject());
+        Assert.True(JToken.DeepEquals(JObject.Parse(options), read), $"{name}: expected {options}, got {read.ToString(Formatting.None)}");
+
+        // Every challenge change is one a code may make, so the mod drops none of them
+        var defaults = (JObject) JObject.Parse(WebFile("src", "data", "game.json"))["defaultChallenge"]!;
+        var dropped = new List<string>();
+        var kept = CodeFormat.FilterChallenge((JObject?) payload["c"] ?? new JObject(), defaults, dropped);
+        Assert.Empty(dropped);
+        Assert.True(JToken.DeepEquals(JObject.Parse(challenge), kept), $"{name}: expected {challenge}, got {kept.ToString(Formatting.None)}");
+    }
+
     [Theory]
     [InlineData("{\"o\":{},\"c\":{\"bloonModifiers\":{\"speedMultiplier\":NaN}}}")]
     [InlineData("{\"o\":{},\"c\":{\"cash\":Infinity}}")]

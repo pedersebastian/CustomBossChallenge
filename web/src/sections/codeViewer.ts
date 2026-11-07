@@ -1,7 +1,7 @@
 // The "Read a share code" section: paste a code, see the setup. A link with #code=… opens a code straight away.
 
 import { decode, extractCode } from "../code/decode";
-import { codeFromHash, compareLinkTo, hashFor, linkTo } from "../code/link";
+import { codeFromHash, compareLinkTo, hashFor, linkTo, studioLinkTo } from "../code/link";
 import { copyWithFeedback, h } from "../dom";
 import { jokeFor, type Joke } from "../fun/jokes";
 import { bossTitle, releaseSetup, renderSetup } from "../preview/render";
@@ -79,10 +79,12 @@ export function setUpCodeViewer(input: HTMLTextAreaElement, result: HTMLElement)
 
     // Opens the compare page with this code as A
     const compare = h("a", { class: "button small orange", href: compareLinkTo(trimmed, "") }, "Compare");
+    // Opens the setup on the Studio page to change it (#12)
+    const edit = h("a", { class: "button small", href: studioLinkTo(trimmed) }, "Edit");
 
     const { options, challenge } = decoded;
     status.textContent = `Showing ${challenge.name || bossTitle(options)}: ${bossTitle(options)}, ${options.Tiers} ${options.Tiers === 1 ? "tier" : "tiers"}.`;
-    replace(renderSetup(decoded.options, decoded.challenge), h("div", { class: "actions" }, copyCode, copyLink, compare));
+    replace(renderSetup(decoded.options, decoded.challenge), h("div", { class: "actions" }, copyCode, copyLink, compare, edit));
     history.replaceState(null, "", hashFor(trimmed));
   }
 

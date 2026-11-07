@@ -1,0 +1,412 @@
+{
+  "comment": "Codes the website's Studio made (#12), with the options and challenge changes the mod must read from them. Made by web/test/website-codes.test.ts (CBC_WEBSITE_CODES=1 npm test), read by UnitTests/CodeFormatTests.cs.",
+  "codes": [
+    {
+      "name": "new setup",
+      "code": "CBC1:q1bKV7KqrtVRSgZRtQA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "boss and Elite",
+      "code": "CBC1:q1bKV7KqVnLKLy5WslLyqUzOUNJRcs3JLElVsiopKk2t1VFKVrKqrq0FAA",
+      "options": {
+        "Boss": "Lych",
+        "Elite": true,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "every boss",
+      "code": "CBC1:q1bKV7KqVnLKLy5WslJyyUzMzc9LSUpMzlaq1VFKVrKqrq0FAA",
+      "options": {
+        "Boss": "Diamondback",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "boss speed and health",
+      "code": "CBC1:q1bKV7KqrtVRSlayqlZKysnPz_PNT8lMy0wtKgaL5BcXBxekpqb4luaUZBbkZKYWKVkZ6ZnqKGWkJuaUZCCE4cqVrAxNa2trawE",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "bloonModifiers": {
+          "bossSpeedMultiplier": 2.5,
+          "healthMultipliers": {
+            "boss": 15
+          }
+        }
+      }
+    },
+    {
+      "name": "lowest boss speed and health",
+      "code": "CBC1:q1bKV7KqrtVRSlayqlZKysnPz_PNT8lMy0wtKgaL5BcXBxekpqb4luaUZBbkZKYWKVkZ6BnqKGWkJuaUZCCE4crB8rW1tbUA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "bloonModifiers": {
+          "bossSpeedMultiplier": 0.1,
+          "healthMultipliers": {
+            "boss": 0.1
+          }
+        }
+      }
+    },
+    {
+      "name": "no paragons",
+      "code": "CBC1:q1bKV7KqrtVRSlayqlbKTawISCxKTM_PK1ayMqitBQA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "maxParagons": 0
+      }
+    },
+    {
+      "name": "three paragons",
+      "code": "CBC1:q1bKV7KqrtVRSlayqlbKTawISCxKTM_PK1ayMq6tBQA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "maxParagons": 3
+      }
+    },
+    {
+      "name": "one tier",
+      "code": "CBC1:q1bKV7KqVgrJTC0qVrIyrNVRSlayqq6tBQA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 1,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "ten tiers, faster and tougher",
+      "code": "CBC2:q1bKV7KqVgrJTC0qVrIyNNBRCi5ITU0JSC0CCSlZmRroKHmkJuaUZMCFjAwManWUkpWsqmtrAQ",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 10,
+        "SpeedPerTier": 50,
+        "HealthPerTier": 200,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "weaker per tier",
+      "code": "CBC2:q1bKV7KqVgrJTC0qVrIy11EKLkhNTQlILQKJKFnpGhroKHmkJuaUZCCL1eooJStZVdfWAgA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 7,
+        "SpeedPerTier": -10,
+        "HealthPerTier": -10,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "spread spawn rounds",
+      "code": "CBC1:BcHBDYAgEATAVjb73ofHiQhlaAVG32BijA9C7850NpbO_T6-urW3Xg8LQxQ8CXMWFhOSC2sUchJsyoIFE8ydQzxZ-hg_",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": "25, 37, 49, 61, 73, 85, 97, 109, 121, 133",
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "latest spawn rounds",
+      "code": "CBC1:FcYxDoAgDAXQq5A_d6hAGXoM9QJGHVzASIwD6d1N3_QGGnRgvc6nQycmLPf21bm99ehQRGYKUZhC8iVf9mWf-MRXfEUYRtihw-wH",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 10,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": "200, 250, 300, 350, 400, 450, 500, 550, 600, 650",
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "typed spawn rounds",
+      "code": "CBC1:q1bKV7KqVgouSCzPC8ovzUspVrJSMjbQUTA2tFawNFAwMTBQqtVRSlayqq6tBQA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": "30, 31; 90 400",
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "broken spawn rounds",
+      "code": "CBC1:q1bKV7KqVgouSCzPC8ovzUspVrJSqtBRMNBR0DXVUTAzUKrVUUpWsqqurQUA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": "x, 0, -5, 60",
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "boss event rounds",
+      "code": "CBC4:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0gHzXctS80qC8kvzUoqVrEqKSlNrdZSSlayqa2sB",
+      "options": {
+        "Boss": "Vortex",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": true
+      },
+      "challenge": {}
+    },
+    {
+      "name": "evenly spaced skulls",
+      "code": "CBC1:q1bKV7KqVgrOLs3J8c1PSVWyUnItS83LqQwuSExOTVHSgUg555fmlShZmdfqKCUrWVXX1gIA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "EvenlySpaced",
+        "SkullCount": 7,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "no skulls",
+      "code": "CBC1:q1bKV7KqVgrOLs3J8c1PSVWyUnItS83LqQwuSExOTVHSgUg555fmlShZGdTqKCUrWVXX1gIA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "EvenlySpaced",
+        "SkullCount": 0,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "custom skulls",
+      "code": "CBC1:q1bKV7KqVgrOLs3J8c1PSVWyUnIuLS7Jz1XSgTLAUsVKVkqWBjoKZmZ6ZuY6CoZGeqZKtTpKyUpW1bW1AA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Custom",
+        "SkullCount": 3,
+        "CustomSkulls": "90, 66.67, 12.5",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "advanced kept",
+      "code": "CBC3:q1bKV7KqVgrJTC0qVrIy0QGznPKLi1OLlayUnHLy8_MSizJLi3V8KpMzXHMyS1IdDE0N9C0MlI10ghLzUvJzdcLyi0pSKxwMDQz0jQ0MlE0NVK2NDFSVanWUkpWsqmtrAQ",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 4,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "TierBosses": "Bloonarius,LychElite@150/80#2,Random,Vortex@100/300#50%;20%",
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "advanced with event rounds",
+      "code": "CBC4:q1bKV7KqVgrJTC0qVrIy1gGznPKLi1OLlayUfCqTM3QCMhIrq1KVdJRAwq5lqXklQfmleSnFSlYlRaWptTpKyUpW1bW1AA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 3,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "TierBosses": "Lych,Phayze",
+        "BossEventRounds": true
+      },
+      "challenge": {}
+    },
+    {
+      "name": "advanced with boss speed",
+      "code": "CBC3:JYwxCoAwEAT_snUq7VKKbSr9QDQnBA435LQK-buo3cAw00D4hjVLNfjBfTTRTAwec5WYNiVPN2m0KxYW3kpDd9jf8JOBKR__oWGj2VJEUrj1ykWzVPix9_4A",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 2,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "TierBosses": "Dreadbloon,Blastapopoulos",
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "bloonModifiers": {
+          "bossSpeedMultiplier": 3
+        }
+      }
+    },
+    {
+      "name": "everything",
+      "code": "CBC4:RY_BTsMwEER_xZrzqoqTmqQ-gipxiRRRfsAlhkS4dhXbLRD535ENlNtqZnb0ZoWDXHHvvIfEMKnPLw3C3sxBQ4YlasLhPRrTu1FD4iH64E6g36NY-bOriG0rEJ5nvXjIjnA4az0OeskKpCA8amXCdFNqkTPqap9ctGMuaQQx0RBrObFuR4xXLTFeC2J82xDjd5wYb7Oxa0EFen_RNvwVZNxEeMmLjsY527txfv0BWnF03hemPpown02B4JuaMBWwf_kWh6w2XUqEk_oY1KLenPWQIqVv",
+      "options": {
+        "Boss": "Phayze",
+        "Elite": true,
+        "SkullMode": "Custom",
+        "SkullCount": 3,
+        "CustomSkulls": "80, 40",
+        "Tiers": 8,
+        "SpeedPerTier": 5,
+        "HealthPerTier": 25,
+        "SpawnRounds": "35, 53, 71, 89, 107, 125, 143, 161, 179, 197",
+        "BossEventRounds": true
+      },
+      "challenge": {
+        "bloonModifiers": {
+          "bossSpeedMultiplier": 1.2,
+          "healthMultipliers": {
+            "boss": 0.8
+          }
+        },
+        "maxParagons": 5
+      }
+    }
+  ]
+}

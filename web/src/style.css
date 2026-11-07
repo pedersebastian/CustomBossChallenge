@@ -1121,3 +1121,111 @@ input:focus-visible {
     display: none;
   }
 }
+
+/* Studio (#12): the Boss Creator's controls next to the code and the Tier Preview they make; stacked on a phone */
+.start-from {
+  margin-bottom: 18px;
+}
+
+.start-from summary {
+  cursor: pointer;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.start-from .error {
+  margin-top: 10px;
+}
+
+.studio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+}
+
+@media (min-width: 960px) {
+  .studio {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    align-items: start;
+  }
+
+  .studio-output {
+    position: sticky;
+    top: 12px;
+  }
+}
+
+.studio-controls {
+  display: grid;
+  gap: 10px;
+  background: var(--panel-inner);
+  border: 3px solid var(--outline);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.studio-controls .note {
+  margin: 0;
+}
+
+.studio-row {
+  display: grid;
+  gap: 6px;
+}
+
+.studio-row[hidden] {
+  display: none;
+}
+
+.studio-row > label {
+  font-weight: 800;
+}
+
+.studio-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.studio-control input[type="range"] {
+  flex: 1 1 160px;
+  min-width: 0;
+  accent-color: #ffd84d;
+  height: 28px;
+}
+
+.studio-control input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  accent-color: #ffd84d;
+}
+
+.studio-value {
+  min-width: 8ch;
+  font-weight: 700;
+}
+
+.studio-control select,
+.studio-text {
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 3px solid var(--outline);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+}
+
+.studio-elite {
+  margin-bottom: 0;
+}
+
+.studio-output .button[hidden] {
+  display: none;
+}
+
+.studio-output h2 {
+  margin-top: 0;
+}
