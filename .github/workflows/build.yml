@@ -4,7 +4,10 @@
 # - a release runs checks.yml first and is only built, published and released when every check passes;
 # - everything the build downloads is pinned. MelonLoader and Mod Helper are the minimum versions thunderstore.toml
 #   promises, so the DLL is built against what it says it needs; the game's assemblies are the ci-dependencies commit
-#   below. The job summary and the release notes say what was used. See CONTRIBUTING.md for when to bump them.
+#   below. The job summary and the release notes say what was used. See CONTRIBUTING.md for when to bump them;
+# - third-party actions are pinned to a commit, with the version in a comment, which Dependabot keeps up to date;
+# - values from outside (the tag, the description) reach run: scripts only through env, never through ${{ }};
+# - the GitHub release is made before Thunderstore, and a CHANGELOG that can't be pushed fails the release.
 name: Build
 
 on:
@@ -80,7 +83,7 @@ jobs:
           echo "MOD_HELPER_VERSION=$modhelper" >> "$GITHUB_ENV"
 
       - name: Download MelonLoader Release
-        uses: robinraju/release-downloader@v1.13
+        uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1.13
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: LavaGang/MelonLoader
@@ -98,7 +101,7 @@ jobs:
           path: ${{ env.BLOONSTD6 }}/MelonLoader/Il2CppAssemblies
 
       - name: Download Mod Helper
-        uses: robinraju/release-downloader@v1.13
+        uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1.13
         if: env.MOD_HELPER_BRANCH == ''
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -108,7 +111,7 @@ jobs:
           tag: ${{ env.MOD_HELPER_VERSION }}
 
       - name: Download Specific Mod Helper
-        uses: dawidd6/action-download-artifact@v28
+        uses: dawidd6/action-download-artifact@a92c7ae74cf1df8810783758581e485ac3aaa309 # v28
         if: env.MOD_HELPER_BRANCH != ''
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -124,7 +127,7 @@ jobs:
           if [ "$RUNNER_OS" == "Windows" ]; then
             choco install -y wget
           fi
-          wget "https://raw.githubusercontent.com/${{ env.MOD_HELPER_REPO }}/${{ env.MOD_HELPER_VERSION }}/BloonsTD6%20Mod%20Helper/btd6.targets"
+          wget "https://raw.githubusercontent.com/$MOD_HELPER_REPO/$MOD_HELPER_VERSION/BloonsTD6%20Mod%20Helper/btd6.targets"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
@@ -132,7 +135,7 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Build
-        run: dotnet build -c Release -p:BloonsTD6="../${{ env.BLOONSTD6 }}" "${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
+        run: dotnet build -c Release -p:BloonsTD6="../$BLOONSTD6" "$PROJECT_NAME/$PROJECT_NAME.csproj"
 
       - name: Say what the mod was built with
         env:
@@ -168,14 +171,15 @@ jobs:
         if: env.IS_RELEASE == 'true'
         working-directory: ${{ env.PROJECT_NAME }}
         run: |
-          if grep -qE "^## \[${{ env.RELEASE_TAG }}\]" CHANGELOG.md; then
+          # The tag as plain text at the start of a line, not as a pattern
+          if awk -v heading="## [$RELEASE_TAG]" 'index($0, heading) == 1 { found = 1 } END { exit !found }' CHANGELOG.md; then
             echo "has_section=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Read changelog entry for ${{ env.RELEASE_TAG }}
         id: changelog_read
         if: steps.changelog_check.outputs.has_section == 'true'
-        uses: mindsers/changelog-reader-action@v2.4.0
+        uses: mindsers/changelog-reader-action@1faaf50aa09d5793d9a100819973df801febfb31 # v2.4.0
         with:
           version: ${{ env.RELEASE_TAG }}
           path: ${{ env.PROJECT_NAME }}/CHANGELOG.md
@@ -183,15 +187,15 @@ jobs:
       - name: Rotate changelog Unreleased section to ${{ env.RELEASE_TAG }}
         id: changelog_rotate
         if: env.IS_RELEASE == 'true' && steps.changelog_check.outputs.has_section != 'true' && env.ACT != 'true'
-        uses: baynezy/ChangeLogger.Action@1.2.7.13
+        uses: baynezy/ChangeLogger.Action@782ea8df5f0669e910de097106a6037147511d2d # 1.2.7.13
         with:
           tag: ${{ env.RELEASE_TAG }}
           log-path: ${{ env.PROJECT_NAME }}/CHANGELOG.md
           repo-path: ${{ env.PROJECT_NAME }}
 
+      # Fails the release when the push fails, so the notes aren't left under "Unreleased" on the default branch
       - name: Commit changelog changes if needed
         if: steps.changelog_rotate.outcome == 'success' && env.ACT != 'true'
-        continue-on-error: true
         working-directory: ${{ env.PROJECT_NAME }}
         env:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
@@ -207,7 +211,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "CHANGELOG.md on $DEFAULT_BRANCH is already up to date; nothing to commit."
           else
-            git commit -m "Release ${{ env.RELEASE_TAG }}"
+            git commit -m "Release $RELEASE_TAG"
             git push origin "$DEFAULT_BRANCH"
             echo "RELEASE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
           fi
@@ -282,7 +286,7 @@ jobs:
         if: env.IS_RELEASE == 'true'
         working-directory: ${{ env.PROJECT_NAME }}
         run: |
-          tcli build --package-version "${{ env.RELEASE_TAG }}" | tee tcli.log
+          tcli build --package-version "$RELEASE_TAG" | tee tcli.log
           sed -i 's|\x1B\[[0-9;]*m||g' tcli.log # get rid of ansi colors
           path=$(grep '^Output path ' tcli.log | sed 's|^Output path ||')
           if [ -z "$path" ]; then
@@ -300,15 +304,9 @@ jobs:
           name: ${{ env.THUNDERSTORE_PACKAGE_NAME }}
           path: ${{ env.THUNDERSTORE_PACKAGE_PATH }}
 
-      - name: Publish Thunderstore Package
-        if: env.IS_RELEASE == 'true' && env.TCLI_AUTH_TOKEN != '' && env.ACT != 'true'
-        env:
-          TCLI_AUTH_TOKEN: ${{ secrets.TCLI_AUTH_TOKEN }}
-        working-directory: ${{ env.PROJECT_NAME }}
-        run: tcli publish --file "${{ env.THUNDERSTORE_PACKAGE_PATH }}"
-
+      # Before Thunderstore, so a release that fails late never leaves a package without its GitHub release
       - name: Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         if: env.IS_RELEASE == 'true'
         with:
           tag_name: ${{ env.RELEASE_TAG }}
@@ -321,3 +319,10 @@ jobs:
             ${{ env.BUILT_WITH }}
           fail_on_unmatched_files: true
           draft: ${{ env.ACT == 'true' }}
+
+      - name: Publish Thunderstore Package
+        if: env.IS_RELEASE == 'true' && env.TCLI_AUTH_TOKEN != '' && env.ACT != 'true'
+        env:
+          TCLI_AUTH_TOKEN: ${{ secrets.TCLI_AUTH_TOKEN }}
+        working-directory: ${{ env.PROJECT_NAME }}
+        run: tcli publish --file "$THUNDERSTORE_PACKAGE_PATH"

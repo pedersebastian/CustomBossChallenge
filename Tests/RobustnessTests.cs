@@ -88,17 +88,17 @@ public class FailedSnapshotTest : ContinueTestBase
         yield return StartCustomGame(options, Challenge(20).Build());
         NoAutoPlay();
         yield return PlayRound();
-        AssertEquals(AssertNotNull(Store.TryLoad(), "The game after round 21").Latest.Snapshot.Round, 21, "Saved round");
+        AssertEquals(AssertNotNull(Store.TryLoad(), "The game after round 21")!.Latest.Snapshot.Round, 21, "Saved round");
 
         CustomBossRetries.FailNextSnapshot = true;
         yield return PlayRound();
         Assert(!CustomBossRetries.FailNextSnapshot, "The snapshot of round 22 was taken");
         Assert(CustomBossRetries.HasLastRound(22), "A round whose JSON failed can still be retried in this session");
-        AssertEquals(AssertNotNull(Store.TryLoad(), "The game after round 22").Latest.Snapshot.Round, 21,
+        AssertEquals(AssertNotNull(Store.TryLoad(), "The game after round 22")!.Latest.Snapshot.Round, 21,
             "A round whose JSON failed isn't in the file");
 
         yield return PlayRound();
-        AssertEquals(AssertNotNull(Store.TryLoad(), "The game after round 23").Latest.Snapshot.Round, 23,
+        AssertEquals(AssertNotNull(Store.TryLoad(), "The game after round 23")!.Latest.Snapshot.Round, 23,
             "The rounds after a failed snapshot are still saved");
         yield return ToMainMenu();
     }

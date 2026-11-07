@@ -197,7 +197,7 @@ public class ContinueStoreTest : ContinueTestBase
         Assert(store.Exists, "The file was not written");
         Assert(!File.Exists(store.FilePath + ".tmp"), "The temporary file was left behind");
 
-        var game = AssertNotNull(store.TryLoad(), "The saved game did not load");
+        var game = AssertNotNull(store.TryLoad(), "The saved game did not load")!;
         AssertEquals(game.Options, options, "Options");
         AssertEquals(game.Dcm.name, dcm.name, "Challenge name");
         AssertEquals(game.Dcm.startRules.cash, 20000, "Start cash");
@@ -211,7 +211,7 @@ public class ContinueStoreTest : ContinueTestBase
         // A hand edited file is held to the Boss Creator's limits
         var file = File.ReadAllText(store.FilePath);
         File.WriteAllText(store.FilePath, file.Replace("\"Tiers\": 7", "\"Tiers\": 99").Replace("\"DefeatedTiers\": 2", "\"DefeatedTiers\": 50"));
-        game = AssertNotNull(store.TryLoad(), "An edited file did not load");
+        game = AssertNotNull(store.TryLoad(), "An edited file did not load")!;
         AssertEquals(game.Options.Tiers, TierMath.MaxTiers, "Tiers are clamped");
         AssertEquals(game.Latest.Snapshot.DefeatedTiers, TierMath.MaxTiers, "Defeated tiers are clamped");
 
@@ -282,7 +282,7 @@ public class ContinueStoreTest : ContinueTestBase
             Version = ContinueStore.Version, Options = options, Challenge = DcmJson.Serialize(dcm),
             Snapshots = new[] {new RoundSnapshot(30, 0, "not json"), new RoundSnapshot(35, 1, "not json")}
         }));
-        var lost = AssertNotNull(store.Load().Lost, "The setup of a game that can't be continued");
+        var lost = AssertNotNull(store.Load().Lost, "The setup of a game that can't be continued")!;
         AssertEquals(lost.Options, options, "Options of the lost game");
         AssertEquals(lost.Dcm.name, dcm.name, "Challenge of the lost game");
         AssertEquals(lost.Round, 35, "Round the lost game was left on");
@@ -364,7 +364,7 @@ public class ContinueTest : ContinueTestBase
         CreateTowerAt(InGame.instance.bridge, new Vector2(40, 40), Game.instance.model.GetTowerFromId("Quincy"), costOverride: 0);
 
         yield return PlayRound();
-        var game = AssertNotNull(Store.TryLoad(), "Round 39 was not saved");
+        var game = AssertNotNull(Store.TryLoad(), "Round 39 was not saved")!;
         AssertEquals(game.Latest.Snapshot.Round, 40, "Saved round after round 39");
         AssertEquals(game.Latest.Snapshot.DefeatedTiers, 0, "Defeated tiers after round 39");
 
@@ -372,7 +372,7 @@ public class ContinueTest : ContinueTestBase
         yield return PlayRound(false);
         AssertEquals(CustomBossState.HighestDefeatedTier, 1, "Tier 1 must be defeated on round 40");
         var latest = InGame.instance.bridge.GetCurrentRound() + 1;
-        game = AssertNotNull(Store.TryLoad(), "Round 40 was not saved");
+        game = AssertNotNull(Store.TryLoad(), "Round 40 was not saved")!;
         var snapshots = string.Join(", ", game.Snapshots.Select(s => $"{s.Snapshot.Round}/{s.Snapshot.DefeatedTiers}"));
         AssertEquals(snapshots, $"40/0, {latest}/1", "Snapshots after tier 1: its round and the latest");
         var before = GameState();
@@ -411,7 +411,7 @@ public class ContinueTest : ContinueTestBase
         // The first round played after continuing keeps the tiers, and the game can still be won
         yield return PlayRound(false);
         Assert(CustomBossState.HighestDefeatedTier >= 1, "Defeated tiers after a round of the continued game");
-        AssertEquals(AssertNotNull(Store.TryLoad(), "The continued game is saved on").Latest.Snapshot.Round,
+        AssertEquals(AssertNotNull(Store.TryLoad(), "The continued game is saved on")!.Latest.Snapshot.Round,
             InGame.instance.bridge.GetCurrentRound() + 1, "Saved round of the continued game");
 
         var bridge = InGame.instance.bridge;
@@ -446,7 +446,7 @@ public class ContinueRetryTest : ContinueTestBase
         yield return LoseAndOpenDefeatScreen(found => screen = found);
         var lostRound = InGame.instance.bridge.GetCurrentRound() + 1;
         Assert(lostRound is > 40 and < 43, $"Lost on round {lostRound}, after the checkpoint and before tier 2");
-        var game = AssertNotNull(Store.TryLoad(), "A lost game must be kept");
+        var game = AssertNotNull(Store.TryLoad(), "A lost game must be kept")!;
         AssertEquals(game.Latest.Snapshot.Round, lostRound, "The kept game continues on the lost round");
 
         yield return CloseGame();
@@ -501,7 +501,7 @@ public class ContinueLifecycleTest : ContinueTestBase
         yield return new WaitForSecondsRealtime(1);
         Assert(!Store.Exists, "A restart must replace the unfinished game");
         yield return PlayRound();
-        AssertEquals(AssertNotNull(Store.TryLoad(), "The restarted game").Latest.Snapshot.Round, 11, "Saved round after a restart");
+        AssertEquals(AssertNotNull(Store.TryLoad(), "The restarted game")!.Latest.Snapshot.Round, 11, "Saved round after a restart");
 
         // New Boss keeps the unfinished game; playing a new one replaces it
         yield return CloseGame();
@@ -516,7 +516,7 @@ public class ContinueLifecycleTest : ContinueTestBase
         yield return StartCustomGame(options, Challenge(20).Build());
         Assert(!Store.Exists, "Starting a new custom game must replace the unfinished one");
         yield return PlayRound();
-        AssertEquals(AssertNotNull(Store.TryLoad(), "The new game").Latest.Snapshot.Round, 21, "Saved round of the new game");
+        AssertEquals(AssertNotNull(Store.TryLoad(), "The new game")!.Latest.Snapshot.Round, 21, "Saved round of the new game");
         yield return CloseGame();
 
         // A normal Boss Challenge is neither saved here nor replaces the unfinished custom game
