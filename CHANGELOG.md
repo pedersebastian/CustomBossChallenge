@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **On Thunderstore**: the mod is also listed under AI Generated, since it is made with AI help (see
+  CONTRIBUTING.md). Nothing in the game changes.
+
 ## [2.10.1] - 2026-11-07
 
 ### Fixed
