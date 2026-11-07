@@ -17,6 +17,12 @@ export const EXTRA_TIER_STEP = 1.5;
 export const MAX_SPEED_FACTOR = 5;
 export const MIN_PER_TIER_FACTOR = 0.1;
 export const MAX_GAME_HEALTH = 2_000_000_000;
+/** The Boss Creator's First Boss Round and Rounds Between Tiers sliders (TierMath.MaxFirstSpawnRound, MaxRoundsBetweenTiers) */
+export const MAX_FIRST_SPAWN_ROUND = 200;
+export const MAX_ROUNDS_BETWEEN_TIERS = 50;
+/** The Boss Creator's Boss Speed and Boss Health sliders, in percent (BossEditorSection.BuildRows) */
+export const BOSS_SPEED_SLIDER = { min: 10, max: 1000, step: 10 } as const;
+export const BOSS_HEALTH_SLIDER = { min: 10, max: 2000, step: 10 } as const;
 
 export const clampTiers = (tiers: number): number => clamp(tiers, MIN_TIERS, MAX_TIERS);
 export const clampSpeedPerTier = (percent: number): number => clamp(percent, MIN_SPEED_PER_TIER, MAX_SPEED_PER_TIER);
@@ -53,6 +59,22 @@ export function spawnRounds(tiers: number, custom: string | null | undefined): n
   }
   return result;
 }
+
+/** TierMath.FormatRounds: "40, 60, 80" */
+export const formatRounds = (rounds: number[]): string => rounds.join(", ");
+
+/**
+ * TierMath.EvenRounds: spawn rounds for every possible tier that start at first and come every gap rounds, so changing
+ * the tier count later keeps the spacing
+ */
+export const evenRounds = (first: number, gap: number): string =>
+  formatRounds(Array.from({ length: MAX_TIERS }, (_, i) => first + i * Math.max(gap, 1)));
+
+/** TierMath.FirstAndGap: the first round and the rounds between the first two tiers, or gap with a single tier */
+export const firstAndGap = (rounds: number[], gap: number): { first: number; gap: number } => ({
+  first: rounds.length > 0 ? rounds[0] : FIRST_SPAWN_ROUND,
+  gap: rounds.length > 1 ? rounds[1] - rounds[0] : gap,
+});
 
 /** The round the game ends on: the last tier always gets 20 rounds */
 export const endRound = (rounds: number[]): number =>

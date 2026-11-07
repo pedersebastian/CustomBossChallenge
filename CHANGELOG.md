@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Make and change setups on the website** (#12): a page of its own,
+  [studio.html](https://pedersebastian.github.io/CustomBossChallenge/studio.html), with the Boss Creator's options:
+  boss and Elite, Boss Speed and Health, Max Paragons, tiers, speed and health per tier, spawn rounds (First Boss
+  Round and Rounds Between Tiers too), Boss Event Rounds and skulls, with the same ranges and steps. Start from a new
+  setup or a code; the Tier Preview follows every change, and **Copy code** gives a code the mod loads exactly as
+  shown. What the page doesn't edit yet, like the map, the rules or Advanced Mode's tier bosses, stays as it was in the
+  code. **Edit** under a code on the main page opens it there, and **Compare with the original** shows what changed.
+
 ## [2.10.2] - 2026-11-07
 
 ### Changed
