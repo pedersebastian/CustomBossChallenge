@@ -137,6 +137,11 @@ public class RetryTest : CustomBossTest
         AssertEquals(screen.continueCostTxt.text, Texts.Free.T(), "Retry From Checkpoint cost");
         AssertEquals(screen.continueDescTxt.text, Texts.RetryFromRound.T(40), "Retry From Checkpoint text");
 
+        // Opening the screen again doesn't wrap its buttons again (#112)
+        var wrapped = Patches.BossDefeatScreen_Open.Wrapped;
+        for (var i = 0; i < 3; i++) Patches.BossDefeatScreen_Open.Postfix(screen);
+        AssertEquals(Patches.BossDefeatScreen_Open.Wrapped, wrapped, "The retry buttons are wrapped once");
+
         screen.retryButton.onClick.Invoke();
         yield return WaitForResume();
         AssertEquals(InGame.instance.bridge.GetCurrentRound() + 1, lostRound, "Round after Retry Last Round");
@@ -144,10 +149,16 @@ public class RetryTest : CustomBossTest
 
         // Again, from the checkpoint this time
         yield return LoseAndOpenDefeatScreen(found => screen = found);
+        var restarts = Patches.InGame_RunRestart.Calls;
         screen!.continueButton.onClick.Invoke();
         yield return WaitForResume();
         AssertEquals(InGame.instance.bridge.GetCurrentRound() + 1, 40, "Round after Retry From Checkpoint");
         AssertRetried(options, monkeyMoney, savedMaps);
+
+        // Does loading a checkpoint restart the match, and would that throw the snapshots away? (#112)
+        Log($"Retry From Checkpoint restarted the match {Patches.InGame_RunRestart.Calls - restarts} time(s)");
+        Assert(CustomBossRetries.HasLastRound(40), "The snapshots are kept after Retry From Checkpoint");
+        Assert(CustomBossRetries.Store.Exists, "The game to continue is kept after Retry From Checkpoint");
 
         yield return ToMainMenu();
         AssertEquals(SavedMaps(), savedMaps, "The player's map saves after leaving");

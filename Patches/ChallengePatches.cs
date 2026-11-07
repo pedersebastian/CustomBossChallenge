@@ -142,17 +142,41 @@ internal static class BossDefeatScreen_Open
     }
 
     /// <summary>
+    /// The retry each wrapped button does now, by the button's instance id
+    /// </summary>
+    private static readonly System.Collections.Generic.Dictionary<int, Action> Retries = new();
+
+    /// <summary>
+    /// The click event each button got from <see cref="OnClick"/>, to see whether it still has it
+    /// </summary>
+    private static readonly System.Collections.Generic.Dictionary<int, IntPtr> Events = new();
+
+    /// <summary>
+    /// How many times a button was wrapped, for the tests: once per button, however often the screen opens (#112)
+    /// </summary>
+    internal static int Wrapped { get; private set; }
+
+    /// <summary>
     /// The game's own click handlers skip retrying without its map saves. The screen may be reused for a normal Boss
-    /// Challenge later, so outside custom games the click still goes to the game's handlers.
+    /// Challenge later, so outside custom games the click still goes to the game's handlers. Each button is wrapped
+    /// once; opening the screen again only changes which retry it does.
     /// </summary>
     private static void OnClick(Button button, Action retry)
     {
+        var id = button.GetInstanceID();
+        Retries[id] = retry;
+
+        // Still wrapped, unless the game gave the button new handlers since
+        if (Events.TryGetValue(id, out var wrapped) && button.onClick != null && button.onClick.Pointer == wrapped) return;
+
+        Wrapped++;
         var original = button.onClick;
         button.onClick = new Button.ButtonClickedEvent();
+        Events[id] = button.onClick.Pointer;
         button.onClick.AddListener(new Action(() =>
         {
-            if (CustomBossState.IsActive) retry();
-            else original.Invoke();
+            if (CustomBossState.IsActive && Retries.TryGetValue(id, out var current)) current();
+            else original?.Invoke();
         }));
     }
 
@@ -212,9 +236,13 @@ internal static class InGame_RoundStart
 [HarmonyPatch(typeof(InGame), nameof(InGame.RunRestart))]
 internal static class InGame_RunRestart
 {
+    /// <summary>How often the game restarted a match this session, for the tests</summary>
+    internal static int Calls { get; private set; }
+
     [HarmonyPrefix]
     internal static void Prefix()
     {
+        Calls++;
         if (CustomBossState.IsActive) CustomBossState.OnRestart();
     }
 }
