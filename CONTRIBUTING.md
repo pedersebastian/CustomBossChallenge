@@ -132,9 +132,12 @@ The result is written to `MelonLoader/Latest.log`, e.g. `Ran 25 test(s), 25 succ
 
 On a Debug build, a run of every test also writes `TestResults/ingame.json` in the repo when the game quits
 (`TestRunReport`): the mod and game version, the commit, which tests failed or were skipped, and `sourceHash`, a
-fingerprint of the mod's own code from `.github/scripts/Get-SourceHash.ps1`. It covers the `.cs` and `.csproj` files,
-`Localization/*.json` and `Bundles/*.bundle`, but not `Tests/`, `UnitTests/`, `PropertyTests/`, `web/`, `docs/`,
-`tools/` or `.github/`, so changing only those doesn't need a new run. A test is skipped when it passes without
+fingerprint of the mod's own code from `.github/scripts/Get-SourceHash.ps1`. It covers every file that ends up in the
+DLL or the Thunderstore package: the `.cs` and `.csproj` files (`Tests/` included, since the tests are built into the
+DLL), `Localization/*.json`, `Bundles/*.bundle`, the `.png` files, `README.md` and `thunderstore.toml`, plus
+`global.json`. It leaves out `CHANGELOG.md` and `LICENSE` (the release rotates the CHANGELOG after the tests ran), and
+`UnitTests/`, `PropertyTests/`, `web/`, `docs/`, `tools/` and `.github/`, so changing only those doesn't need a new
+run. A test is skipped when it passes without
 checking what it normally checks (`Skip`), e.g. tests left out by `CBC_TESTS`, or `WebDataTest` writing its files.
 `ContinueAfterCrashTest` needs two starts of the game (`CBC_CRASH_PHASE`, `CBC_CRASH_FOLDER`), so a normal run lists it
 under `onRequest` instead: not passed, but not keeping the run from counting for a release.
@@ -231,13 +234,33 @@ it again and changes to it are kept. Everything it downloads is pinned, so a rel
 - **MelonLoader and Mod Helper**: the minimum versions in `thunderstore.toml` (`[package.dependencies]`), so the DLL
   is built against what it tells players it needs. Mod Helper's `btd6.targets` comes from the same tag.
 - **The game's assemblies**: the commit of `doombubbles/btd6-ci-dependencies` in `CI_DEPENDENCIES_REF`.
-- **Actions**: version tags, which Dependabot updates.
+- **Actions**: third-party actions are pinned to a commit, with the version in a comment (`@<sha> # v1.13`); GitHub's
+  own (`actions/*`, `github/*`) use version tags. Dependabot updates both, the pins included.
+- **The .NET SDK**: `global.json` asks for SDK 10.0.100 or a newer 10.0 (`rollForward: latestFeature`), so a local build
+  and CI's use the same SDK line.
+
+The release job never puts the tag or the description into a script with `${{ }}`; scripts read them from `env`. It
+makes the GitHub release before publishing to Thunderstore, and fails if it can't push the rotated `CHANGELOG.md`.
 
 The job summary and the end of the release notes say which versions were used.
 
 After a game update, set `CI_DEPENDENCIES_REF` in `build.yml` to the commit of `btd6-ci-dependencies` for the new
 game version (its message says it, e.g. "Update for v57.2"). When the mod starts to need a newer MelonLoader or Mod
 Helper, raise the minimum in `thunderstore.toml`; the build follows it.
+
+Some differences between what is tested and what is released are on purpose:
+
+- **The test report comes from a Debug build.** The released DLL is a Release build, merged with ILRepack. Only Debug
+  builds know which code they were built from (`sourceHash`) and carry the website's data for `WebDataTest`, so the
+  in-game tests run on Debug. The tests themselves are in both builds; the C# is the same.
+- **`Optimize` is `False` in both builds.** It came with Mod Helper's template. It keeps the Release DLL's IL like the
+  Debug DLL the tests ran on, and the JIT from inlining small methods, which Harmony couldn't patch. Turning it on
+  would make the released mod differ from the tested one, for little gain.
+- **Two game versions.** The game version in `TestResults/ingame.json` (the game the tests ran on) can be newer than the
+  one CI builds against (`CI_DEPENDENCIES_REF`), since `btd6-ci-dependencies` is updated some time after the game.
+  A build against the older assemblies that passes is fine; one that fails means the mod uses something new.
+- **No analyzers.** There are no analyzers and no `TreatWarningsAsErrors`. The C# compiles without warnings, so keep
+  it that way, but the game's assemblies change with every update, and a new warning shouldn't block a release.
 
 `.github/workflows/codeql.yml` scans the C#, TypeScript and workflows with CodeQL on pushes to `master`, pull
 requests and once a week. It builds nothing (`build-mode: none`), since the mod can't be built without the game.

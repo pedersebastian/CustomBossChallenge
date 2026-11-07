@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <AssemblyName>CustomBossChallenge</AssemblyName>
         <LangVersion>preview</LangVersion>
+        <!-- Off in Release too, on purpose: the released IL stays like the Debug build the tests ran on (CONTRIBUTING.md) -->
         <Optimize>False</Optimize>
         <DebugType>embedded</DebugType>
         <!-- build.yml is our own (it checks before it releases, see CONTRIBUTING.md), so Mod Helper must not write it again -->
