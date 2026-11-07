@@ -30,4 +30,4 @@ target = "./LICENSE"
 [publish]
 repository = "https://thunderstore.io"
 communities = ["bloons-td-6"]
-categories = ["mods"]
+categories = ["mods", "ai-generated"] # ai-generated: the mod is made with AI help (CONTRIBUTING.md, AI-assisted development)
