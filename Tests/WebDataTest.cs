@@ -238,8 +238,8 @@ public class WebDataTest : CustomBossTest
                 SetupCode.Pack("{\"o\":{\"BossEventRounds\":true,\"TierBosses\":\"Lych,Vortex\"},\"c\":{}}",
                     SetupCode.Version4Prefix),
                 // Fields no player can set, wrong types, null and tricks, which the website must ignore like the mod
-                // does (#108). NaN is left out: JSON.parse can't read it, so the website calls such a code damaged,
-                // while the mod ignores the value; MaliciousCodeTest covers it in the game.
+                // does (#108). NaN is left out: JSON.parse can't read it, and the mod refuses such a code too
+                // (#113); MaliciousCodeTest covers it in the game.
                 SetupCode.Pack("{\"o\":{},\"c\":{\"cashModifiers\":{\"popCashMultiplier\":0},\"roundSets\":[\"x\"]," +
                                "\"powers\":{\"$items\":{\"0\":{\"max\":99}}},\"__proto__\":{\"map\":\"Logs\"}," +
                                "\"$type\":\"Nope\",\"startRules\":null,\"map\":3,\"maxTowers\":2.5," +

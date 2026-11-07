@@ -63,7 +63,7 @@ export function optionsJson(options: BossOptions): JsonObject {
 
 function toInt(value: Json, name: string): number {
   const number = typeof value === "string" && /^\s*[+-]?\d+\s*$/.test(value) ? Number(value) : value;
-  if (typeof number !== "number" || !Number.isInteger(number) || Math.abs(number) > 2_147_483_647) {
+  if (typeof number !== "number" || !Number.isInteger(number) || number < -2_147_483_648 || number > 2_147_483_647) {
     throw new OptionTypeError(`${name} is not a whole number`);
   }
   return number;
@@ -84,6 +84,47 @@ function toEnum(value: Json, names: readonly string[], name: string): string | n
   }
   // A number is the enum's value; an undefined one is replaced by sanitize
   return toInt(value, name);
+}
+
+/** The options a code can hold, and the JSON type each must have; a "?" type may also be null */
+const OPTION_TYPES: Record<string, string> = {
+  Boss: "enum", Elite: "bool", SkullMode: "enum", SkullCount: "int", CustomSkulls: "text?", Tiers: "int",
+  SpeedPerTier: "int", HealthPerTier: "int", ExtraTierHealth: "int?", SpawnRounds: "text?", TierBosses: "text?",
+  RandomTiers: "text?", BossEventRounds: "bool",
+};
+
+/** A whole number in text, only ASCII digits and spaces, like CodeFormat.IntText */
+const INT_TEXT = /^[ \t\r\n]*[+-]?[0-9]+[ \t\r\n]*$/;
+/** An enum's name in text, like CodeFormat.EnumText */
+const ENUM_TEXT = /^[ \t\r\n]*[A-Za-z]+[ \t\r\n]*$/;
+
+const isInt32 = (value: Json): value is number =>
+  typeof value === "number" && Number.isInteger(value) && value >= -2_147_483_648 && value <= 2_147_483_647;
+
+/**
+ * CodeFormat.TypedOptions: a code's options, each with the JSON type it must have, or an OptionTypeError (#113). The mod
+ * reads codes the same way, so neither takes Json.NET's guesses like 5.5 for 6, "1" for Lych or 3 for true. Options the
+ * mod doesn't have are left out.
+ */
+export function typedOptions(diff: JsonObject): JsonObject {
+  const typed: JsonObject = {};
+  for (const [name, value] of Object.entries(diff)) {
+    const type = Object.prototype.hasOwnProperty.call(OPTION_TYPES, name) ? OPTION_TYPES[name] : undefined;
+    if (type === undefined) continue;
+    if (value === null) {
+      if (!type.endsWith("?")) throw new OptionTypeError(`${name} is null`);
+      typed[name] = null;
+      continue;
+    }
+    const base = type.replace("?", "");
+    if (base === "bool" && typeof value === "boolean") typed[name] = value;
+    else if (base === "text" && typeof value === "string") typed[name] = value;
+    else if ((base === "int" || base === "enum") && isInt32(value)) typed[name] = value === 0 ? 0 : value;
+    else if (base === "int" && typeof value === "string" && INT_TEXT.test(value) && isInt32(Number(value))) typed[name] = Number(value);
+    else if (base === "enum" && typeof value === "string" && ENUM_TEXT.test(value)) typed[name] = value;
+    else throw new OptionTypeError(`${name} has the wrong type`);
+  }
+  return typed;
 }
 
 /** Options as read, before sanitize: an enum can still be a number the game doesn't know */

@@ -153,7 +153,7 @@ public class MaliciousCodeTest : CustomBossTest
         // Values far outside what the editor allows are brought into range
         var extreme = SetupCode.Pack(
             "{\"o\":{\"Tiers\":9999,\"Boss\":99},\"c\":{" +
-            "\"bloonModifiers\":{\"bossSpeedMultiplier\":1e30,\"speedMultiplier\":NaN,\"moabSpeedMultiplier\":-3," +
+            "\"bloonModifiers\":{\"bossSpeedMultiplier\":1e30,\"moabSpeedMultiplier\":-3," +
             "\"healthMultipliers\":{\"boss\":-5,\"moabs\":1e9}}," +
             "\"startRules\":{\"cash\":2147483647,\"lives\":0,\"round\":-77,\"endRound\":2000000000,\"revives\":5000}," +
             "\"maxTowers\":999999,\"abilityCooldownReductionMultiplier\":-1," +
@@ -168,8 +168,13 @@ public class MaliciousCodeTest : CustomBossTest
         var defaults = DailyChallengeModel.CreateDefaultEditorModel();
         var modifiers = dcm!.bloonModifiers;
         AssertEquals(modifiers.bossSpeedMultiplier, ChallengeLimits.MaxBossSpeed, "Boss speed");
-        // NaN isn't a number a code may hold, so it is ignored (#108)
-        AssertEquals(modifiers.speedMultiplier, defaults.bloonModifiers.speedMultiplier, "NaN bloon speed");
+        // NaN and Infinity aren't numbers a code may hold, and the website can't read them, so the code is refused (#113)
+        foreach (var literal in new[] {"NaN", "Infinity", "-Infinity"})
+        {
+            Assert(!SetupCode.TryDecode(SetupCode.Pack($"{{\"o\":{{}},\"c\":{{\"bloonModifiers\":{{\"speedMultiplier\":{literal}}}}}}}"),
+                    out _, out _, out var literalProblem) && literalProblem == CodeProblem.Invalid,
+                $"A code with {literal} must not load");
+        }
         AssertEquals(modifiers.moabSpeedMultiplier, ChallengeLimits.MinMultiplier, "Negative MOAB speed");
         AssertEquals(modifiers.healthMultipliers.boss, ChallengeLimits.MinBossHealth, "Boss health");
         AssertEquals(modifiers.healthMultipliers.moabs, ChallengeLimits.MaxMultiplier, "MOAB health");
@@ -189,7 +194,7 @@ public class MaliciousCodeTest : CustomBossTest
 
         // Only what the Challenge Editor and the Boss Creator can set is read from a code (#108)
         var hostile = SetupCode.Pack("{\"o\":{},\"c\":{" +
-            "\"cashModifiers\":{\"popCashMultiplier\":0,\"roundCashMultiplier\":1e30,\"towerCashMultiplier\":NaN}," +
+            "\"cashModifiers\":{\"popCashMultiplier\":0,\"roundCashMultiplier\":1e30,\"towerCashMultiplier\":-1}," +
             "\"roundSets\":[\"NoSuchRounds\",\"bloonarius\"],\"powers\":{\"$items\":{\"0\":{\"max\":99999}}},\"maxPowers\":7," +
             "\"rewards\":\"anything\",\"temporaryUnlockedTowers\":[\"SuperMonkey\"],\"disableTowerXp\":true," +
             "\"disableHeroBoosting\":true,\"disableSaves\":false,\"numberOfPlayers\":4,\"id\":5," +

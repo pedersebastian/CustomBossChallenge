@@ -74,9 +74,10 @@ public static class CodeFormat
         if (hash < 0) return trimmed;
 
         var fragment = trimmed[(hash + 1)..];
-        if (fragment.StartsWith(LinkKey)) fragment = fragment[LinkKey.Length..];
+        if (fragment.StartsWith(LinkKey, StringComparison.Ordinal)) fragment = fragment[LinkKey.Length..];
+        // Ordinal: compared by culture, a code after a %00 would count as one (#113)
         fragment = Uri.UnescapeDataString(fragment).Trim();
-        return fragment.StartsWith(AnyVersionPrefix) ? fragment : trimmed;
+        return fragment.StartsWith(AnyVersionPrefix, StringComparison.Ordinal) ? fragment : trimmed;
     }
 
     /// <summary>
@@ -121,15 +122,25 @@ public static class CodeFormat
 
         code = ExtractCode(code);
         if (code.Length == 0 || code.Length > MaxLength) return false;
-        if (!Array.Exists(KnownPrefixes, code.StartsWith))
+        if (!Array.Exists(KnownPrefixes, prefix => code.StartsWith(prefix, StringComparison.Ordinal)))
         {
-            if (code.StartsWith(AnyVersionPrefix) && code.Length > 4 && char.IsDigit(code[3])) problem = CodeProblem.TooNew;
+            if (code.StartsWith(AnyVersionPrefix, StringComparison.Ordinal) && code.Length > 4 && code[3] is >= '0' and <= '9')
+            {
+                problem = CodeProblem.TooNew;
+            }
             return false;
         }
 
         try
         {
-            payload = JObject.Parse(Inflate(FromBase64Url(code[PrefixLength..])));
+            var json = Inflate(FromBase64Url(code[PrefixLength..]));
+            if (HasNonFiniteLiteral(json))
+            {
+                error = "NaN or Infinity is not a number a code may hold";
+                return false;
+            }
+
+            payload = JObject.Parse(json);
             problem = CodeProblem.None;
             return true;
         }
@@ -138,6 +149,29 @@ public static class CodeFormat
             error = e.Message;
             return false;
         }
+    }
+
+    /// <summary>
+    /// Whether the JSON has NaN, Infinity or -Infinity as a value. Json.NET reads them, but the website's JSON.parse
+    /// can't, so a code with one is refused on both (#113). The mod never writes them. Outside of strings, valid JSON
+    /// has no N or I, so finding one there is enough; inside strings they are text.
+    /// </summary>
+    internal static bool HasNonFiniteLiteral(string json)
+    {
+        var inString = false;
+        for (var i = 0; i < json.Length; i++)
+        {
+            var c = json[i];
+            if (inString)
+            {
+                if (c == '\\') i++;
+                else if (c == '"') inString = false;
+            }
+            else if (c == '"') inString = true;
+            else if (c is 'N' or 'I') return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -296,6 +330,60 @@ public static class CodeFormat
         else return null;
 
         return items.HasValues ? new JObject {[ItemsKey] = items} : null;
+    }
+
+    /// <summary>
+    /// The Boss Creator's options a code can hold, and the JSON type each must have. A "?" type may also be null.
+    /// </summary>
+    private static readonly Dictionary<string, string> OptionTypes = new()
+    {
+        ["Boss"] = "enum", ["Elite"] = "bool", ["SkullMode"] = "enum", ["SkullCount"] = "int", ["CustomSkulls"] = "text?",
+        ["Tiers"] = "int", ["SpeedPerTier"] = "int", ["HealthPerTier"] = "int", ["ExtraTierHealth"] = "int?",
+        ["SpawnRounds"] = "text?", ["TierBosses"] = "text?", ["RandomTiers"] = "text?", ["BossEventRounds"] = "bool"
+    };
+
+    /// <summary>A whole number written as text, as Json.NET reads it into an int: only ASCII digits and spaces</summary>
+    private static readonly System.Text.RegularExpressions.Regex IntText = new(@"^[ \t\r\n]*[+-]?[0-9]+[ \t\r\n]*$");
+
+    /// <summary>An enum's name as text; a number in text, or names joined by commas, are not one</summary>
+    private static readonly System.Text.RegularExpressions.Regex EnumText = new(@"^[ \t\r\n]*[A-Za-z]+[ \t\r\n]*$");
+
+    /// <summary>
+    /// The options of a code (its "o"), each with the JSON type it must have; a value of another type throws a
+    /// <see cref="FormatException"/>, and the code can't be read (#113). The website reads codes the same way
+    /// (web/src/code/options.ts): Json.NET on its own turns 5.5 into 6, "1" into Lych and 3 into true, which JavaScript
+    /// doesn't, so both only take what the mod itself writes. Whole numbers may be written as 5.0 or "5", since
+    /// JavaScript can't tell 5.0 from 5. Options the mod doesn't have are left out.
+    /// </summary>
+    public static JObject TypedOptions(JObject diff)
+    {
+        var typed = new JObject();
+        foreach (var (name, value) in diff)
+        {
+            if (value == null || !OptionTypes.TryGetValue(name, out var type)) continue;
+            if (value.Type == JTokenType.Null)
+            {
+                if (!type.EndsWith('?')) throw new FormatException($"{name} is null");
+                typed[name] = JValue.CreateNull();
+                continue;
+            }
+
+            var number = Typed(value, "int");
+            var text = value.Type == JTokenType.String ? (string?) value : null;
+            typed[name] = type.TrimEnd('?') switch
+            {
+                "bool" when value.Type == JTokenType.Boolean => value.DeepClone(),
+                "text" when text != null => value.DeepClone(),
+                "int" when number != null => number,
+                "int" when text != null && IntText.IsMatch(text) &&
+                            int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) => new JValue(parsed),
+                "enum" when number != null => number,
+                "enum" when text != null && EnumText.IsMatch(text) => value.DeepClone(),
+                _ => throw new FormatException($"{name} has the wrong type")
+            };
+        }
+
+        return typed;
     }
 
     /// <summary>
