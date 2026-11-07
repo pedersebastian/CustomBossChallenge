@@ -14,12 +14,16 @@ import { encode, normalized, payload } from "../src/code/encode";
 import { optionsJson } from "../src/code/options";
 import { GAME, type JsonObject } from "../src/data/types";
 import * as edit from "../src/studio/state";
+import { FOLLOWS } from "../src/math/tierBosses";
 import type { StudioSetup } from "../src/studio/state";
 
 const FILE = fileURLToPath(new URL("./website-codes.json", import.meta.url));
 
 /** A setup made by doing the changes one after another, like a player would */
 const make = (...changes: ((setup: StudioSetup) => StudioSetup)[]): StudioSetup => changes.reduce((setup, change) => change(setup), edit.newSetup());
+
+/** The Advanced tab, as clicked in the Studio */
+const toAdvanced = (setup: StudioSetup): StudioSetup => edit.setAdvanced(setup, true, edit.NO_MEMORY).setup;
 
 /** An Advanced setup as pasted from a code: the Studio keeps its tier bosses */
 const advanced = (tierBosses: string, tiers: number): ((setup: StudioSetup) => StudioSetup) => (setup) => ({
@@ -49,6 +53,23 @@ const SETUPS: [string, StudioSetup][] = [
   ["advanced kept", make(advanced("Bloonarius,LychElite@150/80#2,Random,Vortex@100/300#50%;20%", 4))],
   ["advanced with event rounds", make(advanced("Lych,Phayze", 2), (s) => edit.setBossEventRounds(s, true), (s) => edit.setTiers(s, 3))],
   ["advanced with boss speed", make(advanced("Dreadbloon,Blastapopoulos", 2), (s) => edit.setBossSpeed(s, 300))],
+  // Advanced Mode made with the Studio's own tier controls (#95)
+  ["advanced from standard", make((s) => edit.setBoss(s, "Lych"), (s) => edit.setBossSpeed(s, 150), toAdvanced)],
+  [
+    "advanced, every kind of tier",
+    make(
+      (s) => edit.setTiers(s, 6), toAdvanced, (s) => edit.pickTierBoss(s, 1, "Vortex"), (s) => edit.setTierElite(s, 1, true),
+      (s) => edit.pickTierBoss(s, 2, "Random"), (s) => edit.setTierSpeed(s, 2, 320), (s) => edit.setTierHealth(s, 2, 1990),
+      (s) => edit.pickTierBoss(s, 3, "Random"), (s) => edit.setTierElite(s, 3, true),
+      (s) => edit.setTierSkullMode(s, 4, "EvenlySpaced"), (s) => edit.setTierSkullCount(s, 4, 7),
+      (s) => edit.setTierSkullMode(s, 5, "Custom"), (s) => edit.setTierCustomSkulls(s, 5, "95, 33.3, 5"),
+      (s) => edit.setTierBoss(s, 6, FOLLOWS), (s) => edit.stepTierBoss(s, 6, -1),
+    ),
+  ],
+  [
+    "advanced with event rounds and spread rounds",
+    make(toAdvanced, (s) => edit.stepTierBoss(s, 1, 1), (s) => edit.setBossEventRounds(s, true), (s) => edit.spreadSpawnRounds(s, 20, 10)),
+  ],
   [
     "everything",
     make(

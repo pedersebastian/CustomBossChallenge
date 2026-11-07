@@ -21,7 +21,8 @@ const VALUE_STEP = 10;
 
 /** The bosses in the order the Boss Creator shows them, which is the order of the game's BossType */
 export const TIER_BOSSES = ["Bloonarius", "Lych", "Vortex", "Dreadbloon", "Phayze", "Blastapopoulos", "Diamondback"];
-const CHOICES = [...TIER_BOSSES, RANDOM];
+/** What a tier can be stepped through: every boss, then Random (TierBossMath.Choices) */
+export const CHOICES = [...TIER_BOSSES, RANDOM];
 
 export interface TierBoss {
   /** A boss, Random, or null when the tier follows the setup's boss */
@@ -80,7 +81,7 @@ function formatSkulls(tier: TierBoss): string {
 }
 
 /** A speed or health held to its range, on a multiple of 10, like TierBossMath.ClampValue */
-const clampValue = (value: number, min: number, max: number): number =>
+export const clampValue = (value: number, min: number, max: number): number =>
   Math.min(Math.max(Math.round(value / VALUE_STEP) * VALUE_STEP, min), max);
 
 /** Like .NET's int.TryParse: whole numbers that fit an int, junk is the normal 100 */
@@ -138,4 +139,49 @@ export const normalizeTierBosses = (list: string | null | undefined): string | n
 export function tierEntry(list: string | null | undefined, tier: number): TierBoss {
   const tiers = parseTierBosses(list);
   return tier >= 1 && tier <= tiers.length ? tiers[tier - 1] : FOLLOWS;
+}
+
+/** The list with the boss of a 1-based tier replaced (TierBossMath.With) */
+export function withTier(list: string | null | undefined, tier: number, boss: TierBoss): string {
+  if (tier < 1 || tier > MAX_TIERS) return normalizeTierBosses(list) ?? "";
+  const tiers = parseTierBosses(list);
+  while (tiers.length < tier) tiers.push(FOLLOWS);
+  tiers[tier - 1] = boss;
+  return formatTierBosses(tiers);
+}
+
+/**
+ * The next (direction 1) or previous (-1) of the bosses and Random, wrapping around. A tier that follows the setup's
+ * boss steps from that boss, and keeps the setup's Elite (TierBossMath.Step).
+ */
+export function stepTier(current: TierBoss, setupBoss: string, setupElite: boolean, direction: number): TierBoss {
+  const from = current.boss ?? setupBoss;
+  const index = Math.max(CHOICES.indexOf(from), 0);
+  const next = (((index + Math.sign(direction)) % CHOICES.length) + CHOICES.length) % CHOICES.length;
+  return { ...current, boss: CHOICES[next], elite: current.boss === null ? setupElite : current.elite };
+}
+
+/**
+ * The concrete boss of every tier from 1 to tiers: tiers that follow the setup get its boss and Elite, and Random tiers
+ * a boss picked with pick (given the number of bosses, it returns an index), keeping their own Elite. Every tier keeps
+ * its speed, health and skulls; tiers without an entry get those of standard (TierBossMath.Resolve).
+ */
+export function resolveTiers(
+  list: string | null | undefined,
+  setupBoss: string,
+  setupElite: boolean,
+  tiers: number,
+  pick: (count: number) => number,
+  standard: TierBoss = FOLLOWS,
+): string {
+  const parsed = parseTierBosses(list);
+  const missing: TierBoss = { ...standard, boss: null, elite: false };
+  const count = Math.min(Math.max(tiers, 1), MAX_TIERS);
+  const resolved = Array.from({ length: count }, (_, i) => {
+    const entry = i < parsed.length ? parsed[i] : missing;
+    if (entry.boss === null) return { ...entry, boss: setupBoss, elite: setupElite };
+    if (entry.boss !== RANDOM) return entry;
+    return { ...entry, boss: TIER_BOSSES[Math.min(Math.max(pick(TIER_BOSSES.length), 0), TIER_BOSSES.length - 1)] };
+  });
+  return resolved.map(tokenOf).join(",");
 }

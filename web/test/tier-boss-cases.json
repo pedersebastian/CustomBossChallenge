@@ -1,0 +1,34 @@
+{
+  "comment": "How the Boss Creator changes the boss of a tier in Advanced Mode: TierBossMath.With, Step and Resolve. Tiers are tokens like in BossOptions.TierBosses (\"\" follows the setup's boss). Read by web/test/math.test.ts and UnitTests/TierBossMathTests.cs, so the website's Studio and the mod change tiers alike (#95).",
+  "with": [
+    { "list": null, "tier": 3, "boss": "Lych", "expected": ",,Lych" },
+    { "list": "", "tier": 1, "boss": "VortexElite@120/80#4", "expected": "VortexElite@120/80#4" },
+    { "list": "Lych,Vortex,Phayze", "tier": 2, "boss": "RandomElite", "expected": "Lych,RandomElite,Phayze" },
+    { "list": "Lych,Vortex,Phayze", "tier": 3, "boss": "", "expected": "Lych,Vortex" },
+    { "list": "Lych,,", "tier": 1, "boss": "", "expected": "" },
+    { "list": "Lych", "tier": 10, "boss": "Diamondback", "expected": "Lych,,,,,,,,,Diamondback" },
+    { "list": "Lych", "tier": 11, "boss": "Diamondback", "expected": "Lych" },
+    { "list": " lych , vortex ", "tier": 0, "boss": "Phayze", "expected": "Lych,Vortex" },
+    { "list": "Lych@150/100", "tier": 1, "boss": "Lych@150/100#75%;30%", "expected": "Lych@150/100#75%;30%" }
+  ],
+  "step": [
+    { "tier": "Lych", "setupBoss": "Bloonarius", "setupElite": false, "direction": 1, "expected": "Vortex" },
+    { "tier": "Lych", "setupBoss": "Bloonarius", "setupElite": false, "direction": -1, "expected": "Bloonarius" },
+    { "tier": "Diamondback", "setupBoss": "Lych", "setupElite": false, "direction": 1, "expected": "Random" },
+    { "tier": "Random", "setupBoss": "Lych", "setupElite": false, "direction": 1, "expected": "Bloonarius" },
+    { "tier": "Bloonarius", "setupBoss": "Lych", "setupElite": false, "direction": -1, "expected": "Random" },
+    { "tier": "", "setupBoss": "Phayze", "setupElite": true, "direction": 1, "expected": "BlastapopoulosElite" },
+    { "tier": "", "setupBoss": "Phayze", "setupElite": false, "direction": -1, "expected": "Dreadbloon" },
+    { "tier": "VortexElite@200/50#3", "setupBoss": "Lych", "setupElite": false, "direction": 1, "expected": "DreadbloonElite@200/50#3" },
+    { "tier": "@300/100", "setupBoss": "Lych", "setupElite": true, "direction": 1, "expected": "VortexElite@300/100" }
+  ],
+  "resolve": [
+    { "list": null, "boss": "Lych", "elite": true, "tiers": 3, "pick": 0, "standard": "", "expected": "LychElite,LychElite,LychElite" },
+    { "list": null, "boss": "Vortex", "elite": false, "tiers": 2, "pick": 0, "standard": "@120/80#4", "expected": "Vortex@120/80#4,Vortex@120/80#4" },
+    { "list": "Random,,PhayzeElite", "boss": "Lych", "elite": false, "tiers": 4, "pick": 3, "standard": "", "expected": "Dreadbloon,Lych,PhayzeElite,Lych" },
+    { "list": "RandomElite@200/100", "boss": "Lych", "elite": false, "tiers": 1, "pick": 99, "standard": "", "expected": "DiamondbackElite@200/100" },
+    { "list": "Lych,Vortex,Phayze", "boss": "Bloonarius", "elite": false, "tiers": 2, "pick": 0, "standard": "", "expected": "Lych,Vortex" },
+    { "list": null, "boss": "Bloonarius", "elite": false, "tiers": 0, "pick": 0, "standard": "", "expected": "Bloonarius" },
+    { "list": null, "boss": "Bloonarius", "elite": false, "tiers": 12, "pick": 0, "standard": "#60%;20%", "expected": "Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%" }
+  ]
+}

@@ -26,18 +26,11 @@ import {
 import { bossTitle, releaseSetup, renderSetup } from "../preview/render";
 import * as edit from "./state";
 import type { StudioSetup } from "./state";
+import { makeRows, nextId, type Control } from "./rows";
+import { setUpTierEditor } from "./tiers";
 
 /** How long to wait after the last change before making the code and the preview again */
 export const UPDATE_DELAY = 150;
-
-/** A control and how it shows the setup */
-interface Control {
-  row: HTMLElement;
-  sync: (setup: StudioSetup) => void;
-}
-
-let ids = 0;
-const nextId = (name: string): string => `studio-${name}-${++ids}`;
 
 const perTier = (value: number): string => `${value > 0 ? "+" : ""}${value} % per tier`;
 
@@ -71,84 +64,37 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     pending = window.setTimeout(() => void refresh(), UPDATE_DELAY);
   };
 
-  // ---------- Rows ----------
-
-  function row(label: string, control: HTMLElement, id: string, ...extra: Node[]): HTMLElement {
-    return h("div", { class: "studio-row" }, h("label", { for: id }, label), h("div", { class: "studio-control" }, control, ...extra));
-  }
-
-  function reset(label: string, onReset: () => void): HTMLButtonElement {
-    const button = h("button", { class: "button small blue", type: "button", "aria-label": `Reset ${label}` }, "Reset");
-    button.addEventListener("click", onReset);
-    return button;
-  }
-
-  function slider(
-    label: string,
-    range: { min: number; max: number; step: number },
-    value: (s: StudioSetup) => number,
-    text: (value: number) => string,
-    set: (s: StudioSetup, value: number) => StudioSetup,
-    defaultValue?: number,
-  ): Control & { input: HTMLInputElement } {
-    const id = nextId("slider");
-    const input = h("input", { id, type: "range", min: String(range.min), max: String(range.max), step: String(range.step) });
-    const output = h("output", { for: id, class: "studio-value" });
-    input.addEventListener("input", () => change((s) => set(s, Number(input.value))));
-    const extra = defaultValue === undefined ? [] : [reset(label, () => change((s) => set(s, defaultValue)))];
-    return {
-      input,
-      row: row(label, input, id, output, ...extra),
-      sync: (s) => {
-        const shown = value(s);
-        input.value = String(shown);
-        output.textContent = text(shown);
-        input.setAttribute("aria-valuetext", text(shown));
-      },
-    };
-  }
-
-  function checkbox(label: string, value: (s: StudioSetup) => boolean, set: (s: StudioSetup, on: boolean) => StudioSetup): Control {
-    const id = nextId("check");
-    const input = h("input", { id, type: "checkbox" });
-    input.addEventListener("change", () => change((s) => set(s, input.checked)));
-    return { row: row(label, input, id), sync: (s) => (input.checked = value(s)) };
-  }
-
-  function select(
-    label: string,
-    choices: readonly string[],
-    name: (choice: string) => string,
-    value: (s: StudioSetup) => string,
-    set: (s: StudioSetup, choice: string) => StudioSetup,
-    ...extra: Node[]
-  ): Control {
-    const id = nextId("select");
-    const input = h("select", { id }, ...choices.map((choice) => h("option", { value: choice }, name(choice))));
-    input.addEventListener("change", () => change((s) => set(s, input.value)));
-    return { row: row(label, input, id, ...extra), sync: (s) => (input.value = value(s)) };
-  }
-
-  /** A text field that is read when it is left or Enter is pressed, like the game's */
-  function text(label: string, placeholder: string, value: (s: StudioSetup) => string, set: (s: StudioSetup, text: string) => StudioSetup, ...extra: Node[]): Control {
-    const id = nextId("text");
-    const input = h("input", { id, type: "text", class: "studio-text", spellcheck: "false", placeholder });
-    input.addEventListener("change", () => change((s) => set(s, input.value)));
-    input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        input.blur();
-      }
-    });
-    return { row: row(label, input, id, ...extra), sync: (s) => (document.activeElement === input ? undefined : (input.value = value(s))) };
-  }
+  const { reset, slider, checkbox, select, text } = makeRows(change);
 
   // ---------- The Boss Creator's controls, in its order ----------
 
-  const advancedNote = h(
-    "p",
-    { class: "note" },
-    "Advanced Mode: every tier has its own boss, speed, health and skulls. They are kept as they are in the code; for now they are changed in the game's Boss Creator.",
+  // Above the boss, like the Boss Creator's tabs: Standard, one boss for every tier, or Advanced, a boss per tier (#95)
+  let memory = edit.NO_MEMORY;
+  const switchMode = (on: boolean): void =>
+    change((s) => {
+      const switched = edit.setAdvanced(s, on, memory);
+      memory = switched.memory;
+      return switched.setup;
+    });
+  const standardTab = h("button", { class: "studio-tab", type: "button" }, "Standard");
+  const advancedTab = h("button", { class: "studio-tab", type: "button" }, "Advanced");
+  standardTab.addEventListener("click", () => switchMode(false));
+  advancedTab.addEventListener("click", () => switchMode(true));
+  const modeHelp = h("p", { class: "studio-help", id: nextId("mode-help") });
+  const modeRow = h(
+    "div",
+    { class: "studio-row" },
+    h("p", { class: "studio-row-title", id: nextId("mode") }, "Mode"),
+    h("div", { class: "studio-tabs", role: "group", "aria-label": "Mode", "aria-describedby": modeHelp.id }, standardTab, advancedTab),
+    modeHelp,
+  );
+
+  const tierEditor = setUpTierEditor(change, () => setup, () =>
+    change((s) => {
+      const reset = edit.resetAllTiers(s, memory);
+      memory = reset.memory;
+      return reset.setup;
+    }),
   );
 
   const elite = h("input", { id: nextId("elite"), type: "checkbox" });
@@ -232,7 +178,10 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     boss, bossSpeed, bossHealth, maxParagons, tiers, speedPerTier, healthPerTier,
     firstRound, roundsBetween, spawnRounds, eventRounds, skullMode, skullCount, customSkulls,
   ];
-  form.replaceChildren(advancedNote, ...controls.map((control) => control.row));
+  // The tiers' bosses come right after the tier rows, where the Boss Creator has its Tier Preview
+  const rows = controls.map((control) => control.row);
+  rows.splice(controls.indexOf(healthPerTier) + 1, 0, tierEditor.root);
+  form.replaceChildren(modeRow, ...rows);
   form.addEventListener("submit", (event) => event.preventDefault());
 
   /** Shows the setup in every control, and only the rows that apply (BossEditorSection.Relayout) */
@@ -240,7 +189,13 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     for (const control of controls) control.sync(setup);
     elite.checked = setup.options.Elite;
     const mixed = isMixed(setup.options);
-    advancedNote.hidden = !mixed;
+    standardTab.setAttribute("aria-pressed", String(!mixed));
+    advancedTab.setAttribute("aria-pressed", String(mixed));
+    modeHelp.textContent = mixed
+      ? "Advanced: every tier has a boss of its own, with its own Elite, speed, health and skulls."
+      : "Standard: the same boss on every tier. Advanced gives every tier a boss of its own.";
+    tierEditor.root.hidden = !mixed;
+    if (mixed) tierEditor.sync(setup);
     boss.row.hidden = mixed;
     // In Advanced Mode, Boss Speed and Boss Health stay only while they are set, so they can be seen and reset (#112)
     bossSpeed.row.hidden = mixed && edit.bossSpeed(setup) === 100;
@@ -288,6 +243,7 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     async load(next, from) {
       setup = next;
       original = from;
+      memory = edit.NO_MEMORY;
       sync();
       unchanged = from === null ? null : await encode(next.options, next.challenge);
       await refresh();

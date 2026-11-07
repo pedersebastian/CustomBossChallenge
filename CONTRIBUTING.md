@@ -285,7 +285,7 @@ MelonLoader's assemblies.
 `web/` is a small website (Vite + TypeScript, no framework) that reads share codes without the game, shows the setup
 like the Boss Creator does (Tier Preview, skulls, rules) and lists example codes. It has three pages: `index.html`,
 `compare.html` (two setups side by side) and `studio.html`, the Studio (#12, #79), which makes and changes setups with
-the Boss Creator's controls (`web/src/studio/`). It needs [Node.js](https://nodejs.org/)
+the Boss Creator's controls (`web/src/studio/`), Advanced Mode's bosses per tier included (`tiers.ts`, #95). It needs [Node.js](https://nodejs.org/)
 LTS:
 
 ```
@@ -321,7 +321,8 @@ that many or more shows as Unlimited.
 
 Some cases are shared by the website's tests and the unit tests, in `web/test/`, so both sides read them alike:
 `link-cases.json` (the code in a pasted link, %-escapes included), `skull-cases.json` (custom skulls, rounded like
-.NET) and `option-cases.json` (a code's boss options of every JSON type, made with the mod's own `CodeFormat` and
+.NET), `tier-boss-cases.json` (`TierBossMath.With`, `Step` and `Resolve`, which the Studio's Advanced Mode uses, #95)
+and `option-cases.json` (a code's boss options of every JSON type, made with the mod's own `CodeFormat` and
 Json.NET). When the mod reads one of them differently, change both sides and the file. `website-codes.json` goes the
 other way: codes the Studio made with its own controls, which `UnitTests/CodeFormatTests.cs` reads with the mod's
 `CodeFormat`, so codes made on the website load in the mod unchanged. After changing the Studio or the encoder, write
