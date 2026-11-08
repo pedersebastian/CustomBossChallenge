@@ -1,6 +1,6 @@
 // The "Read a share code" section: paste a code, see the setup. A link with #code=… opens a code straight away.
 
-import { decode, extractCode } from "../code/decode";
+import { decode, extractCode } from "@cbc/share-code";
 import { codeFromHash, compareLinkTo, hashFor, linkTo, studioLinkTo } from "../code/link";
 import { copyWithFeedback, h } from "../dom";
 import { jokeFor, type Joke } from "../fun/jokes";

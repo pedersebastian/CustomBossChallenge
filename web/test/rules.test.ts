@@ -2,10 +2,10 @@
 // may set are written, and the website's reader keeps what the Studio writes
 
 import { describe, expect, it } from "vitest";
-import { decode } from "../src/code/decode";
-import { encode } from "../src/code/encode";
+import { decode } from "@cbc/share-code";
+import { encode } from "@cbc/share-code";
 import { GAME, type Json, type JsonObject } from "../src/data/types";
-import { float } from "../src/math/dotnet";
+import { float } from "@cbc/share-code/dotnet";
 import { MAP_GROUPS, OTHER_MAPS, RULES, cleanText, mapChoices, percentText, resetRule, ruleInput, ruleValue, setRule, type Rule } from "../src/studio/rules";
 import { newSetup } from "../src/studio/state";
 

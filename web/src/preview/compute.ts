@@ -1,11 +1,11 @@
 // What the Boss Creator's Tier Preview and Skull Preview show (Menus/TierStrip.cs, Menus/SkullStrip.cs)
 
 import { GAME } from "../data/types";
-import type { Challenge } from "../code/decode";
-import { bossOf, effectiveSpawnRounds, entryOf, isMixed, skullPercents, tierSkullPercents, type BossOptions } from "../code/options";
-import { float } from "../math/dotnet";
-import { clampTiers, extraTierFactor, formatHealth, healthFactor, maxModelHealth, speedFactor, VANILLA_TIERS } from "../math/tiers";
-import { NORMAL, formatTierBosses, parseTierBosses } from "../math/tierBosses";
+import type { Challenge } from "@cbc/share-code";
+import { bossOf, effectiveSpawnRounds, entryOf, isMixed, skullPercents, tierSkullPercents, type BossOptions } from "@cbc/share-code";
+import { float } from "@cbc/share-code/dotnet";
+import { clampTiers, extraTierFactor, formatHealth, healthFactor, maxModelHealth, speedFactor, VANILLA_TIERS } from "@cbc/share-code/tiers";
+import { NORMAL, formatTierBosses, parseTierBosses } from "@cbc/share-code/tier-bosses";
 
 export interface TierCard {
   tier: number;

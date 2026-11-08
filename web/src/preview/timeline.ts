@@ -1,10 +1,10 @@
 // The spawn-round timeline (#94): when each tier arrives, from the first round to the game's end, so the whole challenge
 // can be seen at a glance. The bar is a picture only; the same rounds are in a list for screen readers and as text.
 
-import type { Challenge } from "../code/decode";
-import { effectiveSpawnRounds, tierBossName, usesBossEventRounds, type BossOptions } from "../code/options";
+import type { Challenge } from "@cbc/share-code";
+import { effectiveSpawnRounds, tierBossName, usesBossEventRounds, type BossOptions } from "@cbc/share-code";
 import { h } from "../dom";
-import { EVENT_ROUNDS, endRound } from "../math/tiers";
+import { EVENT_ROUNDS, endRound } from "@cbc/share-code/tiers";
 
 export interface TimelineTier {
   tier: number;

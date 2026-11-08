@@ -1,9 +1,9 @@
 // Port of Persistence/SetupCode.cs (reading) and Config/ChallengeLimits.Sanitize: share code -> setup.
 // Like the mod, a code is only data: it is never run, never throws and is held to what the game can play.
 
-import { GAME, type Json, type JsonObject } from "../data/types";
-import { clampMultiplier, orDefault } from "../math/limits";
-import { MAX_ROUND } from "../math/tiers";
+import { DATA, type Json, type JsonObject } from "./data";
+import { clampMultiplier, orDefault } from "./math/limits";
+import { MAX_ROUND } from "./math/tiers";
 import { OptionTypeError, defaultName, defaultOptions, optionsJson, readOptions, sanitize, typedOptions, type BossOptions } from "./options";
 
 export const PREFIX = "CBC1:";
@@ -166,11 +166,11 @@ function filterList(value: Json, entry: JsonObject, defaults: Json[] | undefined
 }
 
 /**
- * The part of a challenge diff that GAME.challengeFields allows, with the right types (CodeFormat.FilterChallenge):
+ * The part of a challenge diff that DATA.challengeFields allows, with the right types (CodeFormat.FilterChallenge):
  * a code can only set what the Challenge Editor and the Boss Creator can (#108). The paths left out go to dropped.
  */
 export function filterChallenge(diff: JsonObject, defaults: JsonObject, dropped: string[] = []): JsonObject {
-  return filterObject(diff, GAME.challengeFields, defaults, "", dropped);
+  return filterObject(diff, DATA.challengeFields, defaults, "", dropped);
 }
 
 function fromBase64Url(text: string): Uint8Array {
@@ -191,7 +191,7 @@ async function inflate(data: Uint8Array): Promise<string> {
     const { done, value } = await reader.read();
     if (done) break;
     text += decoder.decode(value, { stream: true });
-    if (text.length > GAME.limits.maxJsonLength) {
+    if (text.length > DATA.limits.maxJsonLength) {
       await reader.cancel();
       throw new Error("Setup code unpacks to too much data");
     }
@@ -256,7 +256,7 @@ export function extractCode(text: string | null | undefined): string {
 export async function decode(code: string | null | undefined): Promise<DecodeResult> {
   const trimmed = extractCode(code);
   if (trimmed === "") return fail("Invalid", "The code is empty.");
-  if (trimmed.length > GAME.limits.maxCodeLength) return fail("Invalid", "The code is too long.");
+  if (trimmed.length > DATA.limits.maxCodeLength) return fail("Invalid", "The code is too long.");
   if (!KNOWN_PREFIXES.some((prefix) => trimmed.startsWith(prefix))) {
     if (trimmed.startsWith("CBC") && trimmed.length > 4 && /\d/.test(trimmed[3])) {
       return fail("TooNew", "This code comes from a newer version of Custom Boss Challenge.");
@@ -272,8 +272,8 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
     if (isObject(payload.o)) apply(optionsJsonValue, typedOptions(payload.o));
     const options = sanitize(readOptions(optionsJsonValue));
 
-    const challengeJson = clone(GAME.defaultChallenge);
-    if (isObject(payload.c)) apply(challengeJson, filterChallenge(payload.c, GAME.defaultChallenge));
+    const challengeJson = clone(DATA.defaultChallenge);
+    if (isObject(payload.c)) apply(challengeJson, filterChallenge(payload.c, DATA.defaultChallenge));
     const challenge = readChallenge(challengeJson, options);
 
     return { ok: true, problem: "None", options, challenge, json: challengeJson };
@@ -286,14 +286,14 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
 export function cleanName(name: string, fallback: string): string {
   // eslint-disable-next-line no-control-regex
   let clean = name.replace(/[\u0000-\u001f\u007f-\u009f]/g, "").trim();
-  if (clean.length > GAME.limits.maxNameLength) clean = clean.slice(0, GAME.limits.maxNameLength).trimEnd();
+  if (clean.length > DATA.limits.maxNameLength) clean = clean.slice(0, DATA.limits.maxNameLength).trimEnd();
   return clean.length > 0 ? clean : fallback;
 }
 
 /** The challenge with the types the game reads it as, brought into range like ChallengeLimits.Sanitize */
 function readChallenge(json: JsonObject, options: BossOptions): Challenge {
-  const limits = GAME.limits;
-  const defaults = GAME.defaultChallenge;
+  const limits = DATA.limits;
+  const defaults = DATA.defaultChallenge;
   const object = (value: Json | undefined): JsonObject => (isObject(value) ? value : {});
   const modifiers = object(json.bloonModifiers);
   const health = object(modifiers.healthMultipliers);
@@ -340,9 +340,9 @@ function readChallenge(json: JsonObject, options: BossOptions): Challenge {
   return {
     // No name of its own means the name of whoever opens the code, so none is shown
     name: name === "" ? "" : cleanName(name, defaultName(options)),
-    map: known(text(json.map), Object.keys(GAME.maps), defaults.map as string),
-    difficulty: known(text(json.difficulty), Object.keys(GAME.difficulties), defaults.difficulty as string),
-    mode: known(text(json.mode), Object.keys(GAME.modes), defaults.mode as string),
+    map: known(text(json.map), Object.keys(DATA.maps), defaults.map as string),
+    difficulty: known(text(json.difficulty), Object.keys(DATA.difficulties), defaults.difficulty as string),
+    mode: known(text(json.mode), Object.keys(DATA.modes), defaults.mode as string),
     cash: orDefault(int(rules.cash, -1), 0, limits.maxCash),
     lives: orDefault(int(rules.lives, -1), 1, limits.maxLives),
     maxLives: orDefault(int(rules.maxLives, -1), 1, limits.maxLives),
@@ -367,8 +367,8 @@ function readChallenge(json: JsonObject, options: BossOptions): Challenge {
 
 /** Why Play would refuse this setup in the game, or null (BossEditorSection.PlayProblem, without the model check) */
 export function playProblem(challenge: Challenge, rounds: number[]): string | null {
-  if (GAME.unsupportedModes.includes(challenge.mode)) {
-    return `The ${GAME.modes[challenge.mode] ?? challenge.mode} game mode can't be used for boss games.`;
+  if (DATA.unsupportedModes.includes(challenge.mode)) {
+    return `The ${DATA.modes[challenge.mode] ?? challenge.mode} game mode can't be used for boss games.`;
   }
   if (challenge.round >= rounds[0]) {
     return `The game starts on round ${challenge.round}, but the first boss tier comes on round ${rounds[0]} and would be skipped.`;

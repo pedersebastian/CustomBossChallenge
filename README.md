@@ -15,6 +15,7 @@ Event and your Boss Challenge records and saves are never affected.
 where you can read a share code and see the whole setup without the game,
 [compare two setups](https://pedersebastian.github.io/CustomBossChallenge/compare.html) side by side, or
 [make and change a setup](https://pedersebastian.github.io/CustomBossChallenge/studio.html) and copy its code.
+To build your own tools for share codes, see the [share-code package](web/packages/share-code/README.md).
 
 ![Boss Creator](docs/boss-creator.jpg)
 

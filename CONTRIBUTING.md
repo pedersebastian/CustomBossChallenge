@@ -285,10 +285,9 @@ MelonLoader's assemblies.
 `web/` is a small website (Vite + TypeScript, no framework) that reads share codes without the game, shows the setup
 like the Boss Creator does (Tier Preview, skulls, rules) and lists example codes. It has three pages: `index.html`,
 `compare.html` (two setups side by side) and `studio.html`, the Studio (#12, #79), which makes and changes setups with
-the Boss Creator's controls (`web/src/studio/`), Advanced Mode's bosses per tier included (`tiers.ts`, #95), the Challenge Editor's rules (`rules.ts`, #97) and its
-tower restrictions (`towers.ts`, #128), held to
-`ChallengeLimits` with the clamping in `web/src/math/limits.ts` that the code reader uses too. It needs [Node.js](https://nodejs.org/)
-LTS:
+the Boss Creator's controls (`web/src/studio/`), Advanced Mode's bosses per tier included (`tiers.ts`, #95), the
+Challenge Editor's rules (`rules.ts`, #97) and its tower restrictions (`towers.ts`, #128), held to `ChallengeLimits`
+with the same clamping the code reader uses. It needs [Node.js](https://nodejs.org/) LTS:
 
 ```
 cd web
@@ -304,12 +303,17 @@ https://pedersebastian.github.io/CustomBossChallenge/ whenever `web/` changes on
 Visits are counted with [GoatCounter](https://pedersebastian.goatcounter.com/) (the script at the end of
 `web/index.html`): no cookies, only the path is sent, never a `#code=…`, and localhost isn't counted.
 
-The website must read codes exactly like the mod, so parts of the mod are ported to TypeScript: `SetupCode` reading
-(`web/src/code/decode.ts`) and writing (`encode.ts`, the same JSON as the mod; the deflated bytes may differ), `BossOptions.Sanitized` (`options.ts`), `TierMath` and `SkullMath` (`web/src/math/`) and
-the Tier Preview numbers (`web/src/preview/compute.ts`, which also has `normalGame`, the setup the strength chart
-compares with). The timeline under the Tier Preview is `web/src/preview/timeline.ts`; its event rounds follow
-`BossRoundsMath.EventRounds`. Change them together with the C#. Besides the fixtures below,
-`web/test/generated.test.ts` reads the random codes from the property tests (see *Property tests*).
+The website must read codes exactly like the mod, so the code reading and writing is a port of the mod's C# in its own
+package, [`@cbc/share-code`](web/packages/share-code/README.md) in `web/packages/share-code` (#98), an npm workspace
+the website imports and other tools can use too: `SetupCode` reading (`src/decode.ts`) and writing (`src/encode.ts`,
+the same JSON as the mod; the deflated bytes may differ), `BossOptions.Sanitized` (`src/options.ts`), and
+`ChallengeLimits`, `TierMath`, `SkullMath` and `TierBossMath` (`src/math/`). Its `src/data.json` is a copy of the part
+of `game.json` codes need: after `WebDataTest` writes new game data, run `npm run sync-data` in `web/`
+(`web/test/share-code-data.test.ts` fails until then). The website itself ports the Tier Preview numbers
+(`web/src/preview/compute.ts`, which also has `normalGame`, the setup the strength chart compares with). The
+timeline under the Tier Preview is `web/src/preview/timeline.ts`; its event rounds follow `BossRoundsMath.EventRounds`.
+Change them together with the C#. Besides the fixtures below, `web/test/generated.test.ts` reads the random codes from
+the property tests (see *Property tests*).
 
 What only the game knows (the default challenge codes are made against, boss health, speed and skulls, map and tower
 names) comes from the game, through the in-game test `WebDataTest`, into `web/src/data/`:

@@ -3,7 +3,7 @@
 // skull block of Advanced Mode, the Konami party and how large a code may unpack to
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { decode } from "../src/code/decode";
+import { decode } from "@cbc/share-code";
 import { keepsSetup } from "../src/code/link";
 import { FEEDBACK_TIME, announce, copyWithFeedback, h } from "../src/dom";
 import { GAME } from "../src/data/types";

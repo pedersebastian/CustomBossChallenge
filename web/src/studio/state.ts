@@ -3,7 +3,7 @@
 // towers, Advanced Mode's tier bosses) stays as it was in the code.
 
 import { GAME, type Json, type JsonObject } from "../data/types";
-import { defaultOptions, effectiveSpawnRounds, entryOf, isMixed, type BossOptions, type SkullMode } from "../code/options";
+import { defaultOptions, effectiveSpawnRounds, entryOf, isMixed, type BossOptions, type SkullMode } from "@cbc/share-code";
 import {
   FOLLOWS,
   MAX_HEALTH,
@@ -15,10 +15,10 @@ import {
   stepTier,
   withTier,
   type TierBoss,
-} from "../math/tierBosses";
-import { DEFAULT_COUNT, DEFAULT_CUSTOM, MAX_SKULLS, normalizeCustom } from "../math/skulls";
-import { MAX_TIERS } from "../math/tiers";
-import { clamp } from "../math/dotnet";
+} from "@cbc/share-code/tier-bosses";
+import { DEFAULT_COUNT, DEFAULT_CUSTOM, MAX_SKULLS, normalizeCustom } from "@cbc/share-code/skulls";
+import { MAX_TIERS } from "@cbc/share-code/tiers";
+import { clamp } from "@cbc/share-code/dotnet";
 import { NO_LIMIT, fromSlider, toSlider } from "../math/paragons";
 import {
   BOSS_HEALTH_SLIDER,
@@ -31,7 +31,7 @@ import {
   clampTiers,
   evenRounds,
   firstAndGap,
-} from "../math/tiers";
+} from "@cbc/share-code/tiers";
 
 export interface StudioSetup {
   options: BossOptions;

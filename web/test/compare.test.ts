@@ -1,7 +1,7 @@
 // Comparing two setups (issue #35): which options differ, the tiers side by side, the verdict and links to a comparison
 
 import { describe, expect, it } from "vitest";
-import { decode } from "../src/code/decode";
+import { decode } from "@cbc/share-code";
 import { compareCodesFromHash, compareHashFor, compareLinkTo } from "../src/code/link";
 import { compareRows, differences, tierPairs, verdict, type Setup } from "../src/compare/diff";
 import { EXAMPLES } from "../src/data/types";

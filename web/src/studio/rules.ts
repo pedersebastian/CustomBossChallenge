@@ -4,9 +4,9 @@
 // Tower restrictions are not here yet. The end round isn't either: in a boss game it always follows the last tier.
 
 import { GAME, type Json, type JsonObject } from "../data/types";
-import { clamp } from "../math/dotnet";
-import { orDefault } from "../math/limits";
-import { MAX_ROUND } from "../math/tiers";
+import { clamp } from "@cbc/share-code/dotnet";
+import { orDefault } from "@cbc/share-code/limits";
+import { MAX_ROUND } from "@cbc/share-code/tiers";
 import type { StudioSetup } from "./state";
 
 export type RuleGroup = "Game" | "Start" | "Bloons" | "Rules";

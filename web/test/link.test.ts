@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import cases from "./link-cases.json";
 import generated from "./generated-codes.json";
 import examples from "../src/data/examples.json";
-import { decode, extractCode } from "../src/code/decode";
+import { decode, extractCode } from "@cbc/share-code";
 import { codeFromHash, hashFor, linkTo } from "../src/code/link";
 
 const PAGE = "https://pedersebastian.github.io/CustomBossChallenge/";

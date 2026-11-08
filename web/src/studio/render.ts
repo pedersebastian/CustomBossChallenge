@@ -1,14 +1,14 @@
 // The Studio page's editor (#12): the Boss Creator's controls, the code they make and the Tier Preview of that code.
 // The preview shows the code read back the way the mod reads it, so what you see is what the mod loads.
 
-import { decode } from "../code/decode";
-import { encode } from "../code/encode";
+import { decode } from "@cbc/share-code";
+import { encode } from "@cbc/share-code";
 import { compareLinkTo, hashFor, linkTo } from "../code/link";
-import { BOSSES, SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, isMixed, type SkullMode } from "../code/options";
+import { BOSSES, SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, isMixed, type SkullMode } from "@cbc/share-code";
 import { copyWithFeedback, h } from "../dom";
 import { GAME } from "../data/types";
 import { paragonsText, fromSlider } from "../math/paragons";
-import { MAX_SKULLS } from "../math/skulls";
+import { MAX_SKULLS } from "@cbc/share-code/skulls";
 import {
   BOSS_HEALTH_SLIDER,
   BOSS_SPEED_SLIDER,
@@ -22,7 +22,7 @@ import {
   MIN_TIERS,
   PER_TIER_STEP,
   formatRounds,
-} from "../math/tiers";
+} from "@cbc/share-code/tiers";
 import { bossTitle, releaseSetup, renderSetup } from "../preview/render";
 import * as edit from "./state";
 import type { StudioSetup } from "./state";

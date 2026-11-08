@@ -1,12 +1,12 @@
 // The Studio's edit functions (#12) and the Boss Creator math they use: each control gives what the Boss Creator would
 
 import { describe, expect, it } from "vitest";
-import { evenRounds, firstAndGap, formatRounds } from "../src/math/tiers";
+import { evenRounds, firstAndGap, formatRounds } from "@cbc/share-code/tiers";
 import { NO_LIMIT, fromSlider, toSlider } from "../src/math/paragons";
 import { GAME } from "../src/data/types";
-import { effectiveSpawnRounds } from "../src/code/options";
+import { effectiveSpawnRounds } from "@cbc/share-code";
 import * as edit from "../src/studio/state";
-import { FOLLOWS } from "../src/math/tierBosses";
+import { FOLLOWS } from "@cbc/share-code/tier-bosses";
 
 const fresh = edit.newSetup;
 

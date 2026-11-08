@@ -3,8 +3,8 @@
 
 import { describe, expect, it } from "vitest";
 import fixtures from "../src/data/fixtures.json";
-import { decode, type Challenge } from "../src/code/decode";
-import { defaultOptions, type BossOptions } from "../src/code/options";
+import { decode, type Challenge } from "@cbc/share-code";
+import { defaultOptions, type BossOptions } from "@cbc/share-code";
 import { tierPairs } from "../src/compare/diff";
 import { normalGame, tierCards } from "../src/preview/compute";
 import { renderSetup } from "../src/preview/render";

@@ -1,6 +1,6 @@
 // The compare page (issue #35): paste two codes, see what differs. A link with #a=…&b=… opens both straight away.
 
-import { decode, extractCode, type DecodeResult } from "../code/decode";
+import { decode, extractCode, type DecodeResult } from "@cbc/share-code";
 import { compareHashFor, compareLinkTo } from "../code/link";
 import { compareRows, GROUPS, tierPairs, verdict, type Setup } from "../compare/diff";
 import { renderCurves } from "../compare/chart";
