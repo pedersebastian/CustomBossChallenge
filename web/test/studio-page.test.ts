@@ -292,4 +292,27 @@ describe("the Studio page", () => {
     expect(quincy.querySelectorAll("select")).toHaveLength(1);
     expect(quincy.querySelector('input[type="checkbox"]')).toBeNull();
   });
+
+  it("hides a tower's paths and paragon lock while it isn't allowed, and keeps them", async () => {
+    await studio.load(newSetup(), null);
+    const primary = form.querySelector<HTMLDetailsElement>('.studio-tower-class[data-set="Primary"]')!;
+    primary.open = true;
+    primary.dispatchEvent(new Event("toggle"));
+    const dart = [...primary.querySelectorAll<HTMLElement>(".studio-tower")].find((f) => f.querySelector("legend")?.textContent === "Dart Monkey")!;
+    const rows = [...dart.querySelectorAll<HTMLElement>(".studio-row")];
+    const path1 = rows[1].querySelector("select")!;
+    path1.value = "2";
+    path1.dispatchEvent(new Event("change"));
+
+    const limit = dart.querySelector("select")!;
+    limit.value = "notAllowed";
+    limit.dispatchEvent(new Event("change"));
+    expect(rows.slice(1).every((row) => row.hidden)).toBe(true);
+    expect(rows[0].hidden).toBe(false);
+
+    limit.value = "none";
+    limit.dispatchEvent(new Event("change"));
+    expect(rows.some((row) => row.hidden)).toBe(false);
+    expect(path1.value).toBe("2");
+  });
 });

@@ -75,6 +75,8 @@ export function setUpTowersSection(
     });
 
     const rows: HTMLElement[] = [row("Limit", limit, limitId, count)];
+    /** The rows that only mean something while the tower is allowed: its paths and paragon lock */
+    const allowedOnly: HTMLElement[] = [];
 
     // Heroes have no upgrade paths or paragon
     const paths = entry.isHero
@@ -89,7 +91,9 @@ export function setUpTowersSection(
             ),
           );
           select.addEventListener("change", () => change((s) => setBlockedTiers(s, tower, path, PATH_TIERS - Number(select.value))));
-          rows.push(row(`Path ${path}`, select, id));
+          const pathRow = row(`Path ${path}`, select, id);
+          rows.push(pathRow);
+          allowedOnly.push(pathRow);
           return select;
         });
 
@@ -98,7 +102,9 @@ export function setUpTowersSection(
       const id = nextId("paragon");
       const box = h("input", { id, type: "checkbox" });
       box.addEventListener("change", () => change((s) => setParagonLock(s, tower, box.checked)));
-      rows.push(row("Paragon locked", box, id));
+      const paragonRow = row("Paragon locked", box, id);
+      rows.push(paragonRow);
+      allowedOnly.push(paragonRow);
       paragon = box;
     }
 
@@ -116,6 +122,9 @@ export function setUpTowersSection(
       if (document.activeElement !== count) count.value = now.max > 0 ? String(now.max) : "";
       paths.forEach((select, i) => (select.value = String(highestTier(now.blocked[i]))));
       if (paragon) paragon.checked = now.restrictParagon;
+      // A tower that isn't allowed can't be upgraded, so its paths and paragon lock are hidden; what they were set
+      // to is kept, for when it is allowed again
+      for (const hidden of allowedOnly) hidden.hidden = now.max === 0;
       fieldset.classList.toggle("changed", changed(now));
     });
     return fieldset;
