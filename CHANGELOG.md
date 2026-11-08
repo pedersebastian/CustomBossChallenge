@@ -42,6 +42,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the highest tier of each upgrade path and the paragon lock for the 14 towers that have one, in a list per class
   like the game's (Heroes, Primary, Military, Magic, Support) with Allow all and Allow none for each.
 
+### Changed
+
+- **The Studio looks like the game's Boss Creator** (#133): each option is a row with an icon, its name, the control
+  and Reset, on one line where there is room. The boss is picked from a row of boss buttons with a tick, Elite next to
+  them, and the arrow keys step through them. The Tier Preview sits right after the tier rows and the Skull Preview
+  under the skulls, like in the game; in Advanced Mode a tier's card opens its picker, which Esc closes. Sliders,
+  checkboxes and the Challenge Editor's groups got the game's look too. All drawn for the website, with no art from
+  the game.
+
 ## [2.10.2] - 2026-11-07
 
 ### Changed

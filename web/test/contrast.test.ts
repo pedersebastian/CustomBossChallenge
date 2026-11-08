@@ -2,6 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 import css from "../src/style.css?raw";
+import { TIER_LOOK } from "../src/data/types";
 
 /** A colour token from :root, e.g. --panel-inner */
 function token(name: string): string {
@@ -38,6 +39,27 @@ describe("contrast", () => {
     ["--muted", "--card"],
   ])("%s on %s is at least 4.5:1", (text, background) => {
     expect(contrast(token(text), token(background))).toBeGreaterThanOrEqual(4.5);
+  });
+
+  // The Studio like the Boss Creator (#133): the group headers' text, the tick and the slider knob
+  it.each([
+    ["--text", "--sea"],
+    ["--outline", "--green"],
+  ])("%s on %s is at least 4.5:1", (text, background) => {
+    expect(contrast(token(text), token(background))).toBeGreaterThanOrEqual(4.5);
+  });
+
+  // Parts of controls need 3:1 (WCAG 1.4.11): the slider knob against its track, and the checked box against the card
+  it.each([
+    ["--gold", "--sea"],
+    ["--green", "--card"],
+  ])("%s against %s is at least 3:1", (part, background) => {
+    expect(contrast(token(part), token(background))).toBeGreaterThanOrEqual(3);
+  });
+
+  // Each boss button's letter is dark on the boss's own colour
+  it.each(Object.entries(TIER_LOOK.themes).map(([boss, colours]) => [boss, colours[0]]))("%s's badge letter is readable", (_, colour) => {
+    expect(contrast(token("--outline"), colour)).toBeGreaterThanOrEqual(4.5);
   });
 
   it("the health note uses the lighter colour", () => expect(css).toMatch(/\.note\.harder\s*\{\s*color:\s*var\(--harder-text\)/));

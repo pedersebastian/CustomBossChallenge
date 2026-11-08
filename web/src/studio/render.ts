@@ -4,7 +4,7 @@
 import { decode } from "@cbc/share-code";
 import { encode } from "@cbc/share-code";
 import { compareLinkTo, hashFor, linkTo } from "../code/link";
-import { BOSSES, SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, isMixed, type SkullMode } from "@cbc/share-code";
+import { SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, isMixed, type SkullMode } from "@cbc/share-code";
 import { copyWithFeedback, h } from "../dom";
 import { GAME } from "../data/types";
 import { paragonsText, fromSlider } from "../math/paragons";
@@ -23,17 +23,21 @@ import {
   PER_TIER_STEP,
   formatRounds,
 } from "@cbc/share-code/tiers";
-import { bossTitle, releaseSetup, renderSetup } from "../preview/render";
+import { bossTitle, releaseSetup, renderSetup, renderSkulls, renderTiers } from "../preview/render";
+import type { Challenge } from "@cbc/share-code";
 import * as edit from "./state";
 import type { StudioSetup } from "./state";
 import { makeRows, nextId, type Control } from "./rows";
 import { setUpTierEditor } from "./tiers";
+import { setUpBossPicker } from "./bossPicker";
+import { icon } from "./icons";
 import { setUpRulesSection } from "./rulesSection";
 
 /** How long to wait after the last change before making the code and the preview again */
 export const UPDATE_DELAY = 150;
 
-const perTier = (value: number): string => `${value > 0 ? "+" : ""}${value} % per tier`;
+// The row is called "… per Tier", so the value is just the change, short enough for one line (#133)
+const perTier = (value: number): string => `${value > 0 ? "+" : ""}${value} %`;
 
 export interface Studio {
   /** Starts editing a setup; code is the code it came from, for Compare, or null for a new setup */
@@ -81,12 +85,17 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
   const advancedTab = h("button", { class: "studio-tab", type: "button" }, "Advanced");
   standardTab.addEventListener("click", () => switchMode(false));
   advancedTab.addEventListener("click", () => switchMode(true));
-  const modeHelp = h("p", { class: "studio-help", id: nextId("mode-help") });
+  const modeHelp = h("p", { class: "studio-help studio-row-help", id: nextId("mode-help") });
   const modeRow = h(
     "div",
     { class: "studio-row" },
+    icon("mode"),
     h("p", { class: "studio-row-title", id: nextId("mode") }, "Mode"),
-    h("div", { class: "studio-tabs", role: "group", "aria-label": "Mode", "aria-describedby": modeHelp.id }, standardTab, advancedTab),
+    h(
+      "div",
+      { class: "studio-control" },
+      h("div", { class: "studio-tabs", role: "group", "aria-label": "Mode", "aria-describedby": modeHelp.id }, standardTab, advancedTab),
+    ),
     modeHelp,
   );
 
@@ -98,17 +107,8 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     }),
   );
 
-  const elite = h("input", { id: nextId("elite"), type: "checkbox" });
-  elite.addEventListener("change", () => change((s) => edit.setElite(s, elite.checked)));
-  const boss = select(
-    "Boss",
-    BOSSES,
-    (name) => name,
-    (s) => s.options.Boss,
-    edit.setBoss,
-    h("label", { class: "toggle studio-elite" }, elite, "Elite"),
-    reset("Boss", () => change(edit.resetBoss)),
-  );
+  // A button per boss with a tick, then Elite, like the Boss Creator's boss row (#133)
+  const boss = setUpBossPicker(change, reset);
 
   const bossSpeed = slider("Boss Speed", BOSS_SPEED_SLIDER, edit.bossSpeed, (v) => `${v} %`, edit.setBossSpeed, 100);
   const bossHealth = slider("Boss Health", BOSS_HEALTH_SLIDER, edit.bossHealth, (v) => `${v} %`, edit.setBossHealth, 100);
@@ -179,9 +179,13 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     boss, bossSpeed, bossHealth, maxParagons, tiers, speedPerTier, healthPerTier,
     firstRound, roundsBetween, spawnRounds, eventRounds, skullMode, skullCount, customSkulls,
   ];
-  // The tiers' bosses come right after the tier rows, where the Boss Creator has its Tier Preview
+  // Where the Boss Creator has them (#133): the Tier Preview right after the tier rows, which in Advanced Mode is the
+  // strip that opens each tier's picker, and the Skull Preview under the skull rows
+  const tierPreview = h("div", { class: "studio-preview-block studio-tier-preview" });
+  const skullPreview = h("div", { class: "studio-preview-block studio-skull-preview" });
   const rows = controls.map((control) => control.row);
-  rows.splice(controls.indexOf(healthPerTier) + 1, 0, tierEditor.root);
+  rows.splice(controls.indexOf(healthPerTier) + 1, 0, tierPreview, tierEditor.root);
+  rows.push(skullPreview);
   // The Challenge Editor's own rules after the Boss Creator's (#97)
   const rulesSection = setUpRulesSection(change, () => setup);
   form.replaceChildren(modeRow, ...rows, rulesSection.root);
@@ -191,7 +195,6 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
   function sync(): void {
     for (const control of controls) control.sync(setup);
     rulesSection.sync(setup);
-    elite.checked = setup.options.Elite;
     const mixed = isMixed(setup.options);
     standardTab.setAttribute("aria-pressed", String(!mixed));
     advancedTab.setAttribute("aria-pressed", String(mixed));
@@ -207,6 +210,18 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     skullMode.row.hidden = mixed;
     skullCount.row.hidden = mixed || setup.options.SkullMode !== "EvenlySpaced";
     customSkulls.row.hidden = mixed || setup.options.SkullMode !== "Custom";
+
+    // The previews follow every change, from the setup as it is now; Boss Speed and Boss Health are all the Tier
+    // Preview needs from the challenge
+    releaseSetup(tierPreview);
+    releaseSetup(skullPreview);
+    tierPreview.hidden = mixed;
+    skullPreview.hidden = mixed;
+    if (!mixed) {
+      const summary = { bossSpeed: edit.bossSpeed(setup) / 100, bossHealth: edit.bossHealth(setup) / 100 } as Challenge;
+      tierPreview.replaceChildren(renderTiers(setup.options, summary));
+      skullPreview.replaceChildren(renderSkulls(setup.options));
+    }
   }
 
   // ---------- Code and preview ----------

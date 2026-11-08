@@ -100,8 +100,12 @@ function renderStrength(options: BossOptions, challenge: Challenge): HTMLElement
 }
 
 /** Long boss names may break where their parts meet on a narrow card, not anywhere: "Blasta-popoulos" */
-const breakable = (name: string): string =>
-  name.replace("Blastapopoulos", "Blasta­popoulos").replace("Diamondback", "Diamond­back").replace("Dreadbloon", "Dread­bloon");
+export const breakable = (name: string): string =>
+  name
+    .replace("Blastapopoulos", "Blasta­popoulos")
+    .replace("Diamondback", "Diamond­back")
+    .replace("Dreadbloon", "Dread­bloon")
+    .replace("Bloonarius", "Bloon­arius");
 
 /** The boss's first letter, or ★ with a boss per tier; with more than 5 tiers it glows like the last tier */
 function renderBadge(options: BossOptions): HTMLElement {
@@ -118,7 +122,8 @@ function renderBadge(options: BossOptions): HTMLElement {
   );
 }
 
-function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
+/** The Tier Preview: a card per tier with its round, speed and health, like Menus/TierStrip.cs (the Studio shows it too) */
+export function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
   const cards = tierCards(options, challenge);
   const strip = h("div", { class: "tiers", role: "list" });
   for (const card of cards) {
@@ -147,7 +152,7 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
         h("span", { class: `tier-speed ${speedTone}`, title: "Speed compared with the normal game", "aria-hidden": "true" }, speed + ARROW[speedTone]),
         h("span", { class: `tier-health ${healthTone}`, title: "Health", "aria-hidden": "true" }, card.health + ARROW[healthTone]),
         boss
-          ? h("span", { class: "tier-skulls", title: "Skulls of this tier's boss", "aria-hidden": "true" }, `☠${card.skulls ?? "?"}`)
+          ? h("span", { class: "tier-skulls", title: "Skulls of this tier's boss", "aria-hidden": "true" }, `☠ ${card.skulls ?? "?"}`)
           : null,
       ),
     );
@@ -167,7 +172,8 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
   return wrapper;
 }
 
-function renderSkulls(options: BossOptions, shownTier = 1): HTMLElement {
+/** The Skull Preview: the health bar with the skulls on it, like Menus/SkullStrip.cs (the Studio shows it too) */
+export function renderSkulls(options: BossOptions, shownTier = 1): HTMLElement {
   const { percents: shown, tier } = skulls(options, shownTier);
   const percents = shown ?? [];
   const bar = h(
