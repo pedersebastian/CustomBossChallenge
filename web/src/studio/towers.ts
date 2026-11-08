@@ -3,7 +3,7 @@
 // and only the fields a code may set (CodeFormat.ChallengeFields.towers) are written, so a code keeps just the changed
 // entries of the list.
 
-import { GAME, type Json, type JsonObject } from "../data/types";
+import { GAME, towerName, type Json, type JsonObject } from "../data/types";
 import { clamp } from "../math/dotnet";
 import { orDefault } from "../math/limits";
 import type { StudioSetup } from "./state";
@@ -58,7 +58,7 @@ function entryOf(item: JsonObject, standard: JsonObject | undefined): TowerEntry
   const read = (key: string, fallback: number) => int(item[key], int(standard?.[key], fallback));
   return {
     tower,
-    name: GAME.towers[tower] ?? tower,
+    name: towerName(tower),
     set: setOf(tower),
     isHero: (item.isHero ?? standard?.isHero) === true,
     hasParagon: GAME.paragonTowers.includes(tower),

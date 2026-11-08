@@ -1,6 +1,6 @@
 // Compares two setups (issue #35): every option side by side, which ones differ, and a short verdict where it's clear
 
-import { GAME } from "../data/types";
+import { GAME, towerName } from "../data/types";
 import type { Challenge } from "../code/decode";
 import {
   effectiveSpawnRounds,
@@ -124,7 +124,7 @@ export function compareRows(a: Setup, b: Setup): Row[] {
   const changed = new Set([...Object.keys(a.challenge.towers), ...Object.keys(b.challenge.towers)]);
   const order = Object.keys(GAME.towers);
   const towers = [...changed].sort((x, y) => (order.indexOf(x) + 1 || Infinity) - (order.indexOf(y) + 1 || Infinity));
-  for (const id of towers) add("Towers", GAME.towers[id] ?? id, (s) => towerLimit(s.challenge.towers[id]));
+  for (const id of towers) add("Towers", towerName(id), (s) => towerLimit(s.challenge.towers[id]));
 
   return rows;
 }

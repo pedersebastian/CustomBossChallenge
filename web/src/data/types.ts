@@ -87,4 +87,13 @@ export interface Example {
 
 export const GAME = game as unknown as GameData;
 export const EXAMPLES = examples as Example[];
+
+/**
+ * The names the website shows for a few towers instead of the game's: the Challenge Editor's "Chosen Primary Hero"
+ * is the hero each player has picked as their own, whoever that is (#128)
+ */
+const TOWER_NAMES: Record<string, string> = { ChosenPrimaryHero: "Your own hero" };
+
+/** A tower's or hero's name as the website shows it */
+export const towerName = (id: string): string => TOWER_NAMES[id] ?? GAME.towers[id] ?? id;
 export const TIER_LOOK = tierLook as TierLookData;

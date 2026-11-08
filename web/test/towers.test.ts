@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import { decode } from "../src/code/decode";
 import { encode } from "../src/code/encode";
-import { GAME, type JsonObject } from "../src/data/types";
+import { GAME, towerName, type JsonObject } from "../src/data/types";
 import { newSetup } from "../src/studio/state";
 import {
   TOWER_SETS,
@@ -59,6 +59,13 @@ describe("tower limits", () => {
 });
 
 describe("heroes", () => {
+  it("call Chosen Primary Hero the player's own hero, and keep the game's other names", () => {
+    expect(towerName("ChosenPrimaryHero")).toBe("Your own hero");
+    expect(entry(newSetup(), "ChosenPrimaryHero").name).toBe("Your own hero");
+    expect(towerName("Quincy")).toBe(GAME.towers.Quincy);
+    expect(towerName("NoSuchTower")).toBe("NoSuchTower");
+  });
+
   it("are allowed (1) or not (0): only one hero can be placed in a game", () => {
     expect(entry(setHeroAllowed(newSetup(), "Quincy", true), "Quincy").max).toBe(1);
     expect(entry(setHeroAllowed(newSetup(), "Ezili", false), "Ezili").max).toBe(0);

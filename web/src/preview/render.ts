@@ -1,6 +1,6 @@
 // Shows a decoded setup the way the Boss Creator would: the boss, the Tier Preview, the skulls and the rules
 
-import { GAME } from "../data/types";
+import { GAME, towerName } from "../data/types";
 import { announce, h } from "../dom";
 import { paragonsText } from "../math/paragons";
 import { playProblem, type Challenge } from "../code/decode";
@@ -273,7 +273,7 @@ function renderRules(options: BossOptions, challenge: Challenge, rounds: number[
   ].filter((x): x is string => Boolean(x));
 
   const towers = Object.entries(challenge.towers).map(([id, max]) => {
-    const name = GAME.towers[id] ?? id;
+    const name = towerName(id);
     return max === 0 ? `${name}: not allowed` : max < 0 ? `${name}: no limit` : `${name}: max ${max}`;
   });
 
