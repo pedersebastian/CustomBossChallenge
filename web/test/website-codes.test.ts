@@ -112,7 +112,7 @@ const SETUPS: [string, StudioSetup][] = [
     ),
   ],
   ["towers: military only, no heroes", make(...["Primary", "Magic", "Support", "Hero"].map((set) => (s: StudioSetup) => towers.setClassAllowed(s, set, false)))],
-  ["towers: a hero allowed", make((s) => towers.setTowerLimit(s, "Quincy", "limited", "1"), (s) => towers.setTowerLimit(s, "ChosenPrimaryHero", "none"))],
+  ["towers: heroes allowed", make((s) => towers.setHeroAllowed(s, "Quincy", true), (s) => towers.setHeroAllowed(s, "ChosenPrimaryHero", true), (s) => towers.setHeroAllowed(s, "Ezili", false))],
   [
     "everything",
     make(

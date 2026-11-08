@@ -16,6 +16,7 @@ import {
   resetTowers,
   setBlockedTiers,
   setClassAllowed,
+  setHeroAllowed,
   setParagonLock,
   setTowerLimit,
   towerEntries,
@@ -31,6 +32,11 @@ const CLASS_NAMES: Record<string, string> = {
   Support: "Support",
   [OTHER_TOWERS]: "Other",
 };
+
+const HERO_LIMITS = [
+  { value: "allowed", label: "Allowed" },
+  { value: "notAllowed", label: "Not allowed" },
+];
 
 const LIMITS: { value: LimitMode; label: string }[] = [
   { value: "none", label: "No limit" },
@@ -54,7 +60,9 @@ export function setUpTowersSection(
   function towerRow(entry: TowerEntry): HTMLElement {
     const tower = entry.tower;
     const limitId = nextId("tower");
-    const limit = h("select", { id: limitId }, ...LIMITS.map((choice) => h("option", { value: choice.value }, choice.label)));
+    // A hero is allowed or not: only one hero can be placed in a game
+    const choices = entry.isHero ? HERO_LIMITS : LIMITS;
+    const limit = h("select", { id: limitId }, ...choices.map((choice) => h("option", { value: choice.value }, choice.label)));
     const count = h("input", {
       type: "number",
       class: "studio-text studio-number",
@@ -65,7 +73,9 @@ export function setUpTowersSection(
       "aria-label": `${entry.name}: how many`,
       ...NO_AUTOFILL,
     });
-    limit.addEventListener("change", () => change((s) => setTowerLimit(s, tower, limit.value as LimitMode)));
+    limit.addEventListener("change", () =>
+      change((s) => (entry.isHero ? setHeroAllowed(s, tower, limit.value === "allowed") : setTowerLimit(s, tower, limit.value as LimitMode))),
+    );
     count.addEventListener("change", () => change((s) => setTowerLimit(s, tower, "limited", count.value)));
     count.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -74,7 +84,7 @@ export function setUpTowersSection(
       }
     });
 
-    const rows: HTMLElement[] = [row("Limit", limit, limitId, count)];
+    const rows: HTMLElement[] = [entry.isHero ? row("Hero", limit, limitId) : row("Limit", limit, limitId, count)];
     /** The rows that only mean something while the tower is allowed: its paths and paragon lock */
     const allowedOnly: HTMLElement[] = [];
 
@@ -117,8 +127,9 @@ export function setUpTowersSection(
     );
 
     syncs.set(tower, (now) => {
-      limit.value = limitMode(now.max);
-      count.hidden = now.max <= 0;
+      // A hero from a code with another limit than 1 is shown as allowed, and kept as it is until changed
+      limit.value = entry.isHero ? (now.max === 0 ? "notAllowed" : "allowed") : limitMode(now.max);
+      count.hidden = entry.isHero || now.max <= 0;
       if (document.activeElement !== count) count.value = now.max > 0 ? String(now.max) : "";
       paths.forEach((select, i) => (select.value = String(highestTier(now.blocked[i]))));
       if (paragon) paragon.checked = now.restrictParagon;

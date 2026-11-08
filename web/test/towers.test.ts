@@ -15,6 +15,7 @@ import {
   resetTowers,
   setBlockedTiers,
   setClassAllowed,
+  setHeroAllowed,
   setParagonLock,
   setTowerLimit,
   towerEntries,
@@ -39,7 +40,6 @@ describe("the game's tower data", () => {
 describe("tower limits", () => {
   it("maps the three modes to -1, 0 and a number", () => {
     expect(entry(setTowerLimit(newSetup(), "DartMonkey", "notAllowed"), "DartMonkey").max).toBe(0);
-    expect(entry(setTowerLimit(newSetup(), "Quincy", "none"), "Quincy").max).toBe(-1);
     expect(entry(setTowerLimit(newSetup(), "DartMonkey", "limited", "3"), "DartMonkey").max).toBe(3);
     // Limited without a number starts at 1
     expect(entry(setTowerLimit(newSetup(), "DartMonkey", "limited"), "DartMonkey").max).toBe(1);
@@ -55,6 +55,15 @@ describe("tower limits", () => {
     expect(limitMode(-1)).toBe("none");
     expect(limitMode(0)).toBe("notAllowed");
     expect(limitMode(7)).toBe("limited");
+  });
+});
+
+describe("heroes", () => {
+  it("are allowed (1) or not (0): only one hero can be placed in a game", () => {
+    expect(entry(setHeroAllowed(newSetup(), "Quincy", true), "Quincy").max).toBe(1);
+    expect(entry(setHeroAllowed(newSetup(), "Ezili", false), "Ezili").max).toBe(0);
+    const all = towerEntries(setClassAllowed(newSetup(), "Hero", true)).filter((e) => e.isHero);
+    expect(all.every((e) => e.max === 1)).toBe(true);
   });
 });
 

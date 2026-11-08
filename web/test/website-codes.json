@@ -659,8 +659,8 @@
       }
     },
     {
-      "name": "towers: a hero allowed",
-      "code": "CBC1:q1bKV7KqrtVRSlayqlYqyS9PLSoGsVQyS1JzwSwDEJGbWKFkpWtYq6NkCOca1oIAAA",
+      "name": "towers: heroes allowed",
+      "code": "CBC1:q1bKV7KqrtVRSlayqlYqyS9PLSoGsVQyS1JzwSwDEJGbWKFkZViro2SIwjOH8wxqQQAA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -677,10 +677,13 @@
         "towers": {
           "$items": {
             "0": {
-              "max": -1
+              "max": 1
             },
             "1": {
               "max": 1
+            },
+            "7": {
+              "max": 0
             }
           }
         }

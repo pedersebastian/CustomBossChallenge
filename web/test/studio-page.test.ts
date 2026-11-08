@@ -315,4 +315,19 @@ describe("the Studio page", () => {
     expect(rows.some((row) => row.hidden)).toBe(false);
     expect(path1.value).toBe("2");
   });
+
+  it("gives a hero only Allowed or Not allowed", async () => {
+    await studio.load(newSetup(), null);
+    const heroes = form.querySelector<HTMLDetailsElement>('.studio-tower-class[data-set="Hero"]')!;
+    heroes.open = true;
+    heroes.dispatchEvent(new Event("toggle"));
+    const quincy = [...heroes.querySelectorAll<HTMLElement>(".studio-tower")].find((f) => f.querySelector("legend")?.textContent === "Quincy")!;
+    const choice = quincy.querySelector("select")!;
+    expect([...choice.options].map((o) => o.textContent)).toEqual(["Allowed", "Not allowed"]);
+    expect(quincy.querySelector('input[type="number"]')).toBeNull();
+    expect(choice.value).toBe("notAllowed");
+    choice.value = "allowed";
+    choice.dispatchEvent(new Event("change"));
+    expect((await readChallenge()).towers).toMatchObject({ Quincy: 1 });
+  });
 });

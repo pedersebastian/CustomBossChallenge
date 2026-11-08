@@ -15,6 +15,12 @@ export const OTHER_TOWERS = "Other";
 export const NO_LIMIT = -1;
 export const NOT_ALLOWED = 0;
 
+/**
+ * A hero that is allowed: only one hero can be placed in a game, so a hero is allowed (1, as the game's own new
+ * challenge has for the allowed hero) or not (0), never limited to more
+ */
+export const HERO_ALLOWED = 1;
+
 /** A tower path has five upgrade tiers */
 export const PATH_TIERS = 5;
 
@@ -130,11 +136,18 @@ export const highestTier = (blocked: number): number => PATH_TIERS - clamp(block
 export const setParagonLock = (setup: StudioSetup, tower: string, locked: boolean): StudioSetup =>
   GAME.paragonTowers.includes(tower) ? changeTower(setup, tower, { restrictParagon: locked }) : setup;
 
-/** Every tower of a class allowed without a limit, or not allowed at all */
+/** A hero allowed or not; for a hero that is all a limit can say */
+export const setHeroAllowed = (setup: StudioSetup, tower: string, allowed: boolean): StudioSetup =>
+  changeTower(setup, tower, { max: allowed ? HERO_ALLOWED : NOT_ALLOWED });
+
+/** Every tower of a class allowed without a limit (a hero: allowed), or not allowed at all */
 export const setClassAllowed = (setup: StudioSetup, set: string, allowed: boolean): StudioSetup =>
   towerEntries(setup)
     .filter((entry) => entry.set === set)
-    .reduce((current, entry) => changeTower(current, entry.tower, { max: allowed ? NO_LIMIT : NOT_ALLOWED }), setup);
+    .reduce(
+      (current, entry) => changeTower(current, entry.tower, { max: !allowed ? NOT_ALLOWED : entry.isHero ? HERO_ALLOWED : NO_LIMIT }),
+      setup,
+    );
 
 /** One tower back to the new challenge's values */
 export function resetTower(setup: StudioSetup, tower: string): StudioSetup {
