@@ -5,6 +5,10 @@
 
 import { SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, tierBossName, type SkullMode } from "@cbc/share-code";
 import { announce, h } from "../dom";
+import { formatDecimals } from "@cbc/share-code/dotnet";
+import type { Challenge } from "@cbc/share-code";
+import { tierCards } from "../preview/compute";
+import { releaseSetup, renderSkulls } from "../preview/render";
 import { CHOICES, FOLLOWS, MAX_HEALTH, MAX_SPEED, MIN_HEALTH, MIN_SPEED, NORMAL, RANDOM } from "@cbc/share-code/tier-bosses";
 import { MAX_SKULLS } from "@cbc/share-code/skulls";
 import { MAX_TIERS } from "@cbc/share-code/tiers";
@@ -46,6 +50,25 @@ export function setUpTierEditor(
     sync(current());
   };
 
+  // The tier picker opens over the strip from a card, like the Boss Creator's TierBossPicker, and closes with Esc or a
+  // click outside it, giving the focus back to the card
+  let opened: HTMLButtonElement | null = null;
+  const open = (tier: number): void => {
+    // Shown first, so the sync that follows draws its Skull Preview too
+    panel.hidden = false;
+    opened = cards[tier - 1];
+    select_(tier);
+    for (const card of cards) card.setAttribute("aria-expanded", String(card === opened));
+    heading.focus();
+  };
+  const close = (): void => {
+    if (panel.hidden) return;
+    panel.hidden = true;
+    for (const card of cards) card.setAttribute("aria-expanded", "false");
+    opened?.focus();
+    opened = null;
+  };
+
   // ---------- The bosses to put on a tier ----------
 
   const chips = CHOICES.map((choice) => {
@@ -69,7 +92,7 @@ export function setUpTierEditor(
   const cards = Array.from({ length: MAX_TIERS }, (_, i) => {
     const tier = i + 1;
     const card = h("button", { class: "studio-tier", type: "button", "data-tier": String(tier) });
-    card.addEventListener("click", () => select_(tier));
+    card.addEventListener("click", () => (opened === card && !panel.hidden ? close() : open(tier)));
     card.addEventListener("keydown", (event) => {
       if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
         event.preventDefault();
@@ -100,7 +123,11 @@ export function setUpTierEditor(
 
   // ---------- The chosen tier's own values ----------
 
-  const heading = h("h3", { class: "studio-tier-heading" });
+  const heading = h("h3", { class: "studio-tier-heading", tabindex: "-1" });
+  const close_ = h("button", { class: "button small", type: "button" }, "Done");
+  close_.addEventListener("click", () => close());
+  /** The chosen tier's skulls, like the picker's Skull Preview */
+  const skullPreview = h("div", { class: "studio-skull-preview" });
   const tierElite = checkbox("Elite", (s) => edit.shownTier(s, selected).elite, (s, on) => edit.setTierElite(s, selected, on));
   const tierSpeed = slider(
     "Speed",
@@ -151,9 +178,21 @@ export function setUpTierEditor(
     { class: "studio-tier-panel", role: "group", "aria-labelledby": "studio-tier-heading" },
     heading,
     ...panelControls.map((control) => control.row),
-    h("div", { class: "actions" }, follow, resetAllButton),
+    skullPreview,
+    h("div", { class: "actions" }, close_, follow, resetAllButton),
   );
   heading.id = "studio-tier-heading";
+  panel.hidden = true;
+  panel.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      close();
+    }
+  });
+  document.addEventListener("pointerdown", (event) => {
+    const target = event.target as Node | null;
+    if (!panel.hidden && target && !panel.contains(target) && !strip.contains(target) && !palette.contains(target)) close();
+  });
 
   const root = h(
     "div",
@@ -169,26 +208,31 @@ export function setUpTierEditor(
     const tiers = setup.options.Tiers;
     if (selected > tiers) selected = tiers;
     const rounds = effectiveSpawnRounds(setup.options);
+    // Each card's speed and health as the Tier Preview shows them, with Boss Speed and Boss Health on top
+    const values = tierCards(setup.options, { bossSpeed: edit.bossSpeed(setup) / 100, bossHealth: edit.bossHealth(setup) / 100 } as Challenge);
 
     cards.forEach((card, i) => {
       const tier = i + 1;
       card.hidden = tier > tiers;
       const shown = edit.shownTier(setup, tier);
       const name = tierBossName(setup.options, tier);
-      const values = shown.speed === NORMAL && shown.health === NORMAL ? "" : `${shown.speed} % speed, ${shown.health} % health`;
+      const own = shown.speed === NORMAL && shown.health === NORMAL ? "" : `${shown.speed} % speed, ${shown.health} % health`;
       const skulls = shown.skulls === "Vanilla" ? "" : shown.skulls === "EvenlySpaced" ? `${shown.skullCount} skulls` : "Custom skulls";
+      const card_ = values[i];
       card.replaceChildren(
         h("span", { class: "studio-tier-number" }, `T${tier}`),
         h("span", { class: "studio-tier-round" }, `R${rounds[i] ?? ""}`),
         h("span", { class: "studio-tier-boss" }, name),
-        // Speed and health on one short line; the card's label says them in words
-        values && h("span", { class: "studio-tier-values", title: values }, `${shown.speed}%/${shown.health}%`),
+        // Like the Tier Preview's cards: the speed compared with the normal game, and the health
+        card_ ? h("span", { class: "studio-tier-values" }, `×${formatDecimals(card_.speed, 2)} · ${card_.health}`) : "",
+        // Its own speed and health on one short line; the card's label says them in words
+        own && h("span", { class: "studio-tier-values", title: own }, `${shown.speed}%/${shown.health}%`),
         skulls && h("span", { class: "studio-tier-values" }, skulls),
       );
       card.setAttribute("aria-pressed", String(tier === selected));
       card.setAttribute(
         "aria-label",
-        `Tier ${tier}, round ${rounds[i] ?? ""}: ${name}${values ? `, ${values}` : ""}${skulls ? `, ${skulls}` : ""}`,
+        `Tier ${tier}, round ${rounds[i] ?? ""}: ${name}${own ? `, ${own}` : ""}${skulls ? `, ${skulls}` : ""}`,
       );
     });
 
@@ -201,6 +245,10 @@ export function setUpTierEditor(
     const mode = edit.shownTier(setup, selected).skulls;
     tierSkullCount.row.hidden = mode !== "EvenlySpaced";
     tierCustomSkulls.row.hidden = mode !== "Custom";
+    if (!panel.hidden) {
+      releaseSetup(skullPreview);
+      skullPreview.replaceChildren(renderSkulls(setup.options, selected));
+    }
   }
 
   return { root, sync, selected: () => selected };

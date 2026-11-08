@@ -118,7 +118,8 @@ function renderBadge(options: BossOptions): HTMLElement {
   );
 }
 
-function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
+/** The Tier Preview: a card per tier with its round, speed and health, like Menus/TierStrip.cs (the Studio shows it too) */
+export function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
   const cards = tierCards(options, challenge);
   const strip = h("div", { class: "tiers", role: "list" });
   for (const card of cards) {
@@ -167,7 +168,8 @@ function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
   return wrapper;
 }
 
-function renderSkulls(options: BossOptions, shownTier = 1): HTMLElement {
+/** The Skull Preview: the health bar with the skulls on it, like Menus/SkullStrip.cs (the Studio shows it too) */
+export function renderSkulls(options: BossOptions, shownTier = 1): HTMLElement {
   const { percents: shown, tier } = skulls(options, shownTier);
   const percents = shown ?? [];
   const bar = h(

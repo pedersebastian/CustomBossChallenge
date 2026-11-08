@@ -287,7 +287,8 @@ like the Boss Creator does (Tier Preview, skulls, rules) and lists example codes
 `compare.html` (two setups side by side) and `studio.html`, the Studio (#12, #79), which makes and changes setups with
 the Boss Creator's controls (`web/src/studio/`), Advanced Mode's bosses per tier included (`tiers.ts`, #95), the
 Challenge Editor's rules (`rules.ts`, #97) and its tower restrictions (`towers.ts`, #128), held to `ChallengeLimits`
-with the same clamping the code reader uses. It needs [Node.js](https://nodejs.org/) LTS:
+with the same clamping the code reader uses. It is laid out like the Boss Creator (#133): rows with our own icons
+(`icons.ts`), the boss buttons (`bossPicker.ts`), and the preview's Tier Preview and Skull Preview among the controls. It needs [Node.js](https://nodejs.org/) LTS:
 
 ```
 cd web

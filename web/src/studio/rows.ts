@@ -3,6 +3,7 @@
 
 import { h } from "../dom";
 import type { StudioSetup } from "./state";
+import { icon, iconNameFor } from "./icons";
 
 /** A control and how it shows the setup */
 export interface Control {
@@ -27,8 +28,15 @@ export const nextId = (name: string): string => `studio-${name}-${++ids}`;
 
 /** The row builders, each calling change with how the setup changes */
 export function makeRows(change: (update: (current: StudioSetup) => StudioSetup) => void) {
+  /** A row like the Boss Creator's (#133): its icon, its name, then the control, its value and Reset */
   function row(label: string, control: HTMLElement, id: string, ...extra: Node[]): HTMLElement {
-    return h("div", { class: "studio-row" }, h("label", { for: id }, label), h("div", { class: "studio-control" }, control, ...extra));
+    return h(
+      "div",
+      { class: "studio-row" },
+      icon(iconNameFor(label)),
+      h("label", { for: id }, label),
+      h("div", { class: "studio-control" }, control, ...extra),
+    );
   }
 
   function reset(label: string, onReset: () => void): HTMLButtonElement {

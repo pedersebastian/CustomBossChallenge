@@ -189,7 +189,9 @@ describe("the Studio page", () => {
     input.value = "250";
     input.dispatchEvent(new Event("input"));
     expect((await tierBosses())?.split(",")[2]).toBe("Bloonarius@250/100");
-    expect(card(3).querySelector(".studio-tier-values")?.textContent).toBe("250%/100%");
+    // The card shows the Tier Preview's numbers, then the tier's own speed and health
+    expect(card(3).querySelector(".studio-tier-values[title]")?.textContent).toBe("250%/100%");
+    expect(card(3).querySelector(".studio-tier-values")?.textContent).toBe("×2.5 · 350k");
   });
 
   const ruleControl = (label: string): HTMLInputElement & HTMLSelectElement => {
@@ -329,5 +331,80 @@ describe("the Studio page", () => {
     choice.value = "allowed";
     choice.dispatchEvent(new Event("change"));
     expect((await readChallenge()).towers).toMatchObject({ Quincy: 1 });
+  });
+
+  describe("like the game's Boss Creator (#133)", () => {
+    const bosses = (): HTMLButtonElement[] => [...form.querySelectorAll<HTMLButtonElement>(".studio-boss")];
+
+    it("picks the boss from a radio group of buttons, with one tab stop and the arrow keys", async () => {
+      await studio.load(newSetup(), null);
+      const group = form.querySelector('[role="radiogroup"]')!;
+      expect(group.getAttribute("aria-labelledby")).toBeTruthy();
+      expect(bosses().filter((b) => b.tabIndex === 0).map((b) => b.dataset.boss)).toEqual(["Bloonarius"]);
+
+      bosses().find((b) => b.dataset.boss === "Lych")!.click();
+      expect(bosses().find((b) => b.getAttribute("aria-checked") === "true")?.dataset.boss).toBe("Lych");
+
+      const lych = bosses().find((b) => b.dataset.boss === "Lych")!;
+      lych.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+      expect(studio.setup().options.Boss).toBe("Vortex");
+      bosses()[2].dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true }));
+      expect(studio.setup().options.Boss).toBe("Diamondback");
+      expect(bosses().filter((b) => b.tabIndex === 0).map((b) => b.dataset.boss)).toEqual(["Diamondback"]);
+      await studio.flush();
+      expect(await decode(studio.code())).toMatchObject({ ok: true, options: { Boss: "Diamondback" } });
+    });
+
+    it("gives every row an icon before its name", async () => {
+      await studio.load(newSetup(), null);
+      for (const row of form.querySelectorAll<HTMLElement>(":scope > .studio-row")) {
+        expect(row.firstElementChild?.classList.contains("studio-icon"), row.textContent ?? "").toBe(true);
+        expect(row.firstElementChild?.getAttribute("aria-hidden")).toBe("true");
+      }
+    });
+
+    it("shows the Tier Preview and Skull Preview among the controls in Standard, and follows the changes", async () => {
+      await studio.load(newSetup(), null);
+      const tiers = form.querySelector<HTMLElement>(".studio-tier-preview")!;
+      const skulls = form.querySelector<HTMLElement>(":scope > .studio-skull-preview")!;
+      expect(tiers.hidden).toBe(false);
+      expect(tiers.querySelectorAll(".tier")).toHaveLength(5);
+      // Right after Health per Tier, like the Boss Creator's
+      expect(tiers.previousElementSibling?.querySelector("label")?.textContent).toBe("Health per Tier");
+
+      const count = rowOf("Boss Tiers").querySelector("input")!;
+      count.value = "7";
+      count.dispatchEvent(new Event("input"));
+      expect(tiers.querySelectorAll(".tier")).toHaveLength(7);
+
+      const mode = rowOf("Skulls").querySelector("select")!;
+      mode.value = "EvenlySpaced";
+      mode.dispatchEvent(new Event("change"));
+      const skullCount = rowOf("Skull Count").querySelector("input")!;
+      skullCount.value = "6";
+      skullCount.dispatchEvent(new Event("input"));
+      expect(skulls.querySelectorAll(".skull")).toHaveLength(6);
+
+      tab("Advanced").click();
+      expect(tiers.hidden).toBe(true);
+      expect(skulls.hidden).toBe(true);
+    });
+
+    it("opens a tier's picker from its card in Advanced, and Esc closes it back to the card", async () => {
+      await studio.load(newSetup(), null);
+      tab("Advanced").click();
+      const panel = form.querySelector<HTMLElement>(".studio-tier-panel")!;
+      expect(panel.hidden).toBe(true);
+      card(2).click();
+      expect(panel.hidden).toBe(false);
+      expect(card(2).getAttribute("aria-expanded")).toBe("true");
+      expect(panel.contains(document.activeElement)).toBe(true);
+      expect(panel.querySelector(".studio-skull-preview .skull-bar")).not.toBeNull();
+
+      panel.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+      expect(panel.hidden).toBe(true);
+      expect(document.activeElement).toBe(card(2));
+      expect(card(2).getAttribute("aria-expanded")).toBe("false");
+    });
   });
 });
