@@ -26,6 +26,10 @@ export interface GameData {
   /** Each map's group in the game's map lists: Beginner, Intermediate, Advanced or Expert */
   mapDifficulties: Record<string, string>;
   towers: Record<string, string>;
+  /** Each tower's class in the game: Primary, Military, Magic, Support, or Hero for the heroes */
+  towerSets: Record<string, string>;
+  /** The towers that have a paragon, the only ones the paragon lock applies to */
+  paragonTowers: string[];
   modes: Record<string, string>;
   difficulties: Record<string, string>;
   unsupportedModes: string[];

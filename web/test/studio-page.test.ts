@@ -246,4 +246,50 @@ describe("the Studio page", () => {
     if (!read.ok) throw new Error(read.reason);
     expect(read.json.map).toBe("BrandNewMap");
   });
+
+  it("builds a tower class when it opens, and its controls change the code (#128)", async () => {
+    await studio.load(newSetup(), null);
+    const primary = form.querySelector<HTMLDetailsElement>('.studio-tower-class[data-set="Primary"]')!;
+    expect(primary.querySelectorAll(".studio-tower")).toHaveLength(0);
+    primary.open = true;
+    primary.dispatchEvent(new Event("toggle"));
+    const dart = [...primary.querySelectorAll<HTMLElement>(".studio-tower")].find((f) => f.querySelector("legend")?.textContent === "Dart Monkey")!;
+    expect(primary.querySelectorAll(".studio-tower")).toHaveLength(7);
+
+    const limit = dart.querySelector("select")!;
+    const count = dart.querySelector<HTMLInputElement>('input[type="number"]')!;
+    expect(count.hidden).toBe(true);
+    limit.value = "limited";
+    limit.dispatchEvent(new Event("change"));
+    expect(count.hidden).toBe(false);
+    count.value = "4";
+    count.dispatchEvent(new Event("change"));
+    const path3 = dart.querySelectorAll("select")[3];
+    path3.value = "2";
+    path3.dispatchEvent(new Event("change"));
+
+    expect((await readChallenge()).towers).toMatchObject({ DartMonkey: 4 });
+    const read = await decode(studio.code());
+    if (!read.ok) throw new Error(read.reason);
+    const towers = read.json.towers as { tower: string; path3NumBlockedTiers: number }[];
+    expect(towers.find((t) => t.tower === "DartMonkey")?.path3NumBlockedTiers).toBe(3);
+    expect(dart.classList.contains("changed")).toBe(true);
+    expect(primary.querySelector("summary")?.textContent).toBe("Primary (7, 1 changed)");
+  });
+
+  it("labels every tower control, and gives heroes no paths or paragon", async () => {
+    await studio.load(newSetup(), null);
+    for (const details of form.querySelectorAll<HTMLDetailsElement>(".studio-tower-class")) {
+      details.open = true;
+      details.dispatchEvent(new Event("toggle"));
+    }
+    expect(form.querySelectorAll(".studio-tower")).toHaveLength(45);
+    for (const input of form.querySelectorAll(".studio-tower input, .studio-tower select")) {
+      const named = input.id !== "" && form.querySelector(`label[for="${input.id}"]`) !== null;
+      expect(named || input.hasAttribute("aria-label"), input.outerHTML).toBe(true);
+    }
+    const quincy = [...form.querySelectorAll<HTMLElement>(".studio-tower")].find((f) => f.querySelector("legend")?.textContent === "Quincy")!;
+    expect(quincy.querySelectorAll("select")).toHaveLength(1);
+    expect(quincy.querySelector('input[type="checkbox"]')).toBeNull();
+  });
 });

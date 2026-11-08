@@ -540,6 +540,153 @@
       }
     },
     {
+      "name": "towers: limits, paths and a paragon",
+      "code": "CBC1:q1bKV7KqrtVRSlayqlYqyS9PLSoGsVQyS1JzwSxDSxCZm1ihZGWso1SUWlxSlJlcEpBYlJien6dkVVJUmlqro2RsAldlAOKagrgFiSUZhn6luU45-cnZqSkhmWDDDXXAEkYYEqYQCWMMCeNaHSUTA7gFhgYGBrUgAAA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "towers": {
+          "$items": {
+            "19": {
+              "max": 3,
+              "restrictParagon": true
+            },
+            "34": {
+              "max": 0
+            },
+            "35": {
+              "path1NumBlockedTiers": 1,
+              "path2NumBlockedTiers": 5,
+              "path3NumBlockedTiers": 3
+            },
+            "40": {
+              "max": 1000
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "towers: military only, no heroes",
+      "code": "CBC1:Xc87CoAwEIThuyyWFjG7vnIbkRQWIqigEHJ3iZW_KcJ-MMVMkk1CyrXMEpKc2xX3o1zVcsb1vfryrdMtweVamhH0jmxITyppZAsqw8qw_sIdyc46kJxgnGCcYJxgbGXfVuU9",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "towers": {
+          "$items": {
+            "7": {
+              "max": 0
+            },
+            "19": {
+              "max": 0
+            },
+            "20": {
+              "max": 0
+            },
+            "21": {
+              "max": 0
+            },
+            "22": {
+              "max": 0
+            },
+            "23": {
+              "max": 0
+            },
+            "24": {
+              "max": 0
+            },
+            "25": {
+              "max": 0
+            },
+            "33": {
+              "max": 0
+            },
+            "34": {
+              "max": 0
+            },
+            "35": {
+              "max": 0
+            },
+            "36": {
+              "max": 0
+            },
+            "37": {
+              "max": 0
+            },
+            "38": {
+              "max": 0
+            },
+            "39": {
+              "max": 0
+            },
+            "40": {
+              "max": 0
+            },
+            "41": {
+              "max": 0
+            },
+            "42": {
+              "max": 0
+            },
+            "43": {
+              "max": 0
+            },
+            "44": {
+              "max": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "towers: a hero allowed",
+      "code": "CBC1:q1bKV7KqrtVRSlayqlYqyS9PLSoGsVQyS1JzwSwDEJGbWKFkpWtYq6NkCOca1oIAAA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "towers": {
+          "$items": {
+            "0": {
+              "max": -1
+            },
+            "1": {
+              "max": 1
+            }
+          }
+        }
+      }
+    },
+    {
       "name": "everything",
       "code": "CBC4:RY_BTsMwEER_xZrzqoqTmqQ-gipxiRRRfsAlhkS4dhXbLRD535ENlNtqZnb0ZoWDXHHvvIfEMKnPLw3C3sxBQ4YlasLhPRrTu1FD4iH64E6g36NY-bOriG0rEJ5nvXjIjnA4az0OeskKpCA8amXCdFNqkTPqap9ctGMuaQQx0RBrObFuR4xXLTFeC2J82xDjd5wYb7Oxa0EFen_RNvwVZNxEeMmLjsY527txfv0BWnF03hemPpown02B4JuaMBWwf_kWh6w2XUqEk_oY1KLenPWQIqVv",
       "options": {

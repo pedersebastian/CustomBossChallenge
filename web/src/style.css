@@ -1477,3 +1477,56 @@ input:focus-visible {
 .studio-controls select option:disabled {
   color: var(--muted);
 }
+
+/* Studio's Towers (#128): a collapsed list per class, a small fieldset per tower. A changed tower has a yellow edge
+   and says "changed" after its name, not only in colour. Everything may shrink, so a phone's page doesn't widen. */
+.studio-towers,
+.studio-tower-class,
+.studio-tower {
+  min-width: 0;
+}
+
+.studio-tower-class {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.studio-tower-class > summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.studio-tower {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 8px 10px 10px;
+  border: 2px solid var(--outline);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.studio-tower legend {
+  font-weight: 800;
+  padding: 0 4px;
+}
+
+.studio-tower.changed {
+  border-color: var(--gold);
+}
+
+.studio-tower.changed legend::after {
+  content: " · changed";
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.studio-tower .studio-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.studio-tower input[type="number"][hidden] {
+  display: none;
+}

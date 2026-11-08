@@ -7,6 +7,7 @@ import { endRound } from "../math/tiers";
 import { NO_AUTOFILL, makeRows, nextId } from "./rows";
 import { MAP_GROUPS, OTHER_MAPS, RULES, percentText, resetRule, ruleInput, ruleValue, setRule, type Choice, type Rule, type RuleGroup } from "./rules";
 import type { StudioSetup } from "./state";
+import { setUpTowersSection } from "./towersSection";
 
 const GROUPS: { group: RuleGroup; title: string }[] = [
   { group: "Game", title: "Game" },
@@ -20,7 +21,10 @@ export interface RulesSection {
   sync: (setup: StudioSetup) => void;
 }
 
-export function setUpRulesSection(change: (update: (current: StudioSetup) => StudioSetup) => void): RulesSection {
+export function setUpRulesSection(
+  change: (update: (current: StudioSetup) => StudioSetup) => void,
+  current: () => StudioSetup,
+): RulesSection {
   const { row, reset } = makeRows(change);
   const syncs: ((setup: StudioSetup) => void)[] = [];
 
@@ -137,6 +141,9 @@ export function setUpRulesSection(change: (update: (current: StudioSetup) => Stu
   const end = h("p", { class: "studio-help" });
   syncs.push((s) => (end.textContent = `The game ends on round ${endRound(effectiveSpawnRounds(s.options))}, 20 rounds after the last tier.`));
 
+  // The towers and heroes, after the other rules (#128)
+  const towers = setUpTowersSection(change, current);
+
   const groups = GROUPS.map(({ group, title }) =>
     h(
       "fieldset",
@@ -151,9 +158,16 @@ export function setUpRulesSection(change: (update: (current: StudioSetup) => Stu
     "details",
     { class: "studio-rules", open: "" },
     h("summary", {}, "Challenge rules"),
-    h("p", { class: "studio-help" }, "The Challenge Editor's own settings. Tower limits are still kept as they are in the code."),
+    h("p", { class: "studio-help" }, "The Challenge Editor's own settings."),
     ...groups,
+    towers.root,
   );
 
-  return { root, sync: (setup) => syncs.forEach((sync) => sync(setup)) };
+  return {
+    root,
+    sync: (setup) => {
+      syncs.forEach((sync) => sync(setup));
+      towers.sync(setup);
+    },
+  };
 }
