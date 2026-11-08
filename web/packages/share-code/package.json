@@ -1,0 +1,18 @@
+{
+  "name": "@cbc/share-code",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Read, check and make Custom Boss Challenge share codes (CBC1: to CBC4:) exactly like the BTD6 mod does",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./tiers": "./src/math/tiers.ts",
+    "./skulls": "./src/math/skulls.ts",
+    "./tier-bosses": "./src/math/tierBosses.ts",
+    "./limits": "./src/math/limits.ts",
+    "./dotnet": "./src/math/dotnet.ts",
+    "./data": "./src/data.ts"
+  }
+}

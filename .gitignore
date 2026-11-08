@@ -190,6 +190,8 @@ PublishScripts/
 **/[Pp]ackages/*
 # except build/, which is used as an MSBuild target.
 !**/[Pp]ackages/build/
+# and the website's npm workspace packages, e.g. web/packages/share-code (#98), which are source, not NuGet packages
+!web/packages/*
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/[Pp]ackages/repositories.config
 # NuGet v3's project.json files produces more ignorable files
