@@ -7,6 +7,7 @@ import { BOSSES } from "@cbc/share-code";
 import { h } from "../dom";
 import { TIER_LOOK } from "../data/types";
 import { icon } from "./icons";
+import { breakable } from "../preview/render";
 import { nextId, type Control } from "./rows";
 import * as edit from "./state";
 import type { StudioSetup } from "./state";
@@ -25,7 +26,8 @@ export function setUpBossPicker(
       "button",
       { class: "studio-boss", type: "button", role: "radio", "data-boss": boss, "aria-label": boss, title: boss },
       h("span", { class: "studio-boss-badge", style: `--boss: ${bossColour(boss)}`, "aria-hidden": "true" }, boss.slice(0, 1)),
-      h("span", { class: "studio-boss-name", "aria-hidden": "true" }, boss),
+      // Long names may break where their parts meet, "Blasta-popoulos", never cut off
+      h("span", { class: "studio-boss-name", "aria-hidden": "true" }, breakable(boss)),
     );
     button.addEventListener("click", () => change((s) => edit.setBoss(s, boss)));
     button.addEventListener("keydown", (event) => {

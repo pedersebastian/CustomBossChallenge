@@ -100,8 +100,12 @@ function renderStrength(options: BossOptions, challenge: Challenge): HTMLElement
 }
 
 /** Long boss names may break where their parts meet on a narrow card, not anywhere: "Blasta-popoulos" */
-const breakable = (name: string): string =>
-  name.replace("Blastapopoulos", "Blasta­popoulos").replace("Diamondback", "Diamond­back").replace("Dreadbloon", "Dread­bloon");
+export const breakable = (name: string): string =>
+  name
+    .replace("Blastapopoulos", "Blasta­popoulos")
+    .replace("Diamondback", "Diamond­back")
+    .replace("Dreadbloon", "Dread­bloon")
+    .replace("Bloonarius", "Bloon­arius");
 
 /** The boss's first letter, or ★ with a boss per tier; with more than 5 tiers it glows like the last tier */
 function renderBadge(options: BossOptions): HTMLElement {

@@ -1636,7 +1636,7 @@ input:focus-visible {
 .studio-bosses {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
   flex: 1 1 100%;
   min-width: 0;
 }
@@ -1676,12 +1676,10 @@ input:focus-visible {
 }
 
 .studio-boss-name {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 700;
   max-width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  hyphens: manual;
   text-align: center;
   line-height: 1.1;
 }
@@ -1691,14 +1689,19 @@ input:focus-visible {
   grid-column: 1 / -1;
 }
 
+/* Seven side by side when they fit, else on two rows; a button is never narrower than its badge, so the chosen one's
+   frame goes all the way round it */
 .studio-bosses {
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 .studio-boss {
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 1 1 58px;
+  min-width: 58px;
+  max-width: 96px;
   width: auto;
+  align-content: start;
 }
 
 .studio-boss[aria-checked="true"] {
