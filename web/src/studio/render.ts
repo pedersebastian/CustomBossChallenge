@@ -28,6 +28,7 @@ import * as edit from "./state";
 import type { StudioSetup } from "./state";
 import { makeRows, nextId, type Control } from "./rows";
 import { setUpTierEditor } from "./tiers";
+import { setUpRulesSection } from "./rulesSection";
 
 /** How long to wait after the last change before making the code and the preview again */
 export const UPDATE_DELAY = 150;
@@ -181,12 +182,15 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
   // The tiers' bosses come right after the tier rows, where the Boss Creator has its Tier Preview
   const rows = controls.map((control) => control.row);
   rows.splice(controls.indexOf(healthPerTier) + 1, 0, tierEditor.root);
-  form.replaceChildren(modeRow, ...rows);
+  // The Challenge Editor's own rules after the Boss Creator's (#97)
+  const rulesSection = setUpRulesSection(change);
+  form.replaceChildren(modeRow, ...rows, rulesSection.root);
   form.addEventListener("submit", (event) => event.preventDefault());
 
   /** Shows the setup in every control, and only the rows that apply (BossEditorSection.Relayout) */
   function sync(): void {
     for (const control of controls) control.sync(setup);
+    rulesSection.sync(setup);
     elite.checked = setup.options.Elite;
     const mixed = isMixed(setup.options);
     standardTab.setAttribute("aria-pressed", String(!mixed));

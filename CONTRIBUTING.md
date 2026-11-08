@@ -285,7 +285,8 @@ MelonLoader's assemblies.
 `web/` is a small website (Vite + TypeScript, no framework) that reads share codes without the game, shows the setup
 like the Boss Creator does (Tier Preview, skulls, rules) and lists example codes. It has three pages: `index.html`,
 `compare.html` (two setups side by side) and `studio.html`, the Studio (#12, #79), which makes and changes setups with
-the Boss Creator's controls (`web/src/studio/`), Advanced Mode's bosses per tier included (`tiers.ts`, #95). It needs [Node.js](https://nodejs.org/)
+the Boss Creator's controls (`web/src/studio/`), Advanced Mode's bosses per tier included (`tiers.ts`, #95), and the Challenge Editor's rules (`rules.ts`, #97), held to
+`ChallengeLimits` with the clamping in `web/src/math/limits.ts` that the code reader uses too. It needs [Node.js](https://nodejs.org/)
 LTS:
 
 ```

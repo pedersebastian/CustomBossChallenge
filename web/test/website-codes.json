@@ -438,6 +438,108 @@
       "challenge": {}
     },
     {
+      "name": "rules: game",
+      "code": "CBC1:LckxCoAwDAXQq8ifc4KsLrp7gdAmWGhaqTpI6d0FcXy8jgrugxDAHS4HGGsxbUUyCDGZpXDn6wFjkRZB8Br1U7ZZzh2EIq7_T1tyPTHGCw",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "map": "Infernal",
+        "difficulty": "Hard",
+        "mode": "HalfCash",
+        "name": "Hard Times"
+      }
+    },
+    {
+      "name": "rules: start",
+      "code": "CBC1:q1bKV7KqrtVRSlayqlYqLkksKgkqzUktBvFyMstADEMdpdzECh8Ix8jUQEcpObE4Q8nK0AAKdJSK8kvzUpSsDI1qa2sB",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "startRules": {
+          "lives": 1,
+          "maxLives": 250,
+          "cash": 100000000,
+          "round": 12
+        }
+      }
+    },
+    {
+      "name": "rules: bloons",
+      "code": "CBC1:XY7LCoMwFET_ZdZBEkQKd1vozo39gtjcaiB6JYl0Ifn3YoW-lnMOzMwGAW1F4Qba0AeRuRXn755j2klamF27huyX4DmCTNUoTGL767_RVX1qFCIPUR6dzfwrtVEY2YY8fnh6jyZQffQmkNG6KNgQznYSUI4rv2LHA89f-SIx71fdwUopTw",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "bloonModifiers": {
+          "speedMultiplier": 1.5,
+          "moabSpeedMultiplier": 0.375,
+          "regrowRateMultiplier": 0.01,
+          "healthMultipliers": {
+            "bloons": 3,
+            "moabs": 100
+          },
+          "allCamo": true,
+          "allRegen": true,
+          "allFortified": true
+        }
+      }
+    },
+    {
+      "name": "rules: on and off",
+      "code": "CBC1:XctBCsJADEDRu2TdA0i2FUFEEO0F0jbqYExgMkMLw9zdTavY7fv8AgZYagMDYIE3zZ1NHB1w18AYnHrh8wkwxcxfuLFI0MdGL8v4h3vLvXBL_tyEA3nqIg2v1dVa0xQ0s__oqJ7oyhPFEfBO4lzrBw",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "maxTowers": 8,
+        "disableMK": true,
+        "disableSelling": true,
+        "disablePowers": true,
+        "disableDoubleCash": true,
+        "disableFastTrack": true,
+        "noContinues": true,
+        "noInstaReward": false
+      }
+    },
+    {
       "name": "everything",
       "code": "CBC4:RY_BTsMwEER_xZrzqoqTmqQ-gipxiRRRfsAlhkS4dhXbLRD535ENlNtqZnb0ZoWDXHHvvIfEMKnPLw3C3sxBQ4YlasLhPRrTu1FD4iH64E6g36NY-bOriG0rEJ5nvXjIjnA4az0OeskKpCA8amXCdFNqkTPqap9ctGMuaQQx0RBrObFuR4xXLTFeC2J82xDjd5wYb7Oxa0EFen_RNvwVZNxEeMmLjsY527txfv0BWnF03hemPpown02B4JuaMBWwf_kWh6w2XUqEk_oY1KLenPWQIqVv",
       "options": {

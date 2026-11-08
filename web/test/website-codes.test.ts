@@ -16,11 +16,19 @@ import { GAME, type JsonObject } from "../src/data/types";
 import * as edit from "../src/studio/state";
 import { FOLLOWS } from "../src/math/tierBosses";
 import type { StudioSetup } from "../src/studio/state";
+import { RULES, ruleInput, setRule } from "../src/studio/rules";
 
 const FILE = fileURLToPath(new URL("./website-codes.json", import.meta.url));
 
 /** A setup made by doing the changes one after another, like a player would */
 const make = (...changes: ((setup: StudioSetup) => StudioSetup)[]): StudioSetup => changes.reduce((setup, change) => change(setup), edit.newSetup());
+
+/** A Challenge Editor rule as typed or picked in the Studio */
+const rule = (id: string, input: string | boolean) => (setup: StudioSetup): StudioSetup => {
+  const found = RULES.find((candidate) => candidate.path.join(".") === id);
+  if (!found) throw new Error(`No rule ${id}`);
+  return setRule(setup, found, ruleInput(found, input));
+};
 
 /** The Advanced tab, as clicked in the Studio */
 const toAdvanced = (setup: StudioSetup): StudioSetup => edit.setAdvanced(setup, true, edit.NO_MEMORY).setup;
@@ -69,6 +77,28 @@ const SETUPS: [string, StudioSetup][] = [
   [
     "advanced with event rounds and spread rounds",
     make(toAdvanced, (s) => edit.stepTierBoss(s, 1, 1), (s) => edit.setBossEventRounds(s, true), (s) => edit.spreadSpawnRounds(s, 20, 10)),
+  ],
+  // The Challenge Editor's rules, made with the Studio's own rule controls (#97)
+  ["rules: game", make(rule("name", "  Hard Times "), rule("map", "Infernal"), rule("difficulty", "Hard"), rule("mode", "HalfCash"))],
+  [
+    "rules: start",
+    make(rule("startRules.cash", "999999999999"), rule("startRules.lives", "0"), rule("startRules.maxLives", "250"), rule("startRules.round", "12")),
+  ],
+  [
+    "rules: bloons",
+    make(
+      rule("bloonModifiers.speedMultiplier", "150"), rule("bloonModifiers.moabSpeedMultiplier", "37.5"),
+      rule("bloonModifiers.regrowRateMultiplier", "0"), rule("bloonModifiers.healthMultipliers.bloons", "300"),
+      rule("bloonModifiers.healthMultipliers.moabs", "100000"), rule("bloonModifiers.allCamo", true),
+      rule("bloonModifiers.allRegen", true), rule("bloonModifiers.allFortified", true),
+    ),
+  ],
+  [
+    "rules: on and off",
+    make(
+      rule("maxTowers", "8"), rule("disableMK", true), rule("disableSelling", true), rule("disablePowers", true),
+      rule("noContinues", true), rule("disableDoubleCash", true), rule("disableFastTrack", true), rule("noInstaReward", false),
+    ),
   ],
   [
     "everything",

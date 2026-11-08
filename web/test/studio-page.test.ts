@@ -191,4 +191,44 @@ describe("the Studio page", () => {
     expect((await tierBosses())?.split(",")[2]).toBe("Bloonarius@250/100");
     expect(card(3).querySelector(".studio-tier-values")?.textContent).toBe("250%/100%");
   });
+
+  const ruleControl = (label: string): HTMLInputElement & HTMLSelectElement => {
+    const found = [...form.querySelectorAll<HTMLElement>(".studio-rules .studio-row")].find((r) => r.querySelector("label")?.textContent === label);
+    if (!found) throw new Error(`No rule ${label}`);
+    return found.querySelector("input, select") as HTMLInputElement & HTMLSelectElement;
+  };
+  const readChallenge = async () => {
+    await studio.flush();
+    const read = await decode(studio.code());
+    if (!read.ok) throw new Error(read.reason);
+    return read.challenge;
+  };
+
+  it("edits the Challenge Editor's rules into the code (#97)", async () => {
+    await studio.load(newSetup(), null);
+    const map = ruleControl("Map");
+    map.value = "Infernal";
+    map.dispatchEvent(new Event("change"));
+    const cash = ruleControl("Starting cash");
+    cash.value = "20000";
+    cash.dispatchEvent(new Event("change"));
+    expect(await readChallenge()).toMatchObject({ map: "Infernal", cash: 20000 });
+
+    // Empty is the game's default again, and the field shows it as empty
+    cash.value = "";
+    cash.dispatchEvent(new Event("change"));
+    expect((await readChallenge()).cash).toBe(-1);
+    expect(cash.value).toBe("");
+    expect(cash.placeholder).toBe("Default");
+  });
+
+  it("shows a clamped value back and turns off the modes Play refuses", async () => {
+    await studio.load(newSetup(), null);
+    const lives = ruleControl("Lives");
+    lives.value = "0";
+    lives.dispatchEvent(new Event("change"));
+    expect(lives.value).toBe("1");
+    const disabled = [...ruleControl("Mode").querySelectorAll("option")].filter((o) => o.disabled).map((o) => o.value);
+    expect(disabled).toEqual(["Deflation", "Apopalypse"]);
+  });
 });
