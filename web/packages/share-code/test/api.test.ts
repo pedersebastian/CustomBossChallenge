@@ -53,8 +53,9 @@ describe("the public API", () => {
 });
 
 describe("the README", () => {
-  // Each ```ts example runs as written: its imports from the package become the package itself
-  const examples = [...README.matchAll(/```ts\n([\s\S]*?)```/g)].map((match) => match[1]);
+  // Each ```ts example runs as written: its imports from the package become the package itself. Any line ending, so
+  // the README reads the same whether git checked it out with \n or \r\n.
+  const examples = [...README.matchAll(/```ts\r?\n([\s\S]*?)```/g)].map((match) => match[1]);
 
   it("has examples", () => expect(examples.length).toBeGreaterThanOrEqual(4));
 
