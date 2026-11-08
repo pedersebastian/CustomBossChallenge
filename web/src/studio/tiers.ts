@@ -3,11 +3,11 @@
 // A boss goes on a tier by dragging it there, by picking a tier and then a boss (on a phone too), or with the arrows on
 // a tier's card. Only text and our own marks: no art from the game.
 
-import { SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, tierBossName, type SkullMode } from "../code/options";
+import { SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, tierBossName, type SkullMode } from "@cbc/share-code";
 import { announce, h } from "../dom";
-import { CHOICES, FOLLOWS, MAX_HEALTH, MAX_SPEED, MIN_HEALTH, MIN_SPEED, NORMAL, RANDOM } from "../math/tierBosses";
-import { MAX_SKULLS } from "../math/skulls";
-import { MAX_TIERS } from "../math/tiers";
+import { CHOICES, FOLLOWS, MAX_HEALTH, MAX_SPEED, MIN_HEALTH, MIN_SPEED, NORMAL, RANDOM } from "@cbc/share-code/tier-bosses";
+import { MAX_SKULLS } from "@cbc/share-code/skulls";
+import { MAX_TIERS } from "@cbc/share-code/tiers";
 import * as edit from "./state";
 import type { StudioSetup } from "./state";
 import { makeRows, type Control } from "./rows";

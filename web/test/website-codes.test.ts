@@ -9,12 +9,12 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { decode, filterChallenge } from "../src/code/decode";
-import { encode, normalized, payload } from "../src/code/encode";
-import { optionsJson } from "../src/code/options";
+import { decode, filterChallenge } from "@cbc/share-code";
+import { encode, normalized, payload } from "@cbc/share-code";
+import { optionsJson } from "@cbc/share-code";
 import { GAME, type JsonObject } from "../src/data/types";
 import * as edit from "../src/studio/state";
-import { FOLLOWS } from "../src/math/tierBosses";
+import { FOLLOWS } from "@cbc/share-code/tier-bosses";
 import type { StudioSetup } from "../src/studio/state";
 import { RULES, ruleInput, setRule } from "../src/studio/rules";
 import * as towers from "../src/studio/towers";

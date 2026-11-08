@@ -2,7 +2,7 @@
 // The JSON inside is the mod's, key for key; the deflated bytes can differ from the mod's, which is fine, since the mod
 // reads any raw deflate.
 
-import { GAME, type Json, type JsonObject } from "../data/types";
+import { DATA, type Json, type JsonObject } from "./data";
 import { PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFIX, filterChallenge } from "./decode";
 import { defaultOptions, optionsJson, readOptions, sanitize, type BossOptions } from "./options";
 
@@ -69,12 +69,12 @@ export function prefixFor(options: BossOptions): string {
  * CodeFormat.Payload: the options ("o") and the challenge ("c"), each as what differs from its defaults. The challenge
  * keeps only what a code may set (CodeFormat.ChallengeFields), as the mod would ignore the rest.
  */
-export function payload(options: BossOptions, challenge: JsonObject = GAME.defaultChallenge): JsonObject {
+export function payload(options: BossOptions, challenge: JsonObject = DATA.defaultChallenge): JsonObject {
   const o = diff(optionsJson(options), optionsJson(defaultOptions()));
-  const c = diff(challenge, GAME.defaultChallenge);
+  const c = diff(challenge, DATA.defaultChallenge);
   return {
     o: isObject(o) ? o : {},
-    c: isObject(c) ? filterChallenge(c, GAME.defaultChallenge) : {},
+    c: isObject(c) ? filterChallenge(c, DATA.defaultChallenge) : {},
   };
 }
 
@@ -96,7 +96,7 @@ export async function pack(json: string, prefix = PREFIX): Promise<string> {
  * SetupCode.Encode: a code the mod loads as this setup. The options are brought into range first; the challenge is the
  * game's JSON of it, like the json decode gives, and defaults to the game's new challenge.
  */
-export async function encode(options: BossOptions, challenge: JsonObject = GAME.defaultChallenge): Promise<string> {
+export async function encode(options: BossOptions, challenge: JsonObject = DATA.defaultChallenge): Promise<string> {
   const setup = normalized(options);
   return pack(JSON.stringify(payload(setup, challenge)), prefixFor(setup));
 }

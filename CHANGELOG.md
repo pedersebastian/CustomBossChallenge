@@ -35,6 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Fortified, Max Towers and the on/off rules (no Monkey Knowledge, no selling, no powers, no continues, no Double
   Cash, no Fast Track, no Insta Monkey reward). Values are held to the mod's own limits, and an empty number is the
   game's default. The end round isn't there: in a boss game it always comes 20 rounds after the last tier.
+- **A package for share codes** (#98): `@cbc/share-code`, in `web/packages/share-code`, reads, checks and makes
+  share codes exactly like the mod, for anyone building their own tools. The website uses it for every code it reads
+  and makes. It has a README with examples, and shares its test codes with the mod's own tests.
 - **Tower restrictions in the Studio** (#128): every tower's and hero's limit (no limit, not allowed or a number),
   the highest tier of each upgrade path and the paragon lock for the 14 towers that have one, in a list per class
   like the game's (Heroes, Primary, Military, Magic, Support) with Allow all and Allow none for each.

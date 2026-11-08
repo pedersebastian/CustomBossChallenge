@@ -64,7 +64,7 @@ public static class CodeFormat
     /// <summary>
     /// The code in pasted text: the text itself, or the part after # in a link to the website ("#code=CBC2:…" or
     /// "#CBC2:…", also %-encoded or wrapped in &lt;…&gt; as Discord does). Text without a code in a link comes back
-    /// trimmed. Same rules as extractCode on the website (web/src/code/decode.ts).
+    /// trimmed. Same rules as extractCode on the website (web/packages/share-code/src/decode.ts).
     /// </summary>
     public static string ExtractCode(string? text)
     {
@@ -351,7 +351,7 @@ public static class CodeFormat
     /// <summary>
     /// The options of a code (its "o"), each with the JSON type it must have; a value of another type throws a
     /// <see cref="FormatException"/>, and the code can't be read (#113). The website reads codes the same way
-    /// (web/src/code/options.ts): Json.NET on its own turns 5.5 into 6, "1" into Lych and 3 into true, which JavaScript
+    /// (web/packages/share-code/src/options.ts): Json.NET on its own turns 5.5 into 6, "1" into Lych and 3 into true, which JavaScript
     /// doesn't, so both only take what the mod itself writes. Whole numbers may be written as 5.0 or "5", since
     /// JavaScript can't tell 5.0 from 5. Options the mod doesn't have are left out.
     /// </summary>

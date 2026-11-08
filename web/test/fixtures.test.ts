@@ -2,11 +2,11 @@
 
 import { describe, expect, it } from "vitest";
 import fixtures from "../src/data/fixtures.json";
-import { decode, playProblem } from "../src/code/decode";
-import { effectiveSpawnRounds, optionsJson } from "../src/code/options";
-import { roundHalfEven } from "../src/math/dotnet";
-import { formatPercent } from "../src/math/skulls";
-import { endRound } from "../src/math/tiers";
+import { decode, playProblem } from "@cbc/share-code";
+import { effectiveSpawnRounds, optionsJson } from "@cbc/share-code";
+import { roundHalfEven } from "@cbc/share-code/dotnet";
+import { formatPercent } from "@cbc/share-code/skulls";
+import { endRound } from "@cbc/share-code/tiers";
 import { skulls, tierCards } from "../src/preview/compute";
 import { EXAMPLES } from "../src/data/types";
 

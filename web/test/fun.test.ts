@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 import generated from "./generated-codes.json";
-import { decode } from "../src/code/decode";
+import { decode } from "@cbc/share-code";
 import { JOKE_TEXTS, jokeFor } from "../src/fun/jokes";
 import { KONAMI, KonamiTracker } from "../src/fun/konami";
 

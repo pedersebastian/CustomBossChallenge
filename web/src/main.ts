@@ -1,5 +1,5 @@
 import "./site";
-import { extractCode } from "./code/decode";
+import { extractCode } from "@cbc/share-code";
 import { codeFromHash } from "./code/link";
 import { setUpCodeViewer } from "./sections/codeViewer";
 import { setUpExamples } from "./sections/examples";

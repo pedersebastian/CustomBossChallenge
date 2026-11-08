@@ -1,6 +1,6 @@
 // The "Try these" section: setups worth playing, with their code ready to copy
 
-import { decode } from "../code/decode";
+import { decode } from "@cbc/share-code";
 import { EXAMPLES } from "../data/types";
 import { copyWithFeedback, h } from "../dom";
 import { renderSetup } from "../preview/render";

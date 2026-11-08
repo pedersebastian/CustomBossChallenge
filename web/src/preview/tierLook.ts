@@ -2,7 +2,7 @@
 // aura get stronger and pulse faster with each tier. The numbers come from the game through tierlook.json.
 
 import { TIER_LOOK } from "../data/types";
-import { VANILLA_TIERS } from "../math/tiers";
+import { VANILLA_TIERS } from "@cbc/share-code/tiers";
 
 export interface TierGlow {
   /** The tier's colour, e.g. #9BFF2E */

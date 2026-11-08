@@ -1,7 +1,7 @@
 // Compares two setups (issue #35): every option side by side, which ones differ, and a short verdict where it's clear
 
 import { GAME, towerName } from "../data/types";
-import type { Challenge } from "../code/decode";
+import type { Challenge } from "@cbc/share-code";
 import {
   effectiveSpawnRounds,
   entryOf,
@@ -12,11 +12,11 @@ import {
   usesBossEventRounds,
   type BossOptions,
   type SkullMode,
-} from "../code/options";
-import { formatDecimals } from "../math/dotnet";
+} from "@cbc/share-code";
+import { formatDecimals } from "@cbc/share-code/dotnet";
 import { paragonsText } from "../math/paragons";
-import { formatPercent } from "../math/skulls";
-import { clampTiers, endRound } from "../math/tiers";
+import { formatPercent } from "@cbc/share-code/skulls";
+import { clampTiers, endRound } from "@cbc/share-code/tiers";
 import { skulls, tierCards, tierSkulls, type TierCard } from "../preview/compute";
 
 export interface Setup {

@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 import { GAME, TIER_LOOK } from "../src/data/types";
-import { MAX_TIERS, VANILLA_TIERS } from "../src/math/tiers";
+import { MAX_TIERS, VANILLA_TIERS } from "@cbc/share-code/tiers";
 import { tierGlow, tierGlowStyle } from "../src/preview/tierLook";
 import css from "../src/style.css?raw";
 

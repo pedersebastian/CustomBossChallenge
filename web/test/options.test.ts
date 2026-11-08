@@ -2,8 +2,8 @@
 // which UnitTests/CodeFormatTests.cs reads too
 
 import { describe, expect, it } from "vitest";
-import { apply } from "../src/code/decode";
-import { defaultOptions, optionsJson, readOptions, sanitize, typedOptions } from "../src/code/options";
+import { apply } from "@cbc/share-code";
+import { defaultOptions, optionsJson, readOptions, sanitize, typedOptions } from "@cbc/share-code";
 import type { Json, JsonObject } from "../src/data/types";
 import cases from "./option-cases.json";
 

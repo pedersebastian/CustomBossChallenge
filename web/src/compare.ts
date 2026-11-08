@@ -1,7 +1,7 @@
 // The compare page's entry point (compare.html)
 import "./site";
 import { compareCodesFromHash } from "./code/link";
-import { extractCode } from "./code/decode";
+import { extractCode } from "@cbc/share-code";
 import { setUpCompare } from "./sections/compare";
 
 const inputA = document.getElementById("code-a") as HTMLTextAreaElement;

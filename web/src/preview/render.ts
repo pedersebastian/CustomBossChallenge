@@ -3,11 +3,11 @@
 import { GAME, towerName } from "../data/types";
 import { announce, h } from "../dom";
 import { paragonsText } from "../math/paragons";
-import { playProblem, type Challenge } from "../code/decode";
-import { SKULL_MODE_NAMES, bossOf, effectiveSpawnRounds, isMixed, tierBossName, tierSkullMode, type BossOptions } from "../code/options";
-import { formatDecimals } from "../math/dotnet";
-import { formatPercent } from "../math/skulls";
-import { clampTiers, endRound, formatHealth, maxModelHealth } from "../math/tiers";
+import { playProblem, type Challenge } from "@cbc/share-code";
+import { SKULL_MODE_NAMES, bossOf, effectiveSpawnRounds, isMixed, tierBossName, tierSkullMode, type BossOptions } from "@cbc/share-code";
+import { formatDecimals } from "@cbc/share-code/dotnet";
+import { formatPercent } from "@cbc/share-code/skulls";
+import { clampTiers, endRound, formatHealth, maxModelHealth } from "@cbc/share-code/tiers";
 import { normalGame, skulls, tierCards } from "./compute";
 import { renderTimeline } from "./timeline";
 import { renderCurves } from "../compare/chart";

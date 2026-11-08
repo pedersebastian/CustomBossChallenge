@@ -2,8 +2,8 @@
 // set, the game's classes and paragons, and the website reads back what the Studio writes
 
 import { describe, expect, it } from "vitest";
-import { decode } from "../src/code/decode";
-import { encode } from "../src/code/encode";
+import { decode } from "@cbc/share-code";
+import { encode } from "@cbc/share-code";
 import { GAME, towerName, type JsonObject } from "../src/data/types";
 import { newSetup } from "../src/studio/state";
 import {

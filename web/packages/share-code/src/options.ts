@@ -1,16 +1,16 @@
 // Port of Config/BossOptions.cs: the boss part of a setup, read the way Json.NET reads it, then brought into range
 
-import { GAME, type Json, type JsonObject } from "../data/types";
-import { MAX_SKULLS, evenlySpaced, normalizeCustom, parseCustom } from "../math/skulls";
+import { DATA, type Json, type JsonObject } from "./data";
+import { MAX_SKULLS, evenlySpaced, normalizeCustom, parseCustom } from "./math/skulls";
 import {
   clampHealthPerTier,
   clampSpeedPerTier,
   clampTiers,
   healthPerTierFromExtraTierHealth,
   spawnRounds,
-} from "../math/tiers";
-import { clamp } from "../math/dotnet";
-import { FOLLOWS, normalizeTierBosses, tierEntry, tierPercents, type TierBoss } from "../math/tierBosses";
+} from "./math/tiers";
+import { clamp } from "./math/dotnet";
+import { FOLLOWS, normalizeTierBosses, tierEntry, tierPercents, type TierBoss } from "./math/tierBosses";
 
 export const SKULL_MODES = ["Vanilla", "EvenlySpaced", "Custom"] as const;
 export type SkullMode = (typeof SKULL_MODES)[number];
@@ -18,7 +18,7 @@ export type SkullMode = (typeof SKULL_MODES)[number];
 /** The skull modes as the Boss Creator names them (Texts.SkullsVanilla, SkullsEvenlySpaced, SkullsCustom) (#114) */
 export const SKULL_MODE_NAMES: Record<SkullMode, string> = { Vanilla: "Vanilla", EvenlySpaced: "Evenly Spaced", Custom: "Custom %" };
 
-export const BOSSES = Object.keys(GAME.bosses);
+export const BOSSES = DATA.bosses;
 
 export interface BossOptions {
   Boss: string;
@@ -41,7 +41,7 @@ export interface BossOptions {
 /** A value Json.NET can't turn into the option's type; the whole code is then unreadable, like in the mod */
 export class OptionTypeError extends Error {}
 
-const DEFAULTS = GAME.defaultOptions as unknown as BossOptions;
+const DEFAULTS = DATA.defaultOptions as unknown as BossOptions;
 
 export const defaultOptions = (): BossOptions => ({ ...DEFAULTS });
 

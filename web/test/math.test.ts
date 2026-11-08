@@ -1,10 +1,10 @@
 // The same cases as the mod's unit tests (UnitTests/TierMathTests.cs, UnitTests/SkullMathTests.cs)
 
 import { describe, expect, it } from "vitest";
-import { evenlySpaced, formatCustom, formatPercent, normalizeCustom, parseCustom } from "../src/math/skulls";
-import { endRound, formatHealth, healthPerTierFromExtraTierHealth, spawnRounds } from "../src/math/tiers";
-import { roundHalfEven } from "../src/math/dotnet";
-import { FOLLOWS, normalizeTierBosses, parseTierBosses, resolveTiers, stepTier, tierEntry, tierPercents, withTier } from "../src/math/tierBosses";
+import { evenlySpaced, formatCustom, formatPercent, normalizeCustom, parseCustom } from "@cbc/share-code/skulls";
+import { endRound, formatHealth, healthPerTierFromExtraTierHealth, spawnRounds } from "@cbc/share-code/tiers";
+import { roundHalfEven } from "@cbc/share-code/dotnet";
+import { FOLLOWS, normalizeTierBosses, parseTierBosses, resolveTiers, stepTier, tierEntry, tierPercents, withTier } from "@cbc/share-code/tier-bosses";
 import tierBossCases from "./tier-boss-cases.json";
 import skullCases from "./skull-cases.json";
 import { isUnlimited, paragonsText } from "../src/math/paragons";

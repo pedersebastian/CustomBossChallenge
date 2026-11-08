@@ -1,9 +1,9 @@
 // The Studio's "Challenge rules" section (#97): a control per rule in rules.ts, in four groups like the Challenge
 // Editor's. Text and number fields are read when they are left or Enter is pressed, and show the value as it is kept.
 
-import { effectiveSpawnRounds } from "../code/options";
+import { effectiveSpawnRounds } from "@cbc/share-code";
 import { h } from "../dom";
-import { endRound } from "../math/tiers";
+import { endRound } from "@cbc/share-code/tiers";
 import { NO_AUTOFILL, makeRows, nextId } from "./rows";
 import { MAP_GROUPS, OTHER_MAPS, RULES, percentText, resetRule, ruleInput, ruleValue, setRule, type Choice, type Rule, type RuleGroup } from "./rules";
 import type { StudioSetup } from "./state";

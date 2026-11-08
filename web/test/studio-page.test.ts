@@ -3,7 +3,7 @@
 // the code it shows
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { decode } from "../src/code/decode";
+import { decode } from "@cbc/share-code";
 import { h } from "../src/dom";
 import { EXAMPLES } from "../src/data/types";
 import { setUpStudio, type Studio } from "../src/studio/render";

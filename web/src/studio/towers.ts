@@ -4,8 +4,8 @@
 // entries of the list.
 
 import { GAME, towerName, type Json, type JsonObject } from "../data/types";
-import { clamp } from "../math/dotnet";
-import { orDefault } from "../math/limits";
+import { clamp } from "@cbc/share-code/dotnet";
+import { orDefault } from "@cbc/share-code/limits";
 import type { StudioSetup } from "./state";
 
 /** The classes in the game's order; a tower the game data has no class for goes under OTHER_TOWERS */

@@ -3,8 +3,8 @@
 
 import { describe, expect, it } from "vitest";
 import file from "./generated-codes.json";
-import { decode } from "../src/code/decode";
-import { optionsJson } from "../src/code/options";
+import { decode } from "@cbc/share-code";
+import { optionsJson } from "@cbc/share-code";
 import { GAME, type Json, type JsonObject } from "../src/data/types";
 
 /** The value at a path like "startRules.cash" */

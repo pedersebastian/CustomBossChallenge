@@ -4,9 +4,9 @@
 import { describe, expect, it } from "vitest";
 import fixtures from "../src/data/fixtures.json";
 import generatedFile from "./generated-codes.json";
-import { decode, filterChallenge } from "../src/code/decode";
-import { deepEqual, diff, encode, prefixFor } from "../src/code/encode";
-import { defaultOptions } from "../src/code/options";
+import { decode, filterChallenge } from "@cbc/share-code";
+import { deepEqual, diff, encode, prefixFor } from "@cbc/share-code";
+import { defaultOptions } from "@cbc/share-code";
 import { EXAMPLES, GAME, type Json, type JsonObject } from "../src/data/types";
 
 /** The JSON inside a code, as the mod reads it */

@@ -1,6 +1,6 @@
 // The Studio page's entry point (studio.html, #12): make a setup, or change one from a code, and copy its code
 import "./site";
-import { decode, extractCode } from "./code/decode";
+import { decode, extractCode } from "@cbc/share-code";
 import { codeFromHash } from "./code/link";
 import { newSetup } from "./studio/state";
 import { setUpStudio } from "./studio/render";

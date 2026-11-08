@@ -1,6 +1,6 @@
 // Links straight to a setup on the website (issue #16): #code=CBC2:… after the page's address.
 
-import { LINK_KEY, extractCode } from "./decode";
+import { LINK_KEY, extractCode } from "@cbc/share-code";
 
 /** The code in a link's #, or null when the # is something else (e.g. #codes, the menu's link to this section) */
 export function codeFromHash(hash = location.hash): string | null {

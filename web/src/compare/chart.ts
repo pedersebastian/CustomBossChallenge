@@ -2,8 +2,8 @@
 // a solid line with round points, B a dashed line with square ones, and the values are also there as a table.
 
 import { h } from "../dom";
-import { formatDecimals } from "../math/dotnet";
-import { formatHealth } from "../math/tiers";
+import { formatDecimals } from "@cbc/share-code/dotnet";
+import { formatHealth } from "@cbc/share-code/tiers";
 import type { TierCard } from "../preview/compute";
 import type { tierPairs } from "./diff";
 
