@@ -152,7 +152,7 @@ export function renderTiers(options: BossOptions, challenge: Challenge): HTMLEle
         h("span", { class: `tier-speed ${speedTone}`, title: "Speed compared with the normal game", "aria-hidden": "true" }, speed + ARROW[speedTone]),
         h("span", { class: `tier-health ${healthTone}`, title: "Health", "aria-hidden": "true" }, card.health + ARROW[healthTone]),
         boss
-          ? h("span", { class: "tier-skulls", title: "Skulls of this tier's boss", "aria-hidden": "true" }, `☠${card.skulls ?? "?"}`)
+          ? h("span", { class: "tier-skulls", title: "Skulls of this tier's boss", "aria-hidden": "true" }, `☠ ${card.skulls ?? "?"}`)
           : null,
       ),
     );
