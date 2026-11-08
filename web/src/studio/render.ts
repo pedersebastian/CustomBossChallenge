@@ -183,7 +183,7 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
   const rows = controls.map((control) => control.row);
   rows.splice(controls.indexOf(healthPerTier) + 1, 0, tierEditor.root);
   // The Challenge Editor's own rules after the Boss Creator's (#97)
-  const rulesSection = setUpRulesSection(change);
+  const rulesSection = setUpRulesSection(change, () => setup);
   form.replaceChildren(modeRow, ...rows, rulesSection.root);
   form.addEventListener("submit", (event) => event.preventDefault());
 

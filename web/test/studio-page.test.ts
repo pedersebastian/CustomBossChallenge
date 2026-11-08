@@ -246,4 +246,88 @@ describe("the Studio page", () => {
     if (!read.ok) throw new Error(read.reason);
     expect(read.json.map).toBe("BrandNewMap");
   });
+
+  it("builds a tower class when it opens, and its controls change the code (#128)", async () => {
+    await studio.load(newSetup(), null);
+    const primary = form.querySelector<HTMLDetailsElement>('.studio-tower-class[data-set="Primary"]')!;
+    expect(primary.querySelectorAll(".studio-tower")).toHaveLength(0);
+    primary.open = true;
+    primary.dispatchEvent(new Event("toggle"));
+    const dart = [...primary.querySelectorAll<HTMLElement>(".studio-tower")].find((f) => f.querySelector("legend")?.textContent === "Dart Monkey")!;
+    expect(primary.querySelectorAll(".studio-tower")).toHaveLength(7);
+
+    const limit = dart.querySelector("select")!;
+    const count = dart.querySelector<HTMLInputElement>('input[type="number"]')!;
+    expect(count.hidden).toBe(true);
+    limit.value = "limited";
+    limit.dispatchEvent(new Event("change"));
+    expect(count.hidden).toBe(false);
+    count.value = "4";
+    count.dispatchEvent(new Event("change"));
+    const path3 = dart.querySelectorAll("select")[3];
+    path3.value = "2";
+    path3.dispatchEvent(new Event("change"));
+
+    expect((await readChallenge()).towers).toMatchObject({ DartMonkey: 4 });
+    const read = await decode(studio.code());
+    if (!read.ok) throw new Error(read.reason);
+    const towers = read.json.towers as { tower: string; path3NumBlockedTiers: number }[];
+    expect(towers.find((t) => t.tower === "DartMonkey")?.path3NumBlockedTiers).toBe(3);
+    expect(dart.classList.contains("changed")).toBe(true);
+    expect(primary.querySelector("summary")?.textContent).toBe("Primary (7, 1 changed)");
+  });
+
+  it("labels every tower control, and gives heroes no paths or paragon", async () => {
+    await studio.load(newSetup(), null);
+    for (const details of form.querySelectorAll<HTMLDetailsElement>(".studio-tower-class")) {
+      details.open = true;
+      details.dispatchEvent(new Event("toggle"));
+    }
+    expect(form.querySelectorAll(".studio-tower")).toHaveLength(45);
+    for (const input of form.querySelectorAll(".studio-tower input, .studio-tower select")) {
+      const named = input.id !== "" && form.querySelector(`label[for="${input.id}"]`) !== null;
+      expect(named || input.hasAttribute("aria-label"), input.outerHTML).toBe(true);
+    }
+    const quincy = [...form.querySelectorAll<HTMLElement>(".studio-tower")].find((f) => f.querySelector("legend")?.textContent === "Quincy")!;
+    expect(quincy.querySelectorAll("select")).toHaveLength(1);
+    expect(quincy.querySelector('input[type="checkbox"]')).toBeNull();
+  });
+
+  it("hides a tower's paths and paragon lock while it isn't allowed, and keeps them", async () => {
+    await studio.load(newSetup(), null);
+    const primary = form.querySelector<HTMLDetailsElement>('.studio-tower-class[data-set="Primary"]')!;
+    primary.open = true;
+    primary.dispatchEvent(new Event("toggle"));
+    const dart = [...primary.querySelectorAll<HTMLElement>(".studio-tower")].find((f) => f.querySelector("legend")?.textContent === "Dart Monkey")!;
+    const rows = [...dart.querySelectorAll<HTMLElement>(".studio-row")];
+    const path1 = rows[1].querySelector("select")!;
+    path1.value = "2";
+    path1.dispatchEvent(new Event("change"));
+
+    const limit = dart.querySelector("select")!;
+    limit.value = "notAllowed";
+    limit.dispatchEvent(new Event("change"));
+    expect(rows.slice(1).every((row) => row.hidden)).toBe(true);
+    expect(rows[0].hidden).toBe(false);
+
+    limit.value = "none";
+    limit.dispatchEvent(new Event("change"));
+    expect(rows.some((row) => row.hidden)).toBe(false);
+    expect(path1.value).toBe("2");
+  });
+
+  it("gives a hero only Allowed or Not allowed", async () => {
+    await studio.load(newSetup(), null);
+    const heroes = form.querySelector<HTMLDetailsElement>('.studio-tower-class[data-set="Hero"]')!;
+    heroes.open = true;
+    heroes.dispatchEvent(new Event("toggle"));
+    const quincy = [...heroes.querySelectorAll<HTMLElement>(".studio-tower")].find((f) => f.querySelector("legend")?.textContent === "Quincy")!;
+    const choice = quincy.querySelector("select")!;
+    expect([...choice.options].map((o) => o.textContent)).toEqual(["Allowed", "Not allowed"]);
+    expect(quincy.querySelector('input[type="number"]')).toBeNull();
+    expect(choice.value).toBe("notAllowed");
+    choice.value = "allowed";
+    choice.dispatchEvent(new Event("change"));
+    expect((await readChallenge()).towers).toMatchObject({ Quincy: 1 });
+  });
 });

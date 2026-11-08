@@ -17,6 +17,7 @@ import * as edit from "../src/studio/state";
 import { FOLLOWS } from "../src/math/tierBosses";
 import type { StudioSetup } from "../src/studio/state";
 import { RULES, ruleInput, setRule } from "../src/studio/rules";
+import * as towers from "../src/studio/towers";
 
 const FILE = fileURLToPath(new URL("./website-codes.json", import.meta.url));
 
@@ -100,6 +101,18 @@ const SETUPS: [string, StudioSetup][] = [
       rule("noContinues", true), rule("disableDoubleCash", true), rule("disableFastTrack", true), rule("noInstaReward", false),
     ),
   ],
+  // Tower restrictions, made with the Studio's own tower controls (#128)
+  [
+    "towers: limits, paths and a paragon",
+    make(
+      (s) => towers.setTowerLimit(s, "DartMonkey", "limited", "3"), (s) => towers.setTowerLimit(s, "SuperMonkey", "notAllowed"),
+      (s) => towers.setTowerLimit(s, "BananaFarm", "limited", "5000"), (s) => towers.setBlockedTiers(s, "NinjaMonkey", 1, 1),
+      (s) => towers.setBlockedTiers(s, "NinjaMonkey", 2, 5), (s) => towers.setBlockedTiers(s, "NinjaMonkey", 3, 3),
+      (s) => towers.setParagonLock(s, "DartMonkey", true),
+    ),
+  ],
+  ["towers: military only, no heroes", make(...["Primary", "Magic", "Support", "Hero"].map((set) => (s: StudioSetup) => towers.setClassAllowed(s, set, false)))],
+  ["towers: heroes allowed", make((s) => towers.setHeroAllowed(s, "Quincy", true), (s) => towers.setHeroAllowed(s, "ChosenPrimaryHero", true), (s) => towers.setHeroAllowed(s, "Ezili", false))],
   [
     "everything",
     make(

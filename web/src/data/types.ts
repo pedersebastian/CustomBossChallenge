@@ -26,6 +26,10 @@ export interface GameData {
   /** Each map's group in the game's map lists: Beginner, Intermediate, Advanced or Expert */
   mapDifficulties: Record<string, string>;
   towers: Record<string, string>;
+  /** Each tower's class in the game: Primary, Military, Magic, Support, or Hero for the heroes */
+  towerSets: Record<string, string>;
+  /** The towers that have a paragon, the only ones the paragon lock applies to */
+  paragonTowers: string[];
   modes: Record<string, string>;
   difficulties: Record<string, string>;
   unsupportedModes: string[];
@@ -83,4 +87,13 @@ export interface Example {
 
 export const GAME = game as unknown as GameData;
 export const EXAMPLES = examples as Example[];
+
+/**
+ * The names the website shows for a few towers instead of the game's: the Challenge Editor's "Chosen Primary Hero"
+ * is the hero each player has picked as their own, whoever that is (#128)
+ */
+const TOWER_NAMES: Record<string, string> = { ChosenPrimaryHero: "Your own hero" };
+
+/** A tower's or hero's name as the website shows it */
+export const towerName = (id: string): string => TOWER_NAMES[id] ?? GAME.towers[id] ?? id;
 export const TIER_LOOK = tierLook as TierLookData;

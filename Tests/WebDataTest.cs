@@ -122,6 +122,19 @@ public class WebDataTest : CustomBossTest
             mapDifficulties[map.id] = map.difficulty.ToString();
         }
 
+        // Each tower's class, so the Studio can group the 45 towers like the game (#128): heroes, and ChosenPrimaryHero
+        // with them, are "Hero"; the rest have the class of their base tower
+        var towerSets = new JObject();
+        foreach (var tower in defaults.towers.ToArray())
+        {
+            var model = tower.isHero ? null : game.towers.FirstOrDefault(t => t.baseId == tower.tower);
+            towerSets[tower.tower] = tower.isHero ? "Hero" : model?.towerSet.ToString() ?? "Other";
+        }
+
+        // The towers that have a paragon, the only ones the Challenge Editor's paragon lock applies to (#128)
+        var paragonTowers = new JArray(game.towers.Where(t => t.isParagon).Select(t => t.baseId).Distinct().OrderBy(id => id)
+            .Select(id => (object) id));
+
         return new JObject
         {
             ["gameVersion"] = UnityEngine.Application.version,
@@ -132,6 +145,8 @@ public class WebDataTest : CustomBossTest
             ["maps"] = maps,
             ["mapDifficulties"] = mapDifficulties,
             ["towers"] = new JObject(defaults.towers.ToArray().Select(tower => new JProperty(tower.tower, tower.tower.T()))),
+            ["towerSets"] = towerSets,
+            ["paragonTowers"] = paragonTowers,
             ["modes"] = new JObject(ChallengeLimits.Modes.Select(mode => new JProperty(mode, mode.T()))),
             ["difficulties"] = new JObject(ChallengeLimits.Difficulties.Select(d => new JProperty(d, d.T()))),
             ["unsupportedModes"] = new JArray(BossEditorSection.UnsupportedModes.Cast<object>()),

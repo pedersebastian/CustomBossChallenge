@@ -285,7 +285,8 @@ MelonLoader's assemblies.
 `web/` is a small website (Vite + TypeScript, no framework) that reads share codes without the game, shows the setup
 like the Boss Creator does (Tier Preview, skulls, rules) and lists example codes. It has three pages: `index.html`,
 `compare.html` (two setups side by side) and `studio.html`, the Studio (#12, #79), which makes and changes setups with
-the Boss Creator's controls (`web/src/studio/`), Advanced Mode's bosses per tier included (`tiers.ts`, #95), and the Challenge Editor's rules (`rules.ts`, #97), held to
+the Boss Creator's controls (`web/src/studio/`), Advanced Mode's bosses per tier included (`tiers.ts`, #95), the Challenge Editor's rules (`rules.ts`, #97) and its
+tower restrictions (`towers.ts`, #128), held to
 `ChallengeLimits` with the clamping in `web/src/math/limits.ts` that the code reader uses too. It needs [Node.js](https://nodejs.org/)
 LTS:
 
@@ -314,6 +315,8 @@ names) comes from the game, through the in-game test `WebDataTest`, into `web/sr
 - `game.json`: the game data. The player's name and the random seed of the default challenge are left out.
   `mapDifficulties` has each map's group in the game (Beginner to Expert), which the Studio's map list is grouped by;
   a map without one goes under Other, and a map the data doesn't have yet is kept as it is in the code.
+  `towerSets` has each tower's class (Hero, Primary, Military, Magic, Support) and `paragonTowers` the towers with a
+  paragon, which the Studio's tower list uses.
 - `tierlook.json`: the colours of tiers 6-10 per boss and how strong and fast their glow pulses, from
   `Config/TierLook.cs`, so the tier cards on the website glow like the boss does in the game
   (`web/src/preview/tierLook.ts`).
