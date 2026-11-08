@@ -23,6 +23,8 @@ export interface GameData {
   challengeFields: JsonObject;
   bosses: Record<string, { normal: BossTier[]; elite: BossTier[] }>;
   maps: Record<string, string>;
+  /** Each map's group in the game's map lists: Beginner, Intermediate, Advanced or Expert */
+  mapDifficulties: Record<string, string>;
   towers: Record<string, string>;
   modes: Record<string, string>;
   difficulties: Record<string, string>;

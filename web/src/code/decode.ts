@@ -2,7 +2,7 @@
 // Like the mod, a code is only data: it is never run, never throws and is held to what the game can play.
 
 import { GAME, type Json, type JsonObject } from "../data/types";
-import { clamp, float } from "../math/dotnet";
+import { clampMultiplier, orDefault } from "../math/limits";
 import { MAX_ROUND } from "../math/tiers";
 import { OptionTypeError, defaultName, defaultOptions, optionsJson, readOptions, sanitize, typedOptions, type BossOptions } from "./options";
 
@@ -319,13 +319,7 @@ function readChallenge(json: JsonObject, options: BossOptions): Challenge {
     if (typeof value !== "string") throw new Error("Not text");
     return value;
   };
-  // A finite float within the limits; NaN becomes the lower limit
-  const multiplier = (value: Json | undefined, min: number, max: number): number => {
-    const read = float(number(value, 1));
-    return Number.isNaN(read) ? float(min) : clamp(read, float(min), float(max));
-  };
-  // The game uses negative values for "default"; anything else is kept within the limits
-  const orDefault = (value: number, min: number, max: number): number => (value < 0 ? -1 : clamp(value, min, max));
+  const multiplier = (value: Json | undefined, min: number, max: number): number => clampMultiplier(number(value, 1), min, max);
 
   const known = (value: string | null, names: string[], fallback: string): string =>
     value !== null && names.includes(value) ? value : fallback;

@@ -113,9 +113,13 @@ public class WebDataTest : CustomBossTest
 
         var defaults = DailyChallengeModel.CreateDefaultEditorModel();
         var maps = new JObject();
+        // The map lists' groups in the game, e.g. "Beginner", so the Studio can group its map list the same way (#97)
+        var mapDifficulties = new JObject();
         foreach (var map in Il2CppAssets.Scripts.Data.GameData.Instance.mapSet.Maps.items)
         {
-            if (map != null && !string.IsNullOrEmpty(map.id)) maps[map.id] = map.id.T();
+            if (map == null || string.IsNullOrEmpty(map.id)) continue;
+            maps[map.id] = map.id.T();
+            mapDifficulties[map.id] = map.difficulty.ToString();
         }
 
         return new JObject
@@ -126,6 +130,7 @@ public class WebDataTest : CustomBossTest
             ["challengeFields"] = CodeFormat.ChallengeFields.DeepClone(),
             ["bosses"] = bosses,
             ["maps"] = maps,
+            ["mapDifficulties"] = mapDifficulties,
             ["towers"] = new JObject(defaults.towers.ToArray().Select(tower => new JProperty(tower.tower, tower.tower.T()))),
             ["modes"] = new JObject(ChallengeLimits.Modes.Select(mode => new JProperty(mode, mode.T()))),
             ["difficulties"] = new JObject(ChallengeLimits.Difficulties.Select(d => new JProperty(d, d.T()))),
