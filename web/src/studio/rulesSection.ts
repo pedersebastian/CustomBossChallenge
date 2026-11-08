@@ -4,8 +4,8 @@
 import { effectiveSpawnRounds } from "../code/options";
 import { h } from "../dom";
 import { endRound } from "../math/tiers";
-import { makeRows, nextId } from "./rows";
-import { RULES, percentText, resetRule, ruleId, ruleInput, ruleValue, setRule, type Rule, type RuleGroup } from "./rules";
+import { NO_AUTOFILL, makeRows, nextId } from "./rows";
+import { RULES, percentText, resetRule, ruleInput, ruleValue, setRule, type Rule, type RuleGroup } from "./rules";
 import type { StudioSetup } from "./state";
 
 const GROUPS: { group: RuleGroup; title: string }[] = [
@@ -36,7 +36,8 @@ export function setUpRulesSection(change: (update: (current: StudioSetup) => Stu
   };
 
   function control(rule: Rule): HTMLElement {
-    const id = nextId(ruleId(rule).replace(/\./g, "-"));
+    // A neutral id: "name" in it would be one more hint to a password manager
+    const id = nextId("rule");
     const set = (value: string | boolean) => change((s) => setRule(s, rule, ruleInput(rule, value)));
     const resetButton = () => reset(rule.label, () => change((s) => resetRule(s, rule)));
 
@@ -58,7 +59,15 @@ export function setUpRulesSection(change: (update: (current: StudioSetup) => Stu
         return row(rule.label, input, id, resetButton());
       }
       case "text": {
-        const input = h("input", { id, type: "text", class: "studio-text", maxlength: String(rule.maxLength), placeholder: "Your own name in the game" });
+        const input = h("input", {
+          id,
+          type: "text",
+          class: "studio-text",
+          maxlength: String(rule.maxLength),
+          placeholder: "Your own name in the game",
+          spellcheck: "false",
+          ...NO_AUTOFILL,
+        });
         readOnLeave(input, () => set(input.value));
         syncs.push((s) => {
           if (document.activeElement !== input) input.value = String(ruleValue(s, rule) ?? "");
@@ -75,6 +84,7 @@ export function setUpRulesSection(change: (update: (current: StudioSetup) => Stu
           step: "1",
           inputmode: "numeric",
           placeholder: "Default",
+          ...NO_AUTOFILL,
         });
         readOnLeave(input, () => set(input.value));
         syncs.push((s) => {
@@ -93,6 +103,7 @@ export function setUpRulesSection(change: (update: (current: StudioSetup) => Stu
           max: String(rule.max * 100),
           step: "any",
           inputmode: "decimal",
+          ...NO_AUTOFILL,
         });
         readOnLeave(input, () => set(input.value));
         syncs.push((s) => {

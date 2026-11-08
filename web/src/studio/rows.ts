@@ -10,6 +10,18 @@ export interface Control {
   sync: (setup: StudioSetup) => void;
 }
 
+/**
+ * Keeps password managers out of the Studio's fields: "Challenge name" looks like a name to them, and they offered
+ * to fill in the player's own (Dashlane reads data-form-type, 1Password, LastPass and Bitwarden their own markers)
+ */
+export const NO_AUTOFILL = {
+  autocomplete: "off",
+  "data-form-type": "other",
+  "data-1p-ignore": "true",
+  "data-lpignore": "true",
+  "data-bwignore": "true",
+} as const;
+
 let ids = 0;
 export const nextId = (name: string): string => `studio-${name}-${++ids}`;
 
@@ -74,7 +86,7 @@ export function makeRows(change: (update: (current: StudioSetup) => StudioSetup)
   /** A text field that is read when it is left or Enter is pressed, like the game's */
   function text(label: string, placeholder: string, value: (s: StudioSetup) => string, set: (s: StudioSetup, text: string) => StudioSetup, ...extra: Node[]): Control {
     const id = nextId("text");
-    const input = h("input", { id, type: "text", class: "studio-text", spellcheck: "false", placeholder });
+    const input = h("input", { id, type: "text", class: "studio-text", spellcheck: "false", placeholder, ...NO_AUTOFILL });
     input.addEventListener("change", () => change((s) => set(s, input.value)));
     input.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {

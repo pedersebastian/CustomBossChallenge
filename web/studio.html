@@ -58,7 +58,7 @@
         <details id="start-from" class="start-from">
           <summary>Start from a share code</summary>
           <label class="sr-only" for="start-code">Share code to start from</label>
-          <textarea id="start-code" class="code-input" rows="2" spellcheck="false" placeholder="CBC2:…"></textarea>
+          <textarea id="start-code" class="code-input" rows="2" spellcheck="false" placeholder="CBC2:…" autocomplete="off" data-form-type="other"></textarea>
           <div class="actions">
             <button id="start-load" class="button small" type="button">Edit this code</button>
             <button id="start-new" class="button small orange" type="button">Start a new setup</button>
@@ -66,7 +66,7 @@
           <p id="start-problem" class="error" hidden></p>
         </details>
         <div class="studio">
-          <form id="studio-controls" class="studio-controls" aria-label="Boss options"></form>
+          <form id="studio-controls" class="studio-controls" aria-label="Boss options" autocomplete="off" data-form-type="other"></form>
           <div class="studio-output">
             <h2 id="studio-code-heading">Share code</h2>
             <textarea id="studio-code" class="code-input" rows="3" readonly spellcheck="false" aria-labelledby="studio-code-heading"></textarea>
