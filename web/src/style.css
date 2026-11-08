@@ -22,6 +22,8 @@
   --blue: #2fb7f5;
   --blue-edge: #12709c;
   --outline: #0b1d38;
+  /* The yellow of focus rings and picked choices */
+  --gold: #ffd84d;
   --radius: 18px;
   color-scheme: dark;
 }
@@ -1452,4 +1454,26 @@ input:focus-visible {
 .studio-rules-group,
 .studio-rules .studio-row {
   grid-template-columns: minmax(0, 1fr);
+}
+
+/* The Studio's lists, open: the browser's own colours were light blue under grey text, hard to read (#97). Every
+   choice is white on the dark card, the picked one dark on yellow, and the group names (Beginner, ...) yellow. */
+.studio-controls select option,
+.studio-controls select optgroup {
+  background-color: var(--card);
+  color: var(--text);
+}
+
+.studio-controls select optgroup {
+  color: var(--gold);
+  font-weight: 800;
+}
+
+.studio-controls select option:checked {
+  background-color: var(--gold);
+  color: var(--outline);
+}
+
+.studio-controls select option:disabled {
+  color: var(--muted);
 }

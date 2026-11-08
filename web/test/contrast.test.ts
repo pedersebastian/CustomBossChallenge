@@ -31,6 +31,11 @@ describe("contrast", () => {
     // The tier cards' arrows
     ["--harder", "--card"],
     ["--easier", "--card"],
+    // The Studio's lists, open (#97): the choices, the picked one and the group names
+    ["--text", "--card"],
+    ["--outline", "--gold"],
+    ["--gold", "--card"],
+    ["--muted", "--card"],
   ])("%s on %s is at least 4.5:1", (text, background) => {
     expect(contrast(token(text), token(background))).toBeGreaterThanOrEqual(4.5);
   });
