@@ -231,4 +231,19 @@ describe("the Studio page", () => {
     const disabled = [...ruleControl("Mode").querySelectorAll("option")].filter((o) => o.disabled).map((o) => o.value);
     expect(disabled).toEqual(["Deflation", "Apopalypse"]);
   });
+
+  it("groups the maps by the game's difficulty and keeps a map it doesn't know", async () => {
+    await studio.load(newSetup(), null);
+    const map = ruleControl("Map");
+    expect([...map.querySelectorAll("optgroup")].map((g) => g.label)).toEqual(["Beginner", "Intermediate", "Advanced", "Expert"]);
+
+    const setup = newSetup();
+    await studio.load({ ...setup, challenge: { ...setup.challenge, map: "BrandNewMap" } }, null);
+    expect(map.value).toBe("BrandNewMap");
+    expect(map.selectedOptions[0].textContent).toBe("BrandNewMap (not known to the website yet)");
+    await studio.flush();
+    const read = await decode(studio.code());
+    if (!read.ok) throw new Error(read.reason);
+    expect(read.json.map).toBe("BrandNewMap");
+  });
 });

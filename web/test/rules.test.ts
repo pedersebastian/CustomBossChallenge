@@ -6,7 +6,7 @@ import { decode } from "../src/code/decode";
 import { encode } from "../src/code/encode";
 import { GAME, type Json, type JsonObject } from "../src/data/types";
 import { float } from "../src/math/dotnet";
-import { RULES, cleanText, percentText, resetRule, ruleInput, ruleValue, setRule, type Rule } from "../src/studio/rules";
+import { MAP_GROUPS, OTHER_MAPS, RULES, cleanText, mapChoices, percentText, resetRule, ruleInput, ruleValue, setRule, type Rule } from "../src/studio/rules";
 import { newSetup } from "../src/studio/state";
 
 const rule = (id: string): Rule => {
@@ -36,6 +36,25 @@ describe("the rule table", () => {
     expect(choices("mode").filter((c) => c.disabled).map((c) => c.value)).toEqual(GAME.unsupportedModes);
     expect(ruleInput(rule("map"), "NoSuchMap")).toBeNull();
     expect(set("map", "NoSuchMap").challenge.map).toBe(GAME.defaultChallenge.map);
+  });
+});
+
+describe("the map list (#97)", () => {
+  it("puts every map under its group from the game, in the game's own order", () => {
+    const choices = mapChoices();
+    expect(choices.map((c) => c.value)).toEqual(Object.keys(GAME.maps));
+    expect(new Set(choices.map((c) => c.group))).toEqual(new Set(MAP_GROUPS));
+    expect(choices.find((c) => c.value === "Tutorial")?.group).toBe("Beginner");
+  });
+
+  it("puts a map without a group in Other", () => {
+    const difficulties = GAME.mapDifficulties;
+    try {
+      GAME.mapDifficulties = { ...difficulties, Tutorial: "Brand New" };
+      expect(mapChoices().find((c) => c.value === "Tutorial")?.group).toBe(OTHER_MAPS);
+    } finally {
+      GAME.mapDifficulties = difficulties;
+    }
   });
 });
 

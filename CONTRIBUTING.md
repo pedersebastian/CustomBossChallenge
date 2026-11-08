@@ -312,6 +312,8 @@ What only the game knows (the default challenge codes are made against, boss hea
 names) comes from the game, through the in-game test `WebDataTest`, into `web/src/data/`:
 
 - `game.json`: the game data. The player's name and the random seed of the default challenge are left out.
+  `mapDifficulties` has each map's group in the game (Beginner to Expert), which the Studio's map list is grouped by;
+  a map without one goes under Other, and a map the data doesn't have yet is kept as it is in the code.
 - `tierlook.json`: the colours of tiers 6-10 per boss and how strong and fast their glow pulses, from
   `Config/TierLook.cs`, so the tier cards on the website glow like the boss does in the game
   (`web/src/preview/tierLook.ts`).

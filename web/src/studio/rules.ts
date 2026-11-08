@@ -21,7 +21,7 @@ interface RuleBase {
 export type Rule = RuleBase &
   (
     | { kind: "text"; maxLength: number }
-    | { kind: "choice"; choices: { value: string; label: string; disabled: boolean }[] }
+    | { kind: "choice"; choices: Choice[] }
     /** A whole number, or -1 for the game's default */
     | { kind: "count"; min: number; max: number }
     /** A multiplier, edited in percent */
@@ -29,16 +29,35 @@ export type Rule = RuleBase &
     | { kind: "toggle" }
   );
 
+/** A choice in a list; choices with a group are shown under it */
+export interface Choice {
+  value: string;
+  label: string;
+  disabled: boolean;
+  group?: string;
+}
+
 const limits = GAME.limits;
 
-const named = (names: Record<string, string>, disabled: string[] = [], note = ""): { value: string; label: string; disabled: boolean }[] =>
+/** The game's map groups, easiest first */
+export const MAP_GROUPS = ["Beginner", "Intermediate", "Advanced", "Expert"];
+
+/** The group for a map the game data has no group for, e.g. one added after the website's data was made */
+export const OTHER_MAPS = "Other";
+
+/** The maps in the game's own order, each under its group like in the game's map lists (#97) */
+export const mapChoices = (): Choice[] =>
+  Object.entries(GAME.maps).map(([value, label]) => {
+    const group = GAME.mapDifficulties[value];
+    return { value, label, disabled: false, group: MAP_GROUPS.includes(group) ? group : OTHER_MAPS };
+  });
+
+const named = (names: Record<string, string>, disabled: string[] = [], note = ""): Choice[] =>
   Object.entries(names).map(([value, label]) => ({
     value,
     label: disabled.includes(value) ? `${label} ${note}` : label,
     disabled: disabled.includes(value),
   }));
-
-const byLabel = (a: { label: string }, b: { label: string }): number => a.label.localeCompare(b.label, "en");
 
 const percent = (path: string[], label: string): Rule => ({
   path,
@@ -54,7 +73,7 @@ const toggle = (path: string[], label: string, group: RuleGroup): Rule => ({ pat
 /** The rules in the order the page shows them */
 export const RULES: Rule[] = [
   { path: ["name"], label: "Challenge name", group: "Game", kind: "text", maxLength: limits.maxNameLength },
-  { path: ["map"], label: "Map", group: "Game", kind: "choice", choices: named(GAME.maps).sort(byLabel) },
+  { path: ["map"], label: "Map", group: "Game", kind: "choice", choices: mapChoices() },
   { path: ["difficulty"], label: "Difficulty", group: "Game", kind: "choice", choices: named(GAME.difficulties) },
   {
     path: ["mode"],

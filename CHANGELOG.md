@@ -29,7 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Strength per tier on the website** (#96): a chart of the boss's health and speed per tier next to the normal
   game (the same bosses without any changes), with the values as a table; in Advanced Mode each row names the tier's
   boss. Both follow the code on the main page and every change in the Studio.
-- **The Challenge Editor's rules in the Studio** (#97): the challenge's name, map, difficulty and mode, starting cash,
+- **The Challenge Editor's rules in the Studio** (#97): the challenge's name, map (grouped Beginner to Expert, like the
+  game's map lists), difficulty and mode, starting cash,
   lives, max lives and start round, bloon and MOAB speed and health, regrow rate, All Camo, All Regrow, All
   Fortified, Max Towers and the on/off rules (no Monkey Knowledge, no selling, no powers, no continues, no Double
   Cash, no Fast Track, no Insta Monkey reward). Values are held to the mod's own limits, and an empty number is the

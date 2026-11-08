@@ -5,7 +5,7 @@ import { effectiveSpawnRounds } from "../code/options";
 import { h } from "../dom";
 import { endRound } from "../math/tiers";
 import { NO_AUTOFILL, makeRows, nextId } from "./rows";
-import { RULES, percentText, resetRule, ruleInput, ruleValue, setRule, type Rule, type RuleGroup } from "./rules";
+import { MAP_GROUPS, OTHER_MAPS, RULES, percentText, resetRule, ruleInput, ruleValue, setRule, type Choice, type Rule, type RuleGroup } from "./rules";
 import type { StudioSetup } from "./state";
 
 const GROUPS: { group: RuleGroup; title: string }[] = [
@@ -49,13 +49,32 @@ export function setUpRulesSection(change: (update: (current: StudioSetup) => Stu
         return row(rule.label, input, id);
       }
       case "choice": {
+        const option = (choice: Choice) => h("option", { value: choice.value, disabled: choice.disabled ? "" : undefined }, choice.label);
+        // Choices with a group, like the maps, are shown under it, easiest group first and the rest after
+        const order = (group: string | undefined): number => {
+          const index = MAP_GROUPS.indexOf(group ?? "");
+          return index < 0 ? MAP_GROUPS.length : index;
+        };
+        const groups = [...new Set(rule.choices.map((choice) => choice.group))].sort((a, b) => order(a) - order(b));
         const input = h(
           "select",
           { id },
-          ...rule.choices.map((choice) => h("option", { value: choice.value, disabled: choice.disabled ? "" : undefined }, choice.label)),
+          ...(groups.every((group) => group === undefined)
+            ? rule.choices.map(option)
+            : groups.map((group) => h("optgroup", { label: group ?? OTHER_MAPS }, ...rule.choices.filter((c) => c.group === group).map(option)))),
         );
+        // A value the website's data doesn't know yet, e.g. a map from a newer game, is kept and shown as it is
+        const unknown = h("option", { hidden: "" });
+        input.prepend(unknown);
         input.addEventListener("change", () => set(input.value));
-        syncs.push((s) => (input.value = String(ruleValue(s, rule))));
+        syncs.push((s) => {
+          const value = String(ruleValue(s, rule));
+          const known = rule.choices.some((choice) => choice.value === value);
+          unknown.hidden = known;
+          unknown.value = known ? "" : value;
+          unknown.textContent = known ? "" : `${value} (not known to the website yet)`;
+          input.value = value;
+        });
         return row(rule.label, input, id, resetButton());
       }
       case "text": {
