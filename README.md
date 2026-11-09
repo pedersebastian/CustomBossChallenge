@@ -59,8 +59,9 @@ To build your own tools for share codes, see the [share-code package](web/packag
   continued, Boss Creator says so once and offers **Load Setup** to play the same setup again from the start.
 - **Ranked practice** (#83): turn on **Show Event Timer** in Mod Settings (Mod Helper's settings for Custom Boss
   Challenge) to race a setup the way the ranked boss events are scored. A panel under your lives and cash shows the
-  time, which is how long the bosses were alive, added up, as the events count it, and the upgrade tiers and cash you
-  used, which Least Tiers and Least Cash events count. When you win, the victory screen also lists the time of every
+  time, which is how long the bosses were alive, added up, as the events count it, the penalty the events add when a
+  round without a boss drags on past its grace time (10 s + 0.25 s per round after its last bloon comes), and the
+  upgrade tiers and cash you used, which Least Tiers and Least Cash events count. When you win, the victory screen also lists the time of every
   tier. Free retries and Continue keep the time right, as the game saves it. It is off by default, and custom games
   stay unranked.
 - **Translated** into every language BTD6 supports (English, Arabic, Chinese Simplified and Traditional, Danish,

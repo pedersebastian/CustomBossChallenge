@@ -17,8 +17,8 @@ namespace CustomBossChallenge.Visuals;
 
 /// <summary>
 /// Ranked practice (#83): with <see cref="Settings.ShowTimer"/> on, a custom game shows the time as the ranked boss
-/// events score it, with the upgrade tiers and cash used that Least Tiers and Least Cash events count, and the victory
-/// screen shows the time of every tier. The game counts all of it itself, also across free retries and Continue (it
+/// events score it (the bosses' time plus the penalty for slow rounds without a boss), with the upgrade tiers and cash
+/// used that Least Tiers and Least Cash events count, and the victory screen shows the time of every tier. The game counts all of it itself, also across free retries and Continue (it
 /// is in its map saves); the mod only shows it. The game's own ranked timer can't be used: outside of ranked it sits
 /// off screen between bosses and behind the top bar while a boss is alive.
 /// </summary>
@@ -54,7 +54,14 @@ public static class RankedHud
     private static BossBloonManager? Manager => InGame.instance?.bridge?.Simulation?.map?.spawner?.bossBloonManager;
 
     /// <summary>
-    /// The ranked time so far: the time every boss was alive, added up, plus any penalty
+    /// The time every boss was alive so far, added up
+    /// </summary>
+    public static TimeSpan? BossTime => Manager is { } manager
+        ? TimeSpanOf(manager.GetBossTotalCompletionTime()) - TimeSpanOf(manager.GetPenaltyTime())
+        : null;
+
+    /// <summary>
+    /// The ranked time so far: the bosses' time plus the penalty, as the events score it
     /// </summary>
     public static TimeSpan? TotalTime => Manager is { } manager ? TimeSpanOf(manager.GetBossTotalCompletionTime()) : null;
 
@@ -70,6 +77,10 @@ public static class RankedHud
         return RankedTime.TierTimes(frames, TierMath.ClampTiers(options.Tiers), CustomBossState.HighestDefeatedTier);
     }
 
+    /// <summary>
+    /// The penalty for time spent on a round without a boss after its bloons are all out, past the events' grace
+    /// time of 10 s + 0.25 s per round. The game counts it in custom games too and keeps it in its map saves.
+    /// </summary>
     public static TimeSpan PenaltyTime => Manager is { } manager ? TimeSpanOf(manager.GetPenaltyTime()) : TimeSpan.Zero;
 
     /// <summary>
@@ -86,11 +97,13 @@ public static class RankedHud
     private static TimeSpan TimeSpanOf(Il2CppSystem.TimeSpan time) => TimeSpan.FromTicks(time.Ticks);
 
     /// <summary>
-    /// The panel's lines while playing: the time, the upgrade tiers used and the cash used
+    /// The panel's lines while playing: the bosses' time and the penalty, as the events show them, then the upgrade
+    /// tiers and cash used
     /// </summary>
     public static List<(string Label, string Value)> PanelLines() => new()
     {
-        (Texts.RankedTime.T(), RankedTime.Format(TotalTime ?? TimeSpan.Zero)),
+        (Texts.RankedTime.T(), RankedTime.Format(BossTime ?? TimeSpan.Zero)),
+        (Texts.PenaltyTime.T(), "+" + RankedTime.Format(PenaltyTime)),
         (Texts.TiersUsed.T(), TiersUsed.ToString("N0")),
         (Texts.CashUsed.T(), "$" + CashUsed.ToString("N0"))
     };

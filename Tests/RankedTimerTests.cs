@@ -201,3 +201,73 @@ public class RankedTimerTest : ContinueTestBase
         RankedHud.Update(true);
     }
 }
+
+/// <summary>
+/// Ranked practice (#83): time spent on a round without a boss after its bloons are all out, past the grace time,
+/// counts as penalty as in the ranked boss events. The game counts it in custom games too; it must reach the panel and
+/// the total, and stay right after a free retry and Continue.
+/// </summary>
+public class RankedPenaltyTest : ContinueTestBase
+{
+    private static int Penalty => (int) Math.Round(RankedHud.PenaltyTime.TotalSeconds * RankedTime.FramesPerSecond);
+
+    protected override IEnumerator Run()
+    {
+        RankedHud.ShowTimerOverride = true;
+
+        // Slow bloons and no towers: round 39 has no boss and its bloons are still out long after the last one came
+        var options = new BossOptions {Tiers = 1, SpawnRounds = "41"};
+        var dcm = Challenge(39).Build();
+        dcm.bloonModifiers.speedMultiplier = 0.3f;
+        yield return StartCustomGame(options, dcm);
+        AssertEquals(Penalty, 0, "Penalty at the start");
+
+        var bridge = InGame.instance.bridge;
+        var manager = bridge.Simulation.map.spawner.bossBloonManager;
+        bridge.SetFastForward(true);
+        bridge.StartRound();
+        var penaltyStart = 0;
+        var roundEnd = 0;
+        yield return WaitFor(() =>
+        {
+            NoAutoPlay();
+            if (manager.penaltyTimerOn && manager.penaltyStartFrame > 0) penaltyStart = manager.penaltyStartFrame;
+            if (bridge.GetCurrentRound() + 1 < 40 || bridge.AreRoundsActive()) return false;
+            roundEnd = bridge.Simulation.time.elapsed;
+            return true;
+        }, "Round 39", BossNotDefeatedTest.TimeoutSeconds);
+        Assert(penaltyStart > 0, "The game's penalty clock never started");
+        Log($"round 39: penalty clock from frame {penaltyStart}, round end {roundEnd}, penalty {Penalty} frames");
+
+        // Every frame from the end of the grace time to the end of the round. The test sees the round's end a few
+        // frames late, more so in fast forward.
+        var expected = roundEnd - penaltyStart;
+        if (Penalty > expected || Penalty < expected - 30) Fail($"Penalty {Penalty} frames, expected a little under {expected}");
+        AssertEquals(RankedHud.TotalTime, RankedHud.BossTime + RankedHud.PenaltyTime, "The total is the bosses' time plus the penalty");
+        RankedHud.Update(true);
+        var texts = RankedHud.Panel!.GetComponentsInChildren<TMP_Text>().Select(text => text.text).ToList();
+        Assert(texts.Contains("+" + RankedTime.Format(RankedHud.PenaltyTime)), $"The panel shows the penalty: {string.Join(" | ", texts)}");
+
+        // Waiting between rounds is no penalty
+        var afterRound = Penalty;
+        yield return new WaitForSecondsRealtime(3);
+        AssertEquals(Penalty, afterRound, "Penalty while waiting between rounds");
+
+        // Round 40 adds more; a free retry of it takes that back
+        bridge.StartRound();
+        yield return WaitFor(() => { NoAutoPlay(); return Penalty > afterRound; }, "More penalty on round 40", BossNotDefeatedTest.TimeoutSeconds);
+        CustomBossRetries.RetryFrom(40, true);
+        yield return WaitForLoadedGame();
+        AssertEquals(Penalty, afterRound, "Penalty after a free retry");
+
+        // Continuing after closing the game keeps it too
+        yield return CloseGame();
+        ClickBossCreator();
+        Popup? popup = null;
+        yield return WaitForPopup(found => popup = found);
+        yield return ClosePopup(popup!, true);
+        yield return WaitForLoadedGame();
+        AssertEquals(Penalty, afterRound, "Penalty of a continued game");
+        yield return ToMainMenu();
+    }
+}
