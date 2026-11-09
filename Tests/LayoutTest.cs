@@ -203,7 +203,64 @@ public class LayoutTest : CustomBossTest
         }
         CheckPicker(format, section);
         section.SetAdvanced(false);
+        CheckWarningLines(format, editor, section);
         Log($"{format}: Play {Describe(play)}, Reset {Describe(reset)}, section {Describe(sectionRect)}, {checkedControls} controls checked");
+    }
+
+    /// <summary>
+    /// With every warning line under the Tier Preview (issue #70), the lines stay inside the row, below the cards and
+    /// apart from each other, and the rows below move down with them
+    /// </summary>
+    private void CheckWarningLines(string format, ChallengeEditor editor, BossEditorSection section)
+    {
+        var round = editor.dcm.startRules.round;
+        var lives = editor.dcm.startRules.lives;
+        var spawnRounds = BossMode.Options.SpawnRounds;
+        var (tiers, bossHealth, healthPerTier, speedPerTier) =
+            (section.Tiers.Slider.value, section.BossHealth.Slider.value, section.HealthPerTier.Slider.value, section.SpeedPerTier.Slider.value);
+        try
+        {
+            // Health limit, tiers at the limits, close tiers, a close start round and a very hard setup all at once
+            section.Tiers.Slider.value = 10;
+            BossMode.Options = BossMode.Options with {SpawnRounds = "40, 41"};
+            section.BossHealth.Slider.value = section.BossHealth.Slider.maxValue;
+            section.HealthPerTier.Slider.value = section.HealthPerTier.Slider.maxValue;
+            section.SpeedPerTier.Slider.value = section.SpeedPerTier.Slider.maxValue;
+            editor.dcm.startRules.round = BossMode.Options.EffectiveSpawnRounds[0] - 2;
+            editor.dcm.startRules.lives = 1;
+            section.RulesChanged();
+            Canvas.ForceUpdateCanvases();
+
+            var lines = section.Strip.Notes.Where(note => note.gameObject.activeSelf).ToList();
+            AssertEquals(lines.Count, TierStrip.MaxNotes, $"{format}: warning lines shown");
+            var row = ScreenRect(section.Strip.Row.GetComponent<RectTransform>());
+            var cards = section.Strip.Cards.Where(card => card.Panel.gameObject.activeSelf).Select(card => ScreenRect(card.Panel.RectTransform)).ToList();
+            var shown = new List<Rect>();
+            foreach (var line in lines)
+            {
+                var letters = LettersRect(line.Text);
+                Expect(Inside(letters, row), $"{format}: the warning '{line.Text.text}' ({Describe(letters)}) is outside the Tier Preview ({Describe(row)})");
+                Expect(!cards.Any(card => Overlap(card, letters)), $"{format}: the warning '{line.Text.text}' ({Describe(letters)}) covers a tier card");
+                Expect(!shown.Any(other => Overlap(other, letters)), $"{format}: the warning '{line.Text.text}' ({Describe(letters)}) covers another warning");
+                shown.Add(letters);
+            }
+
+            // The row below the Tier Preview starts below its last line
+            var next = section.Strip.Row.transform.parent.GetChild(section.Strip.Row.transform.GetSiblingIndex() + 1);
+            var nextRect = ScreenRect(next.GetComponent<RectTransform>());
+            Expect(!Overlap(nextRect, row), $"{format}: the row below the Tier Preview ({Describe(nextRect)}) overlaps it ({Describe(row)})");
+        }
+        finally
+        {
+            editor.dcm.startRules.round = round;
+            editor.dcm.startRules.lives = lives;
+            BossMode.Options = BossMode.Options with {SpawnRounds = spawnRounds};
+            section.Tiers.Slider.value = tiers;
+            section.BossHealth.Slider.value = bossHealth;
+            section.HealthPerTier.Slider.value = healthPerTier;
+            section.SpeedPerTier.Slider.value = speedPerTier;
+            section.RulesChanged();
+        }
     }
 
     /// <summary>

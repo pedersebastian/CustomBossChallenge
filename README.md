@@ -233,6 +233,10 @@ CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg
 Health is capped per tier like the game's own boss health limit, so very strong Elite tiers can end up with the same
 health; the Tier Preview shows the capped values.
 
+Under the cards, orange lines warn about a setup that is allowed but probably not what you meant: a start round only a
+few rounds before the first boss, tiers only a few rounds apart, tiers held to the health limit, tiers that end up the same because of the game's
+limits, and rules that together make a very hard challenge. They never stop Play.
+
 The game always ends 20 rounds after the last tier arrives (round 140 for the default 5 tiers, like the weekly
 events), whatever end round the editor has, and a starting round after the last tier is reset. Otherwise the
 difficulty's normal last round (e.g. 60 on medium) would end the game before the later tiers arrive.

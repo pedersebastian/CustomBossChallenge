@@ -213,6 +213,7 @@ public sealed class BossEditorSection
         BuildRows(sliders.moabSpeedPanel);
         Play = BuildPlayButton();
         BuildFocusStops();
+        WatchEditorRules();
 
         var topInfo = editor.transform.Find("TopInfo/Title");
         titleText = topInfo != null ? topInfo.GetComponent<TMP_Text>() : null;
@@ -1273,7 +1274,63 @@ public sealed class BossEditorSection
     }
 
     /// <summary>
-    /// The strip grows when it shows the health cap line, and the rows below must move with it
+    /// The editor's own sliders for bloon and MOAB speed and health, by the name of their panel, with the model value
+    /// each sets (the slider shows percent). The game only copies them into its model on Play.
+    /// </summary>
+    private static readonly (string Panel, Action<DailyChallengeModel, float> Set)[] RuleSliders =
+    {
+        ("BloonSpeedSlider", (dcm, value) => dcm.bloonModifiers.speedMultiplier = value),
+        ("MoabSpeedSlider", (dcm, value) => dcm.bloonModifiers.moabSpeedMultiplier = value),
+        ("CeramicHealthSlider", (dcm, value) => dcm.bloonModifiers.healthMultipliers.bloons = value),
+        ("MoabHealthSlider", (dcm, value) => dcm.bloonModifiers.healthMultipliers.moabs = value)
+    };
+
+    /// <summary>
+    /// The warnings under the Tier Preview also look at the editor's own rules (issue #70), so they follow them: the
+    /// number fields write the model when they are left, the sliders are copied into it while they move, like the
+    /// game does on Play, and the modifiers come in through <see cref="RulesChanged"/> when their popup saves them
+    /// </summary>
+    private void WatchEditorRules()
+    {
+        foreach (var field in new TMP_InputField?[] {Editor.round, Editor.lives, Editor.cash, Editor.maxTowers})
+        {
+            // Added after the editor's own listeners, so the model already has the new value
+            field?.onEndEdit.AddListener(new Action<string>(_ => RulesChanged()));
+        }
+
+        foreach (var (panel, set) in RuleSliders)
+        {
+            var slider = RuleSlider(Editor, panel);
+            slider?.onValueChanged.AddListener(new Action<float>(value =>
+            {
+                if (!BossMode.Active || refreshing || Editor.dcm == null) return;
+                Editor.dcm.bloonModifiers ??= new BloonModifiers();
+                Editor.dcm.bloonModifiers.healthMultipliers ??= new BloonHealthMultipliers();
+                set(Editor.dcm, value / 100f);
+                RulesChanged();
+            }));
+        }
+
+        Editor.gameModeDropdown?.onValueChanged.AddListener(new Action<int>(_ => RulesChanged()));
+    }
+
+    /// <summary>
+    /// The slider of the editor's own panel <paramref name="panel"/>, like "CeramicHealthSlider", or null
+    /// </summary>
+    public static Slider? RuleSlider(ChallengeEditor editor, string panel) =>
+        editor.sliderSettings.GetComponentsInChildren<Slider>(true).FirstOrDefault(slider => slider.transform.parent?.name == panel);
+
+    /// <summary>
+    /// The editor's own rules changed: the warnings under the Tier Preview are checked again
+    /// </summary>
+    internal void RulesChanged()
+    {
+        if (!BossMode.Active || refreshing || Editor.dcm == null || !Section.activeInHierarchy) return;
+        ShowStrip();
+    }
+
+    /// <summary>
+    /// The strip grows with its warning lines, and the rows below must move with it
     /// </summary>
     private void ShowStrip()
     {

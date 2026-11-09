@@ -1,0 +1,126 @@
+{
+  "about": "Setups and the warnings the Boss Creator shows for them before Play (issue #70). Read by UnitTests/SetupWarningsTests.cs; meant for the website's port of Config/SetupWarnings.cs too. Facts are SetupFacts, with BossOptions under Options; missing values are the editor's defaults. Warnings are in the order the Boss Creator shows them.",
+  "cases": [
+    {
+      "name": "The editor's default setup",
+      "facts": {},
+      "warnings": []
+    },
+    {
+      "name": "Start round 36, four rounds before the first boss",
+      "facts": { "StartRound": 36 },
+      "warnings": ["StartRoundClose"]
+    },
+    {
+      "name": "Start round 35, five rounds before the first boss",
+      "facts": { "StartRound": 35 },
+      "warnings": []
+    },
+    {
+      "name": "Start round on the first boss is a Play problem, not a warning",
+      "facts": { "StartRound": 40 },
+      "warnings": []
+    },
+    {
+      "name": "A later first boss moves the warning with it",
+      "facts": { "StartRound": 58, "Options": { "SpawnRounds": "60, 80, 100, 120, 140" } },
+      "warnings": ["StartRoundClose"]
+    },
+    {
+      "name": "Tiers on rounds 80 and 81",
+      "facts": { "Options": { "SpawnRounds": "40, 60, 80, 81, 100" } },
+      "warnings": ["TiersClose"]
+    },
+    {
+      "name": "Tiers five rounds apart",
+      "facts": { "Options": { "SpawnRounds": "40, 45, 50, 55, 60" } },
+      "warnings": []
+    },
+    {
+      "name": "Boss Health 20 holds the last tiers to the health limit",
+      "facts": {
+        "BossHealth": 20,
+        "Options": { "HealthPerTier": 200 },
+        "TierBases": [
+          { "Health": 20000000, "Speed": 2 }, { "Health": 40000000, "Speed": 2 }, { "Health": 60000000, "Speed": 2 },
+          { "Health": 80000000, "Speed": 2 }, { "Health": 100000000, "Speed": 2 }
+        ]
+      },
+      "warnings": ["HealthCapped", "SameTiers", "HardSetup"]
+    },
+    {
+      "name": "Healthy tiers under the limit",
+      "facts": {
+        "TierBases": [
+          { "Health": 20000, "Speed": 2 }, { "Health": 40000, "Speed": 2 }, { "Health": 60000, "Speed": 2 },
+          { "Health": 80000, "Speed": 2 }, { "Health": 100000, "Speed": 2 }
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "name": "Ten tiers at the speed limit and the health limit end up the same",
+      "facts": {
+        "Options": { "Tiers": 10, "SpeedPerTier": 50, "HealthPerTier": 200 },
+        "TierBases": [
+          { "Health": 20000000, "Speed": 2 }, { "Health": 40000000, "Speed": 2 }, { "Health": 60000000, "Speed": 2 },
+          { "Health": 80000000, "Speed": 2 }, { "Health": 100000000, "Speed": 2 }, { "Health": 100000000, "Speed": 2 },
+          { "Health": 100000000, "Speed": 2 }, { "Health": 100000000, "Speed": 2 }, { "Health": 100000000, "Speed": 2 },
+          { "Health": 100000000, "Speed": 2 }
+        ]
+      },
+      "warnings": ["HealthCapped", "SameTiers", "HardSetup"]
+    },
+    {
+      "name": "Ten tiers that still get stronger every tier",
+      "facts": {
+        "Options": { "Tiers": 10, "SpeedPerTier": 10, "HealthPerTier": 20 },
+        "TierBases": [
+          { "Health": 20000, "Speed": 2 }, { "Health": 40000, "Speed": 2 }, { "Health": 60000, "Speed": 2 },
+          { "Health": 80000, "Speed": 2 }, { "Health": 100000, "Speed": 2 }, { "Health": 100000, "Speed": 2 },
+          { "Health": 100000, "Speed": 2 }, { "Health": 100000, "Speed": 2 }, { "Health": 100000, "Speed": 2 },
+          { "Health": 100000, "Speed": 2 }
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "name": "A normal Elite setup",
+      "facts": { "Options": { "Elite": true } },
+      "warnings": []
+    },
+    {
+      "name": "Elite with 1 life",
+      "facts": { "Lives": 1, "Options": { "Elite": true } },
+      "warnings": []
+    },
+    {
+      "name": "Elite, Boss Health 5, 1 life and no selling",
+      "facts": { "BossHealth": 5, "Lives": 1, "NoSelling": true, "Options": { "Elite": true } },
+      "warnings": ["HardSetup"]
+    },
+    {
+      "name": "Boss Health 5 on its own",
+      "facts": { "BossHealth": 5 },
+      "warnings": []
+    },
+    {
+      "name": "Fast, tough bloons on Impoppable with few towers",
+      "facts": { "Mode": "Impoppable", "Difficulty": "Hard", "BloonHealth": 2, "MoabHealth": 2, "MaxTowers": 5 },
+      "warnings": ["HardSetup"]
+    },
+    {
+      "name": "Every warning at once",
+      "facts": {
+        "StartRound": 38, "BossHealth": 20, "Lives": 1, "NoSelling": true,
+        "Options": { "Elite": true, "Tiers": 7, "HealthPerTier": 200 },
+        "TierBases": [
+          { "Health": 50000000, "Speed": 2 }, { "Health": 90000000, "Speed": 2 }, { "Health": 90000000, "Speed": 2 },
+          { "Health": 90000000, "Speed": 2 }, { "Health": 100000000, "Speed": 2 }, { "Health": 100000000, "Speed": 2 },
+          { "Health": 100000000, "Speed": 2 }
+        ]
+      },
+      "warnings": ["StartRoundClose", "HealthCapped", "SameTiers", "HardSetup"]
+    }
+  ]
+}

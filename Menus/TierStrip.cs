@@ -28,9 +28,21 @@ public sealed class TierStrip
     public const float NoteHeight = 46;
 
     /// <summary>
-    /// The row's height while it also shows the health cap line
+    /// The row's height while it also shows one warning line, like the health cap line
     /// </summary>
     public const float CappedHeight = 430;
+
+    /// <summary>
+    /// What each further warning line adds to the row's height
+    /// </summary>
+    public const float NoteStep = 50;
+
+    /// <summary>
+    /// One line for each kind of <see cref="SetupWarning"/>
+    /// </summary>
+    public const int MaxNotes = 5;
+
+    public const string NoteName = "Warning";
     public const float MaxCardWidth = 330;
     public const float CardGap = 12;
     public const string CardName = "Tier";
@@ -57,9 +69,15 @@ public sealed class TierStrip
     public List<Card> Cards { get; } = new();
 
     /// <summary>
-    /// The line under the cards with the most health a tier can have, only shown while a tier is held to it
+    /// The warning lines under the cards (issue #70), like the most health a tier can have while a tier is held to
+    /// it. Only as many as there are warnings are shown, top to bottom in the order of <see cref="SetupWarning"/>.
     /// </summary>
-    public ModHelperText Note { get; }
+    public List<ModHelperText> Notes { get; } = new();
+
+    /// <summary>
+    /// The warnings the lines show now
+    /// </summary>
+    public List<Warning> Warnings { get; private set; } = new();
 
     private readonly ModHelperPanel strip;
 
@@ -169,26 +187,45 @@ public sealed class TierStrip
             Cards.Add(card);
         }
 
-        Note = strip.AddText(new Info("HealthCap", 0, 18, EditorRows.ControlWidth - 40, NoteHeight)
+        for (var i = 0; i < MaxNotes; i++)
         {
-            Anchor = new Vector2(0.5f, 0), Pivot = new Vector2(0.5f, 0)
-        }, "", 40, TextAlignmentOptions.Center);
-        Note.Text.color = Higher;
+            var note = strip.AddText(new Info(NoteName + i, 0, 18, EditorRows.ControlWidth - 40, NoteHeight)
+            {
+                Anchor = new Vector2(0.5f, 0), Pivot = new Vector2(0.5f, 0)
+            }, "", 40, TextAlignmentOptions.Center);
+            note.Text.color = Higher;
+            // Long translations shrink to the line instead of running into the next one
+            note.Text.enableAutoSizing = true;
+            note.Text.fontSizeMin = 24;
+            note.Text.fontSizeMax = 40;
+            note.Text.textWrappingMode = TextWrappingModes.NoWrap;
+            note.gameObject.SetActive(false);
+            Notes.Add(note);
+        }
     }
 
     /// <summary>
-    /// Cards share the strip's width, centered, but never get wider than <see cref="MaxCardWidth"/>. With the health
-    /// cap line the row grows and the cards stay at its top, above the line.
+    /// The row's height with <paramref name="lines"/> warning lines
     /// </summary>
-    private void LayOut(int tiers, bool capped)
+    public static float HeightFor(int lines) => lines <= 0 ? Height : CappedHeight + (lines - 1) * NoteStep;
+
+    /// <summary>
+    /// Cards share the strip's width, centered, but never get wider than <see cref="MaxCardWidth"/>. With the health
+    /// warning lines the row grows and the cards stay at its top, above the lines.
+    /// </summary>
+    private void LayOut(int tiers, int lines)
     {
-        var height = capped ? CappedHeight : Height;
+        var height = HeightFor(lines);
         var rowRect = Row.GetComponent<RectTransform>();
         rowRect.sizeDelta = new Vector2(rowRect.sizeDelta.x, height);
         strip.RectTransform.sizeDelta = new Vector2(strip.RectTransform.sizeDelta.x, height - 10);
-        Note.gameObject.SetActive(capped);
+        for (var i = 0; i < Notes.Count; i++)
+        {
+            Notes[i].gameObject.SetActive(i < lines);
+            Notes[i].RectTransform.anchoredPosition = new Vector2(0, 18 + (lines - 1 - i) * NoteStep);
+        }
 
-        var y = capped ? (height - 10 - CardHeight) / 2 - 8 : 0;
+        var y = lines > 0 ? (height - 10 - CardHeight) / 2 - 8 : 0;
         var slot = Math.Min(EditorRows.ControlWidth / tiers, MaxCardWidth + CardGap);
         var left = (EditorRows.ControlWidth - slot * tiers) / 2;
         for (var i = 0; i < tiers; i++)
@@ -213,8 +250,8 @@ public sealed class TierStrip
     {
         var height = Row.GetComponent<RectTransform>().sizeDelta.y;
         var tiers = TierMath.ClampTiers(options.Tiers);
-        var bossHealth = dcm?.bloonModifiers?.healthMultipliers?.boss ?? 1;
-        var values = Values(options, dcm, Game.instance?.model);
+        var game = Game.instance?.model;
+        var values = Values(options, dcm, game);
 
         for (var i = 0; i < Cards.Count; i++)
         {
@@ -236,9 +273,9 @@ public sealed class TierStrip
             Paint(card.Health, value.Shown, value.HealthFactor);
         }
 
-        // The cap is on the boss model and leaves room for Boss Health, which is applied on top of it like in the game
-        EditorRows.SetText(Note.Text, Texts.HealthCap.T(FormatHealth(TierMath.MaxModelHealth(bossHealth) * bossHealth)));
-        LayOut(tiers, values.Exists(value => value.Capped));
+        Warnings = SetupWarnings.Check(Facts(options, dcm, game));
+        for (var i = 0; i < Warnings.Count && i < Notes.Count; i++) EditorRows.SetText(Notes[i].Text, Texts.Warning(Warnings[i]));
+        LayOut(tiers, Math.Min(Warnings.Count, Notes.Count));
         return !Mathf.Approximately(height, Row.GetComponent<RectTransform>().sizeDelta.y);
     }
 
@@ -260,6 +297,7 @@ public sealed class TierStrip
         var bossSpeed = dcm?.bloonModifiers?.bossSpeedMultiplier ?? 1;
         var bossHealth = dcm?.bloonModifiers?.healthMultipliers?.boss ?? 1;
         var cap = TierMath.MaxModelHealth(bossHealth);
+        var facts = Facts(options, dcm, game);
         var values = new List<CardValues>();
         for (var tier = 1; tier <= TierMath.ClampTiers(options.Tiers); tier++)
         {
@@ -268,13 +306,11 @@ public sealed class TierStrip
             var tierHealth = options.TierHealthFactor(tier);
             var speed = TierMath.SpeedFactor(tier, options.SpeedPerTier) * tierSpeed * bossSpeed;
             var health = TierMath.HealthFactor(tier, options.HealthPerTier) * tierHealth * bossHealth;
-            var source = options.SourceId(tier);
             var shown = "?";
             var capped = false;
-            if (game != null && game.DoesBloonExist(source) && !options.EntryOf(tier).IsRandom)
+            // The same health the warnings check against the game's limit
+            if (SetupWarnings.ModelHealth(facts, tier) is { } model)
             {
-                var model = game.GetBloon(source).maxHealth * TierMath.ExtraTierFactor(tier) *
-                            TierMath.HealthFactor(tier, options.HealthPerTier) * tierHealth;
                 capped = model > cap;
                 shown = FormatHealth(Math.Min(model, cap) * bossHealth);
             }
@@ -296,6 +332,49 @@ public sealed class TierStrip
     /// ▲ for a value above the normal game, ▼ below it, nothing for the same
     /// </summary>
     public static string Mark(double factor) => factor > 1.0001 ? HigherMark : factor < 0.9999 ? LowerMark : "";
+
+    /// <summary>
+    /// What <see cref="SetupWarnings"/> needs from <paramref name="dcm"/> and the boss models in
+    /// <paramref name="game"/>; without them, the editor's defaults and no model values
+    /// </summary>
+    public static SetupFacts Facts(BossOptions options, DailyChallengeModel? dcm, GameModel? game)
+    {
+        var bases = new TierBase?[TierMath.ClampTiers(options.Tiers)];
+        for (var tier = 1; tier <= bases.Length; tier++)
+        {
+            var source = options.SourceId(tier);
+            if (game == null || !game.DoesBloonExist(source) || options.EntryOf(tier).IsRandom) continue;
+            var model = game.GetBloon(source);
+            bases[tier - 1] = new TierBase(model.maxHealth, model.speed);
+        }
+
+        var facts = new SetupFacts {Options = options, TierBases = bases};
+        if (dcm == null) return facts;
+
+        var modifiers = dcm.bloonModifiers;
+        var health = modifiers?.healthMultipliers;
+        return facts with
+        {
+            StartRound = dcm.startRules?.round ?? facts.StartRound,
+            Difficulty = dcm.difficulty ?? facts.Difficulty,
+            Mode = dcm.mode ?? facts.Mode,
+            Lives = dcm.startRules?.lives ?? facts.Lives,
+            Cash = dcm.startRules?.cash ?? facts.Cash,
+            MaxTowers = dcm.maxTowers,
+            BloonSpeed = modifiers?.speedMultiplier ?? 1,
+            MoabSpeed = modifiers?.moabSpeedMultiplier ?? 1,
+            BossSpeed = modifiers?.bossSpeedMultiplier ?? 1,
+            BloonHealth = health?.bloons ?? 1,
+            MoabHealth = health?.moabs ?? 1,
+            BossHealth = health?.boss ?? 1,
+            NoSelling = dcm.disableSelling,
+            NoKnowledge = dcm.disableMK,
+            NoPowers = dcm.disablePowers,
+            AllCamo = modifiers?.allCamo ?? false,
+            AllRegrow = modifiers?.allRegen ?? false,
+            AllFortified = modifiers?.allFortified ?? false
+        };
+    }
 
     /// <summary>
     /// Health the way the game shortens big numbers, e.g. 950, 7.5k, 112k, 3.4M, 1.2B
