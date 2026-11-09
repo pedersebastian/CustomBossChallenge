@@ -2,7 +2,6 @@ using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
 using CustomBossChallenge.Menus;
 using HarmonyLib;
-using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
 using Il2CppAssets.Scripts.Unity.UI_New.DailyChallenge;
@@ -182,23 +181,6 @@ internal static class ChallengeEditor_OverrideClose
         editor.towerSelectObject != null && editor.towerSelectObject.activeInHierarchy ||
         editor.mapSelectPanel != null && editor.mapSelectPanel.gameObject.activeInHierarchy ||
         editor.modifierSettings != null && editor.modifierSettings.gameObject.activeInHierarchy;
-}
-
-/// <summary>
-/// The editor's map picker shows which maps the selected boss has been defeated on
-/// </summary>
-[HarmonyPatch(typeof(MapSelectPanel), nameof(MapSelectPanel.Open))]
-[OptionalPatch]
-internal static class MapSelectPanel_Open
-{
-    [HarmonyPrefix]
-    internal static void Prefix(MapSelectPanel __instance, ref BossType bossType, ref bool showBossVisuals)
-    {
-        if (!BossMode.Active || __instance.GetComponentInParent<ChallengeEditor>() == null) return;
-
-        bossType = BossMode.Options.BossOf(1).Boss;
-        showBossVisuals = true;
-    }
 }
 
 /// <summary>

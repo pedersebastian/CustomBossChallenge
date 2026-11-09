@@ -1,17 +1,20 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
 using CustomBossChallenge.Menus;
 using CustomBossChallenge.Persistence;
+using HarmonyLib;
 using Il2CppAssets.Scripts;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Unity;
 using Il2CppAssets.Scripts.Unity.Menu;
 using Il2CppAssets.Scripts.Unity.UI_New;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
+using Il2CppAssets.Scripts.Unity.UI_New.DailyChallenge;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using Il2CppTMPro;
 using UnityEngine;
@@ -73,6 +76,7 @@ public class BossCreatorTest : CustomBossTest
         yield return BackClosesPanel(editor!.TowerRestrictionClicked, () => editor.towerRestrictionMenu, "Tower Restrictions");
         yield return BackClosesPanel(editor.TowerSelectClicked, () => editor.towerSelectObject, "Add towers");
         yield return BackClosesPanel(editor.MapSelectClicked, () => editor.mapSelectPanel.gameObject, "Map select");
+        yield return MapPickerHasNoBossMedals(editor);
         yield return BackClosesPanel(editor.modifierSettings.OpenEditPopup, () => editor.modifierSettings.gameObject, "Modifiers");
 
         var section = AssertNotNull(BossEditorSection.Current, "No boss section")!;
@@ -614,6 +618,14 @@ public class BossCreatorTest : CustomBossTest
         Assert(editor.endRound.gameObject.activeSelf, "The normal Challenge Editor hides the End Round field");
         Assert(editor.endRound.transform.parent.Find("EndRoundLbl").gameObject.activeSelf, "The normal Challenge Editor hides the End Round label");
 
+        // The normal editor's map picker opens as the game opens it
+        editor.MapSelectClicked();
+        yield return new WaitForSecondsRealtime(1);
+        Assert(editor.mapSelectPanel.gameObject.activeInHierarchy, "The normal Challenge Editor's map picker did not open");
+        Assert(!BossMode.Active, "Opening the map picker turned boss mode on");
+        MenuManager.instance.Back();
+        yield return new WaitForSecondsRealtime(1);
+
         MenuManager.instance.Back();
         yield return ToMainMenu();
     }
@@ -755,6 +767,66 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(section.MaxParagons.Value, section.MaxParagons.Slider.maxValue, "Max paragons shown after reset");
         AssertEquals(editor.dcm.maxParagons, ParagonMath.NoLimit, "Max paragons in the model after reset");
     }
+
+    private static MapSelectPanel.MapTypeCallback? mapPickerCallback;
+    private static bool mapPickerBossVisuals;
+
+    private static void RecordMapPickerOpen(MapSelectPanel.MapTypeCallback mapChangedEvent, bool showBossVisuals)
+    {
+        mapPickerCallback = mapChangedEvent;
+        mapPickerBossVisuals = showBossVisuals;
+    }
+
+    /// <summary>
+    /// The Boss Creator's map picker shows no boss medal skulls: custom games never give those medals, so the skulls
+    /// would only make it look like they did. The game's own boss view of the same panel does show them, which proves
+    /// the check looks at the right objects (when the test profile has any medal).
+    /// </summary>
+    private IEnumerator MapPickerHasNoBossMedals(ChallengeEditor editor)
+    {
+        var harmony = new HarmonyLib.Harmony($"{nameof(BossCreatorTest)}.MapPicker");
+        harmony.Patch(AccessTools.Method(typeof(MapSelectPanel), nameof(MapSelectPanel.Open)),
+            prefix: new HarmonyMethod(typeof(BossCreatorTest), nameof(RecordMapPickerOpen)));
+        try
+        {
+            mapPickerCallback = null;
+            editor.MapSelectClicked();
+            yield return new WaitForSecondsRealtime(1);
+            var panel = editor.mapSelectPanel;
+            Assert(panel.gameObject.activeInHierarchy, "The map picker did not open");
+            Assert(mapPickerCallback != null, "The map picker was not opened through MapSelectPanel.Open");
+            Assert(!mapPickerBossVisuals, "The Boss Creator opens the map picker with the boss visuals on");
+            var shown = BossMedals(panel);
+            Assert(shown.Count == 0, $"The Boss Creator's map picker shows boss medals: {string.Join(", ", shown.Take(5))}");
+
+            // The game's own boss view of the panel, as its boss menus open it
+            panel.Open(mapPickerCallback, BossType.Bloonarius, true);
+            yield return new WaitForSecondsRealtime(2);
+            var bossView = BossMedals(panel);
+            Assert(bossView.Any(name => name.Contains("HideDefeated")),
+                "The game's boss view shows no Hide Defeated button, its objects may have been renamed");
+            if (bossView.Any(name => name.Contains("DefeatedIcons"))) Log("The game's boss view shows the medal skulls");
+            else Log("The test profile has no Bloonarius medals, so the skulls in the game's boss view were not checked");
+
+            MenuManager.instance.Back();
+            yield return new WaitForSecondsRealtime(1);
+            Assert(!panel.gameObject.activeInHierarchy, "Back did not close the map picker");
+        }
+        finally
+        {
+            harmony.UnpatchSelf();
+        }
+    }
+
+    /// <summary>
+    /// The visible boss medal skulls (normal and Elite) on the panel's map cards, and its Hide Defeated filter
+    /// </summary>
+    private static List<string> BossMedals(MapSelectPanel panel) =>
+        panel.transform.GetComponentsInChildren<Transform>(false)
+            .Where(t => t.name.StartsWith("HideDefeated") ||
+                        t.parent != null && t.parent.name == "DefeatedIcons" && t.name is "Normal" or "Elite")
+            .Select(t => $"{t.parent!.parent?.name}/{t.parent.name}/{t.name}")
+            .ToList();
 
     private IEnumerator BackClosesPanel(Action open, Func<GameObject> panel, string name)
     {
