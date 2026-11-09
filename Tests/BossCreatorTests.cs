@@ -171,8 +171,10 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(cards[2].Speed.Text.text, $"×2.1{TierStrip.HigherMark}", "Speed of tier 3 (+20 % per tier)");
         AssertEquals(cards[6].Speed.Text.text, $"×3.3{TierStrip.HigherMark}", "Speed of tier 7");
         var tier7 = Game.instance.model.GetBloon("VortexElite5").maxHealth * TierMath.ExtraTierFactor(7) * TierMath.HealthFactor(7, 50);
-        AssertEquals(cards[6].Health.Text.text, TierStrip.FormatHealth(Math.Min(tier7, TierMath.MaxModelHealth(3)) * 3) + TierStrip.HigherMark,
-            "Health of tier 7");
+        // The game's text may put a space before the unit
+        AssertEquals(string.Concat(cards[6].Health.Text.text.Where(c => !char.IsWhiteSpace(c))),
+            TierStrip.FormatHealth(Math.Min(tier7, TierMath.MaxModelHealth(3)) * 3) + TierStrip.HigherMark,
+            $"Health of tier 7 (shown '{cards[6].Health.Text.text}')");
         // With 7 cards there is room for the values at full size; they only shrink on narrower cards
         foreach (var text in new[] { cards[6].Speed, cards[6].Health })
         {
@@ -190,9 +192,9 @@ public class BossCreatorTest : CustomBossTest
         // The game's text may put a space before the unit
         AssertEquals(string.Concat(cards[9].Health.Text.text.Where(c => !char.IsWhiteSpace(c))), $"2B{TierStrip.HigherMark}",
             "Health of tier 10, capped like in the game");
-        Assert(section.Strip.Note.Text.text.Contains("2B"), $"The cap line shows the game's limit: {section.Strip.Note.Text.text}");
-        Assert(section.Strip.Note.gameObject.activeSelf, "The cap line shows while a tier reaches the cap");
-        AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.CappedHeight, "The strip grows for the cap line");
+        var capLine = WarningLine(section, SetupWarning.HealthCapped);
+        Assert(capLine != null && capLine.Text.text.Contains("2B"), $"The cap line shows the game's limit: {capLine?.Text.text}");
+        AssertStripHeight(section, "The strip grows for the warning lines");
         // With 10 narrow cards, the values and their marks still fit inside each card
         for (var i = 0; i < 10; i++)
         {
@@ -207,8 +209,9 @@ public class BossCreatorTest : CustomBossTest
         section.BossHealth.Slider.value = 300;
         section.HealthPerTier.Slider.value = 50;
         section.Tiers.Slider.value = 3;
-        Assert(!section.Strip.Note.gameObject.activeSelf, "The cap line is hidden while no tier reaches the cap");
-        AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.Height, "The strip shrinks back without the cap line");
+        Assert(WarningLine(section, SetupWarning.HealthCapped) == null, "The cap line is hidden while no tier reaches the cap");
+        AssertStripHeight(section, "The strip shrinks back without the cap line");
+        yield return WarningsBeforePlay(editor!, section);
         section.Tiers.Slider.value = 7;
         AssertEquals(cards[0].Speed.Text.color, TierStrip.Higher, "Faster than the normal game is orange");
         section.BossSpeed.Slider.value = 50;
@@ -766,6 +769,76 @@ public class BossCreatorTest : CustomBossTest
         Assert(!editor.dcm.bloonModifiers.allFortified, "All fortified in the model after reset");
         AssertEquals(section.MaxParagons.Value, section.MaxParagons.Slider.maxValue, "Max paragons shown after reset");
         AssertEquals(editor.dcm.maxParagons, ParagonMath.NoLimit, "Max paragons in the model after reset");
+    }
+
+    /// <summary>
+    /// The editor's own rules give warnings under the Tier Preview as soon as they change, and the warnings never stop
+    /// Play (issue #70)
+    /// </summary>
+    private IEnumerator WarningsBeforePlay(ChallengeEditor editor, BossEditorSection section)
+    {
+        var before = section.Strip.Warnings.Select(w => w.Kind).ToList();
+        var round = (editor.dcm.startRules.round, editor.round.text);
+        var lives = (editor.dcm.startRules.lives, editor.lives.text);
+        var bossRound = BossMode.Options.EffectiveSpawnRounds[0];
+
+        // A start round a few rounds before the first boss, typed into the editor's own field
+        var start = (bossRound - 3).ToString();
+        editor.round.text = start;
+        editor.round.onEndEdit.Invoke(start);
+        yield return null;
+        var line = WarningLine(section, SetupWarning.StartRoundClose);
+        Assert(line != null && line.Text.text.Contains(start), $"No warning about the start round {start}: {line?.Text.text}");
+        AssertStripHeight(section, "With the start round warning");
+        AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "A warning must not stop Play");
+
+        // Rules that together make a very hard challenge: 1 life, Boss Health ×10 and tough bloons from the slider
+        editor.lives.text = "1";
+        editor.lives.onEndEdit.Invoke("1");
+        var bossHealth = section.BossHealth.Slider.value;
+        section.BossHealth.Slider.value = 1000;
+        var ceramic = AssertNotNull(BossEditorSection.RuleSlider(editor, "CeramicHealthSlider"), "No bloon health slider")!;
+        var ceramicValue = ceramic.value;
+        ceramic.value = ceramic.maxValue;
+        yield return null;
+        AssertEquals(editor.dcm.bloonModifiers.healthMultipliers.bloons, ceramic.maxValue / 100f, "The bloon health slider goes into the model");
+        Assert(WarningLine(section, SetupWarning.HardSetup) != null, "No warning about a very hard setup");
+        AssertStripHeight(section, "With the hard setup warning");
+        AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "Warnings must not stop Play");
+
+        // Everything back: the warnings are the ones from before
+        ceramic.value = ceramicValue;
+        section.BossHealth.Slider.value = bossHealth;
+        editor.lives.text = lives.text;
+        editor.lives.onEndEdit.Invoke(lives.text);
+        editor.round.text = round.text;
+        editor.round.onEndEdit.Invoke(round.text);
+        yield return null;
+        AssertEquals(editor.dcm.startRules.round, round.round, "Start round set back");
+        AssertEquals(editor.dcm.startRules.lives, lives.lives, "Lives set back");
+        AssertEquals(string.Join(",", section.Strip.Warnings.Select(w => w.Kind)), string.Join(",", before), "Warnings after setting the rules back");
+        AssertStripHeight(section, "With the rules set back");
+    }
+
+    /// <summary>
+    /// The Tier Preview's line for <paramref name="kind"/>, or null when it isn't shown
+    /// </summary>
+    private static BTD_Mod_Helper.Api.Components.ModHelperText? WarningLine(BossEditorSection section, SetupWarning kind)
+    {
+        var index = section.Strip.Warnings.FindIndex(w => w.Kind == kind);
+        if (index < 0) return null;
+        var line = section.Strip.Notes[index];
+        return line.gameObject.activeSelf ? line : null;
+    }
+
+    /// <summary>
+    /// The Tier Preview has room for exactly the warning lines it shows, and shows one for every warning
+    /// </summary>
+    private void AssertStripHeight(BossEditorSection section, string what)
+    {
+        var shown = section.Strip.Notes.Count(note => note.gameObject.activeSelf);
+        AssertEquals(shown, section.Strip.Warnings.Count, $"{what}: warning lines shown");
+        AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.HeightFor(shown), $"{what}: height");
     }
 
     private static MapSelectPanel.MapTypeCallback? mapPickerCallback;

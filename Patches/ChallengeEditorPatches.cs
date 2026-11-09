@@ -201,6 +201,10 @@ internal static class ChallengeEditorModifierSettings_ApplyDCMtoUI
 internal static class ChallengeEditorModifierSettings_ApplyUIToDCM
 {
     [HarmonyPostfix]
-    internal static void Postfix(ChallengeEditorModifierSettings __instance, DailyChallengeModel dcm) =>
+    internal static void Postfix(ChallengeEditorModifierSettings __instance, DailyChallengeModel dcm)
+    {
         FortifiedModifier.Save(__instance, dcm);
+        // The warnings before Play look at the modifiers too
+        BossEditorSection.Current?.RulesChanged();
+    }
 }

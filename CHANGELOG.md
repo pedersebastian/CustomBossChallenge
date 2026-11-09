@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Warnings before Play** (#70): the Tier Preview has a line for each thing in the setup that is allowed but
+  probably not meant, and they never stop Play: a start round only a few rounds before the first boss, tiers held to
+  the game's health limit (the line that was already there), tiers that end up the same because their speed and
+  health reached the game's limits, and rules that together make a very hard challenge. They follow the editor's
+  own rules too, like the start round, lives and the bloon sliders, as soon as they change.
 - **Ranked practice** (#83): a new Mod Settings page, Ranked Practice, with **Show Ranked Stats**, off by default. In custom games it
   shows the time the way the ranked boss events score it (how long the bosses were alive, added up, plus the penalty
   for a round without a boss that drags on past its grace time), with the upgrade tiers and cash used that Least Tiers and Least Cash events count, so the time can break a tie. The victory screen
