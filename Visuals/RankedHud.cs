@@ -16,7 +16,7 @@ using Object = UnityEngine.Object;
 namespace CustomBossChallenge.Visuals;
 
 /// <summary>
-/// Ranked practice (#83): with <see cref="Settings.ShowTimer"/> on, a custom game shows the time as the ranked boss
+/// Ranked practice (#83): with <see cref="Settings.ShowRankedStats"/> on, a custom game shows the time as the ranked boss
 /// events score it (the bosses' time plus the penalty for slow rounds without a boss), with the upgrade tiers and cash
 /// used that Least Tiers and Least Cash events count, and the victory screen shows the time of every tier. The game counts all of it itself, also across free retries and Continue (it
 /// is in its map saves); the mod only shows it. The game's own ranked timer can't be used: outside of ranked it sits
@@ -45,9 +45,9 @@ public static class RankedHud
     /// <summary>
     /// Tests only: the setting as if the player had chosen it, null for the player's setting
     /// </summary>
-    internal static bool? ShowTimerOverride { get; set; }
+    internal static bool? ShowRankedStatsOverride { get; set; }
 
-    public static bool Enabled => ShowTimerOverride ?? Settings.ShowTimer;
+    public static bool Enabled => ShowRankedStatsOverride ?? Settings.ShowRankedStats;
 
     public static bool Visible => Enabled && CustomBossState.IsActive;
 

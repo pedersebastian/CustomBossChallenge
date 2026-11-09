@@ -57,7 +57,7 @@ To build your own tools for share codes, see the [share-code package](web/packag
   free retries included. It is kept in `BloonsTD6/UserData/CustomBossChallenge/Continue.json`, separate from the
   game's own saves, and replaced when you win, restart or play a new custom game. If a BTD6 update means it can't be
   continued, Boss Creator says so once and offers **Load Setup** to play the same setup again from the start.
-- **Ranked practice** (#83): turn on **Show Event Timer** in Mod Settings (Mod Helper's settings for Custom Boss
+- **Ranked practice** (#83): turn on **Show Ranked Stats** in Mod Settings (Mod Helper's settings for Custom Boss
   Challenge) to race a setup the way the ranked boss events are scored. A panel under your lives and cash shows the
   time, which is how long the bosses were alive, added up, as the events count it, the penalty the events add when a
   round without a boss drags on past its grace time (10 s + 0.25 s per round after its last bloon comes), and the

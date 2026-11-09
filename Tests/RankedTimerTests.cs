@@ -19,12 +19,12 @@ using Object = UnityEngine.Object;
 namespace CustomBossChallenge.Tests;
 
 /// <summary>
-/// Ranked practice (#83): the Show Event Timer setting shows the ranked time with the upgrade tiers and cash used in
+/// Ranked practice (#83): the Show Ranked Stats setting shows the ranked time and penalty with the upgrade tiers and cash used in
 /// custom games, the time survives a free retry and Continue, and the victory screen shows the time of every tier
 /// </summary>
 public class RankedTimerTest : ContinueTestBase
 {
-    private const string ShowTimerKey = Texts.KeyPrefix + "ShowTimer Setting Name";
+    private const string ShowRankedStatsKey = Texts.KeyPrefix + "ShowRankedStats Setting Name";
     private const string RankedPracticeKey = Texts.KeyPrefix + Settings.RankedPracticeName + " Category";
 
     /// <summary>
@@ -85,33 +85,34 @@ public class RankedTimerTest : ContinueTestBase
 
     protected override IEnumerator Run()
     {
-        AssertEquals(Settings.ShowTimer.GetDefaultValue(), false, "Show Event Timer is off by default");
+        AssertEquals(Settings.ShowRankedStats.GetDefaultValue(), false, "Show Ranked Stats is off by default");
 
         // Mod Helper translates the settings with keys of its own
         ModSettingsMenu.Open(ModContent.GetInstance<CustomBossChallenge>());
         yield return new WaitForSecondsRealtime(3);
+        if (ScreenshotTour.Folder is { Length: > 0 } settingsFolder) yield return ScreenshotTour.Capture(settingsFolder, "ranked-settings");
         var menuTexts = Object.FindObjectsOfType<TMP_Text>().Where(text => text.isActiveAndEnabled).Select(text => text.text ?? "").ToList();
         Log($"mod settings: {string.Join(" | ", menuTexts.Where(text => text.Length < 80))}");
-        foreach (var key in new[] {RankedPracticeKey, ShowTimerKey})
+        foreach (var key in new[] {RankedPracticeKey, ShowRankedStatsKey})
         {
             Assert(menuTexts.Contains(key.T()), $"Mod Settings must show '{key.T()}'");
         }
         Assert(!menuTexts.Any(text => text.Contains(Texts.KeyPrefix)), "Mod Settings shows a text key");
         var option = AssertNotNull(Object.FindObjectsOfType<ModHelperOption>().FirstOrDefault(found =>
-            found.GetComponentsInChildren<TMP_Text>().Any(text => text.text == ShowTimerKey.T())), "No Show Event Timer option")!;
+            found.GetComponentsInChildren<TMP_Text>().Any(text => text.text == ShowRankedStatsKey.T())), "No Show Ranked Stats option")!;
         option.InfoButton.Button.onClick.Invoke();
         Popup? info = null;
         yield return WaitForPopup(found => info = found);
-        AssertEquals(info!.body.text, (Texts.KeyPrefix + "ShowTimer Setting Description").T(), "Show Event Timer's info");
+        AssertEquals(info!.body.text, (Texts.KeyPrefix + "ShowRankedStats Setting Description").T(), "Show Ranked Stats's info");
         yield return ClosePopup(info, true);
         yield return ToMainMenu();
 
-        RankedHud.ShowTimerOverride = false;
+        RankedHud.ShowRankedStatsOverride = false;
         var options = new BossOptions {Tiers = 3, SpawnRounds = "40, 42, 44", SpeedPerTier = 20, HealthPerTier = 30};
         yield return StartCustomGame(options, Challenge(39, 0.1f).Build());
         AssertPanel(false, "with the setting off");
 
-        RankedHud.ShowTimerOverride = true;
+        RankedHud.ShowRankedStatsOverride = true;
         AssertPanel(true, "with the setting on");
         ExtraTierGameTest.PlaceStrongTower(InGame.instance.GetGameModel().GetTowerFromId("DartMonkey"));
 
@@ -160,9 +161,9 @@ public class RankedTimerTest : ContinueTestBase
         if (ScreenshotTour.Folder is { Length: > 0 } hudFolder) yield return ScreenshotTour.Capture(hudFolder, "ranked-hud");
 
         // Switching the setting off in the game hides what the mod showed
-        RankedHud.ShowTimerOverride = false;
+        RankedHud.ShowRankedStatsOverride = false;
         AssertPanel(false, "after switching the setting off");
-        RankedHud.ShowTimerOverride = true;
+        RankedHud.ShowRankedStatsOverride = true;
 
         // The victory screen shows the time of every tier, the total and the tiers and cash used
         ExtraTierGameTest.PlaceStrongTower(InGame.instance.GetGameModel().GetTowerFromId("DartMonkey"));
@@ -213,7 +214,7 @@ public class RankedPenaltyTest : ContinueTestBase
 
     protected override IEnumerator Run()
     {
-        RankedHud.ShowTimerOverride = true;
+        RankedHud.ShowRankedStatsOverride = true;
 
         // Slow bloons and no towers: round 39 has no boss and its bloons are still out long after the last one came
         var options = new BossOptions {Tiers = 1, SpawnRounds = "41"};

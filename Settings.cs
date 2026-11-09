@@ -24,17 +24,17 @@ public class Settings : ModSettings
     };
 
     /// <summary>
-    /// Shows the ranked event timer, the upgrade tiers and cash used, and the time of every tier when the game is won
-    /// (#83). The game keeps the time either way; this only shows it.
+    /// Shows what the ranked boss events score (#83): the bosses' time, the penalty, the upgrade tiers and cash used,
+    /// and the time of every tier when the game is won. The game keeps all of it either way; this only shows it.
     /// </summary>
-    public static readonly ModSettingBool ShowTimer = new(false)
+    public static readonly ModSettingBool ShowRankedStats = new(false)
     {
         category = RankedPractice,
-        displayName = "Show Event Timer",
-        description = "Shows the ranked boss events' timer in custom boss games, with the upgrade tiers and cash used. " +
-                      "The time is how long the bosses were alive, added up, as the events score it. When the game " +
-                      "is won you also see the time of every tier, so a Least Tiers or Least Cash run can be compared " +
-                      "on time too. Custom games stay unranked.",
+        displayName = "Show Ranked Stats",
+        description = "Shows what the ranked boss events score in custom boss games: the time the bosses were " +
+                      "alive, added up, the penalty for a round without a boss that drags on, and the upgrade tiers " +
+                      "and cash used. When the game is won you also see the time of every tier, so a Least Tiers or " +
+                      "Least Cash run can be compared on time too. Custom games stay unranked.",
         icon = VanillaSprites.StopWatch
     };
 }
