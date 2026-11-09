@@ -115,5 +115,14 @@
   "CustomBossChallenge-ModeStandard": "Standard",
   "CustomBossChallenge-ModeAdvanced": "Avancé",
   "CustomBossChallenge-BossEventRounds": "Manches des événements de boss",
-  "CustomBossChallenge-BossEventRoundsInfo": "Cochez pour jouer les manches des événements de boss officiels de ce boss au lieu des manches normales. Dans les événements, les niveaux arrivent aux manches 40, 60, 80, 100 et 120 avec des bloons faits pour eux ; avec d’autres manches d’apparition, ces manches se déplacent avec les niveaux. En mode Avancé, chaque niveau arrive à la manche faite pour son propre boss, et les autres manches suivent le boss du premier niveau."
+  "CustomBossChallenge-BossEventRoundsInfo": "Cochez pour jouer les manches des événements de boss officiels de ce boss au lieu des manches normales. Dans les événements, les niveaux arrivent aux manches 40, 60, 80, 100 et 120 avec des bloons faits pour eux ; avec d’autres manches d’apparition, ces manches se déplacent avec les niveaux. En mode Avancé, chaque niveau arrive à la manche faite pour son propre boss, et les autres manches suivent le boss du premier niveau.",
+  "CustomBossChallenge-Ranked Practice Category": "Entraînement classé",
+  "CustomBossChallenge-ShowRankedStats Setting Name": "Afficher les stats classées",
+  "CustomBossChallenge-ShowRankedStats Setting Description": "Affiche dans les parties de boss personnalisées ce que mesurent les événements de boss classés : la durée de vie des boss, additionnée, la pénalité pour une manche sans boss qui traîne, ainsi que les niveaux d’amélioration et l’argent utilisés. Après la victoire, vous voyez aussi le temps de chaque palier, pour comparer aussi au temps une partie Least Tiers ou Least Cash. Les parties personnalisées restent non classées.",
+  "CustomBossChallenge-TierTime": "Palier {0}",
+  "CustomBossChallenge-TotalTime": "Total",
+  "CustomBossChallenge-PenaltyTime": "Pénalité",
+  "CustomBossChallenge-TiersUsed": "Niveaux d’amélioration utilisés",
+  "CustomBossChallenge-CashUsed": "Argent utilisé",
+  "CustomBossChallenge-RankedTime": "Temps"
 }

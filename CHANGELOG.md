@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Ranked practice** (#83): a new Mod Settings page, Ranked Practice, with **Show Ranked Stats**, off by default. In custom games it
+  shows the time the way the ranked boss events score it (how long the bosses were alive, added up, plus the penalty
+  for a round without a boss that drags on past its grace time), with the upgrade tiers and cash used that Least Tiers and Least Cash events count, so the time can break a tie. The victory screen
+  adds the time of every tier. The game keeps the time itself, so free retries and Continue keep it right.
 - **Make and change setups on the website** (#12): a page of its own,
   [studio.html](https://pedersebastian.github.io/CustomBossChallenge/studio.html), with the Boss Creator's options:
   boss and Elite, Boss Speed and Health, Max Paragons, tiers, speed and health per tier, spawn rounds (First Boss

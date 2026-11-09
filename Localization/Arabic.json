@@ -115,5 +115,14 @@
   "CustomBossChallenge-ModeStandard": "عادي",
   "CustomBossChallenge-ModeAdvanced": "متقدم",
   "CustomBossChallenge-BossEventRounds": "جولات أحداث الزعماء",
-  "CustomBossChallenge-BossEventRoundsInfo": "حدد لتلعب جولات أحداث الزعماء الرسمية لهذا الزعيم بدلاً من الجولات العادية. في الأحداث تصل المستويات في الجولات 40 و60 و80 و100 و120 مع بالونات مصممة لها؛ ومع جولات ظهور أخرى تنتقل تلك الجولات مع المستويات. في الوضع المتقدم يصل كل مستوى في الجولة المصممة لزعيمه الخاص، وتتبع الجولات الأخرى زعيم المستوى الأول."
+  "CustomBossChallenge-BossEventRoundsInfo": "حدد لتلعب جولات أحداث الزعماء الرسمية لهذا الزعيم بدلاً من الجولات العادية. في الأحداث تصل المستويات في الجولات 40 و60 و80 و100 و120 مع بالونات مصممة لها؛ ومع جولات ظهور أخرى تنتقل تلك الجولات مع المستويات. في الوضع المتقدم يصل كل مستوى في الجولة المصممة لزعيمه الخاص، وتتبع الجولات الأخرى زعيم المستوى الأول.",
+  "CustomBossChallenge-Ranked Practice Category": "تدريب مصنف",
+  "CustomBossChallenge-ShowRankedStats Setting Name": "إظهار إحصاءات التصنيف",
+  "CustomBossChallenge-ShowRankedStats Setting Description": "يعرض في ألعاب الزعماء المخصصة ما تقيسه أحداث الزعماء المصنفة: مجموع المدة التي بقي فيها الزعماء أحياء، وعقوبة الجولة التي تطول دون زعيم، ومستويات الترقية والمال المستخدم. عند الفوز ترى أيضًا وقت كل مستوى، لتقارن محاولات Least Tiers أو Least Cash بالوقت أيضًا. تبقى الألعاب المخصصة غير مصنفة.",
+  "CustomBossChallenge-TierTime": "المستوى {0}",
+  "CustomBossChallenge-TotalTime": "المجموع",
+  "CustomBossChallenge-PenaltyTime": "العقوبة",
+  "CustomBossChallenge-TiersUsed": "مستويات الترقية المستخدمة",
+  "CustomBossChallenge-CashUsed": "المال المستخدم",
+  "CustomBossChallenge-RankedTime": "الوقت"
 }

@@ -115,5 +115,14 @@
   "CustomBossChallenge-ModeStandard": "มาตรฐาน",
   "CustomBossChallenge-ModeAdvanced": "ขั้นสูง",
   "CustomBossChallenge-BossEventRounds": "รอบของอีเวนต์บอส",
-  "CustomBossChallenge-BossEventRoundsInfo": "ติ๊กเพื่อเล่นรอบของอีเวนต์บอสอย่างเป็นทางการของบอสนี้แทนรอบปกติ ในอีเวนต์ แต่ละระดับจะมาในรอบที่ 40, 60, 80, 100 และ 120 พร้อมบลูนที่ทำมาเพื่อมัน หากเปลี่ยนรอบที่ปรากฏ รอบเหล่านั้นจะย้ายตามระดับไปด้วย ในโหมดขั้นสูง แต่ละระดับจะมาในรอบที่ทำมาเพื่อบอสของตัวเอง และรอบอื่น ๆ จะตามบอสของระดับแรก"
+  "CustomBossChallenge-BossEventRoundsInfo": "ติ๊กเพื่อเล่นรอบของอีเวนต์บอสอย่างเป็นทางการของบอสนี้แทนรอบปกติ ในอีเวนต์ แต่ละระดับจะมาในรอบที่ 40, 60, 80, 100 และ 120 พร้อมบลูนที่ทำมาเพื่อมัน หากเปลี่ยนรอบที่ปรากฏ รอบเหล่านั้นจะย้ายตามระดับไปด้วย ในโหมดขั้นสูง แต่ละระดับจะมาในรอบที่ทำมาเพื่อบอสของตัวเอง และรอบอื่น ๆ จะตามบอสของระดับแรก",
+  "CustomBossChallenge-Ranked Practice Category": "ฝึกโหมดจัดอันดับ",
+  "CustomBossChallenge-ShowRankedStats Setting Name": "แสดงสถิติจัดอันดับ",
+  "CustomBossChallenge-ShowRankedStats Setting Description": "แสดงสิ่งที่อีเวนต์บอสแบบจัดอันดับวัด ในเกมบอสที่กำหนดเอง: ผลรวมของเวลาที่บอสมีชีวิตอยู่ บทลงโทษเมื่อรอบที่ไม่มีบอสยืดเยื้อ และระดับอัปเกรดกับเงินที่ใช้ เมื่อชนะจะเห็นเวลาของแต่ละระดับด้วย จึงเทียบรอบ Least Tiers หรือ Least Cash ด้วยเวลาได้เช่นกัน เกมที่กำหนดเองยังคงไม่จัดอันดับ",
+  "CustomBossChallenge-TierTime": "ระดับ {0}",
+  "CustomBossChallenge-TotalTime": "รวม",
+  "CustomBossChallenge-PenaltyTime": "บทลงโทษ",
+  "CustomBossChallenge-TiersUsed": "ระดับอัปเกรดที่ใช้",
+  "CustomBossChallenge-CashUsed": "เงินที่ใช้",
+  "CustomBossChallenge-RankedTime": "เวลา"
 }

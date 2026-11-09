@@ -115,5 +115,14 @@
   "CustomBossChallenge-ModeStandard": "Standart",
   "CustomBossChallenge-ModeAdvanced": "Gelişmiş",
   "CustomBossChallenge-BossEventRounds": "Boss Etkinliği Turları",
-  "CustomBossChallenge-BossEventRoundsInfo": "Normal turlar yerine bu boss’un resmi boss etkinliklerinin turlarını oynamak için işaretleyin. Etkinliklerde seviyeler kendileri için yapılmış bloon’larla 40, 60, 80, 100 ve 120. turlarda gelir; başka çıkış turlarında bu turlar seviyelerle birlikte kayar. Gelişmiş’te her seviye kendi boss’u için yapılmış turda gelir, diğer turlar ise ilk seviyenin boss’unu izler."
+  "CustomBossChallenge-BossEventRoundsInfo": "Normal turlar yerine bu boss’un resmi boss etkinliklerinin turlarını oynamak için işaretleyin. Etkinliklerde seviyeler kendileri için yapılmış bloon’larla 40, 60, 80, 100 ve 120. turlarda gelir; başka çıkış turlarında bu turlar seviyelerle birlikte kayar. Gelişmiş’te her seviye kendi boss’u için yapılmış turda gelir, diğer turlar ise ilk seviyenin boss’unu izler.",
+  "CustomBossChallenge-Ranked Practice Category": "Dereceli antrenman",
+  "CustomBossChallenge-ShowRankedStats Setting Name": "Dereceli istatistikleri göster",
+  "CustomBossChallenge-ShowRankedStats Setting Description": "Özel boss oyunlarında dereceli boss etkinliklerinin ölçtüklerini gösterir: bossların toplamda ne kadar hayatta kaldığı, uzayan bosssuz bir tur için ceza, kullanılan geliştirme kademesi ve para. Oyun kazanıldığında her kademenin süresini de görürsün, böylece Least Tiers veya Least Cash denemeleri de süreyle karşılaştırılabilir. Özel oyunlar derecesiz kalır.",
+  "CustomBossChallenge-TierTime": "Kademe {0}",
+  "CustomBossChallenge-TotalTime": "Toplam",
+  "CustomBossChallenge-PenaltyTime": "Ceza",
+  "CustomBossChallenge-TiersUsed": "Kullanılan geliştirme kademesi",
+  "CustomBossChallenge-CashUsed": "Kullanılan para",
+  "CustomBossChallenge-RankedTime": "Süre"
 }

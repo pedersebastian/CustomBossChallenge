@@ -57,6 +57,13 @@ To build your own tools for share codes, see the [share-code package](web/packag
   free retries included. It is kept in `BloonsTD6/UserData/CustomBossChallenge/Continue.json`, separate from the
   game's own saves, and replaced when you win, restart or play a new custom game. If a BTD6 update means it can't be
   continued, Boss Creator says so once and offers **Load Setup** to play the same setup again from the start.
+- **Ranked practice** (#83): turn on **Show Ranked Stats** in Mod Settings (Mod Helper's settings for Custom Boss
+  Challenge) to race a setup the way the ranked boss events are scored. A panel under your lives and cash shows the
+  time, which is how long the bosses were alive, added up, as the events count it, the penalty the events add when a
+  round without a boss drags on past its grace time (10 s + 0.25 s per round after its last bloon comes), and the
+  upgrade tiers and cash you used, which Least Tiers and Least Cash events count. When you win, the victory screen also lists the time of every
+  tier. Free retries and Continue keep the time right, as the game saves it. It is off by default, and custom games
+  stay unranked.
 - **Translated** into every language BTD6 supports (English, Arabic, Chinese Simplified and Traditional, Danish,
   Dutch, Finnish, French, German, Italian, Japanese, Korean, Norwegian, Polish, Brazilian Portuguese, Russian,
   Spanish, Latin American Spanish, Swedish, Thai and Turkish), following the game's language setting.

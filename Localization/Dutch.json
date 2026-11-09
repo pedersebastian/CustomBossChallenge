@@ -115,5 +115,14 @@
   "CustomBossChallenge-ModeStandard": "Standaard",
   "CustomBossChallenge-ModeAdvanced": "Geavanceerd",
   "CustomBossChallenge-BossEventRounds": "Baas-evenementrondes",
-  "CustomBossChallenge-BossEventRoundsInfo": "Vink aan om de rondes van de officiële baasevenementen voor deze baas te spelen in plaats van de normale rondes. In de evenementen komen de niveaus op ronde 40, 60, 80, 100 en 120 met bloons die voor hen gemaakt zijn; met andere spawnrondes verschuiven die rondes mee met de niveaus. In Geavanceerd komt elk niveau op de ronde die voor zijn eigen baas gemaakt is, en de andere rondes volgen de baas van het eerste niveau."
+  "CustomBossChallenge-BossEventRoundsInfo": "Vink aan om de rondes van de officiële baasevenementen voor deze baas te spelen in plaats van de normale rondes. In de evenementen komen de niveaus op ronde 40, 60, 80, 100 en 120 met bloons die voor hen gemaakt zijn; met andere spawnrondes verschuiven die rondes mee met de niveaus. In Geavanceerd komt elk niveau op de ronde die voor zijn eigen baas gemaakt is, en de andere rondes volgen de baas van het eerste niveau.",
+  "CustomBossChallenge-Ranked Practice Category": "Ranked oefenen",
+  "CustomBossChallenge-ShowRankedStats Setting Name": "Ranked-statistieken tonen",
+  "CustomBossChallenge-ShowRankedStats Setting Description": "Toont in eigen baasspellen wat de ranked baas-events meten: hoe lang de bazen samen leefden, de straf voor een uitlopende ronde zonder baas, en de gebruikte upgradeniveaus en het gebruikte geld. Na de overwinning zie je ook de tijd van elk niveau, zodat ook een Least Tiers- of Least Cash-poging op tijd te vergelijken is. Eigen spellen blijven unranked.",
+  "CustomBossChallenge-TierTime": "Niveau {0}",
+  "CustomBossChallenge-TotalTime": "Totaal",
+  "CustomBossChallenge-PenaltyTime": "Straf",
+  "CustomBossChallenge-TiersUsed": "Gebruikte upgradeniveaus",
+  "CustomBossChallenge-CashUsed": "Gebruikt geld",
+  "CustomBossChallenge-RankedTime": "Tijd"
 }

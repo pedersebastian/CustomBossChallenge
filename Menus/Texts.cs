@@ -8,6 +8,11 @@ namespace CustomBossChallenge.Menus;
 /// </summary>
 public static class Texts
 {
+    /// <summary>
+    /// What every text key of the mod starts with
+    /// </summary>
+    public const string KeyPrefix = nameof(CustomBossChallenge) + "-";
+
     private static string Key(string name, string english) => ModContent.Localize<CustomBossChallenge>(name, english);
 
     public static readonly string BossCreator = Key(nameof(BossCreator), "Boss Creator");
@@ -203,6 +208,13 @@ public static class Texts
         "This version of BTD6 changed parts of the game that keep custom games from touching your records, " +
         "achievements and Monkey Money, so the Boss Creator is turned off until Custom Boss Challenge is updated.\n\n" +
         "Missing: {0}");
+
+    public static readonly string TierTime = Key(nameof(TierTime), "Tier {0}");
+    public static readonly string TotalTime = Key(nameof(TotalTime), "Total");
+    public static readonly string PenaltyTime = Key(nameof(PenaltyTime), "Penalty");
+    public static readonly string TiersUsed = Key(nameof(TiersUsed), "Upgrade Tiers Used");
+    public static readonly string CashUsed = Key(nameof(CashUsed), "Cash Used");
+    public static readonly string RankedTime = Key(nameof(RankedTime), "Time");
 
     /// <summary>
     /// The text for a key in the player's language

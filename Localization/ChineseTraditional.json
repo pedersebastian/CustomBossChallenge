@@ -115,5 +115,14 @@
   "CustomBossChallenge-ModeStandard": "標準",
   "CustomBossChallenge-ModeAdvanced": "進階",
   "CustomBossChallenge-BossEventRounds": "Boss 活動回合",
-  "CustomBossChallenge-BossEventRoundsInfo": "勾選後使用該 Boss 官方 Boss 活動的回合，而不是普通回合。在活動中，各階段在第 40、60、80、100 和 120 回合登場，並配有專門的氣球；若更改出現回合，這些回合會隨階段一起移動。在進階模式中，每個階段在為其自身 Boss 設計的回合登場，其餘回合跟隨第一階段的 Boss。"
+  "CustomBossChallenge-BossEventRoundsInfo": "勾選後使用該 Boss 官方 Boss 活動的回合，而不是普通回合。在活動中，各階段在第 40、60、80、100 和 120 回合登場，並配有專門的氣球；若更改出現回合，這些回合會隨階段一起移動。在進階模式中，每個階段在為其自身 Boss 設計的回合登場，其餘回合跟隨第一階段的 Boss。",
+  "CustomBossChallenge-Ranked Practice Category": "排位練習",
+  "CustomBossChallenge-ShowRankedStats Setting Name": "顯示排位數據",
+  "CustomBossChallenge-ShowRankedStats Setting Description": "在自訂首領遊戲中顯示排位首領活動所計的數據：各首領存活時間的總和、無首領回合拖延的懲罰，以及已用升級等級和已用金錢。獲勝後還會顯示每個階段的用時，這樣 Least Tiers 或 Least Cash 的嘗試也能按時間比較。自訂遊戲仍不計排名。",
+  "CustomBossChallenge-TierTime": "第 {0} 階段",
+  "CustomBossChallenge-TotalTime": "總計",
+  "CustomBossChallenge-PenaltyTime": "懲罰",
+  "CustomBossChallenge-TiersUsed": "已用升級等級",
+  "CustomBossChallenge-CashUsed": "已用金錢",
+  "CustomBossChallenge-RankedTime": "時間"
 }

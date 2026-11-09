@@ -115,5 +115,14 @@
   "CustomBossChallenge-ModeStandard": "Standard",
   "CustomBossChallenge-ModeAdvanced": "Erweitert",
   "CustomBossChallenge-BossEventRounds": "Boss-Event-Runden",
-  "CustomBossChallenge-BossEventRoundsInfo": "Ankreuzen, um die Runden der offiziellen Boss-Events für diesen Boss statt der normalen Runden zu spielen. In den Events erscheinen die Stufen in Runde 40, 60, 80, 100 und 120 mit dafür gemachten Bloons; bei anderen Spawn-Runden wandern diese Runden mit den Stufen. Im Erweiterten Modus erscheint jede Stufe in der Runde, die für ihren eigenen Boss gemacht ist, und die übrigen Runden folgen dem Boss der ersten Stufe."
+  "CustomBossChallenge-BossEventRoundsInfo": "Ankreuzen, um die Runden der offiziellen Boss-Events für diesen Boss statt der normalen Runden zu spielen. In den Events erscheinen die Stufen in Runde 40, 60, 80, 100 und 120 mit dafür gemachten Bloons; bei anderen Spawn-Runden wandern diese Runden mit den Stufen. Im Erweiterten Modus erscheint jede Stufe in der Runde, die für ihren eigenen Boss gemacht ist, und die übrigen Runden folgen dem Boss der ersten Stufe.",
+  "CustomBossChallenge-Ranked Practice Category": "Ranglisten-Training",
+  "CustomBossChallenge-ShowRankedStats Setting Name": "Ranglisten-Statistik anzeigen",
+  "CustomBossChallenge-ShowRankedStats Setting Description": "Zeigt in eigenen Bossspielen, was die Ranglisten-Boss-Events werten: wie lange die Bosse zusammen am Leben waren, die Strafe für eine sich hinziehende Runde ohne Boss sowie die verwendeten Upgrade-Stufen und das verwendete Geld. Nach dem Sieg siehst du auch die Zeit jeder Stufe, damit sich auch ein Least-Tiers- oder Least-Cash-Lauf nach Zeit vergleichen lässt. Eigene Spiele bleiben ohne Wertung.",
+  "CustomBossChallenge-TierTime": "Stufe {0}",
+  "CustomBossChallenge-TotalTime": "Gesamt",
+  "CustomBossChallenge-PenaltyTime": "Strafe",
+  "CustomBossChallenge-TiersUsed": "Verwendete Upgrade-Stufen",
+  "CustomBossChallenge-CashUsed": "Verwendetes Geld",
+  "CustomBossChallenge-RankedTime": "Zeit"
 }
