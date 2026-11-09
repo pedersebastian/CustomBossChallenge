@@ -54,6 +54,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   under the skulls, like in the game; in Advanced Mode a tier's card opens its picker, which Esc closes. Sliders,
   checkboxes and the Challenge Editor's groups got the game's look too. All drawn for the website, with no art from
   the game.
+- **No boss medal skulls in the Boss Creator's map picker**: the blue and purple skulls for the maps where you beat
+  a boss in the game's own boss events, and the Hide Defeated filter, are gone from the Boss Creator's map list.
+  Custom games never give those medals, so the skulls only made it look like they did. The normal Challenge Editor
+  and the game's boss menus show the map list as before.
 
 ## [2.10.2] - 2026-11-07
 
