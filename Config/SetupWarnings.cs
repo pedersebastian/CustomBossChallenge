@@ -59,6 +59,11 @@ public enum SetupWarning
     /// <summary>The game starts only a few rounds before the first boss. Args: start round, rounds left, boss round.</summary>
     StartRoundClose,
 
+    /// <summary>
+    /// A tier comes only a few rounds after the one before, like rounds 80 and 81. Args: the rounds, like "80-81".
+    /// </summary>
+    TiersClose,
+
     /// <summary>Some tiers are held to the game's health limit. Args: the most health a tier can have.</summary>
     HealthCapped,
 
@@ -77,7 +82,10 @@ public readonly record struct Warning(SetupWarning Kind, params object[] Args);
 /// </summary>
 public static class SetupWarnings
 {
-    /// <summary>Starting fewer rounds than this before the first boss leaves hardly any time to build up</summary>
+    /// <summary>
+    /// Starting fewer rounds than this before the first boss, or a tier coming fewer rounds than this after the one
+    /// before, leaves hardly any time
+    /// </summary>
     public const int CloseRounds = 5;
 
     /// <summary>A setup scores at least this in <see cref="Difficulty"/> before it counts as very hard</summary>
@@ -99,6 +107,10 @@ public static class SetupWarnings
         if (left > 0 && left < CloseRounds)
             warnings.Add(new Warning(SetupWarning.StartRoundClose, facts.StartRound, left, bossRound));
 
+        var close = CloseTiers(options);
+        if (close.Count > 0)
+            warnings.Add(new Warning(SetupWarning.TiersClose, string.Join(", ", close.Select(pair => $"{pair.Before}-{pair.After}"))));
+
         var cap = TierMath.MaxModelHealth(facts.BossHealth);
         if (Enumerable.Range(1, tiers).Any(tier => ModelHealth(facts, tier) > cap))
             warnings.Add(new Warning(SetupWarning.HealthCapped, (double) cap * Math.Max(facts.BossHealth, 1)));
@@ -110,6 +122,18 @@ public static class SetupWarnings
 
         if (Difficulty(facts) >= HardThreshold) warnings.Add(new Warning(SetupWarning.HardSetup));
         return warnings;
+    }
+
+    /// <summary>
+    /// The spawn rounds of tiers that come fewer than <see cref="CloseRounds"/> rounds after the tier before, with
+    /// the round of the tier before. The last tier always gets 20 rounds, so only the gaps between tiers count.
+    /// </summary>
+    public static List<(int Before, int After)> CloseTiers(BossOptions options)
+    {
+        var rounds = options.EffectiveSpawnRounds;
+        return rounds.Zip(rounds.Skip(1), (before, after) => (Before: before, After: after))
+            .Where(pair => pair.After - pair.Before < CloseRounds)
+            .ToList();
     }
 
     /// <summary>

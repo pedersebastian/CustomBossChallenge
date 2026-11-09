@@ -89,6 +89,7 @@
   "CustomBossChallenge-TierCount": "{0} niveaux",
   "CustomBossChallenge-HealthCap": "La santé s'arrête à {0} par palier, la limite du jeu : certains paliers en ont moins que ce que demandent les réglages.",
   "CustomBossChallenge-StartRoundClose": "La partie commence à la manche {0}, seulement {1} manches avant le premier boss à la manche {2}.",
+  "CustomBossChallenge-TiersClose": "Des paliers arrivent à quelques manches d'intervalle aux manches {0}, ce qui laisse peu de temps pour battre chacun.",
   "CustomBossChallenge-SameTiers": "Les paliers {0} finissent identiques : leur vitesse et leur santé ont atteint les limites du jeu.",
   "CustomBossChallenge-HardSetup": "Ensemble, ces règles donnent un défi très difficile.",
   "CustomBossChallenge-UnsupportedMode": "Le mode de jeu {0} ne peut pas être utilisé pour les parties de boss.",

@@ -89,6 +89,7 @@
   "CustomBossChallenge-TierCount": "Уровней: {0}",
   "CustomBossChallenge-HealthCap": "Здоровье ограничено {0} на уровень, пределом игры: некоторые уровни получают меньше, чем задано настройками.",
   "CustomBossChallenge-StartRoundClose": "Игра начинается с раунда {0}, всего за {1} раунда до первого босса в раунде {2}.",
+  "CustomBossChallenge-TiersClose": "Уровни идут с разницей всего в несколько раундов в раундах {0}, поэтому на каждый остаётся мало времени.",
   "CustomBossChallenge-SameTiers": "Уровни {0} получаются одинаковыми: их скорость и здоровье достигли пределов игры.",
   "CustomBossChallenge-HardSetup": "Вместе эти правила делают испытание очень сложным.",
   "CustomBossChallenge-UnsupportedMode": "Игровой режим {0} нельзя использовать в играх с боссом.",

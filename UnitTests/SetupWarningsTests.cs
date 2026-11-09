@@ -62,6 +62,20 @@ public class SetupWarningsTests
     }
 
     [Theory]
+    [InlineData("40, 60, 80, 100, 120", "")]
+    [InlineData("40, 45, 50, 55, 60", "")]
+    [InlineData("40, 60, 80, 81, 100", "80-81")]
+    [InlineData("40, 44, 80, 81, 83", "40-44, 80-81, 81-83")]
+    // Rounds the setup repeats are moved one round apart, which is close too
+    [InlineData("40, 40, 40", "40-41, 41-42")]
+    public void TiersClose_warns_about_tiers_fewer_than_five_rounds_apart(string spawnRounds, string expected)
+    {
+        var options = new BossOptions {SpawnRounds = spawnRounds, Tiers = TierMath.ParseRounds(spawnRounds).Count};
+        var warning = SetupWarnings.Check(new SetupFacts {Options = options}).Where(w => w.Kind == SetupWarning.TiersClose).ToList();
+        Assert.Equal(expected, warning.Count == 0 ? "" : (string) warning[0].Args[0]);
+    }
+
+    [Theory]
     [InlineData(1, 2_000_000_000, false)]
     [InlineData(1, 2_000_000_001, true)]
     // Boss Health is applied on top of the model, so it lowers the most a model can have
@@ -172,6 +186,8 @@ public class SetupWarningsTests
             TierBases = Bases(7, 1e8)
         };
         Assert.Equal("StartRoundClose,HealthCapped,SameTiers,HardSetup", Kinds(facts));
+        Assert.Equal("StartRoundClose,TiersClose,HealthCapped,SameTiers,HardSetup",
+            Kinds(facts with {Options = facts.Options with {SpawnRounds = "40, 60, 80, 81, 100, 120, 140"}}));
     }
 
     private static string Kinds(SetupFacts facts) => string.Join(",", SetupWarnings.Check(facts).Select(w => w.Kind));

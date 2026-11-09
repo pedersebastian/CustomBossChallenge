@@ -89,6 +89,7 @@
   "CustomBossChallenge-TierCount": "{0}단계",
   "CustomBossChallenge-HealthCap": "체력은 단계당 {0}에서 멈춥니다(게임의 한계). 일부 단계는 설정보다 적은 체력을 받습니다.",
   "CustomBossChallenge-StartRoundClose": "게임이 {0} 라운드에서 시작되어, {2} 라운드의 첫 보스까지 {1} 라운드밖에 없습니다.",
+  "CustomBossChallenge-TiersClose": "{0} 라운드에서 단계가 몇 라운드 간격으로만 나와서, 각 단계를 이길 시간이 거의 없습니다.",
   "CustomBossChallenge-SameTiers": "{0} 단계는 결국 같아집니다. 속도와 체력이 게임의 한계에 도달했습니다.",
   "CustomBossChallenge-HardSetup": "이 규칙들을 함께 쓰면 매우 어려운 도전이 됩니다.",
   "CustomBossChallenge-UnsupportedMode": "{0} 게임 모드는 보스 게임에 사용할 수 없습니다.",

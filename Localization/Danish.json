@@ -89,6 +89,7 @@
   "CustomBossChallenge-TierCount": "{0} niveauer",
   "CustomBossChallenge-HealthCap": "Liv stopper ved {0} pr. niveau, spillets grænse: nogle niveauer får mindre end indstillingerne beder om.",
   "CustomBossChallenge-StartRoundClose": "Spillet starter på runde {0}, kun {1} runder før den første boss på runde {2}.",
+  "CustomBossChallenge-TiersClose": "Niveauer kommer kun få runder efter hinanden i runde {0}, så der er kort tid til at slå hvert af dem.",
   "CustomBossChallenge-SameTiers": "Niveau {0} ender med at være ens: deres fart og liv har nået spillets grænser.",
   "CustomBossChallenge-HardSetup": "Disse regler giver tilsammen en meget svær udfordring.",
   "CustomBossChallenge-UnsupportedMode": "Spiltilstanden {0} kan ikke bruges til bossspil.",

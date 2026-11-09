@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Warnings before Play** (#70): the Tier Preview has a line for each thing in the setup that is allowed but
-  probably not meant, and they never stop Play: a start round only a few rounds before the first boss, tiers held to
+  probably not meant, and they never stop Play: a start round only a few rounds before the first boss, tiers that come
+  only a few rounds apart (like rounds 80 and 81), tiers held to
   the game's health limit (the line that was already there), tiers that end up the same because their speed and
   health reached the game's limits, and rules that together make a very hard challenge. They follow the editor's
   own rules too, like the start round, lives and the bloon sliders, as soon as they change.

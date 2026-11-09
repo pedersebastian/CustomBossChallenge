@@ -27,6 +27,16 @@
       "warnings": ["StartRoundClose"]
     },
     {
+      "name": "Tiers on rounds 80 and 81",
+      "facts": { "Options": { "SpawnRounds": "40, 60, 80, 81, 100" } },
+      "warnings": ["TiersClose"]
+    },
+    {
+      "name": "Tiers five rounds apart",
+      "facts": { "Options": { "SpawnRounds": "40, 45, 50, 55, 60" } },
+      "warnings": []
+    },
+    {
       "name": "Boss Health 20 holds the last tiers to the health limit",
       "facts": {
         "BossHealth": 20,

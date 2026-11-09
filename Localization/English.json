@@ -89,6 +89,7 @@
   "CustomBossChallenge-TierCount": "{0} tiers",
   "CustomBossChallenge-HealthCap": "Health stops at {0} per tier, the game's limit: some tiers get less than the settings ask for.",
   "CustomBossChallenge-StartRoundClose": "The game starts on round {0}, only {1} rounds before the first boss on round {2}.",
+  "CustomBossChallenge-TiersClose": "Tiers come only a few rounds apart on rounds {0}, which leaves little time to beat each one.",
   "CustomBossChallenge-SameTiers": "Tiers {0} end up the same: their speed and health have reached the game's limits.",
   "CustomBossChallenge-HardSetup": "These rules together make a very hard challenge.",
   "CustomBossChallenge-UnsupportedMode": "The {0} game mode can't be used for boss games.",

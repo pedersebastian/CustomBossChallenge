@@ -89,6 +89,7 @@
   "CustomBossChallenge-TierCount": "{0} livelli",
   "CustomBossChallenge-HealthCap": "La salute si ferma a {0} per livello, il limite del gioco: alcuni livelli ne hanno meno di quanto chiedono le impostazioni.",
   "CustomBossChallenge-StartRoundClose": "La partita inizia al round {0}, solo {1} round prima del primo boss al round {2}.",
+  "CustomBossChallenge-TiersClose": "Alcuni livelli arrivano a pochi round di distanza ai round {0}, quindi resta poco tempo per batterli.",
   "CustomBossChallenge-SameTiers": "I livelli {0} finiscono uguali: velocità e salute hanno raggiunto i limiti del gioco.",
   "CustomBossChallenge-HardSetup": "Insieme, queste regole rendono la sfida molto difficile.",
   "CustomBossChallenge-UnsupportedMode": "La modalità di gioco {0} non può essere usata per le partite con boss.",

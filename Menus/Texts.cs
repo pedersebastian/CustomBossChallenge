@@ -196,6 +196,8 @@ public static class Texts
         "Health stops at {0} per tier, the game's limit: some tiers get less than the settings ask for.");
     public static readonly string StartRoundClose = Key(nameof(StartRoundClose),
         "The game starts on round {0}, only {1} rounds before the first boss on round {2}.");
+    public static readonly string TiersClose = Key(nameof(TiersClose),
+        "Tiers come only a few rounds apart on rounds {0}, which leaves little time to beat each one.");
     public static readonly string SameTiers = Key(nameof(SameTiers),
         "Tiers {0} end up the same: their speed and health have reached the game's limits.");
     public static readonly string HardSetup = Key(nameof(HardSetup),
@@ -230,6 +232,7 @@ public static class Texts
         Config.SetupWarning.StartRoundClose => StartRoundClose.T(warning.Args[0], warning.Args[1], warning.Args[2]),
         // The limit is on the boss model and leaves room for Boss Health, which is applied on top like in the game
         Config.SetupWarning.HealthCapped => HealthCap.T(TierStrip.FormatHealth((double) warning.Args[0])),
+        Config.SetupWarning.TiersClose => TiersClose.T(warning.Args[0]),
         Config.SetupWarning.SameTiers => SameTiers.T(warning.Args[0]),
         _ => HardSetup.T()
     };

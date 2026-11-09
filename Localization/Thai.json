@@ -89,6 +89,7 @@
   "CustomBossChallenge-TierCount": "{0} ระดับ",
   "CustomBossChallenge-HealthCap": "พลังชีวิตหยุดที่ {0} ต่อระดับ ซึ่งเป็นขีดจำกัดของเกม: บางระดับจะได้น้อยกว่าที่ตั้งค่าไว้",
   "CustomBossChallenge-StartRoundClose": "เกมเริ่มที่รอบ {0} ก่อนบอสตัวแรกในรอบ {2} เพียง {1} รอบ",
+  "CustomBossChallenge-TiersClose": "ระดับต่าง ๆ มาห่างกันเพียงไม่กี่รอบในรอบ {0} ทำให้มีเวลาน้อยในการเอาชนะแต่ละระดับ",
   "CustomBossChallenge-SameTiers": "ระดับ {0} ออกมาเหมือนกัน: ความเร็วและพลังชีวิตถึงขีดจำกัดของเกมแล้ว",
   "CustomBossChallenge-HardSetup": "กฎเหล่านี้รวมกันทำให้ความท้าทายยากมาก",
   "CustomBossChallenge-UnsupportedMode": "โหมดเกม {0} ไม่สามารถใช้กับเกมบอสได้",

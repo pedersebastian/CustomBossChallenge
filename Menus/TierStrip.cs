@@ -40,7 +40,7 @@ public sealed class TierStrip
     /// <summary>
     /// One line for each kind of <see cref="SetupWarning"/>
     /// </summary>
-    public const int MaxNotes = 4;
+    public const int MaxNotes = 5;
 
     public const string NoteName = "Warning";
     public const float MaxCardWidth = 330;

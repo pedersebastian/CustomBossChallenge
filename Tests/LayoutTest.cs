@@ -215,12 +215,14 @@ public class LayoutTest : CustomBossTest
     {
         var round = editor.dcm.startRules.round;
         var lives = editor.dcm.startRules.lives;
+        var spawnRounds = BossMode.Options.SpawnRounds;
         var (tiers, bossHealth, healthPerTier, speedPerTier) =
             (section.Tiers.Slider.value, section.BossHealth.Slider.value, section.HealthPerTier.Slider.value, section.SpeedPerTier.Slider.value);
         try
         {
-            // Health limit, tiers at the limits, a close start round and a very hard setup all at once
+            // Health limit, tiers at the limits, close tiers, a close start round and a very hard setup all at once
             section.Tiers.Slider.value = 10;
+            BossMode.Options = BossMode.Options with {SpawnRounds = "40, 41"};
             section.BossHealth.Slider.value = section.BossHealth.Slider.maxValue;
             section.HealthPerTier.Slider.value = section.HealthPerTier.Slider.maxValue;
             section.SpeedPerTier.Slider.value = section.SpeedPerTier.Slider.maxValue;
@@ -252,6 +254,7 @@ public class LayoutTest : CustomBossTest
         {
             editor.dcm.startRules.round = round;
             editor.dcm.startRules.lives = lives;
+            BossMode.Options = BossMode.Options with {SpawnRounds = spawnRounds};
             section.Tiers.Slider.value = tiers;
             section.BossHealth.Slider.value = bossHealth;
             section.HealthPerTier.Slider.value = healthPerTier;
