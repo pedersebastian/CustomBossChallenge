@@ -115,5 +115,14 @@
   "CustomBossChallenge-ModeStandard": "Standard",
   "CustomBossChallenge-ModeAdvanced": "Avansert",
   "CustomBossChallenge-BossEventRounds": "Boss-event-runder",
-  "CustomBossChallenge-BossEventRoundsInfo": "Huk av for å spille rundene fra de offisielle boss-eventene for denne bossen i stedet for de vanlige rundene. I eventene kommer nivåene på runde 40, 60, 80, 100 og 120 med bloons laget for dem; med andre Spawn-runder flyttes de rundene med nivåene. I Avansert kommer hvert nivå på runden laget for sin egen boss, og de andre rundene følger bossen på første nivå."
+  "CustomBossChallenge-BossEventRoundsInfo": "Huk av for å spille rundene fra de offisielle boss-eventene for denne bossen i stedet for de vanlige rundene. I eventene kommer nivåene på runde 40, 60, 80, 100 og 120 med bloons laget for dem; med andre Spawn-runder flyttes de rundene med nivåene. I Avansert kommer hvert nivå på runden laget for sin egen boss, og de andre rundene følger bossen på første nivå.",
+  "CustomBossChallenge-Ranked Practice Category": "Ranked-trening",
+  "CustomBossChallenge-ShowTimer Setting Name": "Vis event-timer",
+  "CustomBossChallenge-ShowTimer Setting Description": "Viser timeren fra de rangerte boss-eventene i egne boss-spill, sammen med oppgraderingsnivåene og pengene som er brukt. Tiden er hvor lenge bossene levde, lagt sammen, slik eventene teller den. Når spillet er vunnet, ser du også tiden for hvert nivå, så en Least Tiers- eller Least Cash-runde også kan sammenlignes på tid. Egne spill er fortsatt urangerte.",
+  "CustomBossChallenge-TierTime": "Nivå {0}",
+  "CustomBossChallenge-TotalTime": "Totalt",
+  "CustomBossChallenge-PenaltyTime": "Straff",
+  "CustomBossChallenge-TiersUsed": "Oppgraderingsnivåer brukt",
+  "CustomBossChallenge-CashUsed": "Penger brukt",
+  "CustomBossChallenge-RankedTime": "Tid"
 }

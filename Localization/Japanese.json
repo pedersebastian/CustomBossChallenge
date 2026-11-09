@@ -115,5 +115,14 @@
   "CustomBossChallenge-ModeStandard": "スタンダード",
   "CustomBossChallenge-ModeAdvanced": "アドバンス",
   "CustomBossChallenge-BossEventRounds": "ボスイベントのラウンド",
-  "CustomBossChallenge-BossEventRoundsInfo": "通常のラウンドの代わりに、このボスの公式ボスイベントのラウンドをプレイします。イベントでは各ティアがラウンド40、60、80、100、120に専用のブルーンと共に登場します。出現ラウンドを変えると、それらのラウンドもティアと一緒に移動します。アドバンスでは各ティアが自分のボス用のラウンドに登場し、その他のラウンドは最初のティアのボスに従います。"
+  "CustomBossChallenge-BossEventRoundsInfo": "通常のラウンドの代わりに、このボスの公式ボスイベントのラウンドをプレイします。イベントでは各ティアがラウンド40、60、80、100、120に専用のブルーンと共に登場します。出現ラウンドを変えると、それらのラウンドもティアと一緒に移動します。アドバンスでは各ティアが自分のボス用のラウンドに登場し、その他のラウンドは最初のティアのボスに従います。",
+  "CustomBossChallenge-Ranked Practice Category": "ランク戦の練習",
+  "CustomBossChallenge-ShowTimer Setting Name": "イベントタイマーを表示",
+  "CustomBossChallenge-ShowTimer Setting Description": "カスタムボスゲームで、ランク制ボスイベントのタイマーと、使ったアップグレードティア数・資金を表示します。時間はイベントと同じく、ボスが生きていた時間の合計です。勝利すると各ティアのタイムも表示されるので、Least Tiers や Least Cash の挑戦もタイムで比べられます。カスタムゲームはランク外のままです。",
+  "CustomBossChallenge-TierTime": "ティア {0}",
+  "CustomBossChallenge-TotalTime": "合計",
+  "CustomBossChallenge-PenaltyTime": "ペナルティ",
+  "CustomBossChallenge-TiersUsed": "使用アップグレードティア",
+  "CustomBossChallenge-CashUsed": "使用資金",
+  "CustomBossChallenge-RankedTime": "タイム"
 }

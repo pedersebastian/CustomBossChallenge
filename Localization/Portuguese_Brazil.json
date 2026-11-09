@@ -115,5 +115,14 @@
   "CustomBossChallenge-ModeStandard": "Padrão",
   "CustomBossChallenge-ModeAdvanced": "Avançado",
   "CustomBossChallenge-BossEventRounds": "Rodadas de evento de chefe",
-  "CustomBossChallenge-BossEventRoundsInfo": "Marque para jogar as rodadas dos eventos de chefe oficiais deste chefe em vez das rodadas normais. Nos eventos os níveis chegam nas rodadas 40, 60, 80, 100 e 120 com bloons feitos para eles; com outras rodadas de surgimento, essas rodadas se movem com os níveis. No Avançado cada nível chega na rodada feita para o seu próprio chefe, e as outras rodadas seguem o chefe do primeiro nível."
+  "CustomBossChallenge-BossEventRoundsInfo": "Marque para jogar as rodadas dos eventos de chefe oficiais deste chefe em vez das rodadas normais. Nos eventos os níveis chegam nas rodadas 40, 60, 80, 100 e 120 com bloons feitos para eles; com outras rodadas de surgimento, essas rodadas se movem com os níveis. No Avançado cada nível chega na rodada feita para o seu próprio chefe, e as outras rodadas seguem o chefe do primeiro nível.",
+  "CustomBossChallenge-Ranked Practice Category": "Treino ranqueado",
+  "CustomBossChallenge-ShowTimer Setting Name": "Mostrar cronômetro do evento",
+  "CustomBossChallenge-ShowTimer Setting Description": "Mostra o cronômetro dos eventos de chefe ranqueados nas partidas de chefe personalizadas, com os níveis de melhoria e o dinheiro usados. O tempo é quanto os chefes ficaram vivos, somado, como os eventos contam. Ao vencer, você também vê o tempo de cada nível, para comparar pelo tempo até uma partida de Least Tiers ou Least Cash. Partidas personalizadas continuam sem ranque.",
+  "CustomBossChallenge-TierTime": "Nível {0}",
+  "CustomBossChallenge-TotalTime": "Total",
+  "CustomBossChallenge-PenaltyTime": "Penalidade",
+  "CustomBossChallenge-TiersUsed": "Níveis de melhoria usados",
+  "CustomBossChallenge-CashUsed": "Dinheiro usado",
+  "CustomBossChallenge-RankedTime": "Tempo"
 }

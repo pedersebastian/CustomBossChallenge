@@ -44,6 +44,7 @@ public class CustomBossChallenge : BloonsTD6Mod
             FailNextUpdate?.Invoke();
             Visuals.BossHud.Update();
         });
+        Guarded("ranked timer", () => Visuals.RankedHud.Update());
         if (Time.realtimeSinceStartup >= nextPresentationCheck)
         {
             nextPresentationCheck = Time.realtimeSinceStartup + Visuals.BossPresentation.CheckInterval;

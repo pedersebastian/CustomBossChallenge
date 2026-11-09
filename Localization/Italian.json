@@ -115,5 +115,14 @@
   "CustomBossChallenge-ModeStandard": "Standard",
   "CustomBossChallenge-ModeAdvanced": "Avanzata",
   "CustomBossChallenge-BossEventRounds": "Round degli eventi boss",
-  "CustomBossChallenge-BossEventRoundsInfo": "Spunta per giocare i round degli eventi boss ufficiali di questo boss invece dei round normali. Negli eventi i livelli arrivano ai round 40, 60, 80, 100 e 120 con bloon fatti per loro; con altri round di comparsa quei round si spostano con i livelli. In modalità Avanzata ogni livello arriva al round fatto per il proprio boss, e gli altri round seguono il boss del primo livello."
+  "CustomBossChallenge-BossEventRoundsInfo": "Spunta per giocare i round degli eventi boss ufficiali di questo boss invece dei round normali. Negli eventi i livelli arrivano ai round 40, 60, 80, 100 e 120 con bloon fatti per loro; con altri round di comparsa quei round si spostano con i livelli. In modalità Avanzata ogni livello arriva al round fatto per il proprio boss, e gli altri round seguono il boss del primo livello.",
+  "CustomBossChallenge-Ranked Practice Category": "Allenamento classificato",
+  "CustomBossChallenge-ShowTimer Setting Name": "Mostra timer evento",
+  "CustomBossChallenge-ShowTimer Setting Description": "Mostra il timer degli eventi boss classificati nelle partite boss personalizzate, con i livelli di potenziamento e il denaro usati. Il tempo è quanto sono rimasti in vita i boss, sommato, come lo contano gli eventi. A vittoria ottenuta vedi anche il tempo di ogni livello, così anche una partita Least Tiers o Least Cash si può confrontare sul tempo. Le partite personalizzate restano non classificate.",
+  "CustomBossChallenge-TierTime": "Livello {0}",
+  "CustomBossChallenge-TotalTime": "Totale",
+  "CustomBossChallenge-PenaltyTime": "Penalità",
+  "CustomBossChallenge-TiersUsed": "Livelli di potenziamento usati",
+  "CustomBossChallenge-CashUsed": "Denaro usato",
+  "CustomBossChallenge-RankedTime": "Tempo"
 }

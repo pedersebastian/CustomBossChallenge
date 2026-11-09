@@ -45,6 +45,7 @@ public abstract class CustomBossTest : ModTest
         Creator.BossMode.ToldAboutNewerFiles = true;
         CustomBossRetries.FailNextSnapshot = false;
         CustomBossChallenge.FailNextUpdate = null;
+        Visuals.RankedHud.ShowTimerOverride = null;
 
         // The time each test takes is logged, to see which tests make the suite slow
         Log("starting");
@@ -53,6 +54,7 @@ public abstract class CustomBossTest : ModTest
         yield return RunSafely(Run());
         Log($"done in {UnityEngine.Time.realtimeSinceStartup - started:0}s");
 
+        Visuals.RankedHud.ShowTimerOverride = null;
         CustomBossRetries.Store = store;
         Creator.BossMode.Store = lastSetup;
         Creator.BossMode.Saved = savedSetups;
