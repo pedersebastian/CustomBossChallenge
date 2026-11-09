@@ -16,7 +16,14 @@ export function evenlySpaced(count: number): number[] {
 
 /** A float as float.TryParse with NumberStyles.Float reads it, or NaN */
 function parseFloat32(text: string): number {
-  return /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(text) ? float(Number(text)) : NaN;
+  return /^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$/.test(text) ? float(Number(text)) : NaN;
+}
+
+/** text without its trailing '%' signs, like C#'s TrimEnd('%'); a loop, as /%+$/ is quadratic on "%%%…x" */
+function trimPercent(text: string): string {
+  let end = text.length;
+  while (end > 0 && text[end - 1] === "%") end--;
+  return text.slice(0, end);
 }
 
 /**
@@ -29,7 +36,7 @@ export function parseCustom(text: string | null | undefined): number[] | null {
   const values: number[] = [];
   for (const part of text.split(/[,; ]/)) {
     if (part === "") continue;
-    const value = parseFloat32(part.trim().replace(/%+$/, ""));
+    const value = parseFloat32(trimPercent(part.trim()));
     if (Number.isNaN(value) || value < 1 || value > 99) continue;
     const threshold = float(roundHalfEven(value / 100, 4));
     if (!values.includes(threshold)) values.push(threshold);
