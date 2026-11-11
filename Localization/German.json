@@ -131,5 +131,10 @@
   "CustomBossChallenge-RankedTime": "Zeit",
   "CustomBossChallenge-RulesHeader": "Boss-Ersteller",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Alles andere wie in einem normalen Boss-Spiel"
+  "CustomBossChallenge-RulesNoChanges": "Alles andere wie in einem normalen Boss-Spiel",
+  "CustomBossChallenge-RulesTier": "Stufe {0}, Runde {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0} % Tempo",
+  "CustomBossChallenge-RulesTierHealth": "{0} % Gesundheit",
+  "CustomBossChallenge-RulesTierSkulls": "{0} Totenköpfe",
+  "CustomBossChallenge-RulesTierCustomSkulls": "Totenköpfe bei {0} %"
 }

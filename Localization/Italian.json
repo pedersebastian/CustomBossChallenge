@@ -131,5 +131,10 @@
   "CustomBossChallenge-RankedTime": "Tempo",
   "CustomBossChallenge-RulesHeader": "Creatore di boss",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Tutto il resto come in una normale partita boss"
+  "CustomBossChallenge-RulesNoChanges": "Tutto il resto come in una normale partita boss",
+  "CustomBossChallenge-RulesTier": "Livello {0}, round {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0} % velocità",
+  "CustomBossChallenge-RulesTierHealth": "{0} % salute",
+  "CustomBossChallenge-RulesTierSkulls": "{0} teschi",
+  "CustomBossChallenge-RulesTierCustomSkulls": "teschi a {0} %"
 }

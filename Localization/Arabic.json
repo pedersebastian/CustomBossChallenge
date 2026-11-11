@@ -131,5 +131,10 @@
   "CustomBossChallenge-RankedTime": "الوقت",
   "CustomBossChallenge-RulesHeader": "منشئ الزعماء",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "كل شيء آخر كما في لعبة الزعيم العادية"
+  "CustomBossChallenge-RulesNoChanges": "كل شيء آخر كما في لعبة الزعيم العادية",
+  "CustomBossChallenge-RulesTier": "المستوى {0}، الجولة {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "سرعة {0} %",
+  "CustomBossChallenge-RulesTierHealth": "صحة {0} %",
+  "CustomBossChallenge-RulesTierSkulls": "{0} جماجم",
+  "CustomBossChallenge-RulesTierCustomSkulls": "جماجم عند {0} %"
 }

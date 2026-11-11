@@ -131,5 +131,10 @@
   "CustomBossChallenge-RankedTime": "时间",
   "CustomBossChallenge-RulesHeader": "Boss创建器",
   "CustomBossChallenge-RulesLine": "{0}：{1}",
-  "CustomBossChallenge-RulesNoChanges": "其余与普通Boss游戏相同"
+  "CustomBossChallenge-RulesNoChanges": "其余与普通Boss游戏相同",
+  "CustomBossChallenge-RulesTier": "第 {0} 阶段，第 {1} 回合：{2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0}% 速度",
+  "CustomBossChallenge-RulesTierHealth": "{0}% 生命值",
+  "CustomBossChallenge-RulesTierSkulls": "{0} 个骷髅",
+  "CustomBossChallenge-RulesTierCustomSkulls": "骷髅位于 {0}%"
 }

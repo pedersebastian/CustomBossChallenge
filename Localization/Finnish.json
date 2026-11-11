@@ -131,5 +131,10 @@
   "CustomBossChallenge-RankedTime": "Aika",
   "CustomBossChallenge-RulesHeader": "Pomoluoja",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Kaikki muu kuten tavallisessa pomopelissä"
+  "CustomBossChallenge-RulesNoChanges": "Kaikki muu kuten tavallisessa pomopelissä",
+  "CustomBossChallenge-RulesTier": "Taso {0}, kierros {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0} % nopeus",
+  "CustomBossChallenge-RulesTierHealth": "{0} % terveys",
+  "CustomBossChallenge-RulesTierSkulls": "{0} kalloa",
+  "CustomBossChallenge-RulesTierCustomSkulls": "kallot {0} %:ssa"
 }

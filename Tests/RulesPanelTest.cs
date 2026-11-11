@@ -20,7 +20,7 @@ namespace CustomBossChallenge.Tests;
 /// of the Modifiers list after the game's own, the rest in the Rules box, once however often it is opened, and only the
 /// boss with a no-changes line for a setup with nothing changed
 /// </summary>
-public class RulesPanelTest : CustomBossTest
+public class RulesPanelTest : RulesPanelTestBase
 {
     protected override IEnumerator Run()
     {
@@ -49,13 +49,67 @@ public class RulesPanelTest : CustomBossTest
         yield return Play(plain);
         yield return OpenRules();
         AssertLines(plain, "default setup");
-        Assert(RulesPanel.Lines(plain).Last() == Texts.RulesNoChanges.T(), "The default setup has the no-changes line");
+        Assert(RulesPanel.Lines(plain, 0).Last() == Texts.RulesNoChanges.T(), "The default setup has the no-changes line");
         yield return CloseRules();
 
         yield return ToMainMenu();
     }
+}
 
-    private void AssertLines(BossOptions options, string when)
+/// <summary>
+/// The Rules panel in Advanced Mode (#142): a line per tier with its round, boss and what differs from it, a boss picked
+/// at random kept a secret until it arrives, and a 10-tier line-up that the Rules box scrolls to
+/// </summary>
+public class RulesPanelAdvancedTest : RulesPanelTestBase
+{
+    protected override IEnumerator Run()
+    {
+        var setup = new BossOptions
+        {
+            Tiers = 10,
+            TierBosses = "Lych,VortexElite@120/80,Random,Phayze#4,,Bloonarius#60%;30%,DreadbloonElite,Blastapopoulos,Random,Lych@200/150"
+        };
+        yield return Play(setup);
+        var options = AssertNotNull(CustomBossState.ActiveOptions, "The game's options")!;
+        Assert(options.WasRandom(3) && options.WasRandom(9), $"Tiers 3 and 9 were Random: {options.RandomTiers}");
+
+        yield return OpenRules();
+        AssertLines(options, "before any boss", 0, fitsView: false);
+        var lines = RulesPanel.Lines(options, 0);
+        Assert(lines.Any(line => line.StartsWith(Texts.RulesTier.T(3, 80, Texts.RandomBoss.T()))), "Tier 3 is still a secret");
+        Assert(lines.Any(line => line.StartsWith(Texts.RulesTier.T(2, 60, ""))) &&
+               lines.Single(line => line.StartsWith(Texts.RulesTier.T(2, 60, ""))).Contains(Texts.RulesTierSpeed.T(120)),
+            "Tier 2 shows its own speed");
+
+        var folder = System.Environment.GetEnvironmentVariable("CBC_SCREENSHOTS");
+        if (!string.IsNullOrWhiteSpace(folder)) yield return ScreenshotTour.Capture(folder, "rules-panel-advanced");
+        yield return CloseRules();
+
+        // Tier 3 arrives: its boss is shown from then on, tier 9's is still a secret
+        var manager = InGame.instance.bridge.Simulation.map.spawner.bossBloonManager;
+        manager.SpawnBoss(3, false);
+        yield return new WaitForSecondsRealtime(1.5f);
+        AssertEquals(RulesPanel.ArrivedTier(), 3, "Arrived tier");
+        yield return OpenRules();
+        AssertLines(options, "tier 3 arrived", 3, fitsView: false);
+        var (boss, elite) = options.BossOf(3);
+        var after = RulesPanel.Lines(options, 3);
+        Assert(after.Any(line => line.StartsWith(Texts.RulesTier.T(3, 80, Visuals.BossHud.Name(boss, elite)))), "Tier 3 shows its boss");
+        Assert(after.Any(line => line.StartsWith(Texts.RulesTier.T(9, 200, Texts.RandomBoss.T()))), "Tier 9 is still a secret");
+        yield return CloseRules();
+
+        yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// Opening and checking the pause screen's Rules panel, for the Standard and Advanced Mode tests
+/// </summary>
+public abstract class RulesPanelTestBase : CustomBossTest
+{
+    /// <param name="arrivedTier">The highest tier whose boss has arrived</param>
+    /// <param name="fitsView">Whether the text must fit without scrolling; else the box must scroll to all of it</param>
+    protected void AssertLines(BossOptions options, string when, int arrivedTier = 0, bool fitsView = true)
     {
         var screen = AssertNotNull(Screen(), $"Rules panel open ({when})")!;
         var content = screen.gameRuleContent;
@@ -63,7 +117,7 @@ public class RulesPanelTest : CustomBossTest
             .Where(child => child.name == RulesPanel.Name).ToList();
         AssertEquals(ours.Count, 1, $"Boss rules in the Rules box ({when})");
         var text = ours[0].GetComponent<TMP_Text>();
-        AssertEquals(text.text, string.Join("\n", RulesPanel.Lines(options)), $"Boss rules ({when})");
+        AssertEquals(text.text, string.Join("\n", RulesPanel.Lines(options, arrivedTier)), $"Boss rules ({when})");
         Assert(ours[0].gameObject.activeInHierarchy, $"Boss rules shown ({when})");
         Log($"{when}: {text.text.Replace("\n", " | ")}");
 
@@ -75,8 +129,15 @@ public class RulesPanelTest : CustomBossTest
         var textRight = view.InverseTransformPoint(rect.TransformPoint(new Vector3(rect.rect.xMax, rect.rect.yMin))).x;
         Log($"{when}: text bottom {textBottom:0}, right {textRight:0}, view {view.rect.xMin:0}..{view.rect.xMax:0} x " +
             $"{view.rect.yMin:0}..{view.rect.yMax:0}, content height {content.Cast<RectTransform>().rect.height:0}");
-        Assert(textBottom >= view.rect.yMin - 1, $"Boss rules fit in the Rules box ({when})");
         Assert(textRight <= view.rect.xMax + 1, $"Boss rules fit across the Rules box ({when})");
+        if (fitsView) Assert(textBottom >= view.rect.yMin - 1, $"Boss rules fit in the Rules box ({when})");
+        else
+        {
+            var box = content.Cast<RectTransform>();
+            var inContent = box.InverseTransformPoint(rect.TransformPoint(new Vector3(rect.rect.xMin, rect.rect.yMin))).y;
+            Assert(scroll != null && scroll.vertical, $"The Rules box scrolls ({when})");
+            Assert(inContent >= box.rect.yMin - 1, $"The Rules box scrolls to all the boss rules ({when})");
+        }
 
         // The sliders: rows after the game's own Boss Health and Boss Speed, like them, and the game's own kept
         var modifiers = screen.modifierContent;
@@ -113,10 +174,10 @@ public class RulesPanelTest : CustomBossTest
         }
     }
 
-    private static ChallengeRulesScreen? Screen() =>
+    protected static ChallengeRulesScreen? Screen() =>
         MenuManager.instance.GetCurrentMenu()?.TryCast<ChallengeRulesScreen>();
 
-    private IEnumerator Play(BossOptions options, Il2CppAssets.Scripts.Models.ServerEvents.DailyChallengeModel? dcm = null)
+    protected IEnumerator Play(BossOptions options, Il2CppAssets.Scripts.Models.ServerEvents.DailyChallengeModel? dcm = null)
     {
         if (InGame.instance != null) yield return ToMainMenu();
         yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm ?? BaseDcm(), BossGameLauncher.Resolve(options)));
@@ -126,7 +187,7 @@ public class RulesPanelTest : CustomBossTest
     /// <summary>
     /// Opens the pause screen and its Rules button, as the player does
     /// </summary>
-    private IEnumerator OpenRules()
+    protected IEnumerator OpenRules()
     {
         MenuManager.instance.OpenMenu(SceneNames.PauseScreenUI);
         yield return WaitFor(() => MenuManager.instance.GetCurrentMenu()?.TryCast<PauseScreen>() != null &&
@@ -136,7 +197,7 @@ public class RulesPanelTest : CustomBossTest
         yield return new WaitForSecondsRealtime(0.5f);
     }
 
-    private IEnumerator CloseRules()
+    protected IEnumerator CloseRules()
     {
         // The Rules panel goes back to the pause screen, which Continue closes like the player's button
         for (var tries = 0; tries < 6; tries++)

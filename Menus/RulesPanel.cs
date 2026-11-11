@@ -31,10 +31,21 @@ public static class RulesPanel
     private static bool logged;
 
     /// <summary>
-    /// The lines the Rules box shows for <paramref name="options"/>: a header, then <see cref="RulesSummary.Rules"/>
+    /// The lines the Rules box shows for <paramref name="options"/>: a header, then <see cref="RulesSummary.Rules"/>.
+    /// Bosses picked at random stay a secret for tiers after <paramref name="arrivedTier"/>.
     /// </summary>
-    public static List<string> Lines(BossOptions options) =>
-        new[] {$"<size=125%>{Texts.RulesHeader.T()}</size>"}.Concat(RulesSummary.Rules(options).Select(Texts.Summary)).ToList();
+    public static List<string> Lines(BossOptions options, int arrivedTier) =>
+        new[] {$"<size=125%>{Texts.RulesHeader.T()}</size>"}
+            .Concat(RulesSummary.Rules(options, arrivedTier).Select(Texts.Summary)).ToList();
+
+    /// <summary>
+    /// The highest tier whose boss has arrived in the game being played, like the HUD counts it
+    /// </summary>
+    public static int ArrivedTier()
+    {
+        var manager = Il2CppAssets.Scripts.Unity.UI_New.InGame.InGame.instance?.bridge?.Simulation?.map?.spawner?.bossBloonManager;
+        return manager != null ? Patches.MixedBosses.ArrivedTier(manager) : 0;
+    }
 
     /// <summary>
     /// The rows the Modifiers list gets for <paramref name="options"/>, after the game's own: the Boss Creator's sliders
@@ -87,7 +98,7 @@ public static class RulesPanel
         var text = ModHelperText.Create(new Info(Name, 0, 0, width, 100)
         {
             Anchor = new Vector2(0, 1), Pivot = new Vector2(0, 1)
-        }, string.Join("\n", Lines(options)), FontSize, TextAlignmentOptions.TopLeft);
+        }, string.Join("\n", Lines(options, ArrivedTier())), FontSize, TextAlignmentOptions.TopLeft);
         text.transform.SetParent(content, false);
         text.transform.SetAsLastSibling();
         text.Text.enableWordWrapping = true;

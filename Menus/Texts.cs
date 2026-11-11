@@ -228,6 +228,35 @@ public static class Texts
     public static readonly string RulesLine = Key(nameof(RulesLine), "{0}: {1}");
     public static readonly string RulesNoChanges = Key(nameof(RulesNoChanges),
         "Everything else as in a normal boss game");
+    public static readonly string RulesTier = Key(nameof(RulesTier), "Tier {0}, round {1}: {2}");
+    public static readonly string RulesTierSpeed = Key(nameof(RulesTierSpeed), "{0} % speed");
+    public static readonly string RulesTierHealth = Key(nameof(RulesTierHealth), "{0} % health");
+    public static readonly string RulesTierSkulls = Key(nameof(RulesTierSkulls), "{0} skulls");
+    public static readonly string RulesTierCustomSkulls = Key(nameof(RulesTierCustomSkulls), "skulls at {0} %");
+
+    /// <summary>
+    /// A tier's line in the Rules panel in Advanced Mode (#142), e.g. "Tier 2, round 60: Vortex Elite, 120 % speed":
+    /// the boss, or Random while it is a secret, then what differs from the boss's own
+    /// </summary>
+    private static string TierSummary(object[] args)
+    {
+        var parts = new System.Collections.Generic.List<string>
+        {
+            (bool) args[4] ? RandomBoss.T() : Visuals.BossHud.Name((Il2CppAssets.Scripts.Data.Boss.BossType) args[2], (bool) args[3])
+        };
+        if ((int) args[5] != Config.TierBossMath.Normal) parts.Add(RulesTierSpeed.T(args[5]));
+        if ((int) args[6] != Config.TierBossMath.Normal) parts.Add(RulesTierHealth.T(args[6]));
+        switch ((Config.SkullMode) args[7])
+        {
+            case Config.SkullMode.EvenlySpaced:
+                parts.Add((int) args[8] == 0 ? NoSkulls.T() : RulesTierSkulls.T(args[8]));
+                break;
+            case Config.SkullMode.Custom:
+                parts.Add(RulesTierCustomSkulls.T(args[8]));
+                break;
+        }
+        return RulesTier.T(args[0], args[1], string.Join(", ", parts));
+    }
 
     /// <summary>
     /// The line the pause screen's Rules panel shows for a boss option (#141), with the Boss Creator's names
@@ -238,6 +267,7 @@ public static class Texts
             Visuals.BossHud.Name((Il2CppAssets.Scripts.Data.Boss.BossType) line.Args[0], (bool) line.Args[1])),
         Config.RuleLine.Tiers => RulesLine.T(BossTiers.T(), line.Args[0]),
         Config.RuleLine.SpawnRounds => RulesLine.T(SpawnRounds.T(), line.Args[0]),
+        Config.RuleLine.Tier => TierSummary(line.Args),
         Config.RuleLine.BossEventRounds => BossEventRounds.T(),
         Config.RuleLine.SpeedPerTier => RulesLine.T(SpeedPerTier.T(), PerTier.T(Signed((int) line.Args[0]))),
         Config.RuleLine.HealthPerTier => RulesLine.T(HealthPerTier.T(), PerTier.T(Signed((int) line.Args[0]))),

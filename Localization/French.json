@@ -131,5 +131,10 @@
   "CustomBossChallenge-RankedTime": "Temps",
   "CustomBossChallenge-RulesHeader": "Créateur de boss",
   "CustomBossChallenge-RulesLine": "{0} : {1}",
-  "CustomBossChallenge-RulesNoChanges": "Tout le reste comme dans une partie de boss normale"
+  "CustomBossChallenge-RulesNoChanges": "Tout le reste comme dans une partie de boss normale",
+  "CustomBossChallenge-RulesTier": "Palier {0}, manche {1} : {2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0} % de vitesse",
+  "CustomBossChallenge-RulesTierHealth": "{0} % de santé",
+  "CustomBossChallenge-RulesTierSkulls": "{0} crânes",
+  "CustomBossChallenge-RulesTierCustomSkulls": "crânes à {0} %"
 }

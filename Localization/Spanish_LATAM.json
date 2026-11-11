@@ -131,5 +131,10 @@
   "CustomBossChallenge-RankedTime": "Tiempo",
   "CustomBossChallenge-RulesHeader": "Creador de jefes",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Todo lo demás como en una partida de jefe normal"
+  "CustomBossChallenge-RulesNoChanges": "Todo lo demás como en una partida de jefe normal",
+  "CustomBossChallenge-RulesTier": "Nivel {0}, ronda {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0} % de velocidad",
+  "CustomBossChallenge-RulesTierHealth": "{0} % de salud",
+  "CustomBossChallenge-RulesTierSkulls": "{0} calaveras",
+  "CustomBossChallenge-RulesTierCustomSkulls": "calaveras al {0} %"
 }

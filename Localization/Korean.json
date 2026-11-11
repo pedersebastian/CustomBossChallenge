@@ -131,5 +131,10 @@
   "CustomBossChallenge-RankedTime": "시간",
   "CustomBossChallenge-RulesHeader": "보스 크리에이터",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "그 외에는 일반 보스 게임과 같음"
+  "CustomBossChallenge-RulesNoChanges": "그 외에는 일반 보스 게임과 같음",
+  "CustomBossChallenge-RulesTier": "{0}단계, {1}라운드: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "속도 {0}%",
+  "CustomBossChallenge-RulesTierHealth": "체력 {0}%",
+  "CustomBossChallenge-RulesTierSkulls": "해골 {0}개",
+  "CustomBossChallenge-RulesTierCustomSkulls": "해골 {0}%"
 }

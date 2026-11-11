@@ -131,5 +131,10 @@
   "CustomBossChallenge-RankedTime": "เวลา",
   "CustomBossChallenge-RulesHeader": "ตัวสร้างบอส",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "อย่างอื่นเหมือนเกมบอสปกติ"
+  "CustomBossChallenge-RulesNoChanges": "อย่างอื่นเหมือนเกมบอสปกติ",
+  "CustomBossChallenge-RulesTier": "ระดับ {0} รอบ {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "ความเร็ว {0}%",
+  "CustomBossChallenge-RulesTierHealth": "พลังชีวิต {0}%",
+  "CustomBossChallenge-RulesTierSkulls": "หัวกะโหลก {0} อัน",
+  "CustomBossChallenge-RulesTierCustomSkulls": "หัวกะโหลกที่ {0}%"
 }
