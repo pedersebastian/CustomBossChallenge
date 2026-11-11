@@ -55,7 +55,7 @@ public static class ConfigApplier
         // CustomBossChallenge.OnNewGameModel then moves them to the tiers' Spawn Rounds. The game doesn't have the
         // CHIMPS events' set (#139): BossEventRounds puts it in there instead.
         var eventSet = options.BaseEventRoundSetIn(dcm.mode);
-        if (options.UsesBossEventRounds && eventSet != BossOptions.ChimpsEventRoundSet)
+        if (options.UsesBossEventRounds && !BossOptions.IsChimpsEventRoundSet(eventSet))
         {
             var roundSets = dcm.roundSets ??= new Il2CppSystem.Collections.Generic.List<string>();
             if (!roundSets.Contains(eventSet)) roundSets.Add(eventSet);

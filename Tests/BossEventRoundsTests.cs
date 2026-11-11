@@ -149,12 +149,18 @@ public class BossEventRoundsChimpsTest : CustomBossTest
 {
     protected override IEnumerator Run()
     {
-        AssertEquals(GameData.Instance.MergeableRoundSetByName(BossOptions.ChimpsEventRoundSet) == null, true,
-            "The game has no CHIMPS event rounds of its own (if it has now, check them against the mod's copy)");
+        foreach (var set in new[] {BossOptions.ChimpsBossRoundSet, BossOptions.ChimpsBloonariusRoundSet})
+        {
+            AssertEquals(GameData.Instance.MergeableRoundSetByName(set) == null, true,
+                $"The game has no {set} of its own (if it has now, check it against the mod's copy)");
+        }
         var defaults = GameData.Instance.RoundSetByName("DefaultRoundSet").rounds;
-        var expected = Enumerable.Range(0, defaults.Length).Select(i => i < ChimpsRoundSet.Rounds.Count
-            ? Exact(ChimpsRoundSet.Rounds[i].Groups)
+        string[] Expected(string set) => Enumerable.Range(0, defaults.Length).Select(i => i < ChimpsRoundSet.Rounds(set).Count
+            ? Exact(ChimpsRoundSet.Rounds(set)[i].Groups)
             : Exact(defaults[i])).ToArray();
+        var expected = Expected(BossOptions.ChimpsBossRoundSet);
+        var earlier = Expected(BossOptions.ChimpsBloonariusRoundSet);
+        Assert(expected[0] != earlier[0], "The two CHIMPS sets have different first rounds");
         var chimps = BaseDcm();
         chimps.mode = BossOptions.ChimpsMode;
 
@@ -178,14 +184,25 @@ public class BossEventRoundsChimpsTest : CustomBossTest
         yield return Play(new BossOptions(), noSelling);
         Assert(!InGame.instance.GetGameModel().towerSellEnabled, "The challenge's own Disable Selling still works");
 
-        // Every boss gets the same rounds, as the mod's copy has them, and the challenge has no round set to merge
+        // Every boss gets the same rounds, as the mod's copy has them, and the challenge has no round set to merge:
+        // the newest CHIMPS event's by default, the earlier ones' when picked
         var on = new BossOptions {BossEventRounds = true};
         foreach (var boss in new[] {BossType.Lych, BossType.Dreadbloon})
         {
             yield return Play(on with {Boss = boss}, chimps);
-            AssertRounds(expected, $"CHIMPS rounds with {boss}");
+            AssertRounds(expected, $"Newest CHIMPS rounds with {boss}");
             AssertEquals(InGameData.CurrentGame.dcModel.roundSets?.Count ?? 0, 0, "No round set for the game to merge");
         }
+        foreach (var boss in new[] {BossType.Diamondback, BossType.Bloonarius})
+        {
+            yield return Play(on with {Boss = boss, ChimpsRounds = ChimpsRounds.Earlier}, chimps);
+            AssertRounds(earlier, $"Earlier CHIMPS rounds with {boss}");
+            AssertEquals(InGameData.CurrentGame.dcModel.roundSets?.Count ?? 0, 0, "No round set for the game to merge");
+        }
+
+        // The pick is only for CHIMPS: Standard plays the boss's own rounds with either
+        yield return Play(on with {Boss = BossType.Lych, ChimpsRounds = ChimpsRounds.Earlier}, BaseDcm());
+        Assert(Exact(InGame.instance.GetGameModel().roundSet.rounds[0]) != earlier[0], "Standard ignores the CHIMPS pick");
 
         // Moved with the tiers, also after a restart
         var moved = on with {SpawnRounds = "30, 50, 70, 90, 110"};
@@ -376,6 +393,39 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         yield return null;
         AssertEquals(editor.dcm.mode, BossOptions.ChimpsMode, "CHIMPS picked");
         Assert(Warned(), "CHIMPS with Boss Event Rounds warns about the CHIMPS events' rounds");
+
+        // In CHIMPS the tick makes room for a dropdown: Off, the newest CHIMPS event's rounds or the earlier ones'
+        var chimpsRounds = section.ChimpsEventRounds;
+        Assert(chimpsRounds.gameObject.activeInHierarchy && !section.BossEventRounds.gameObject.activeSelf,
+            "CHIMPS shows the dropdown in place of the tick");
+        AssertEquals(chimpsRounds.Dropdown.options.Count, 3, "Off, newest and earlier");
+        AssertEquals(chimpsRounds.Dropdown.captionText.text, Menus.Texts.ChimpsRoundsNewest.T(),
+            $"The entry's text as it is, not taken for a key (option '{chimpsRounds.Dropdown.options[1].text}')");
+        AssertEquals(chimpsRounds.Dropdown.value, 1, "Ticked shows the newest CHIMPS rounds");
+        // The mode change becomes its own Undo step once the editor's rules are looked at again
+        yield return new WaitForSecondsRealtime(BossHistory.RulesCheckInterval + 0.2f);
+        chimpsRounds.Dropdown.value = 2;
+        yield return null;
+        Assert(BossMode.Options is {BossEventRounds: true, ChimpsRounds: ChimpsRounds.Earlier}, "Picking the earlier rounds");
+        Assert(Warned(), "The earlier CHIMPS rounds warn too");
+        var earlierCode = SetupCode.Encode(BossMode.Options, editor.dcm);
+        Assert(SetupCode.TryDecode(earlierCode, out var earlierRead, out _, out var earlierProblem), $"The code reads back: {earlierProblem}");
+        AssertEquals(earlierRead, BossMode.Options, "The earlier CHIMPS rounds read back from the code");
+        Assert(Menus.BossEditorSection.Summary(earlierRead, editor.dcm).Contains(Menus.Texts.ChimpsRoundsEarlier.T()),
+            "The summary says which CHIMPS rounds");
+        BossHistory.Undo(editor);
+        yield return null;
+        Assert(BossMode.Options.ChimpsRounds == ChimpsRounds.Newest && chimpsRounds.Dropdown.value == 1, "Undo goes back to the newest");
+        BossHistory.Redo(editor);
+        yield return null;
+        Assert(BossMode.Options.ChimpsRounds == ChimpsRounds.Earlier && chimpsRounds.Dropdown.value == 2, "Redo picks the earlier again");
+        chimpsRounds.Dropdown.value = 0;
+        yield return null;
+        Assert(!BossMode.Options.BossEventRounds, "Off turns Boss Event Rounds off");
+        Assert(!Warned(), "No CHIMPS warning without Boss Event Rounds");
+        chimpsRounds.Dropdown.value = 1;
+        yield return null;
+        Assert(BossMode.Options is {BossEventRounds: true, ChimpsRounds: ChimpsRounds.Newest}, "Back on the newest");
         // Too long for one line at a readable size, so it wraps onto two and the row makes room for both (#139)
         var index = section.Strip.Warnings.FindIndex(w => w.Kind == SetupWarning.ChimpsEventRounds);
         AssertEquals(section.Strip.NoteRows[index], TierStrip.MaxNoteRows, "The CHIMPS warning takes two lines");
@@ -389,17 +439,21 @@ public class BossEventRoundsCreatorTest : CustomBossTest
             scroll.verticalNormalizedPosition = 0.8f;
             yield return new WaitForSecondsRealtime(1);
             yield return ScreenshotTour.Capture(folder, "chimps-warning");
+            foreach (var at in new[] {0.6f, 0.45f, 0.3f})
+            {
+                scroll.verticalNormalizedPosition = at;
+                yield return new WaitForSecondsRealtime(1);
+                yield return ScreenshotTour.Capture(folder, $"chimps-dropdown-{(int) (at * 100)}");
+            }
             scroll.verticalNormalizedPosition = position;
         }
         Assert(Menus.BossEditorSection.PlayProblem(section.Editor.dcm, BossMode.Options) == null, "The warning doesn't stop Play");
-        section.BossEventRounds.Toggle.isOn = false;
-        yield return null;
-        Assert(!Warned(), "No CHIMPS warning without Boss Event Rounds");
-        section.BossEventRounds.Toggle.isOn = true;
         editor.gameModeDropdown.value = mode;
         editor.ApplyUiSettingsToDCM();
         yield return null;
         Assert(!Warned(), "No CHIMPS warning after going back to Standard");
+        Assert(section.BossEventRounds.gameObject.activeSelf && !chimpsRounds.gameObject.activeSelf, "Standard shows the tick again");
+        Assert(section.BossEventRounds.Toggle.isOn, "The tick shows Boss Event Rounds on");
 
         // Codes and the setup summary
         var code = SetupCode.Encode(BossMode.Options, section.Editor.dcm);

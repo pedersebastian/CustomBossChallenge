@@ -65,6 +65,13 @@ public sealed record BossOptions
     /// </summary>
     public bool BossEventRounds { get; init; }
 
+    /// <summary>
+    /// Which CHIMPS boss events' rounds Boss Event Rounds play in CHIMPS. Left out of saves and codes when it is the
+    /// default, so the defaults the website knows stay the same.
+    /// </summary>
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public ChimpsRounds ChimpsRounds { get; init; }
+
     /// <summary>Whether the game is played with the boss events' own rounds, in Standard and in Advanced Mode</summary>
     [JsonIgnore]
     public bool UsesBossEventRounds => BossEventRounds;
@@ -84,20 +91,36 @@ public sealed record BossOptions
     public const string ChimpsMode = "Clicks";
 
     /// <summary>
-    /// The round set the CHIMPS boss events play, whatever the boss (#139). The game doesn't have it, the mod
-    /// brings its own copy (<see cref="ChimpsRoundSet"/>).
+    /// The round set of the newest CHIMPS boss event, Diamondback8 (October 2026), for any boss. The game doesn't have
+    /// it, the mod brings its own copy (<see cref="ChimpsRoundSet"/>).
     /// </summary>
-    public const string ChimpsEventRoundSet = "chimpsbloonarius";
+    public const string ChimpsBossRoundSet = "chimpsboss";
+
+    /// <summary>
+    /// The round set of the earlier CHIMPS boss events, Bloonarius55 (2024) and Dreadbloon32New (2025), for any boss
+    /// (#139). The game doesn't have it either.
+    /// </summary>
+    public const string ChimpsBloonariusRoundSet = "chimpsbloonarius";
+
+    /// <summary>The round set of the CHIMPS boss events <paramref name="chimps"/> picks</summary>
+    public static string ChimpsEventRoundSet(ChimpsRounds chimps) =>
+        chimps == ChimpsRounds.Earlier ? ChimpsBloonariusRoundSet : ChimpsBossRoundSet;
+
+    /// <summary>Whether <paramref name="name"/> is one of the CHIMPS boss events' round sets</summary>
+    public static bool IsChimpsEventRoundSet(string? name) => name is ChimpsBossRoundSet or ChimpsBloonariusRoundSet;
 
     /// <summary>
     /// The event round set a tier with <paramref name="boss"/> plays in <paramref name="mode"/>: the CHIMPS events'
-    /// own set in CHIMPS, the boss's own set in every other mode
+    /// set <paramref name="chimps"/> picks in CHIMPS, the boss's own set in every other mode
     /// </summary>
-    public static string EventRoundSet(BossType boss, string? mode) =>
-        mode == ChimpsMode ? ChimpsEventRoundSet : BossEventRoundSet(boss);
+    public static string EventRoundSet(BossType boss, string? mode, ChimpsRounds chimps = ChimpsRounds.Newest) =>
+        mode == ChimpsMode ? ChimpsEventRoundSet(chimps) : BossEventRoundSet(boss);
+
+    /// <summary>The event round set <paramref name="tier"/> plays in <paramref name="mode"/></summary>
+    public string EventRoundSetIn(int tier, string? mode) => EventRoundSet(BossOf(tier).Boss, mode, ChimpsRounds);
 
     /// <summary>The event round set the match plays in <paramref name="mode"/>, from the first tier's boss</summary>
-    public string BaseEventRoundSetIn(string? mode) => EventRoundSet(BossOf(1).Boss, mode);
+    public string BaseEventRoundSetIn(string? mode) => EventRoundSetIn(1, mode);
 
     /// <summary>
     /// The skull thresholds (0-1, descending) these options ask for, or null to keep the vanilla skulls
@@ -214,4 +237,16 @@ public sealed record BossOptions
     /// The bloon id of a boss at the given tier, e.g. "VortexElite3"
     /// </summary>
     public static string BossIdOf(BossType boss, bool elite, int tier) => $"{boss}{(elite ? "Elite" : "")}{tier}";
+}
+
+/// <summary>
+/// The CHIMPS boss events' round sets Boss Event Rounds can play in CHIMPS (#139)
+/// </summary>
+public enum ChimpsRounds
+{
+    /// <summary>The newest CHIMPS boss event's rounds, "chimpsboss" (Diamondback, 2026)</summary>
+    Newest,
+
+    /// <summary>The earlier CHIMPS boss events' rounds, "chimpsbloonarius" (Bloonarius 2024, Dreadbloon 2025)</summary>
+    Earlier
 }

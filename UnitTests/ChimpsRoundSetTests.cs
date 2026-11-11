@@ -1,13 +1,18 @@
 using System;
 using System.Linq;
 using CustomBossChallenge.Config;
+using CustomBossChallenge.Persistence;
 using Il2CppAssets.Scripts.Data.Boss;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace CustomBossChallenge.UnitTests;
 
 /// <summary>
-/// Boss Event Rounds in CHIMPS play the CHIMPS boss events' own rounds, whatever the boss (#139)
+/// Boss Event Rounds in CHIMPS play the CHIMPS boss events' own rounds, whatever the boss: the newest event's
+/// (chimpsboss) or the earlier ones' (chimpsbloonarius), as the player picks (#139)
 /// </summary>
 public class ChimpsRoundSetTests
 {
@@ -15,8 +20,12 @@ public class ChimpsRoundSetTests
 
     [Theory]
     [MemberData(nameof(Bosses))]
-    public void Chimps_plays_the_chimps_events_rounds_for_every_boss(BossType boss) =>
-        Assert.Equal("chimpsbloonarius", BossOptions.EventRoundSet(boss, "Clicks"));
+    public void Chimps_plays_the_picked_chimps_events_rounds_for_every_boss(BossType boss)
+    {
+        Assert.Equal("chimpsboss", BossOptions.EventRoundSet(boss, "Clicks"));
+        Assert.Equal("chimpsboss", BossOptions.EventRoundSet(boss, "Clicks", ChimpsRounds.Newest));
+        Assert.Equal("chimpsbloonarius", BossOptions.EventRoundSet(boss, "Clicks", ChimpsRounds.Earlier));
+    }
 
     [Theory]
     [InlineData(null)]
@@ -27,32 +36,40 @@ public class ChimpsRoundSetTests
     [InlineData("clicks")]
     public void Other_modes_play_the_boss_own_rounds(string? mode)
     {
-        Assert.Equal("lych", BossOptions.EventRoundSet(BossType.Lych, mode));
-        Assert.Equal("vortex", new BossOptions {Boss = BossType.Vortex}.BaseEventRoundSetIn(mode));
+        Assert.Equal("lych", BossOptions.EventRoundSet(BossType.Lych, mode, ChimpsRounds.Earlier));
+        Assert.Equal("vortex", new BossOptions {Boss = BossType.Vortex, ChimpsRounds = ChimpsRounds.Earlier}.BaseEventRoundSetIn(mode));
     }
 
     [Fact]
-    public void The_match_set_follows_the_first_tier_and_the_mode()
+    public void The_match_set_follows_the_first_tier_the_mode_and_the_pick()
     {
         var options = new BossOptions {Tiers = 2, TierBosses = "Phayze,Lych"};
         Assert.Equal("phayze", options.BaseEventRoundSetIn("Standard"));
-        Assert.Equal("chimpsbloonarius", options.BaseEventRoundSetIn("Clicks"));
+        Assert.Equal("lych", options.EventRoundSetIn(2, "Standard"));
+        Assert.Equal("chimpsboss", options.BaseEventRoundSetIn("Clicks"));
+        Assert.Equal("chimpsbloonarius", (options with {ChimpsRounds = ChimpsRounds.Earlier}).EventRoundSetIn(2, "Clicks"));
     }
 
-    [Fact]
-    public void The_mods_copy_has_every_round_once_in_order()
+    [Theory]
+    [InlineData("chimpsboss", true)]
+    [InlineData("chimpsbloonarius", true)]
+    [InlineData("bloonarius", false)]
+    [InlineData(null, false)]
+    public void Both_chimps_sets_are_chimps_sets(string? name, bool chimps) =>
+        Assert.Equal(chimps, BossOptions.IsChimpsEventRoundSet(name));
+
+    [Theory]
+    [InlineData("chimpsboss", 498)]
+    [InlineData("chimpsbloonarius", 688)]
+    public void The_mods_copies_have_every_round_once_in_order(string set, int groupCount)
     {
-        var rounds = ChimpsRoundSet.Rounds;
+        var rounds = ChimpsRoundSet.Rounds(set);
         Assert.Equal(Enumerable.Range(1, 140), rounds.Select(round => round.Number));
         Assert.DoesNotContain(rounds, round => round.AddToRound);
         Assert.All(rounds, round => Assert.NotEmpty(round.Groups));
-    }
 
-    [Fact]
-    public void Every_group_has_a_bloon_bloons_and_a_time()
-    {
-        var groups = ChimpsRoundSet.Rounds.SelectMany(round => round.Groups).ToList();
-        Assert.Equal(688, groups.Count);
+        var groups = rounds.SelectMany(round => round.Groups).ToList();
+        Assert.Equal(groupCount, groups.Count);
         Assert.All(groups, group =>
         {
             Assert.Matches("^[A-Z][A-Za-z]+$", group.Bloon);
@@ -63,14 +80,32 @@ public class ChimpsRoundSetTests
     }
 
     [Fact]
-    public void The_copy_has_the_events_rounds()
+    public void The_copies_have_the_events_rounds()
     {
-        var rounds = ChimpsRoundSet.Rounds;
-        Assert.Equal(new ChimpsRoundSet.Group("Red", 25, 0, 17.5125f), rounds[0].Groups[0]);
-        Assert.Equal("Moab Ceramic", string.Join(" ", rounds[39].Groups.Select(group => group.Bloon)));
-        Assert.Equal("Bad", rounds[99].Groups.Single().Bloon);
-        Assert.Equal("BadFortified Bad", string.Join(" ", rounds[139].Groups.Select(group => group.Bloon)));
-        Assert.Equal(45, rounds[139].Groups[1].Start);
+        var newest = ChimpsRoundSet.Rounds("chimpsboss");
+        Assert.Equal(new ChimpsRoundSet.Group("Red", 60, 0, 17.5125f), newest[0].Groups.Single());
+        Assert.Equal(new ChimpsRoundSet.Group("Moab", 10, 0, 10), newest[39].Groups.Single());
+        Assert.Equal(new ChimpsRoundSet.Group("Bad", 10, 0, 25), newest[99].Groups.Single());
+
+        var earlier = ChimpsRoundSet.Rounds("chimpsbloonarius");
+        Assert.Equal(new ChimpsRoundSet.Group("Red", 25, 0, 17.5125f), earlier[0].Groups[0]);
+        Assert.Equal("Moab Ceramic", string.Join(" ", earlier[39].Groups.Select(group => group.Bloon)));
+        Assert.Equal("Bad", earlier[99].Groups.Single().Bloon);
+
+        foreach (var rounds in new[] {newest, earlier})
+        {
+            Assert.Equal("BadFortified Bad", string.Join(" ", rounds[139].Groups.Select(group => group.Bloon)));
+            Assert.Equal(45, rounds[139].Groups[1].Start);
+        }
+    }
+
+    [Fact]
+    public void The_two_sets_differ()
+    {
+        var newest = ChimpsRoundSet.Rounds("chimpsboss");
+        var earlier = ChimpsRoundSet.Rounds("chimpsbloonarius");
+        var differ = newest.Zip(earlier).Count(pair => !pair.First.Groups.SequenceEqual(pair.Second.Groups));
+        Assert.True(differ > 100, $"Only {differ} rounds differ");
     }
 
     [Fact]
@@ -87,4 +122,39 @@ public class ChimpsRoundSetTests
         Assert.Equal(new ChimpsRoundSet.Group("Blue", 3, 1.5f, 2), rounds[1].Groups.Single());
         Assert.Equal(3.5f, rounds[1].Groups[0].End);
     }
+
+    /// <summary>Options as JSON the way SetupCode writes them, enums by name</summary>
+    private static readonly JsonSerializer Serializer = JsonSerializer.Create(new JsonSerializerSettings
+    {
+        Converters = {new StringEnumConverter()}
+    });
+
+    private static JObject Json(BossOptions options) => JObject.FromObject(options, Serializer);
+
+    [Fact]
+    public void The_newest_set_is_the_default_and_left_out_of_codes_and_saves()
+    {
+        Assert.Equal(ChimpsRounds.Newest, new BossOptions().ChimpsRounds);
+        Assert.Null(Json(new BossOptions {BossEventRounds = true})["ChimpsRounds"]);
+        Assert.DoesNotContain("ChimpsRounds", JsonConvert.SerializeObject(new BossOptions()));
+        Assert.Equal(ChimpsRounds.Newest, JsonConvert.DeserializeObject<BossOptions>("{\"BossEventRounds\": true}")!.ChimpsRounds);
+    }
+
+    [Fact]
+    public void The_earlier_set_goes_into_codes_and_reads_back()
+    {
+        var options = new BossOptions {BossEventRounds = true, ChimpsRounds = ChimpsRounds.Earlier};
+        var defaults = Json(new BossOptions());
+        var diff = (JObject) CodeFormat.Diff(Json(options), defaults)!;
+        Assert.Equal("Earlier", (string?) diff["ChimpsRounds"]);
+
+        var typed = CodeFormat.TypedOptions(diff);
+        Assert.Equal("Earlier", (string?) typed["ChimpsRounds"]);
+        var read = CodeFormat.Apply(defaults.DeepClone(), typed).ToObject<BossOptions>(Serializer);
+        Assert.Equal(options, read);
+    }
+
+    [Fact]
+    public void A_chimps_set_that_isnt_one_cant_be_read() =>
+        Assert.Throws<FormatException>(() => CodeFormat.TypedOptions(new JObject {["ChimpsRounds"] = true}));
 }

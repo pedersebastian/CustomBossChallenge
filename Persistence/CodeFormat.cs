@@ -339,7 +339,8 @@ public static class CodeFormat
     {
         ["Boss"] = "enum", ["Elite"] = "bool", ["SkullMode"] = "enum", ["SkullCount"] = "int", ["CustomSkulls"] = "text?",
         ["Tiers"] = "int", ["SpeedPerTier"] = "int", ["HealthPerTier"] = "int", ["ExtraTierHealth"] = "int?",
-        ["SpawnRounds"] = "text?", ["TierBosses"] = "text?", ["RandomTiers"] = "text?", ["BossEventRounds"] = "bool"
+        ["SpawnRounds"] = "text?", ["TierBosses"] = "text?", ["RandomTiers"] = "text?", ["BossEventRounds"] = "bool",
+        ["ChimpsRounds"] = "enum"
     };
 
     /// <summary>A whole number written as text, as Json.NET reads it into an int: only ASCII digits and spaces</summary>
