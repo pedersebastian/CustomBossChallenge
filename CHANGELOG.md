@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **CHIMPS boss event rounds** (#139): in CHIMPS, Boss Event Rounds now play the rounds of the CHIMPS boss events
+  (`chimpsbloonarius`, used by the Bloonarius and Dreadbloon CHIMPS events), the same for every boss and every tier
+  in Advanced Mode. The game only gets this round set from NK's servers during an event, so the mod brings its own
+  copy, taken from Blooncyclopedia's dump of the set. The rounds move with the Spawn Rounds like the other boss rounds,
+  and games past round 140 go on into freeplay as before. Other modes still play the boss's own event rounds.
 - **Boss options in the Rules panel** (#141): in a custom game, the pause screen's Rules button now also shows the
   Boss Creator's options that differ from a normal boss game. The sliders (Boss Tiers, Speed per Tier, Health per
   Tier, Skull Count) are rows of the Modifiers list after the game's Boss Health and Boss Speed; the boss and Elite,
