@@ -92,6 +92,7 @@
   "CustomBossChallenge-TiersClose": "Stufen kommen in Runde {0} nur wenige Runden nacheinander, so bleibt wenig Zeit, jede zu besiegen.",
   "CustomBossChallenge-SameTiers": "Die Stufen {0} sind am Ende gleich: Tempo und Gesundheit haben die Grenzen des Spiels erreicht.",
   "CustomBossChallenge-HardSetup": "Diese Regeln zusammen ergeben eine sehr schwere Herausforderung.",
+  "CustomBossChallenge-ChimpsEventRounds": "Boss Event Rounds spielen in CHIMPS die Runden der CHIMPS-Boss-Events: viel schwerer als die normalen Runden, mit weit mehr Bloons ab Runde 1.",
   "CustomBossChallenge-UnsupportedMode": "Der Spielmodus {0} kann nicht für Boss-Spiele verwendet werden.",
   "CustomBossChallenge-StartRoundAfterBoss": "Das Spiel beginnt in Runde {0}, aber die erste Boss-Stufe kommt in Runde {1} und würde übersprungen. Wähle eine frühere Startrunde oder spätere Erscheinungsrunden.",
   "CustomBossChallenge-BossUnavailable": "Dieser Boss kann nicht gespielt werden: Das Spiel hat keinen {0}-Bloon. Ein Spielupdate hat ihn möglicherweise geändert.",

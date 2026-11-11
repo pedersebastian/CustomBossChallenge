@@ -92,6 +92,7 @@
   "CustomBossChallenge-TiersClose": "ラウンド {0} ではティアが数ラウンドおきにしか来ないため、それぞれを倒す時間がほとんどありません。",
   "CustomBossChallenge-SameTiers": "ティア {0} は同じになります。速度と体力がゲームの上限に達しています。",
   "CustomBossChallenge-HardSetup": "これらのルールを合わせると、とても難しいチャレンジになります。",
+  "CustomBossChallenge-ChimpsEventRounds": "CHIMPSでのBoss Event RoundsはCHIMPSボスイベントのラウンドになります。通常のラウンドよりずっと難しく、ラウンド1からブルーンがはるかに多く出ます。",
   "CustomBossChallenge-UnsupportedMode": "{0}ゲームモードはボスゲームでは使用できません。",
   "CustomBossChallenge-StartRoundAfterBoss": "ゲームはラウンド {0} から始まりますが、ボスの最初のティアはラウンド {1} に出現するため飛ばされます。もっと早い開始ラウンドか、もっと遅い出現ラウンドを選んでください。",
   "CustomBossChallenge-BossUnavailable": "このボスはプレイできません：ゲームに{0}のブルーンがありません。ゲームのアップデートで変更された可能性があります。",

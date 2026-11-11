@@ -203,6 +203,9 @@ public static class Texts
         "Tiers {0} end up the same: their speed and health have reached the game's limits.");
     public static readonly string HardSetup = Key(nameof(HardSetup),
         "These rules together make a very hard challenge.");
+    public static readonly string ChimpsEventRounds = Key(nameof(ChimpsEventRounds),
+        "Boss Event Rounds in CHIMPS play the rounds of the CHIMPS boss events: much harder than the normal rounds, " +
+        "with far more bloons from round 1.");
 
     public static readonly string UnsupportedMode = Key(nameof(UnsupportedMode),
         "The {0} game mode can't be used for boss games.");
@@ -283,6 +286,7 @@ public static class Texts
         Config.SetupWarning.HealthCapped => HealthCap.T(TierStrip.FormatHealth((double) warning.Args[0])),
         Config.SetupWarning.TiersClose => TiersClose.T(warning.Args[0]),
         Config.SetupWarning.SameTiers => SameTiers.T(warning.Args[0]),
+        Config.SetupWarning.ChimpsEventRounds => ChimpsEventRounds.T(),
         _ => HardSetup.T()
     };
 

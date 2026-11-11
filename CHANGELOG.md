@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`chimpsbloonarius`, used by the Bloonarius and Dreadbloon CHIMPS events), the same for every boss and every tier
   in Advanced Mode. The game only gets this round set from NK's servers during an event, so the mod brings its own
   copy, taken from Blooncyclopedia's dump of the set. The rounds move with the Spawn Rounds like the other boss rounds,
-  and games past round 140 go on into freeplay as before. Other modes still play the boss's own event rounds.
+  and games past round 140 go on into freeplay as before. Other modes still play the boss's own event rounds. The
+  Tier Preview warns that these rounds are much harder than the normal ones, with far more bloons from round 1.
 - **Boss options in the Rules panel** (#141): in a custom game, the pause screen's Rules button now also shows the
   Boss Creator's options that differ from a normal boss game. The sliders (Boss Tiers, Speed per Tier, Health per
   Tier, Skull Count) are rows of the Modifiers list after the game's Boss Health and Boss Speed; the boss and Elite,
@@ -74,6 +75,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a boss in the game's own boss events, and the Hide Defeated filter, are gone from the Boss Creator's map list.
   Custom games never give those medals, so the skulls only made it look like they did. The normal Challenge Editor
   and the game's boss menus show the map list as before.
+
+### Fixed
+
+- **No selling in CHIMPS**: custom boss games in CHIMPS let towers be sold for $0, because in a challenge the game
+  only turns selling off with the challenge's own Disable Selling. They now have no selling, like the game's own CHIMPS.
 
 ## [2.10.2] - 2026-11-07
 

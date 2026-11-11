@@ -158,6 +158,16 @@ public class BossEventRoundsChimpsTest : CustomBossTest
         var chimps = BaseDcm();
         chimps.mode = BossOptions.ChimpsMode;
 
+        // CHIMPS has no selling, like the game's own CHIMPS, also without Boss Event Rounds; other modes keep it
+        yield return Play(new BossOptions(), chimps);
+        Assert(!InGame.instance.GetGameModel().towerSellEnabled, "No selling in CHIMPS");
+        yield return Play(new BossOptions(), BaseDcm());
+        Assert(InGame.instance.GetGameModel().towerSellEnabled, "Selling in Standard");
+        var noSelling = BaseDcm();
+        noSelling.disableSelling = true;
+        yield return Play(new BossOptions(), noSelling);
+        Assert(!InGame.instance.GetGameModel().towerSellEnabled, "The challenge's own Disable Selling still works");
+
         // Every boss gets the same rounds, as the mod's copy has them, and the challenge has no round set to merge
         var on = new BossOptions {BossEventRounds = true};
         foreach (var boss in new[] {BossType.Lych, BossType.Dreadbloon})
@@ -342,6 +352,24 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         BossHistory.Redo(section.Editor);
         yield return null;
         Assert(BossMode.Options.BossEventRounds && section.BossEventRounds.Toggle.isOn, "Redo turns it on again");
+
+        // In CHIMPS the Tier Preview warns that the CHIMPS events' rounds are much harder (#139), and only then
+        bool Warned() => section.Strip.Warnings.Any(w => w.Kind == SetupWarning.ChimpsEventRounds);
+        Assert(!Warned(), "No CHIMPS warning in Standard");
+        var mode = section.Editor.dcm.mode;
+        section.Editor.dcm.mode = BossOptions.ChimpsMode;
+        section.RulesChanged();
+        yield return null;
+        Assert(Warned(), "CHIMPS with Boss Event Rounds warns about the CHIMPS events' rounds");
+        Assert(Menus.BossEditorSection.PlayProblem(section.Editor.dcm, BossMode.Options) == null, "The warning doesn't stop Play");
+        section.BossEventRounds.Toggle.isOn = false;
+        yield return null;
+        Assert(!Warned(), "No CHIMPS warning without Boss Event Rounds");
+        section.BossEventRounds.Toggle.isOn = true;
+        section.Editor.dcm.mode = mode;
+        section.RulesChanged();
+        yield return null;
+        Assert(!Warned(), "No CHIMPS warning after going back to Standard");
 
         // Codes and the setup summary
         var code = SetupCode.Encode(BossMode.Options, section.Editor.dcm);

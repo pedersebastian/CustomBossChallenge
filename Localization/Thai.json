@@ -92,6 +92,7 @@
   "CustomBossChallenge-TiersClose": "ระดับต่าง ๆ มาห่างกันเพียงไม่กี่รอบในรอบ {0} ทำให้มีเวลาน้อยในการเอาชนะแต่ละระดับ",
   "CustomBossChallenge-SameTiers": "ระดับ {0} ออกมาเหมือนกัน: ความเร็วและพลังชีวิตถึงขีดจำกัดของเกมแล้ว",
   "CustomBossChallenge-HardSetup": "กฎเหล่านี้รวมกันทำให้ความท้าทายยากมาก",
+  "CustomBossChallenge-ChimpsEventRounds": "ใน CHIMPS ตัวเลือก Boss Event Rounds จะใช้รอบของอีเวนต์บอส CHIMPS ซึ่งยากกว่ารอบปกติมาก และมีบลูนมากกว่ามากตั้งแต่รอบที่ 1",
   "CustomBossChallenge-UnsupportedMode": "โหมดเกม {0} ไม่สามารถใช้กับเกมบอสได้",
   "CustomBossChallenge-StartRoundAfterBoss": "เกมเริ่มที่รอบ {0} แต่บอสระดับแรกมาในรอบ {1} และจะถูกข้ามไป เลือกรอบเริ่มต้นที่เร็วกว่านี้หรือรอบที่บอสปรากฏที่ช้ากว่านี้",
   "CustomBossChallenge-BossUnavailable": "ไม่สามารถเล่นบอสนี้ได้: เกมไม่มีบลูน {0} การอัปเดตเกมอาจเปลี่ยนแปลงไปแล้ว",

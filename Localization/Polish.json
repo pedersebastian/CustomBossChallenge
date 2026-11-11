@@ -92,6 +92,7 @@
   "CustomBossChallenge-TiersClose": "Poziomy przychodzą w odstępie kilku rund w rundach {0}, więc zostaje mało czasu na pokonanie każdego z nich.",
   "CustomBossChallenge-SameTiers": "Poziomy {0} wychodzą takie same: ich szybkość i zdrowie osiągnęły limity gry.",
   "CustomBossChallenge-HardSetup": "Te zasady razem dają bardzo trudne wyzwanie.",
+  "CustomBossChallenge-ChimpsEventRounds": "Boss Event Rounds w CHIMPS gra rundy z wydarzeń bossów CHIMPS: dużo trudniejsze niż zwykłe rundy, z dużo większą liczbą bloonów od rundy 1.",
   "CustomBossChallenge-UnsupportedMode": "Tryb gry {0} nie może być używany w grach z bossem.",
   "CustomBossChallenge-StartRoundAfterBoss": "Gra zaczyna się od rundy {0}, ale pierwszy poziom bossa pojawia się w rundzie {1} i zostałby pominięty. Wybierz wcześniejszą rundę startową lub późniejsze rundy pojawienia się.",
   "CustomBossChallenge-BossUnavailable": "Nie można zagrać z tym bossem: gra nie ma balonu {0}. Mogła go zmienić aktualizacja gry.",

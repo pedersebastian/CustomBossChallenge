@@ -45,6 +45,10 @@ public static class ConfigApplier
 
         // Custom games never overwrite the player's Boss Challenge save and are never treated as a custom map
         dcm.disableSaves = true;
+
+        // CHIMPS has no selling, but in a challenge the game only turns it off for the challenge's own Disable Selling
+        // and otherwise lets towers be sold for $0. Custom boss games play CHIMPS like the game's own CHIMPS.
+        if (dcm.mode == BossOptions.ChimpsMode) dcm.disableSelling = true;
         dcm.customMapModel = null;
 
         // The game merges the boss's own round set over the default rounds, like in the boss events (#80);

@@ -92,6 +92,7 @@
   "CustomBossChallenge-TiersClose": "{0} turlarında kademeler yalnızca birkaç tur arayla geliyor, bu da her birini yenmek için az zaman bırakıyor.",
   "CustomBossChallenge-SameTiers": "{0} kademeleri aynı oluyor: hızları ve canları oyunun sınırlarına ulaştı.",
   "CustomBossChallenge-HardSetup": "Bu kurallar birlikte çok zor bir meydan okuma oluşturuyor.",
+  "CustomBossChallenge-ChimpsEventRounds": "CHIMPS’te Boss Event Rounds, CHIMPS boss etkinliklerinin turlarını oynatır: normal turlardan çok daha zordur ve 1. turdan itibaren çok daha fazla bloon gelir.",
   "CustomBossChallenge-UnsupportedMode": "{0} oyun modu boss oyunlarında kullanılamaz.",
   "CustomBossChallenge-StartRoundAfterBoss": "Oyun {0}. turda başlıyor, ancak bossun ilk kademesi {1}. turda geliyor ve atlanır. Daha erken bir başlangıç turu veya daha geç çıkış turları seçin.",
   "CustomBossChallenge-BossUnavailable": "Bu boss oynanamaz: oyunda {0} balonu yok. Bir oyun güncellemesi onu değiştirmiş olabilir.",
