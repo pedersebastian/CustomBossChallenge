@@ -333,7 +333,7 @@ public sealed class BossEditorSection
         chimpsEntries.Add(Texts.EventRoundsOff.T());
         chimpsEntries.Add(Texts.ChimpsRoundsNewest.T());
         chimpsEntries.Add(Texts.ChimpsRoundsEarlier.T());
-        ChimpsEventRounds = ModHelperDropdown.Create(EditorRows.ControlInfo("ChimpsEventRounds", 1100, 150),
+        ChimpsEventRounds = ModHelperDropdown.Create(EditorRows.ControlInfo("ChimpsEventRounds", 1300, 150),
             chimpsEntries, 500, new Action<int>(index => UpdateOptions("ChimpsEventRounds", o => o with
             {
                 BossEventRounds = index > 0,

@@ -87,8 +87,8 @@ public static class Texts
         "and the other rounds follow the first tier's boss. In CHIMPS, pick the rounds of the newest CHIMPS boss event " +
         "(Diamondback, 2026) or the earlier ones (Bloonarius and Dreadbloon), the same for every boss.");
     public static readonly string EventRoundsOff = Key(nameof(EventRoundsOff), "Off");
-    public static readonly string ChimpsRoundsNewest = Key(nameof(ChimpsRoundsNewest), "Newest CHIMPS events");
-    public static readonly string ChimpsRoundsEarlier = Key(nameof(ChimpsRoundsEarlier), "Earlier CHIMPS events");
+    public static readonly string ChimpsRoundsNewest = Key(nameof(ChimpsRoundsNewest), "Newest CHIMPS events (hard)");
+    public static readonly string ChimpsRoundsEarlier = Key(nameof(ChimpsRoundsEarlier), "Earlier CHIMPS events (harder)");
     public static readonly string SpawnRounds = Key(nameof(SpawnRounds), "Spawn Rounds");
     public static readonly string SpawnRoundsInfo = Key(nameof(SpawnRoundsInfo),
         "The round each tier arrives on, separated by commas, e.g. 40, 60, 80. Missing rounds continue every 20 " +
