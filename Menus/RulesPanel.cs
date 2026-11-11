@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using BTD_Mod_Helper;
 using BTD_Mod_Helper.Api.Components;
+using BTD_Mod_Helper.Api.Enums;
+using BTD_Mod_Helper.Extensions;
 using CustomBossChallenge.Config;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
 using Il2CppTMPro;
@@ -20,16 +22,34 @@ public static class RulesPanel
     /// <summary>The name of the text the mod adds to the Rules box</summary>
     public const string Name = "CbcRules";
 
+    /// <summary>The name of the rows the mod adds to the Modifiers list</summary>
+    public const string ModifierName = "CbcModifier";
+
     private const float FontSize = 72;
     private const float Padding = 30;
 
     private static bool logged;
 
     /// <summary>
-    /// The lines the panel shows for <paramref name="options"/>: a header, then <see cref="RulesSummary.Lines"/>
+    /// The lines the Rules box shows for <paramref name="options"/>: a header, then <see cref="RulesSummary.Rules"/>
     /// </summary>
     public static List<string> Lines(BossOptions options) =>
-        new[] {$"<size=125%>{Texts.RulesHeader.T()}</size>"}.Concat(RulesSummary.Lines(options).Select(Texts.Summary)).ToList();
+        new[] {$"<size=125%>{Texts.RulesHeader.T()}</size>"}.Concat(RulesSummary.Rules(options).Select(Texts.Summary)).ToList();
+
+    /// <summary>
+    /// The rows the Modifiers list gets for <paramref name="options"/>, after the game's own: the Boss Creator's sliders
+    /// </summary>
+    public static List<(string Icon, string Label, string Value)> ModifierRows(BossOptions options) =>
+        RulesSummary.Modifiers(options).Select(line => (Icon(line), Texts.ModifierLabel(line), Texts.ModifierValue(line))).ToList();
+
+    /// <summary>The Boss Creator's icon for a slider</summary>
+    private static string Icon(SummaryLine line) => line.Kind switch
+    {
+        RuleLine.Tiers => VanillaSprites.BossTiersIconSmall,
+        RuleLine.SpeedPerTier => VanillaSprites.FasterBossIcon,
+        RuleLine.HealthPerTier => VanillaSprites.BossBoostIcon,
+        _ => VanillaSprites.CrossboneSkull
+    };
 
     public static void Show(ChallengeRulesScreen screen)
     {
@@ -43,8 +63,20 @@ public static class RulesPanel
         var id = content.GetInstanceID();
         if (grid != null && GridPadding.TryGetValue(id, out var bottom)) grid.padding.bottom = bottom;
 
+        var modifiers = screen.modifierContent;
+        if (modifiers != null)
+        {
+            for (var i = modifiers.childCount - 1; i >= 0; i--)
+            {
+                var child = modifiers.GetChild(i);
+                if (child.name == ModifierName) Object.DestroyImmediate(child.gameObject);
+            }
+        }
+
         if (!CustomBossState.IsActive || !ConfigApplier.IsMarked(screen.dcm) ||
             CustomBossState.ActiveOptions is not { } options) return;
+
+        ShowModifiers(screen, options);
 
         LogLayout(content.gameObject);
 
@@ -84,6 +116,31 @@ public static class RulesPanel
             LayoutRebuilder.MarkLayoutForRebuild(rect);
         }
         textRect.anchoredPosition = new Vector2(left + Padding, -top);
+    }
+
+    /// <summary>
+    /// Rows like the game's Boss Speed and Boss Health in the Modifiers list, made from the game's own row
+    /// </summary>
+    private static void ShowModifiers(ChallengeRulesScreen screen, BossOptions options)
+    {
+        if (screen.modifierContent == null || screen.modifierPrefab == null) return;
+        foreach (var (icon, label, value) in ModifierRows(options))
+        {
+            var row = Object.Instantiate(screen.modifierPrefab, screen.modifierContent);
+            row.name = ModifierName;
+            row.SetActive(true);
+            row.transform.SetAsLastSibling();
+            row.transform.Find("Icon")?.GetComponent<Image>()?.SetSprite(icon);
+            SetText(row.transform.Find("Layout/Lbl"), label);
+            SetText(row.transform.Find("Layout/Value"), value);
+        }
+        LayoutRebuilder.MarkLayoutForRebuild(screen.modifierContent.Cast<RectTransform>());
+    }
+
+    private static void SetText(Transform? text, string value)
+    {
+        var tmp = text != null ? text.GetComponent<TMP_Text>() : null;
+        if (tmp != null) tmp.SetText(value);
     }
 
     /// <summary>The grid's own bottom padding, by the Rules box's instance id, before the mod made room in it</summary>

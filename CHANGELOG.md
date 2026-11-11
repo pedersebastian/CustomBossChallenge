@@ -11,10 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Boss options in the Rules panel** (#141): in a custom game, the pause screen's Rules button now also lists the
-  Boss Creator's options in the panel's Rules box: the boss and Elite, and every option that differs from a normal
-  boss game (tiers, spawn rounds, boss event rounds, speed and health per tier, skulls). A setup with nothing else
-  changed says so. Advanced Mode's tier-by-tier list follows in #142.
+- **Boss options in the Rules panel** (#141): in a custom game, the pause screen's Rules button now also shows the
+  Boss Creator's options that differ from a normal boss game. The sliders (Boss Tiers, Speed per Tier, Health per
+  Tier, Skull Count) are rows of the Modifiers list after the game's Boss Health and Boss Speed; the boss and Elite,
+  spawn rounds, boss event rounds and custom skulls are lines in the Rules box. A setup with nothing else changed says
+  so. Advanced Mode's tier-by-tier list follows in #142.
 - **Warnings before Play** (#70): the Tier Preview has a line for each thing in the setup that is allowed but
   probably not meant, and they never stop Play: a start round only a few rounds before the first boss, tiers that come
   only a few rounds apart (like rounds 80 and 81), tiers held to

@@ -34,11 +34,21 @@ public enum RuleLine
     NoChanges
 }
 
-public readonly record struct SummaryLine(RuleLine Kind, params object[] Args);
+public readonly record struct SummaryLine(RuleLine Kind, params object[] Args)
+{
+    /// <summary>
+    /// Whether the line is a slider of the Boss Creator, which the panel shows as a row of its Modifiers list like the
+    /// game's Boss Speed and Boss Health, instead of a line of text in its Rules box
+    /// </summary>
+    public bool IsModifier => Kind is RuleLine.Tiers or RuleLine.SpeedPerTier or RuleLine.HealthPerTier ||
+                              Kind == RuleLine.Skulls && (SkullMode) Args[0] == SkullMode.EvenlySpaced;
+}
 
 /// <summary>
 /// The boss options of a game as short lines for the Challenge Rules panel of the pause screen (#140), every one that
 /// differs from a normal boss game. Without the game's types so it can be unit tested; Texts.Summary words the lines.
+/// The sliders go in the panel's Modifiers list (<see cref="Modifiers"/>), the rest in its Rules box
+/// (<see cref="Rules"/>).
 /// </summary>
 public static class RulesSummary
 {
@@ -81,4 +91,10 @@ public static class RulesSummary
         if (lines.Count == changes) lines.Add(new SummaryLine(RuleLine.NoChanges));
         return lines;
     }
+
+    /// <summary>The lines for the Rules box: <see cref="Lines"/> without the sliders</summary>
+    public static List<SummaryLine> Rules(BossOptions options) => Lines(options).Where(line => !line.IsModifier).ToList();
+
+    /// <summary>The sliders, for rows of the Modifiers list</summary>
+    public static List<SummaryLine> Modifiers(BossOptions options) => Lines(options).Where(line => line.IsModifier).ToList();
 }

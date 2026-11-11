@@ -95,6 +95,35 @@ public class RulesSummaryTests
     }
 
     [Fact]
+    public void Sliders_go_to_the_modifiers_and_the_rest_to_the_rules()
+    {
+        var options = new BossOptions
+        {
+            Tiers = 6, SpawnRounds = "41", BossEventRounds = true, SpeedPerTier = 6, HealthPerTier = 20,
+            SkullMode = SkullMode.EvenlySpaced, SkullCount = 4
+        };
+        Assert.Equal("Boss,SpawnRounds,BossEventRounds", string.Join(",", RulesSummary.Rules(options).Select(l => l.Kind)));
+        Assert.Equal("Tiers,SpeedPerTier,HealthPerTier,Skulls",
+            string.Join(",", RulesSummary.Modifiers(options).Select(l => l.Kind)));
+    }
+
+    [Fact]
+    public void Custom_skulls_are_a_rule_not_a_slider()
+    {
+        var options = new BossOptions {SkullMode = SkullMode.Custom, CustomSkulls = "75, 50"};
+        Assert.Equal("Boss,Skulls", string.Join(",", RulesSummary.Rules(options).Select(l => l.Kind)));
+        Assert.Empty(RulesSummary.Modifiers(options));
+    }
+
+    [Fact]
+    public void Only_sliders_changed_still_has_no_no_changes_line()
+    {
+        var options = new BossOptions {SpeedPerTier = 10};
+        Assert.Equal("Boss", string.Join(",", RulesSummary.Rules(options).Select(l => l.Kind)));
+        Assert.Equal("SpeedPerTier", string.Join(",", RulesSummary.Modifiers(options).Select(l => l.Kind)));
+    }
+
+    [Fact]
     public void Every_change_comes_in_order()
     {
         var options = new BossOptions
