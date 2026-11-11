@@ -354,3 +354,6 @@ web/.env.*.local
 
 # Worktrees made by Claude Code sessions
 .claude/worktrees/
+
+# Downloads of the boss events backfill (tools/boss-events/sources.mjs)
+tools/boss-events/.cache/

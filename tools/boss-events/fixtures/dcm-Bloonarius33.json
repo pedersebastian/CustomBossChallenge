@@ -1,0 +1,683 @@
+{
+  "normalDcm": {
+    "towers": [
+      {
+        "tower": "Quincy",
+        "max": 99,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "Gwendolin",
+        "max": 1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "ObynGreenfoot",
+        "max": 1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "Sauda",
+        "max": 1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "StrikerJones",
+        "max": 1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "Adora",
+        "max": 1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "Alchemist",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 1,
+        "isHero": false
+      },
+      {
+        "tower": "ChosenPrimaryHero",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "BananaFarm",
+        "max": 8,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "BombShooter",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "BoomerangMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "DartMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 1,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Druid",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "CaptainChurchill",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "GlueGunner",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Benjamin",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "HeliPilot",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Ezili",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "IceMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "PatFusty",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "MonkeyAce",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "MonkeyBuccaneer",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 1,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "AdmiralBrickell",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "MonkeySub",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Etienne",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "MonkeyVillage",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "NinjaMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Psi",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "SniperMonkey",
+        "max": 10,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Geraldo",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "SpikeFactory",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "SuperMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "TackShooter",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "WizardMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "MortarMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "EngineerMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 1,
+        "isHero": false
+      },
+      {
+        "tower": "DartlingGunner",
+        "max": 10,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      }
+    ],
+    "map": "Skates",
+    "difficulty": "Medium",
+    "rewards": "",
+    "mode": "DoubleMoabHealth",
+    "id": 71,
+    "maxTowers": -1,
+    "seed": 1,
+    "bloonModifiers": {
+      "speedMultiplier": 1.0,
+      "moabSpeedMultiplier": 1.0,
+      "regrowRateMultiplier": 1.0,
+      "healthMultipliers": {
+        "bloons": 1.0,
+        "moabs": 1.0
+      },
+      "allCamo": false,
+      "allRegen": false
+    },
+    "disableMK": false,
+    "startRules": {
+      "lives": 200,
+      "cash": 1200,
+      "round": 1,
+      "maxLives": -1,
+      "endRound": 140
+    },
+    "name": "Bloonarius33",
+    "displayIncludedTowers": true,
+    "disableSelling": false,
+    "disablePowers": false,
+    "noContinues": false,
+    "noInstaReward": false,
+    "removeableCostMultiplier": 1.0,
+    "abilityCooldownReductionMultiplier": 1.0,
+    "leastCashUsed": -1,
+    "leastTiersUsed": -1,
+    "roundSets": [
+      "bloonarius"
+    ],
+    "maxParagons": 4
+  },
+  "eliteDcm": {
+    "towers": [
+      {
+        "tower": "Quincy",
+        "max": 99,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "Gwendolin",
+        "max": 1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "ObynGreenfoot",
+        "max": 1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "Sauda",
+        "max": 1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "StrikerJones",
+        "max": 1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "Adora",
+        "max": 1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "Alchemist",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 1,
+        "isHero": false
+      },
+      {
+        "tower": "ChosenPrimaryHero",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "BananaFarm",
+        "max": 8,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "BombShooter",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "BoomerangMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "DartMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 1,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Druid",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "CaptainChurchill",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "GlueGunner",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Benjamin",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "HeliPilot",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Ezili",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "IceMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "PatFusty",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "MonkeyAce",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "MonkeyBuccaneer",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 1,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "AdmiralBrickell",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "MonkeySub",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Etienne",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "MonkeyVillage",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "NinjaMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Psi",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "SniperMonkey",
+        "max": 10,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "Geraldo",
+        "max": 0,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": true
+      },
+      {
+        "tower": "SpikeFactory",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "SuperMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "TackShooter",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "WizardMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "MortarMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      },
+      {
+        "tower": "EngineerMonkey",
+        "max": -1,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 1,
+        "isHero": false
+      },
+      {
+        "tower": "DartlingGunner",
+        "max": 10,
+        "path1NumBlockedTiers": 0,
+        "path2NumBlockedTiers": 0,
+        "path3NumBlockedTiers": 0,
+        "isHero": false
+      }
+    ],
+    "map": "Skates",
+    "difficulty": "Medium",
+    "rewards": "",
+    "mode": "DoubleMoabHealth",
+    "id": 0,
+    "maxTowers": -1,
+    "seed": 1,
+    "bloonModifiers": {
+      "speedMultiplier": 1.0,
+      "moabSpeedMultiplier": 1.0,
+      "regrowRateMultiplier": 1.0,
+      "healthMultipliers": {
+        "bloons": 1.0,
+        "moabs": 1.0
+      },
+      "allCamo": false,
+      "allRegen": false
+    },
+    "disableMK": false,
+    "startRules": {
+      "lives": 100,
+      "cash": 1200,
+      "round": 1,
+      "maxLives": -1,
+      "endRound": 140
+    },
+    "name": "",
+    "displayIncludedTowers": true,
+    "disableSelling": false,
+    "disablePowers": false,
+    "noContinues": false,
+    "noInstaReward": false,
+    "removeableCostMultiplier": 1.0,
+    "abilityCooldownReductionMultiplier": 1.0,
+    "leastCashUsed": -1,
+    "leastTiersUsed": -1,
+    "roundSets": [
+      "bloonarius"
+    ],
+    "maxParagons": 4
+  },
+  "bossType": "bloonarius"
+}
