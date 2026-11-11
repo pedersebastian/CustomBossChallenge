@@ -80,6 +80,25 @@ public sealed record BossOptions
     /// </summary>
     public static string BossEventRoundSet(BossType boss) => boss.ToString().ToLowerInvariant();
 
+    /// <summary>The game mode of CHIMPS in the game's challenge models</summary>
+    public const string ChimpsMode = "Clicks";
+
+    /// <summary>
+    /// The round set the CHIMPS boss events play, whatever the boss (#139). The game doesn't have it, the mod
+    /// brings its own copy (<see cref="ChimpsRoundSet"/>).
+    /// </summary>
+    public const string ChimpsEventRoundSet = "chimpsbloonarius";
+
+    /// <summary>
+    /// The event round set a tier with <paramref name="boss"/> plays in <paramref name="mode"/>: the CHIMPS events'
+    /// own set in CHIMPS, the boss's own set in every other mode
+    /// </summary>
+    public static string EventRoundSet(BossType boss, string? mode) =>
+        mode == ChimpsMode ? ChimpsEventRoundSet : BossEventRoundSet(boss);
+
+    /// <summary>The event round set the match plays in <paramref name="mode"/>, from the first tier's boss</summary>
+    public string BaseEventRoundSetIn(string? mode) => EventRoundSet(BossOf(1).Boss, mode);
+
     /// <summary>
     /// The skull thresholds (0-1, descending) these options ask for, or null to keep the vanilla skulls
     /// </summary>

@@ -13,6 +13,7 @@
     <ItemGroup>
         <Compile Include="..\Config\BossOptions.cs" Link="Mod\BossOptions.cs" />
         <Compile Include="..\Config\BossRoundsMath.cs" Link="Mod\BossRoundsMath.cs" />
+        <Compile Include="..\Config\ChimpsRoundSet.cs" Link="Mod\ChimpsRoundSet.cs" />
         <Compile Include="..\Config\ChallengeLimits.Options.cs" Link="Mod\ChallengeLimits.Options.cs" />
         <Compile Include="..\Config\KeyboardShortcuts.cs" Link="Mod\KeyboardShortcuts.cs" />
         <Compile Include="..\Config\RandomNames.cs" Link="Mod\RandomNames.cs" />
@@ -35,6 +36,11 @@
         <!-- The game has its own copy; this only has to be the same major version -->
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="..\Config\RoundSets\chimpsbloonarius.json" LogicalName="CustomBossChallenge.chimpsbloonarius.json" />
+    </ItemGroup>
+
     <ItemGroup>
         <InternalsVisibleTo Include="CustomBossChallenge.UnitTests" />
         <InternalsVisibleTo Include="CustomBossChallenge.PropertyTests" />

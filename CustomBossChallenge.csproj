@@ -24,6 +24,11 @@
         <EmbeddedResource Include="README.md" LogicalName="CustomBossChallenge.README.md" />
     </ItemGroup>
 
+    <!-- The CHIMPS boss events' rounds, which the game doesn't have (#139) -->
+    <ItemGroup>
+        <EmbeddedResource Include="Config\RoundSets\chimpsbloonarius.json" LogicalName="CustomBossChallenge.chimpsbloonarius.json" />
+    </ItemGroup>
+
     <!-- The website is its own project. Only the data it gets from the game is built in, so WebDataTest can check it,
          and only in Debug builds, which the tests run on: the released mod doesn't carry it -->
     <ItemGroup>

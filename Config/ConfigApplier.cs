@@ -45,15 +45,20 @@ public static class ConfigApplier
 
         // Custom games never overwrite the player's Boss Challenge save and are never treated as a custom map
         dcm.disableSaves = true;
+
+        // CHIMPS has no selling, but in a challenge the game only turns it off for the challenge's own Disable Selling
+        // and otherwise lets towers be sold for $0. Custom boss games play CHIMPS like the game's own CHIMPS.
+        if (dcm.mode == BossOptions.ChimpsMode) dcm.disableSelling = true;
         dcm.customMapModel = null;
 
         // The game merges the boss's own round set over the default rounds, like in the boss events (#80);
-        // CustomBossChallenge.OnNewGameModel then moves them to the tiers' Spawn Rounds
-        if (options.UsesBossEventRounds)
+        // CustomBossChallenge.OnNewGameModel then moves them to the tiers' Spawn Rounds. The game doesn't have the
+        // CHIMPS events' set (#139): BossEventRounds puts it in there instead.
+        var eventSet = options.BaseEventRoundSetIn(dcm.mode);
+        if (options.UsesBossEventRounds && eventSet != BossOptions.ChimpsEventRoundSet)
         {
             var roundSets = dcm.roundSets ??= new Il2CppSystem.Collections.Generic.List<string>();
-            var name = options.BaseEventRoundSet;
-            if (!roundSets.Contains(name)) roundSets.Add(name);
+            if (!roundSets.Contains(eventSet)) roundSets.Add(eventSet);
         }
 
         if (!IsMarked(dcm))
@@ -77,6 +82,10 @@ public static class ConfigApplier
         dcm.chalType = defaults.chalType;
         dcm.disableSaves = defaults.disableSaves;
         if (dcm.startRules != null) dcm.startRules.endRound = defaults.startRules.endRound;
+
+        // Prepare turns selling off in CHIMPS, where Disable Selling changes nothing: the setup gets the editor's own
+        // value back, so it doesn't stay on when the player picks another mode
+        if (dcm.mode == BossOptions.ChimpsMode) dcm.disableSelling = defaults.disableSelling;
 
         // Boss Event Rounds is a boss option, not a round set of the challenge
         foreach (var boss in Enum.GetValues<Il2CppAssets.Scripts.Data.Boss.BossType>())

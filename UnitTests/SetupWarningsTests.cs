@@ -190,6 +190,26 @@ public class SetupWarningsTests
             Kinds(facts with {Options = facts.Options with {SpawnRounds = "40, 60, 80, 81, 100, 120, 140"}}));
     }
 
+    [Theory]
+    [InlineData("Clicks", true, true)]
+    [InlineData("Clicks", false, false)]
+    [InlineData("Standard", true, false)]
+    [InlineData("Impoppable", true, false)]
+    public void ChimpsEventRounds_warns_only_for_the_tick_in_chimps(string mode, bool eventRounds, bool warned) =>
+        Assert.Equal(warned, SetupWarnings.Check(new SetupFacts {Mode = mode, Options = new BossOptions {BossEventRounds = eventRounds}})
+            .Any(w => w.Kind == SetupWarning.ChimpsEventRounds));
+
+    [Fact]
+    public void ChimpsEventRounds_comes_just_before_HardSetup()
+    {
+        var facts = new SetupFacts
+        {
+            Mode = "Clicks", StartRound = 38, BossHealth = 20, Lives = 1, NoSelling = true,
+            Options = new BossOptions {Elite = true, BossEventRounds = true, Tiers = 3, TierBosses = "Lych"}
+        };
+        Assert.Equal("StartRoundClose,ChimpsEventRounds,HardSetup", Kinds(facts));
+    }
+
     private static string Kinds(SetupFacts facts) => string.Join(",", SetupWarnings.Check(facts).Select(w => w.Kind));
 
     private static TierBase?[] Bases(int tiers, double health) =>
