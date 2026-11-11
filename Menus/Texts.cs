@@ -224,6 +224,33 @@ public static class Texts
     public static readonly string CashUsed = Key(nameof(CashUsed), "Cash Used");
     public static readonly string RankedTime = Key(nameof(RankedTime), "Time");
 
+    public static readonly string RulesHeader = Key(nameof(RulesHeader), "Boss Creator");
+    public static readonly string RulesLine = Key(nameof(RulesLine), "{0}: {1}");
+    public static readonly string RulesNoChanges = Key(nameof(RulesNoChanges),
+        "Everything else as in a normal boss game");
+
+    /// <summary>
+    /// The line the pause screen's Rules panel shows for a boss option (#141), with the Boss Creator's names
+    /// </summary>
+    public static string Summary(Config.SummaryLine line) => line.Kind switch
+    {
+        Config.RuleLine.Boss => RulesLine.T(BossType.T(),
+            Visuals.BossHud.Name((Il2CppAssets.Scripts.Data.Boss.BossType) line.Args[0], (bool) line.Args[1])),
+        Config.RuleLine.Tiers => RulesLine.T(BossTiers.T(), line.Args[0]),
+        Config.RuleLine.SpawnRounds => RulesLine.T(SpawnRounds.T(), line.Args[0]),
+        Config.RuleLine.BossEventRounds => BossEventRounds.T(),
+        Config.RuleLine.SpeedPerTier => RulesLine.T(SpeedPerTier.T(), PerTier.T(Signed((int) line.Args[0]))),
+        Config.RuleLine.HealthPerTier => RulesLine.T(HealthPerTier.T(), PerTier.T(Signed((int) line.Args[0]))),
+        Config.RuleLine.Skulls => (Config.SkullMode) line.Args[0] == Config.SkullMode.Custom
+            ? RulesLine.T(SkullHealth.T(), line.Args[1])
+            : (int) line.Args[1] == 0
+                ? RulesLine.T(Skulls.T(), NoSkulls.T())
+                : RulesLine.T(SkullCount.T(), $"{line.Args[1]} ({SkullsEvenlySpaced.T()})"),
+        _ => RulesNoChanges.T()
+    };
+
+    private static string Signed(int value) => value > 0 ? $"+{value}" : $"{value}";
+
     /// <summary>
     /// The line the Tier Preview shows for a setup warning (issue #70)
     /// </summary>

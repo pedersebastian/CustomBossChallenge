@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "Straff",
   "CustomBossChallenge-TiersUsed": "Använda uppgraderingsnivåer",
   "CustomBossChallenge-CashUsed": "Använda pengar",
-  "CustomBossChallenge-RankedTime": "Tid"
+  "CustomBossChallenge-RankedTime": "Tid",
+  "CustomBossChallenge-RulesHeader": "Bossskapare",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "Allt annat som i ett vanligt bosspel"
 }

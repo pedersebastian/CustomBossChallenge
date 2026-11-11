@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "บทลงโทษ",
   "CustomBossChallenge-TiersUsed": "ระดับอัปเกรดที่ใช้",
   "CustomBossChallenge-CashUsed": "เงินที่ใช้",
-  "CustomBossChallenge-RankedTime": "เวลา"
+  "CustomBossChallenge-RankedTime": "เวลา",
+  "CustomBossChallenge-RulesHeader": "ตัวสร้างบอส",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "อย่างอื่นเหมือนเกมบอสปกติ"
 }

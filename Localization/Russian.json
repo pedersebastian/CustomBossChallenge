@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "Штраф",
   "CustomBossChallenge-TiersUsed": "Использовано уровней улучшений",
   "CustomBossChallenge-CashUsed": "Потрачено денег",
-  "CustomBossChallenge-RankedTime": "Время"
+  "CustomBossChallenge-RankedTime": "Время",
+  "CustomBossChallenge-RulesHeader": "Создатель боссов",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "Всё остальное как в обычной игре с боссом"
 }

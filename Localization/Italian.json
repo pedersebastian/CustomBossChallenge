@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "Penalità",
   "CustomBossChallenge-TiersUsed": "Livelli di potenziamento usati",
   "CustomBossChallenge-CashUsed": "Denaro usato",
-  "CustomBossChallenge-RankedTime": "Tempo"
+  "CustomBossChallenge-RankedTime": "Tempo",
+  "CustomBossChallenge-RulesHeader": "Creatore di boss",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "Tutto il resto come in una normale partita boss"
 }

@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "Pénalité",
   "CustomBossChallenge-TiersUsed": "Niveaux d’amélioration utilisés",
   "CustomBossChallenge-CashUsed": "Argent utilisé",
-  "CustomBossChallenge-RankedTime": "Temps"
+  "CustomBossChallenge-RankedTime": "Temps",
+  "CustomBossChallenge-RulesHeader": "Créateur de boss",
+  "CustomBossChallenge-RulesLine": "{0} : {1}",
+  "CustomBossChallenge-RulesNoChanges": "Tout le reste comme dans une partie de boss normale"
 }

@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "Strafe",
   "CustomBossChallenge-TiersUsed": "Verwendete Upgrade-Stufen",
   "CustomBossChallenge-CashUsed": "Verwendetes Geld",
-  "CustomBossChallenge-RankedTime": "Zeit"
+  "CustomBossChallenge-RankedTime": "Zeit",
+  "CustomBossChallenge-RulesHeader": "Boss-Ersteller",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "Alles andere wie in einem normalen Boss-Spiel"
 }

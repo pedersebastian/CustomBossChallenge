@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "ペナルティ",
   "CustomBossChallenge-TiersUsed": "使用アップグレードティア",
   "CustomBossChallenge-CashUsed": "使用資金",
-  "CustomBossChallenge-RankedTime": "タイム"
+  "CustomBossChallenge-RankedTime": "タイム",
+  "CustomBossChallenge-RulesHeader": "ボスクリエイター",
+  "CustomBossChallenge-RulesLine": "{0}：{1}",
+  "CustomBossChallenge-RulesNoChanges": "その他は通常のボスゲームと同じ"
 }
