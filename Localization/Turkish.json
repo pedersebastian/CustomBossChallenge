@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "Ceza",
   "CustomBossChallenge-TiersUsed": "Kullanılan geliştirme kademesi",
   "CustomBossChallenge-CashUsed": "Kullanılan para",
-  "CustomBossChallenge-RankedTime": "Süre"
+  "CustomBossChallenge-RankedTime": "Süre",
+  "CustomBossChallenge-RulesHeader": "Boss Oluşturucu",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "Geri kalan her şey normal bir boss oyunundaki gibi"
 }

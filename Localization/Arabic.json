@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "العقوبة",
   "CustomBossChallenge-TiersUsed": "مستويات الترقية المستخدمة",
   "CustomBossChallenge-CashUsed": "المال المستخدم",
-  "CustomBossChallenge-RankedTime": "الوقت"
+  "CustomBossChallenge-RankedTime": "الوقت",
+  "CustomBossChallenge-RulesHeader": "منشئ الزعماء",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "كل شيء آخر كما في لعبة الزعيم العادية"
 }

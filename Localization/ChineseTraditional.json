@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "懲罰",
   "CustomBossChallenge-TiersUsed": "已用升級等級",
   "CustomBossChallenge-CashUsed": "已用金錢",
-  "CustomBossChallenge-RankedTime": "時間"
+  "CustomBossChallenge-RankedTime": "時間",
+  "CustomBossChallenge-RulesHeader": "Boss建立器",
+  "CustomBossChallenge-RulesLine": "{0}：{1}",
+  "CustomBossChallenge-RulesNoChanges": "其餘與一般Boss遊戲相同"
 }

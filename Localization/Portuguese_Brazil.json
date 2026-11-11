@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "Penalidade",
   "CustomBossChallenge-TiersUsed": "Níveis de melhoria usados",
   "CustomBossChallenge-CashUsed": "Dinheiro usado",
-  "CustomBossChallenge-RankedTime": "Tempo"
+  "CustomBossChallenge-RankedTime": "Tempo",
+  "CustomBossChallenge-RulesHeader": "Criador de Chefes",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "Todo o resto como em um jogo de chefe normal"
 }

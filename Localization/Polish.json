@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "Kara",
   "CustomBossChallenge-TiersUsed": "Użyte poziomy ulepszeń",
   "CustomBossChallenge-CashUsed": "Użyta gotówka",
-  "CustomBossChallenge-RankedTime": "Czas"
+  "CustomBossChallenge-RankedTime": "Czas",
+  "CustomBossChallenge-RulesHeader": "Kreator Bossów",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "Wszystko inne jak w zwykłej grze z bossem"
 }

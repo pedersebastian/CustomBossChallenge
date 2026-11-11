@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "Penalty",
   "CustomBossChallenge-TiersUsed": "Upgrade Tiers Used",
   "CustomBossChallenge-CashUsed": "Cash Used",
-  "CustomBossChallenge-RankedTime": "Time"
+  "CustomBossChallenge-RankedTime": "Time",
+  "CustomBossChallenge-RulesHeader": "Boss Creator",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "Everything else as in a normal boss game"
 }

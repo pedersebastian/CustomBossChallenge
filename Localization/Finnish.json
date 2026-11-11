@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "Rangaistus",
   "CustomBossChallenge-TiersUsed": "Käytetyt päivitystasot",
   "CustomBossChallenge-CashUsed": "Käytetyt rahat",
-  "CustomBossChallenge-RankedTime": "Aika"
+  "CustomBossChallenge-RankedTime": "Aika",
+  "CustomBossChallenge-RulesHeader": "Pomoluoja",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "Kaikki muu kuten tavallisessa pomopelissä"
 }

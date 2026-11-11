@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "Straff",
   "CustomBossChallenge-TiersUsed": "Oppgraderingsnivåer brukt",
   "CustomBossChallenge-CashUsed": "Penger brukt",
-  "CustomBossChallenge-RankedTime": "Tid"
+  "CustomBossChallenge-RankedTime": "Tid",
+  "CustomBossChallenge-RulesHeader": "Boss-skaper",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "Alt annet som i et vanlig bosspill"
 }

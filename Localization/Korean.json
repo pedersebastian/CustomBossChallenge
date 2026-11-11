@@ -128,5 +128,8 @@
   "CustomBossChallenge-PenaltyTime": "페널티",
   "CustomBossChallenge-TiersUsed": "사용한 업그레이드 티어",
   "CustomBossChallenge-CashUsed": "사용한 돈",
-  "CustomBossChallenge-RankedTime": "시간"
+  "CustomBossChallenge-RankedTime": "시간",
+  "CustomBossChallenge-RulesHeader": "보스 크리에이터",
+  "CustomBossChallenge-RulesLine": "{0}: {1}",
+  "CustomBossChallenge-RulesNoChanges": "그 외에는 일반 보스 게임과 같음"
 }
