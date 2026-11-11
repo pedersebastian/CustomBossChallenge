@@ -838,7 +838,8 @@ public class BossCreatorTest : CustomBossTest
     {
         var shown = section.Strip.Notes.Count(note => note.gameObject.activeSelf);
         AssertEquals(shown, section.Strip.Warnings.Count, $"{what}: warning lines shown");
-        AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.HeightFor(shown), $"{what}: height");
+        AssertEquals(section.Strip.NoteRows.Count, shown, $"{what}: lines counted for every warning");
+        AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.HeightFor(section.Strip.TextRows), $"{what}: height");
     }
 
     private static MapSelectPanel.MapTypeCallback? mapPickerCallback;

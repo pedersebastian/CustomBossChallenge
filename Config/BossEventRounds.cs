@@ -13,6 +13,7 @@ namespace CustomBossChallenge.Config;
 /// Boss Event Rounds in the match (#80). <see cref="ConfigApplier.Prepare"/> has the game merge the first tier's boss's
 /// round set over the default rounds; here its boss rounds move to the tiers' Spawn Rounds
 /// (<see cref="BossRoundsMath"/>), and in Advanced Mode every tier with another boss gets that boss's own round (#84).
+/// In CHIMPS the match plays the CHIMPS boss events' own rounds instead, the same for every boss (#139).
 /// </summary>
 public static class BossEventRounds
 {
@@ -23,19 +24,25 @@ public static class BossEventRounds
     /// Moves the match's boss event rounds to the tiers' spawn rounds and gives every tier its own boss's round, on a
     /// copy of its round set so the game's own round sets stay as they are. Returns what it did, for the log.
     /// </summary>
-    public static string Apply(GameModel match, BossOptions options)
+    public static string Apply(GameModel match, BossOptions options, string? mode)
     {
         var set = match.roundSet;
         if (set == null) return "missing round set";
 
-        var name = options.BaseEventRoundSet;
-        if (GameData.Instance.MergeableRoundSetByName(name) == null)
+        var name = options.BaseEventRoundSetIn(mode);
+        var rounds = set.rounds;
+        var chimps = false;
+        if (name == BossOptions.ChimpsEventRoundSet)
+        {
+            rounds = ChimpsRounds(rounds);
+            chimps = true;
+        }
+        else if (GameData.Instance.MergeableRoundSetByName(name) == null)
         {
             ModHelper.Warning<CustomBossChallenge>($"The game has no round set '{name}', playing the default rounds");
             return "not in the game";
         }
 
-        var rounds = set.rounds;
         var sources = BossRoundsMath.Sources(options.EffectiveSpawnRounds, rounds.Length);
         var reordered = sources.Select(source => rounds[source - 1]).ToArray();
         var own = new List<string>();
@@ -46,7 +53,7 @@ public static class BossEventRounds
         {
             foreach (var (round, tier, eventRound) in BossRoundsMath.TierEventRounds(options.EffectiveSpawnRounds, rounds.Length))
             {
-                var tierSet = BossOptions.BossEventRoundSet(options.BossOf(tier).Boss);
+                var tierSet = BossOptions.EventRoundSet(options.BossOf(tier).Boss, mode);
                 if (tierSet == name) continue;
                 if (eventRound > defaults.Length) continue;
                 var replaced = RoundOf(tierSet, eventRound, defaults[eventRound - 1]);
@@ -56,7 +63,7 @@ public static class BossEventRounds
             }
         }
 
-        if (BossRoundsMath.IsIdentity(sources) && own.Count == 0) return name;
+        if (!chimps && BossRoundsMath.IsIdentity(sources) && own.Count == 0) return name;
 
         var moved = set.Clone().Cast<RoundSetModel>();
         moved.rounds = new Il2CppReferenceArray<RoundModel>(reordered);
@@ -67,6 +74,32 @@ public static class BossEventRounds
             log += $", moved to {TierMath.FormatRounds(options.EffectiveSpawnRounds.Take(TierMath.VanillaTiers).ToArray())}";
         }
         return own.Count == 0 ? log : $"{log}, {string.Join(", ", own)}";
+    }
+
+    /// <summary>
+    /// <paramref name="rounds"/> with the CHIMPS boss events' rounds in place of their own. The game's own copy wins if
+    /// it ever has one, merged like the boss sets; otherwise the mod's (<see cref="ChimpsRoundSet"/>). Only the rounds
+    /// the match has are replaced, so it keeps its length and freeplay starts on the same round as without them.
+    /// </summary>
+    public static Il2CppReferenceArray<RoundModel> ChimpsRounds(Il2CppReferenceArray<RoundModel> rounds)
+    {
+        var name = BossOptions.ChimpsEventRoundSet;
+        var result = rounds.ToArray();
+        if (GameData.Instance.MergeableRoundSetByName(name) != null)
+        {
+            for (var round = 1; round <= result.Length; round++) result[round - 1] = RoundOf(name, round, result[round - 1])!;
+            return new Il2CppReferenceArray<RoundModel>(result);
+        }
+
+        foreach (var round in ChimpsRoundSet.Rounds)
+        {
+            if (round.Number < 1 || round.Number > result.Length) continue;
+            var groups = round.Groups.Select(group =>
+                new BloonGroupModel("", group.Bloon, group.Start * FramesPerSecond, group.End * FramesPerSecond, group.Count));
+            if (round.AddToRound) groups = result[round.Number - 1].groups.Concat(groups);
+            result[round.Number - 1] = new RoundModel("", new Il2CppReferenceArray<BloonGroupModel>(groups.ToArray()));
+        }
+        return new Il2CppReferenceArray<RoundModel>(result);
     }
 
     /// <summary>

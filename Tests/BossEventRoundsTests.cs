@@ -31,18 +31,19 @@ public class BossEventRoundsGameTest : CustomBossTest
 
         var defaults = Rounds(GameData.Instance.RoundSetByName("DefaultRoundSet"));
 
-        // Off, the default rounds
+        // Off, the default rounds, also in CHIMPS
         var chimps = BaseDcm();
-        chimps.mode = "Clicks";
+        chimps.mode = BossOptions.ChimpsMode;
         yield return Play(new BossOptions(), chimps);
         AssertRounds(defaults, "Without Boss Event Rounds");
+        var standard = BaseDcm();
 
         // Every boss's rounds as the game merges them, and the same from our own conversion for Advanced Mode
         var merged = new Dictionary<BossType, string[]>();
         var defaultRounds = GameData.Instance.RoundSetByName("DefaultRoundSet").rounds;
         foreach (var boss in Enum.GetValues<BossType>())
         {
-            yield return Play(new BossOptions {Boss = boss, BossEventRounds = true}, chimps);
+            yield return Play(new BossOptions {Boss = boss, BossEventRounds = true}, standard);
             var game = InGame.instance.GetGameModel().roundSet.rounds;
             merged[boss] = Rounds(InGame.instance.GetGameModel().roundSet);
             var set = BossOptions.BossEventRoundSet(boss);
@@ -54,18 +55,18 @@ public class BossEventRoundsGameTest : CustomBossTest
             }
         }
 
-        // On in CHIMPS, the boss's rounds where the event has them
+        // On, the boss's rounds where the event has them
         var events = merged[BossType.Bloonarius];
         Assert(events[39] != defaults[39], $"Round 40 is the default one: {events[39]}");
         AssertEquals(events[40], defaults[40], "Round 41 is no boss round");
         var on = new BossOptions {BossEventRounds = true};
-        yield return Play(on, chimps);
+        yield return Play(on, standard);
         Assert(!InGameData.CurrentGame.dcModel.roundSets.Contains("lych"), "Only the boss's own round set");
 
         // Moved with the tiers, also after a restart
         var moved = on with {SpawnRounds = "30, 50, 70, 90, 110"};
         var expected = Moved(events, moved);
-        yield return Play(moved, chimps);
+        yield return Play(moved, standard);
         AssertRounds(expected, "Rounds moved to the spawn rounds");
         AssertEquals(Rounds(InGame.instance.GetGameModel().roundSet)[29], events[39], "Round 30 is the event's round 40");
         yield return Restart();
@@ -78,7 +79,7 @@ public class BossEventRoundsGameTest : CustomBossTest
         expected = Moved(merged[BossType.Lych], advanced);
         expected[49] = merged[second][59];
         expected[69] = merged[BossType.Bloonarius][79];
-        yield return Play(advanced, chimps);
+        yield return Play(advanced, standard);
         AssertRounds(expected, $"Advanced Mode, each tier with its own boss's round ({second} on tier 2)");
 
         // Vortex first brings its extra rounds along
@@ -91,7 +92,7 @@ public class BossEventRoundsGameTest : CustomBossTest
         // A Random tier plays the round of the boss it got, also after a restart
         var random = BossGameLauncher.Resolve(on with {Tiers = 2, TierBosses = "Lych,Random"});
         Assert(!random.HasRandom, "Random tiers get their boss when the game starts");
-        yield return Play(random, chimps);
+        yield return Play(random, standard);
         var picked = random.BossOf(2).Boss;
         AssertEquals(Rounds(InGame.instance.GetGameModel().roundSet)[59], merged[picked][59],
             $"The Random tier plays the round of {picked}");
@@ -138,6 +139,144 @@ public class BossEventRoundsGameTest : CustomBossTest
     /// <summary>The bloons of every round, one text per round</summary>
     public static string[] Rounds(RoundSetModel set) => set.rounds.Select(round =>
         string.Join(" ", round.groups.Select(g => $"{g.count}x{g.bloon}@{g.start:0}-{g.end:0}"))).ToArray();
+}
+
+/// <summary>
+/// Boss Event Rounds in CHIMPS play the CHIMPS boss events' own rounds, the same for every boss, which the game itself
+/// doesn't have (#139). They move with the tiers like the boss sets, and games past round 140 go on into freeplay.
+/// </summary>
+public class BossEventRoundsChimpsTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        AssertEquals(GameData.Instance.MergeableRoundSetByName(BossOptions.ChimpsEventRoundSet) == null, true,
+            "The game has no CHIMPS event rounds of its own (if it has now, check them against the mod's copy)");
+        var defaults = GameData.Instance.RoundSetByName("DefaultRoundSet").rounds;
+        var expected = Enumerable.Range(0, defaults.Length).Select(i => i < ChimpsRoundSet.Rounds.Count
+            ? Exact(ChimpsRoundSet.Rounds[i].Groups)
+            : Exact(defaults[i])).ToArray();
+        var chimps = BaseDcm();
+        chimps.mode = BossOptions.ChimpsMode;
+
+        // Prepare turns selling off in CHIMPS only, and Unprepare gives the setup the editor's own value back
+        var prepared = ConfigApplier.Prepare(chimps, new BossOptions());
+        Assert(prepared.disableSelling && !chimps.disableSelling, "Prepare turns selling off in CHIMPS, on a copy");
+        Assert(!ConfigApplier.Unprepare(prepared).disableSelling, "The CHIMPS setup gets Disable Selling back off");
+        var standardNoSelling = BaseDcm();
+        standardNoSelling.disableSelling = true;
+        Assert(ConfigApplier.Unprepare(ConfigApplier.Prepare(standardNoSelling, new BossOptions())).disableSelling,
+            "The player's own Disable Selling stays in other modes");
+        Assert(!ConfigApplier.Prepare(BaseDcm(), new BossOptions()).disableSelling, "Selling stays in Standard");
+
+        // CHIMPS has no selling, like the game's own CHIMPS, also without Boss Event Rounds; other modes keep it
+        yield return Play(new BossOptions(), chimps);
+        Assert(!InGame.instance.GetGameModel().towerSellEnabled, "No selling in CHIMPS");
+        yield return Play(new BossOptions(), BaseDcm());
+        Assert(InGame.instance.GetGameModel().towerSellEnabled, "Selling in Standard");
+        var noSelling = BaseDcm();
+        noSelling.disableSelling = true;
+        yield return Play(new BossOptions(), noSelling);
+        Assert(!InGame.instance.GetGameModel().towerSellEnabled, "The challenge's own Disable Selling still works");
+
+        // Every boss gets the same rounds, as the mod's copy has them, and the challenge has no round set to merge
+        var on = new BossOptions {BossEventRounds = true};
+        foreach (var boss in new[] {BossType.Lych, BossType.Dreadbloon})
+        {
+            yield return Play(on with {Boss = boss}, chimps);
+            AssertRounds(expected, $"CHIMPS rounds with {boss}");
+            AssertEquals(InGameData.CurrentGame.dcModel.roundSets?.Count ?? 0, 0, "No round set for the game to merge");
+        }
+
+        // Moved with the tiers, also after a restart
+        var moved = on with {SpawnRounds = "30, 50, 70, 90, 110"};
+        var movedRounds = BossRoundsMath.Sources(moved.EffectiveSpawnRounds, expected.Length)
+            .Select(source => expected[source - 1]).ToArray();
+        yield return Play(moved, chimps);
+        AssertRounds(movedRounds, "CHIMPS rounds moved to the spawn rounds");
+        AssertEquals(Exact(InGame.instance.GetGameModel().roundSet.rounds[29]), expected[39], "Round 30 is the event's round 40");
+        yield return Restart();
+        AssertRounds(movedRounds, "CHIMPS rounds after a restart");
+
+        // Advanced Mode: every tier plays the same set, so nothing comes from the tiers' own bosses
+        yield return Play(on with {Tiers = 3, TierBosses = "Lych,Vortex,Bloonarius"}, chimps);
+        AssertRounds(expected, "Advanced Mode in CHIMPS");
+
+        // Standard still plays the boss's own rounds
+        yield return Play(on with {Boss = BossType.Lych}, BaseDcm());
+        Assert(Exact(InGame.instance.GetGameModel().roundSet.rounds[0]) != expected[0], "Standard keeps the boss's own round 1");
+
+        // Past round 140: the set keeps the game's length and freeplay takes over, and a tier there still comes
+        var late = on with {Tiers = 7, SpawnRounds = "40, 60, 80, 100, 120, 145, 160"};
+        yield return Play(late, chimps);
+        AssertEquals(InGame.instance.GetGameModel().roundSet.rounds.Length, defaults.Length, "The round set keeps its length");
+        AssertRounds(expected, "Rounds 1-140 with tiers past 140");
+        yield return PlayFrom(145, late);
+
+        yield return ToMainMenu();
+        AssertEquals(string.Join("|", defaults.Select(Exact)), string.Join("|", GameData.Instance.RoundSetByName("DefaultRoundSet").rounds.Select(Exact)),
+            "The game's own default rounds");
+    }
+
+    /// <summary>Jumps to <paramref name="round"/> (counted from 1) and plays it: bloons come, and so does the tier due there</summary>
+    private IEnumerator PlayFrom(int round, BossOptions options)
+    {
+        var bridge = InGame.instance.bridge;
+        var spawner = bridge.Simulation.map.spawner;
+        spawner.SetRound(round - 1);
+        bridge.SetFastForward(true);
+        bridge.StartRound();
+        var tier = Array.IndexOf(options.EffectiveSpawnRounds, round) + 1;
+        var start = Time.realtimeSinceStartup;
+        var bloons = 0;
+        while (Time.realtimeSinceStartup - start < 60)
+        {
+            bloons = Math.Max(bloons, InGame.instance.GetBloons().Count);
+            var boss = spawner.bossBloonManager.CurrentBoss;
+            if (bloons > 1 && (tier == 0 || boss != null && boss.bloonModel.id == options.BossId(tier))) break;
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
+        Log($"round {bridge.GetCurrentRound() + 1}: {bloons} bloons, boss {spawner.bossBloonManager.CurrentBoss?.bloonModel.id}");
+        AssertEquals(bridge.GetCurrentRound() + 1, round, "The round played");
+        Assert(bloons > 1, $"Round {round} has freeplay bloons");
+        if (tier > 0) AssertEquals(spawner.bossBloonManager.CurrentBoss?.bloonModel.id, options.BossId(tier), $"Tier {tier} on round {round}");
+        bridge.SetFastForward(false);
+    }
+
+    private static string Exact(RoundModel round) =>
+        string.Join(" ", round.groups.Select(g => $"{g.count}x{g.bloon}@{g.start:R}-{g.end:R}"));
+
+    /// <summary>The mod's copy of a round, in frames like the game's rounds</summary>
+    private static string Exact(IEnumerable<ChimpsRoundSet.Group> groups) =>
+        string.Join(" ", groups.Select(g => $"{g.Count}x{g.Bloon}@{g.Start * 60f:R}-{g.End * 60f:R}"));
+
+    private IEnumerator Play(BossOptions options, Il2CppAssets.Scripts.Models.ServerEvents.DailyChallengeModel dcm)
+    {
+        if (InGame.instance != null) yield return ToMainMenu();
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+        Assert(CustomBossState.IsActive, "Custom state is not active in game");
+    }
+
+    private IEnumerator Restart()
+    {
+        var simulation = InGame.instance.bridge.Simulation.Pointer;
+        InGame.instance.RunRestart();
+        yield return WaitFor(() => InGame.instance?.bridge?.Simulation != null &&
+                                   InGame.instance.bridge.Simulation.Pointer != simulation, "Restarting the game", 30);
+        yield return new WaitForSecondsRealtime(1);
+    }
+
+    private void AssertRounds(string[] expected, string what)
+    {
+        var actual = InGame.instance.GetGameModel().roundSet.rounds.Select(Exact).ToArray();
+        var differ = Enumerable.Range(0, Math.Max(actual.Length, expected.Length))
+            .Where(i => i >= actual.Length || i >= expected.Length || actual[i] != expected[i]).Select(i => i + 1).ToList();
+        if (differ.Count > 0)
+        {
+            var first = differ[0] - 1;
+            Fail($"{what}: rounds {string.Join(", ", differ.Take(10))} differ, e.g. " +
+                 $"{(first < actual.Length ? actual[first] : "none")} instead of {(first < expected.Length ? expected[first] : "none")}");
+        }
+    }
 }
 
 /// <summary>
@@ -223,6 +362,44 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         BossHistory.Redo(section.Editor);
         yield return null;
         Assert(BossMode.Options.BossEventRounds && section.BossEventRounds.Toggle.isOn, "Redo turns it on again");
+
+        // In CHIMPS the Tier Preview warns that the CHIMPS events' rounds are much harder (#139), and only then
+        bool Warned() => section.Strip.Warnings.Any(w => w.Kind == SetupWarning.ChimpsEventRounds);
+        Assert(!Warned(), "No CHIMPS warning in Standard");
+        // Through the editor's own mode dropdown, like the player
+        var editor = section.Editor;
+        var mode = editor.gameModeDropdown.value;
+        var chimpsIndex = editor.gameModes.IndexOf(BossOptions.ChimpsMode);
+        Assert(chimpsIndex >= 0, "The editor offers CHIMPS");
+        editor.gameModeDropdown.value = chimpsIndex;
+        editor.ApplyUiSettingsToDCM();
+        yield return null;
+        AssertEquals(editor.dcm.mode, BossOptions.ChimpsMode, "CHIMPS picked");
+        Assert(Warned(), "CHIMPS with Boss Event Rounds warns about the CHIMPS events' rounds");
+        // Too long for one line at a readable size, so it wraps onto two and the row makes room for both (#139)
+        var index = section.Strip.Warnings.FindIndex(w => w.Kind == SetupWarning.ChimpsEventRounds);
+        AssertEquals(section.Strip.NoteRows[index], TierStrip.MaxNoteRows, "The CHIMPS warning takes two lines");
+        AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.HeightFor(section.Strip.TextRows),
+            "The row has room for both lines");
+        var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
+        if (!string.IsNullOrWhiteSpace(folder))
+        {
+            var scroll = section.Editor.GetComponentInChildren<UnityEngine.UI.ScrollRect>();
+            var position = scroll.verticalNormalizedPosition;
+            scroll.verticalNormalizedPosition = 0.8f;
+            yield return new WaitForSecondsRealtime(1);
+            yield return ScreenshotTour.Capture(folder, "chimps-warning");
+            scroll.verticalNormalizedPosition = position;
+        }
+        Assert(Menus.BossEditorSection.PlayProblem(section.Editor.dcm, BossMode.Options) == null, "The warning doesn't stop Play");
+        section.BossEventRounds.Toggle.isOn = false;
+        yield return null;
+        Assert(!Warned(), "No CHIMPS warning without Boss Event Rounds");
+        section.BossEventRounds.Toggle.isOn = true;
+        editor.gameModeDropdown.value = mode;
+        editor.ApplyUiSettingsToDCM();
+        yield return null;
+        Assert(!Warned(), "No CHIMPS warning after going back to Standard");
 
         // Codes and the setup summary
         var code = SetupCode.Encode(BossMode.Options, section.Editor.dcm);

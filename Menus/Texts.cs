@@ -84,7 +84,8 @@ public static class Texts
         "Tick to play the rounds of the official boss events for this boss instead of the normal rounds. In the " +
         "events the tiers arrive on rounds 40, 60, 80, 100 and 120 with bloons made for them; with other Spawn " +
         "Rounds those rounds move with the tiers. In Advanced Mode every tier arrives on the round made for its own boss, " +
-        "and the other rounds follow the first tier's boss.");
+        "and the other rounds follow the first tier's boss. In CHIMPS the rounds of the CHIMPS boss events are played " +
+        "instead, the same for every boss.");
     public static readonly string SpawnRounds = Key(nameof(SpawnRounds), "Spawn Rounds");
     public static readonly string SpawnRoundsInfo = Key(nameof(SpawnRoundsInfo),
         "The round each tier arrives on, separated by commas, e.g. 40, 60, 80. Missing rounds continue every 20 " +
@@ -202,6 +203,9 @@ public static class Texts
         "Tiers {0} end up the same: their speed and health have reached the game's limits.");
     public static readonly string HardSetup = Key(nameof(HardSetup),
         "These rules together make a very hard challenge.");
+    public static readonly string ChimpsEventRounds = Key(nameof(ChimpsEventRounds),
+        "Boss Event Rounds in CHIMPS play the rounds of the CHIMPS boss events, which are much harder than the normal " +
+        "rounds.");
 
     public static readonly string UnsupportedMode = Key(nameof(UnsupportedMode),
         "The {0} game mode can't be used for boss games.");
@@ -312,6 +316,7 @@ public static class Texts
         Config.SetupWarning.HealthCapped => HealthCap.T(TierStrip.FormatHealth((double) warning.Args[0])),
         Config.SetupWarning.TiersClose => TiersClose.T(warning.Args[0]),
         Config.SetupWarning.SameTiers => SameTiers.T(warning.Args[0]),
+        Config.SetupWarning.ChimpsEventRounds => ChimpsEventRounds.T(),
         _ => HardSetup.T()
     };
 

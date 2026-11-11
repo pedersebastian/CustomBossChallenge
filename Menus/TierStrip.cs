@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
 using CustomBossChallenge.Config;
@@ -36,6 +37,13 @@ public sealed class TierStrip
     /// What each further warning line adds to the row's height
     /// </summary>
     public const float NoteStep = 50;
+
+    /// <summary>The font size of the warning lines, and the smallest they shrink to before a line wraps in two</summary>
+    public const float NoteFontSize = 40;
+    public const float NoteMinFontSize = 32;
+
+    /// <summary>A warning too long for one line gets at most this many</summary>
+    public const int MaxNoteRows = 2;
 
     /// <summary>
     /// One line for each kind of <see cref="SetupWarning"/>
@@ -192,12 +200,12 @@ public sealed class TierStrip
             var note = strip.AddText(new Info(NoteName + i, 0, 18, EditorRows.ControlWidth - 40, NoteHeight)
             {
                 Anchor = new Vector2(0.5f, 0), Pivot = new Vector2(0.5f, 0)
-            }, "", 40, TextAlignmentOptions.Center);
+            }, "", NoteFontSize, TextAlignmentOptions.Center);
             note.Text.color = Higher;
-            // Long translations shrink to the line instead of running into the next one
+            // Long warnings wrap onto a second line (NoteRows), and only shrink if they don't fit on two
             note.Text.enableAutoSizing = true;
             note.Text.fontSizeMin = 24;
-            note.Text.fontSizeMax = 40;
+            note.Text.fontSizeMax = NoteFontSize;
             note.Text.textWrappingMode = TextWrappingModes.NoWrap;
             note.gameObject.SetActive(false);
             Notes.Add(note);
@@ -205,9 +213,31 @@ public sealed class TierStrip
     }
 
     /// <summary>
-    /// The row's height with <paramref name="lines"/> warning lines
+    /// The row's height with <paramref name="lines"/> lines of warning text, counting a warning on two lines twice
     /// </summary>
     public static float HeightFor(int lines) => lines <= 0 ? Height : CappedHeight + (lines - 1) * NoteStep;
+
+    /// <summary>How many lines each shown warning takes, top first</summary>
+    public List<int> NoteRows { get; } = new();
+
+    /// <summary>The lines of warning text the row has room for</summary>
+    public int TextRows => NoteRows.Sum();
+
+    /// <summary>
+    /// Whether <paramref name="note"/>'s text fits on one line without shrinking below <see cref="NoteMinFontSize"/>;
+    /// otherwise it gets <see cref="MaxNoteRows"/> lines
+    /// </summary>
+    private static int RowsFor(ModHelperText note)
+    {
+        var text = note.Text;
+        var size = text.fontSize;
+        text.enableAutoSizing = false;
+        text.fontSize = NoteMinFontSize;
+        var width = text.GetPreferredValues(text.text, float.PositiveInfinity, float.PositiveInfinity).x;
+        text.fontSize = size;
+        text.enableAutoSizing = true;
+        return width <= note.RectTransform.sizeDelta.x ? 1 : MaxNoteRows;
+    }
 
     /// <summary>
     /// Cards share the strip's width, centered, but never get wider than <see cref="MaxCardWidth"/>. With the health
@@ -215,17 +245,31 @@ public sealed class TierStrip
     /// </summary>
     private void LayOut(int tiers, int lines)
     {
-        var height = HeightFor(lines);
+        NoteRows.Clear();
+        for (var i = 0; i < lines; i++) NoteRows.Add(RowsFor(Notes[i]));
+        var rows = TextRows;
+        var height = HeightFor(rows);
         var rowRect = Row.GetComponent<RectTransform>();
         rowRect.sizeDelta = new Vector2(rowRect.sizeDelta.x, height);
         strip.RectTransform.sizeDelta = new Vector2(strip.RectTransform.sizeDelta.x, height - 10);
-        for (var i = 0; i < Notes.Count; i++)
+
+        // Bottom up: each line sits above the ones after it, a warning on two lines takes two steps
+        var below = 0;
+        for (var i = Notes.Count - 1; i >= 0; i--)
         {
-            Notes[i].gameObject.SetActive(i < lines);
-            Notes[i].RectTransform.anchoredPosition = new Vector2(0, 18 + (lines - 1 - i) * NoteStep);
+            var note = Notes[i];
+            note.gameObject.SetActive(i < lines);
+            if (i >= lines) continue;
+            var noteRows = NoteRows[i];
+            note.Text.textWrappingMode = noteRows > 1 ? TextWrappingModes.Normal : TextWrappingModes.NoWrap;
+            // A line of text at full size is a bit taller than a step, so a wrapped warning also takes the gap below it
+            note.RectTransform.sizeDelta = new Vector2(note.RectTransform.sizeDelta.x,
+                noteRows > 1 ? noteRows * NoteStep + 16 : NoteHeight);
+            note.RectTransform.anchoredPosition = new Vector2(0, (noteRows > 1 ? 4 : 18) + below * NoteStep);
+            below += noteRows;
         }
 
-        var y = lines > 0 ? (height - 10 - CardHeight) / 2 - 8 : 0;
+        var y = rows > 0 ? (height - 10 - CardHeight) / 2 - 8 : 0;
         var slot = Math.Min(EditorRows.ControlWidth / tiers, MaxCardWidth + CardGap);
         var left = (EditorRows.ControlWidth - slot * tiers) / 2;
         for (var i = 0; i < tiers; i++)

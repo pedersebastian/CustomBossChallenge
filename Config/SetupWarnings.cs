@@ -70,6 +70,11 @@ public enum SetupWarning
     /// <summary>Tiers in a row end up the same because of the limits. Args: the tiers, like "6-8".</summary>
     SameTiers,
 
+    /// <summary>
+    /// Boss Event Rounds in CHIMPS play the CHIMPS boss events' rounds (#139), much harder than the normal ones. No args.
+    /// </summary>
+    ChimpsEventRounds,
+
     /// <summary>The rules together make a very hard challenge. No args.</summary>
     HardSetup
 }
@@ -119,6 +124,9 @@ public static class SetupWarnings
         if (same.Count > 0)
             warnings.Add(new Warning(SetupWarning.SameTiers,
                 string.Join(", ", same.Select(run => $"{run.First}-{run.Last}"))));
+
+        if (options.UsesBossEventRounds && facts.Mode == BossOptions.ChimpsMode)
+            warnings.Add(new Warning(SetupWarning.ChimpsEventRounds));
 
         if (Difficulty(facts) >= HardThreshold) warnings.Add(new Warning(SetupWarning.HardSetup));
         return warnings;
