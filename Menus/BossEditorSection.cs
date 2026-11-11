@@ -71,6 +71,12 @@ public sealed class BossEditorSection
     /// Boss Event Rounds (#80, #84): the rounds of the official boss events, moved with the tiers
     /// </summary>
     public ModHelperCheckbox BossEventRounds { get; private set; } = null!;
+
+    /// <summary>
+    /// In CHIMPS, the Boss Event Rounds tick's place: Off, or which CHIMPS boss events' rounds (#139). The entries are
+    /// <see cref="ChimpsEntry"/>'s.
+    /// </summary>
+    public ModHelperDropdown ChimpsEventRounds { get; private set; } = null!;
     public GameObject BossEventRoundsRow { get; private set; } = null!;
 
     /// <summary>
@@ -323,6 +329,36 @@ public sealed class BossEditorSection
             new Action<bool>(on => UpdateOptions("BossEventRounds", o => o with {BossEventRounds = on})),
             VanillaSprites.TickGreenIcon, 20);
         BossEventRounds.transform.SetParent(BossEventRoundsRow.transform, false);
+        var chimpsEntries = new Il2CppSystem.Collections.Generic.List<string>();
+        chimpsEntries.Add(Texts.EventRoundsOff.T());
+        chimpsEntries.Add(Texts.ChimpsRoundsNewest.T());
+        chimpsEntries.Add(Texts.ChimpsRoundsEarlier.T());
+        ChimpsEventRounds = ModHelperDropdown.Create(EditorRows.ControlInfo("ChimpsEventRounds", 1300, 150),
+            chimpsEntries, 500, new Action<int>(index => UpdateOptions("ChimpsEventRounds", o => o with
+            {
+                BossEventRounds = index > 0,
+                ChimpsRounds = index > 1 ? Config.ChimpsRounds.Earlier : index == 1 ? Config.ChimpsRounds.Newest : o.ChimpsRounds
+            })), VanillaSprites.BlueInsertPanelRound, 60);
+        ChimpsEventRounds.transform.SetParent(BossEventRoundsRow.transform, false);
+        // The entries are longer than the skull modes: they shrink to fit instead of running past the arrow
+        foreach (var text in new[] {ChimpsEventRounds.Dropdown.captionText, ChimpsEventRounds.Dropdown.itemText})
+        {
+            text.enableAutoSizing = true;
+            text.fontSizeMax = text.fontSize;
+            text.fontSizeMin = SavedListMinFontSize;
+            text.textWrappingMode = TextWrappingModes.NoWrap;
+            text.overflowMode = TextOverflowModes.Ellipsis;
+            // Already translated: the game's localizer would take "CHIMPS" for a key and space out its letters
+            var nkText = text.TryCast<Il2Cpp.NK_TextMeshProUGUI>();
+            if (nkText != null)
+            {
+                nkText.AutoLocalize = false;
+                nkText.localizeKey = "";
+            }
+        }
+        for (var i = 0; i < chimpsEntries.Count; i++) ChimpsEventRounds.Dropdown.options[i].text = chimpsEntries[i];
+        ChimpsEventRounds.Dropdown.RefreshShownValue();
+        ChimpsEventRounds.gameObject.SetActive(false);
 
         skullModeRow = EditorRows.LabelRow(template, rows, "SkullModeRow", Texts.Skulls.T(), VanillaSprites.CrossboneSkull);
         var modes = new Il2CppSystem.Collections.Generic.List<string>();
@@ -497,10 +533,26 @@ public sealed class BossEditorSection
         focusStops.Add(FocusStop.ForSlider("RoundsBetween", RoundsBetween));
         focusStops.Add(FocusStop.ForField("SpawnRounds", SpawnRounds.InputField));
         focusStops.Add(FocusStop.ForButton("ResetRounds", resetRounds.Button));
-        focusStops.Add(new FocusStop("BossEventRounds", () => BossEventRounds.gameObject)
+        // One stop for the tick or, in CHIMPS, the dropdown in its place
+        focusStops.Add(new FocusStop("BossEventRounds",
+            () => ChimpsEventRounds.gameObject.activeSelf ? ChimpsEventRounds.gameObject : BossEventRounds.gameObject)
         {
-            Activate = () => BossEventRounds.Toggle.isOn = !BossEventRounds.Toggle.isOn,
-            Reset = () => BossEventRounds.Toggle.isOn = false
+            Activate = () =>
+            {
+                if (ChimpsEventRounds.gameObject.activeSelf) ChimpsEventRounds.Dropdown.Show();
+                else BossEventRounds.Toggle.isOn = !BossEventRounds.Toggle.isOn;
+            },
+            Step = direction =>
+            {
+                if (!ChimpsEventRounds.gameObject.activeSelf) return;
+                var dropdown = ChimpsEventRounds.Dropdown;
+                dropdown.value = Math.Clamp(dropdown.value + direction, 0, dropdown.options.Count - 1);
+            },
+            Reset = () =>
+            {
+                if (ChimpsEventRounds.gameObject.activeSelf) ChimpsEventRounds.Dropdown.value = 0;
+                else BossEventRounds.Toggle.isOn = false;
+            }
         });
         var skullMode = FocusStop.ForDropdown("SkullMode", SkullMode.Dropdown);
         skullMode.Reset = ResetSkulls;
@@ -760,7 +812,8 @@ public sealed class BossEditorSection
     /// </summary>
     public static string Describe(BossOptions options, DailyChallengeModel dcm) =>
         $"'{dcm.name}', {options.Boss}{(options.Elite ? " Elite" : "")}, {options.Tiers} tiers" +
-        (options.Mixed ? $" ({options.TierBosses})" : "") + (options.UsesBossEventRounds ? ", boss event rounds" : "") +
+        (options.Mixed ? $" ({options.TierBosses})" : "") +
+        (options.UsesBossEventRounds ? $", boss event rounds {options.BaseEventRoundSetIn(dcm.mode)}" : "") +
         $", {dcm.map}, {dcm.difficulty}, {dcm.mode}";
 
     /// <summary>
@@ -770,7 +823,9 @@ public sealed class BossEditorSection
     {
         var boss = options.Mixed ? Texts.DifferentBosses.T()
             : options.Elite ? $"{options.Boss} {Texts.Elite.T()}" : options.Boss.ToString();
-        var rounds = options.UsesBossEventRounds ? $", {Texts.BossEventRounds.T()}" : "";
+        var rounds = !options.UsesBossEventRounds ? ""
+            : dcm.mode == BossOptions.ChimpsMode ? $", {Texts.BossEventRounds.T()} ({ChimpsEntry(options).T()})"
+            : $", {Texts.BossEventRounds.T()}";
         return $"<b>{PlainText(dcm.name)}</b>\n{boss}, {Texts.TierCount.T(options.Tiers)}{rounds}\n" +
                $"{PlainText(dcm.map.T())}, {PlainText(dcm.difficulty.T())}";
     }
@@ -956,6 +1011,7 @@ public sealed class BossEditorSection
 
             Elite.SetChecked(options.Elite, false);
             BossEventRounds.SetChecked(options.BossEventRounds, false);
+            ShowEventRounds(dcm?.mode ?? Editor.dcm?.mode, options);
             Mode.Show(options.Mixed);
             Tiers.Show(options.Tiers);
             SpeedPerTier.Show(options.SpeedPerTier);
@@ -1326,8 +1382,46 @@ public sealed class BossEditorSection
     internal void RulesChanged()
     {
         if (!BossMode.Active || refreshing || Editor.dcm == null || !Section.activeInHierarchy) return;
+        ShowEventRounds(SelectedMode());
         ShowStrip();
     }
+
+    /// <summary>
+    /// The game mode picked in the editor's mode dropdown, which the editor's model may only get after this hears it
+    /// </summary>
+    private string? SelectedMode()
+    {
+        var dropdown = Editor.gameModeDropdown;
+        var modes = Editor.gameModes;
+        return dropdown != null && modes != null && dropdown.value >= 0 && dropdown.value < modes.Count
+            ? modes[dropdown.value]
+            : Editor.dcm?.mode;
+    }
+
+    /// <summary>
+    /// The Boss Event Rounds tick, or in CHIMPS the dropdown in its place with its entry for the options (#139)
+    /// </summary>
+    internal void ShowEventRounds(string? mode, BossOptions? shown = null)
+    {
+        var chimps = mode == BossOptions.ChimpsMode;
+        BossEventRounds.gameObject.SetActive(!chimps);
+        ChimpsEventRounds.gameObject.SetActive(chimps);
+        var options = shown ?? BossMode.Options;
+        BossEventRounds.SetChecked(options.BossEventRounds, false);
+        ChimpsEventRounds.Dropdown.SetValueWithoutNotify(ChimpsIndex(options));
+    }
+
+    /// <summary>The CHIMPS dropdown's entry for <paramref name="options"/>: Off, Newest or Earlier</summary>
+    public static int ChimpsIndex(BossOptions options) =>
+        !options.BossEventRounds ? 0 : options.ChimpsRounds == Config.ChimpsRounds.Earlier ? 2 : 1;
+
+    /// <summary>The text of the CHIMPS dropdown's entry for <paramref name="options"/></summary>
+    public static string ChimpsEntry(BossOptions options) => ChimpsIndex(options) switch
+    {
+        0 => Texts.EventRoundsOff,
+        1 => Texts.ChimpsRoundsNewest,
+        _ => Texts.ChimpsRoundsEarlier
+    };
 
     /// <summary>
     /// The strip grows with its warning lines, and the rows below must move with it

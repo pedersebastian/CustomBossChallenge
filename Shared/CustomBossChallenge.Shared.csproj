@@ -39,6 +39,7 @@
 
     <ItemGroup>
         <EmbeddedResource Include="..\Config\RoundSets\chimpsbloonarius.json" LogicalName="CustomBossChallenge.chimpsbloonarius.json" />
+        <EmbeddedResource Include="..\Config\RoundSets\chimpsboss.json" LogicalName="CustomBossChallenge.chimpsboss.json" />
     </ItemGroup>
 
     <ItemGroup>
