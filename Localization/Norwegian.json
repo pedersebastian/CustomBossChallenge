@@ -92,7 +92,7 @@
   "CustomBossChallenge-TiersClose": "Nivåer kommer bare noen få runder etter hverandre på runde {0}, så det blir lite tid til å slå hvert av dem.",
   "CustomBossChallenge-SameTiers": "Nivå {0} blir like: farten og livet deres har nådd spillets grenser.",
   "CustomBossChallenge-HardSetup": "Disse reglene sammen gir en svært vanskelig utfordring.",
-  "CustomBossChallenge-ChimpsEventRounds": "Boss Event Rounds i CHIMPS spiller rundene fra CHIMPS-boss-eventene: mye vanskeligere enn de vanlige rundene, med langt flere bloons fra runde 1.",
+  "CustomBossChallenge-ChimpsEventRounds": "Boss Event Rounds i CHIMPS spiller rundene fra CHIMPS-boss-eventene, som er mye vanskeligere enn de vanlige rundene.",
   "CustomBossChallenge-UnsupportedMode": "Spillmodusen {0} kan ikke brukes til boss-spill.",
   "CustomBossChallenge-StartRoundAfterBoss": "Spillet starter på runde {0}, men bossens første nivå kommer på runde {1} og ville blitt hoppet over. Velg en tidligere startrunde eller senere spawn-runder.",
   "CustomBossChallenge-BossUnavailable": "Denne bossen kan ikke spilles: spillet har ingen {0}-bloon. En spilloppdatering kan ha endret den.",

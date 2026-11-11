@@ -83,6 +83,10 @@ public static class ConfigApplier
         dcm.disableSaves = defaults.disableSaves;
         if (dcm.startRules != null) dcm.startRules.endRound = defaults.startRules.endRound;
 
+        // Prepare turns selling off in CHIMPS, where Disable Selling changes nothing: the setup gets the editor's own
+        // value back, so it doesn't stay on when the player picks another mode
+        if (dcm.mode == BossOptions.ChimpsMode) dcm.disableSelling = defaults.disableSelling;
+
         // Boss Event Rounds is a boss option, not a round set of the challenge
         foreach (var boss in Enum.GetValues<Il2CppAssets.Scripts.Data.Boss.BossType>())
         {

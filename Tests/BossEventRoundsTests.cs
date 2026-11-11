@@ -158,6 +158,16 @@ public class BossEventRoundsChimpsTest : CustomBossTest
         var chimps = BaseDcm();
         chimps.mode = BossOptions.ChimpsMode;
 
+        // Prepare turns selling off in CHIMPS only, and Unprepare gives the setup the editor's own value back
+        var prepared = ConfigApplier.Prepare(chimps, new BossOptions());
+        Assert(prepared.disableSelling && !chimps.disableSelling, "Prepare turns selling off in CHIMPS, on a copy");
+        Assert(!ConfigApplier.Unprepare(prepared).disableSelling, "The CHIMPS setup gets Disable Selling back off");
+        var standardNoSelling = BaseDcm();
+        standardNoSelling.disableSelling = true;
+        Assert(ConfigApplier.Unprepare(ConfigApplier.Prepare(standardNoSelling, new BossOptions())).disableSelling,
+            "The player's own Disable Selling stays in other modes");
+        Assert(!ConfigApplier.Prepare(BaseDcm(), new BossOptions()).disableSelling, "Selling stays in Standard");
+
         // CHIMPS has no selling, like the game's own CHIMPS, also without Boss Event Rounds; other modes keep it
         yield return Play(new BossOptions(), chimps);
         Assert(!InGame.instance.GetGameModel().towerSellEnabled, "No selling in CHIMPS");
@@ -356,18 +366,38 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         // In CHIMPS the Tier Preview warns that the CHIMPS events' rounds are much harder (#139), and only then
         bool Warned() => section.Strip.Warnings.Any(w => w.Kind == SetupWarning.ChimpsEventRounds);
         Assert(!Warned(), "No CHIMPS warning in Standard");
-        var mode = section.Editor.dcm.mode;
-        section.Editor.dcm.mode = BossOptions.ChimpsMode;
-        section.RulesChanged();
+        // Through the editor's own mode dropdown, like the player
+        var editor = section.Editor;
+        var mode = editor.gameModeDropdown.value;
+        var chimpsIndex = editor.gameModes.IndexOf(BossOptions.ChimpsMode);
+        Assert(chimpsIndex >= 0, "The editor offers CHIMPS");
+        editor.gameModeDropdown.value = chimpsIndex;
+        editor.ApplyUiSettingsToDCM();
         yield return null;
+        AssertEquals(editor.dcm.mode, BossOptions.ChimpsMode, "CHIMPS picked");
         Assert(Warned(), "CHIMPS with Boss Event Rounds warns about the CHIMPS events' rounds");
+        // Too long for one line at a readable size, so it wraps onto two and the row makes room for both (#139)
+        var index = section.Strip.Warnings.FindIndex(w => w.Kind == SetupWarning.ChimpsEventRounds);
+        AssertEquals(section.Strip.NoteRows[index], TierStrip.MaxNoteRows, "The CHIMPS warning takes two lines");
+        AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.HeightFor(section.Strip.TextRows),
+            "The row has room for both lines");
+        var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
+        if (!string.IsNullOrWhiteSpace(folder))
+        {
+            var scroll = section.Editor.GetComponentInChildren<UnityEngine.UI.ScrollRect>();
+            var position = scroll.verticalNormalizedPosition;
+            scroll.verticalNormalizedPosition = 0.8f;
+            yield return new WaitForSecondsRealtime(1);
+            yield return ScreenshotTour.Capture(folder, "chimps-warning");
+            scroll.verticalNormalizedPosition = position;
+        }
         Assert(Menus.BossEditorSection.PlayProblem(section.Editor.dcm, BossMode.Options) == null, "The warning doesn't stop Play");
         section.BossEventRounds.Toggle.isOn = false;
         yield return null;
         Assert(!Warned(), "No CHIMPS warning without Boss Event Rounds");
         section.BossEventRounds.Toggle.isOn = true;
-        section.Editor.dcm.mode = mode;
-        section.RulesChanged();
+        editor.gameModeDropdown.value = mode;
+        editor.ApplyUiSettingsToDCM();
         yield return null;
         Assert(!Warned(), "No CHIMPS warning after going back to Standard");
 

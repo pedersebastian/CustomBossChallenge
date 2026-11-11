@@ -204,8 +204,8 @@ public static class Texts
     public static readonly string HardSetup = Key(nameof(HardSetup),
         "These rules together make a very hard challenge.");
     public static readonly string ChimpsEventRounds = Key(nameof(ChimpsEventRounds),
-        "Boss Event Rounds in CHIMPS play the rounds of the CHIMPS boss events: much harder than the normal rounds, " +
-        "with far more bloons from round 1.");
+        "Boss Event Rounds in CHIMPS play the rounds of the CHIMPS boss events, which are much harder than the normal " +
+        "rounds.");
 
     public static readonly string UnsupportedMode = Key(nameof(UnsupportedMode),
         "The {0} game mode can't be used for boss games.");

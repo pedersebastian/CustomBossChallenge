@@ -92,7 +92,7 @@
   "CustomBossChallenge-TiersClose": "Tiers come only a few rounds apart on rounds {0}, which leaves little time to beat each one.",
   "CustomBossChallenge-SameTiers": "Tiers {0} end up the same: their speed and health have reached the game's limits.",
   "CustomBossChallenge-HardSetup": "These rules together make a very hard challenge.",
-  "CustomBossChallenge-ChimpsEventRounds": "Boss Event Rounds in CHIMPS play the rounds of the CHIMPS boss events: much harder than the normal rounds, with far more bloons from round 1.",
+  "CustomBossChallenge-ChimpsEventRounds": "Boss Event Rounds in CHIMPS play the rounds of the CHIMPS boss events, which are much harder than the normal rounds.",
   "CustomBossChallenge-UnsupportedMode": "The {0} game mode can't be used for boss games.",
   "CustomBossChallenge-StartRoundAfterBoss": "The game starts on round {0}, but the first boss tier comes on round {1} and would be skipped. Choose an earlier start round or later spawn rounds.",
   "CustomBossChallenge-BossUnavailable": "This boss can't be played: the game has no {0} bloon. A game update may have changed it.",

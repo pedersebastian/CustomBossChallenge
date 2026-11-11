@@ -92,7 +92,7 @@
   "CustomBossChallenge-TiersClose": "Alguns níveis chegam com poucas rodadas de diferença nas rodadas {0}, o que deixa pouco tempo para derrotar cada um.",
   "CustomBossChallenge-SameTiers": "Os níveis {0} acabam iguais: a velocidade e a vida deles chegaram aos limites do jogo.",
   "CustomBossChallenge-HardSetup": "Juntas, estas regras tornam o desafio muito difícil.",
-  "CustomBossChallenge-ChimpsEventRounds": "No CHIMPS, Boss Event Rounds usa as rodadas dos eventos de chefe CHIMPS: muito mais difíceis que as rodadas normais, com muito mais bloons desde a rodada 1.",
+  "CustomBossChallenge-ChimpsEventRounds": "No CHIMPS, Boss Event Rounds usa as rodadas dos eventos de chefe CHIMPS, muito mais difíceis que as rodadas normais.",
   "CustomBossChallenge-UnsupportedMode": "O modo de jogo {0} não pode ser usado em jogos de chefe.",
   "CustomBossChallenge-StartRoundAfterBoss": "O jogo começa na rodada {0}, mas o primeiro nível do chefe aparece na rodada {1} e seria pulado. Escolha uma rodada inicial anterior ou rodadas de surgimento posteriores.",
   "CustomBossChallenge-BossUnavailable": "Este chefe não pode ser jogado: o jogo não tem o bloon {0}. Uma atualização do jogo pode tê-lo alterado.",

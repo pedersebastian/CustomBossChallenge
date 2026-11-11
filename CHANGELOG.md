@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in Advanced Mode. The game only gets this round set from NK's servers during an event, so the mod brings its own
   copy, taken from Blooncyclopedia's dump of the set. The rounds move with the Spawn Rounds like the other boss rounds,
   and games past round 140 go on into freeplay as before. Other modes still play the boss's own event rounds. The
-  Tier Preview warns that these rounds are much harder than the normal ones, with far more bloons from round 1.
+  Tier Preview warns that these rounds are much harder than the normal ones.
 - **Boss options in the Rules panel** (#141): in a custom game, the pause screen's Rules button now also shows the
   Boss Creator's options that differ from a normal boss game. The sliders (Boss Tiers, Speed per Tier, Health per
   Tier, Skull Count) are rows of the Modifiers list after the game's Boss Health and Boss Speed; the boss and Elite,
@@ -79,7 +79,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **No selling in CHIMPS**: custom boss games in CHIMPS let towers be sold for $0, because in a challenge the game
-  only turns selling off with the challenge's own Disable Selling. They now have no selling, like the game's own CHIMPS.
+  only turns selling off with the challenge's own Disable Selling. They now have no selling, like the game's own
+  CHIMPS. A lost CHIMPS game's setup loads with Disable Selling off, so it doesn't stay on in another mode.
 
 ## [2.10.2] - 2026-11-07
 

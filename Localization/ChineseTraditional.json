@@ -92,7 +92,7 @@
   "CustomBossChallenge-TiersClose": "第 {0} 回合的各階之間只相隔幾個回合，擊敗每一階的時間很少。",
   "CustomBossChallenge-SameTiers": "第 {0} 階最終完全相同：它們的速度和生命值已達到遊戲的上限。",
   "CustomBossChallenge-HardSetup": "這些規則加在一起會讓挑戰非常困難。",
-  "CustomBossChallenge-ChimpsEventRounds": "在 CHIMPS 中，Boss Event Rounds 使用 CHIMPS Boss 活動的回合：比普通回合難得多，從第 1 回合起氣球就多得多。",
+  "CustomBossChallenge-ChimpsEventRounds": "在 CHIMPS 中，Boss Event Rounds 使用 CHIMPS Boss 活動的回合，比普通回合難得多。",
   "CustomBossChallenge-UnsupportedMode": "{0}遊戲模式不能用於Boss遊戲。",
   "CustomBossChallenge-StartRoundAfterBoss": "遊戲從第 {0} 回合開始，但首領的第一階段在第 {1} 回合出現，會被跳過。請選擇更早的起始回合或更晚的出現回合。",
   "CustomBossChallenge-BossUnavailable": "無法挑戰此Boss：遊戲中沒有{0}氣球。可能是遊戲更新更改了它。",
