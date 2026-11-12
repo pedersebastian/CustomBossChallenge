@@ -32,9 +32,9 @@ public static class BossEventRounds
         var name = options.BaseEventRoundSetIn(mode);
         var rounds = set.rounds;
         var chimps = false;
-        if (name == BossOptions.ChimpsEventRoundSet)
+        if (BossOptions.IsChimpsEventRoundSet(name))
         {
-            rounds = ChimpsRounds(rounds);
+            rounds = ChimpsRounds(rounds, name);
             chimps = true;
         }
         else if (GameData.Instance.MergeableRoundSetByName(name) == null)
@@ -53,7 +53,7 @@ public static class BossEventRounds
         {
             foreach (var (round, tier, eventRound) in BossRoundsMath.TierEventRounds(options.EffectiveSpawnRounds, rounds.Length))
             {
-                var tierSet = BossOptions.EventRoundSet(options.BossOf(tier).Boss, mode);
+                var tierSet = options.EventRoundSetIn(tier, mode);
                 if (tierSet == name) continue;
                 if (eventRound > defaults.Length) continue;
                 var replaced = RoundOf(tierSet, eventRound, defaults[eventRound - 1]);
@@ -77,13 +77,12 @@ public static class BossEventRounds
     }
 
     /// <summary>
-    /// <paramref name="rounds"/> with the CHIMPS boss events' rounds in place of their own. The game's own copy wins if
+    /// <paramref name="rounds"/> with the rounds of the CHIMPS boss events' set <paramref name="name"/> in place of their own. The game's own copy wins if
     /// it ever has one, merged like the boss sets; otherwise the mod's (<see cref="ChimpsRoundSet"/>). Only the rounds
     /// the match has are replaced, so it keeps its length and freeplay starts on the same round as without them.
     /// </summary>
-    public static Il2CppReferenceArray<RoundModel> ChimpsRounds(Il2CppReferenceArray<RoundModel> rounds)
+    public static Il2CppReferenceArray<RoundModel> ChimpsRounds(Il2CppReferenceArray<RoundModel> rounds, string name)
     {
-        var name = BossOptions.ChimpsEventRoundSet;
         var result = rounds.ToArray();
         if (GameData.Instance.MergeableRoundSetByName(name) != null)
         {
@@ -91,7 +90,7 @@ public static class BossEventRounds
             return new Il2CppReferenceArray<RoundModel>(result);
         }
 
-        foreach (var round in ChimpsRoundSet.Rounds)
+        foreach (var round in ChimpsRoundSet.Rounds(name))
         {
             if (round.Number < 1 || round.Number > result.Length) continue;
             var groups = round.Groups.Select(group =>

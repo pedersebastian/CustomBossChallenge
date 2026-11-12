@@ -348,9 +348,14 @@ healthchecksdb
 # Website (web/): npm packages and the built site
 web/node_modules/
 web/dist/
+# Built from data/boss-events/ by tools/boss-events/archive.mjs --bundle when the website is deployed
+web/public/boss-events.json
 # Local, private settings for the website (web/.env stays: it only has public settings)
 web/.env.local
 web/.env.*.local
 
 # Worktrees made by Claude Code sessions
 .claude/worktrees/
+
+# Downloads of the boss events backfill (tools/boss-events/sources.mjs)
+tools/boss-events/.cache/

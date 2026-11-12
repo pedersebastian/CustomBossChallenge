@@ -46,10 +46,11 @@ To build your own tools for share codes, see the [share-code package](web/packag
   - **Boss Event Rounds** (#80): play the rounds of the official boss events for your boss instead of the normal
     rounds, in every game mode. In the events the tiers arrive on rounds 40, 60, 80, 100 and 120 with bloons made
     for them; with other Spawn Rounds those rounds move with the tiers. In Advanced Mode (#84) every tier arrives on
-    the round made for its own boss. In CHIMPS (#139) you play the rounds of the CHIMPS boss events instead, the same
-    for every boss; the mod brings that round set along, from
-    [Blooncyclopedia](https://www.bloonswiki.com/Stats:Bloons_TD_6/Roundsets/chimpsbloonarius), since the game only
-    gets it during an event.
+    the round made for its own boss. In CHIMPS (#139) the tick is a dropdown: you play the rounds of the newest CHIMPS
+    boss event (Diamondback, 2026) or the earlier ones (Bloonarius and Dreadbloon), the same for every boss. The mod
+    brings those round sets along, since the game only gets them during an event: from
+    [Blooncyclopedia](https://www.bloonswiki.com/Stats:Bloons_TD_6/Roundsets/chimpsbloonarius) and
+    [BTD6 API Explorer](https://github.com/HalfHydra/BTD6-API-Explorer).
   - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health
     percentages. Works for every boss and Elite tier (Lych uses its ethereal thresholds).
   - **Max Paragons**, the paragon limit events use, from 0 to Unlimited.
@@ -226,7 +227,7 @@ CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg
 | First Boss Round | 1–200 | 40 | Fills in Spawn Rounds together with Rounds Between Tiers. |
 | Rounds Between Tiers | 1–50 | 20 | Fills in Spawn Rounds; 1 sends a new tier every round. |
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
-| Boss Event Rounds | on / off | off | The official boss events' rounds for the boss, moved with the tiers when Spawn Rounds differ from 40, 60, 80, 100, 120. In Advanced Mode each tier's round comes from its own boss. In CHIMPS, the CHIMPS boss events' rounds for every boss. |
+| Boss Event Rounds | on / off | off | The official boss events' rounds for the boss, moved with the tiers when Spawn Rounds differ from 40, 60, 80, 100, 120. In Advanced Mode each tier's round comes from its own boss. In CHIMPS a dropdown: off, the newest CHIMPS boss event's rounds (default) or the earlier ones', for every boss. |
 | Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | In Advanced, set per tier in its picker, with the count and the list below. |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
 | Skulls at Boss HP % | comma separated % (1–99) | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. Use a point for decimals (`33.5`). The field shows the list as it is used: sorted, duplicates merged, invalid values dropped. |
@@ -332,5 +333,11 @@ pull request (see [Translations](https://github.com/pedersebastian/CustomBossCha
 ## License
 
 [MIT](LICENSE)
+
+The archive of past boss events in `data/boss-events/` is Ninja Kiwi's data, from
+[Ninja Kiwi's Open Data](https://data.ninjakiwi.com/), [jxu/btd6-events](https://github.com/jxu/btd6-events) and
+[Blooncyclopedia](https://www.bloonswiki.com/) (the files that use Blooncyclopedia's content are under
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)); see
+[its README](https://github.com/pedersebastian/CustomBossChallenge/blob/master/data/boss-events/README.md).
 
 [![Requires BTD6 Mod Helper](https://raw.githubusercontent.com/gurrenm3/BTD-Mod-Helper/master/banner.png)](https://github.com/gurrenm3/BTD-Mod-Helper#readme)

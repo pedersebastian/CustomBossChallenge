@@ -6,14 +6,19 @@ using Newtonsoft.Json;
 namespace CustomBossChallenge.Config;
 
 /// <summary>
-/// The rounds of the CHIMPS boss events (#139), <see cref="BossOptions.ChimpsEventRoundSet"/>. NK sends this set with
-/// the events, so the game itself doesn't have it; the mod brings a copy in RoundSets/chimpsbloonarius.json, taken
-/// from Blooncyclopedia's dump of the game's set (JSON:Bloons_TD_6/Rounds/chimpsbloonarius) in the game's own format.
+/// The rounds of the CHIMPS boss events (#139), <see cref="BossOptions.ChimpsEventRoundSet"/>. NK sends these sets
+/// with the events, so the game itself doesn't have them; the mod brings copies in RoundSets/, in the game's own
+/// format:
+/// <list type="bullet">
+/// <item>chimpsbloonarius.json from Blooncyclopedia's dump of the set (JSON:Bloons_TD_6/Rounds/chimpsbloonarius)</item>
+/// <item>chimpsboss.json from BTD6 API Explorer's dump (github.com/HalfHydra/BTD6-API-Explorer,
+/// data/roundsets/chimpsboss.json), with each group's end turned back into the game's duration</item>
+/// </list>
 /// </summary>
 public static class ChimpsRoundSet
 {
-    /// <summary>The name the mod's copy is built into the mod under</summary>
-    public const string ResourceName = "CustomBossChallenge.chimpsbloonarius.json";
+    /// <summary>The name the mod's copy of <paramref name="set"/> is built into the mod under</summary>
+    public static string ResourceName(string set) => $"CustomBossChallenge.{set}.json";
 
     /// <summary>A group of bloons as the game's round sets have it, times in seconds</summary>
     public sealed record Group(string Bloon, int Count, float Start, float Duration)
@@ -25,19 +30,17 @@ public static class ChimpsRoundSet
     /// <summary>A round of the set: its bloons replace the round's own (the set never adds to a round)</summary>
     public sealed record Round(int Number, bool AddToRound, IReadOnlyList<Group> Groups);
 
-    private static IReadOnlyList<Round>? rounds;
+    private static readonly Dictionary<string, IReadOnlyList<Round>> Sets = new();
 
-    /// <summary>Every round of the mod's copy, in order, read once</summary>
-    public static IReadOnlyList<Round> Rounds
+    /// <summary>Every round of the mod's copy of <paramref name="set"/>, in order, read once</summary>
+    public static IReadOnlyList<Round> Rounds(string set)
     {
-        get
-        {
-            if (rounds != null) return rounds;
-            using var stream = typeof(ChimpsRoundSet).Assembly.GetManifestResourceStream(ResourceName) ??
-                               throw new FileNotFoundException($"The mod has no {ResourceName}");
-            using var reader = new StreamReader(stream);
-            return rounds = Parse(reader.ReadToEnd());
-        }
+        if (Sets.TryGetValue(set, out var rounds)) return rounds;
+        var resource = ResourceName(set);
+        using var stream = typeof(ChimpsRoundSet).Assembly.GetManifestResourceStream(resource) ??
+                           throw new FileNotFoundException($"The mod has no {resource}");
+        using var reader = new StreamReader(stream);
+        return Sets[set] = Parse(reader.ReadToEnd());
     }
 
     /// <summary>The rounds of a round set in the game's JSON format, in order of their numbers</summary>
