@@ -68,8 +68,40 @@ blocked upgrade paths included, apart from the `maxLives`/`maxTowers` defaults a
 
 ## Making the files
 
+New events are saved every day by `.github/workflows/boss-events.yml`, which runs `tools/boss-events/archive.mjs`. It
+reads Ninja Kiwi's list of events (`https://data.ninjakiwi.com/btd6/bosses`) and, for every id the archive doesn't
+have yet, the `standard` and `elite` metadata. A file has the list entry's fields that don't change while the event
+runs (not the scores or the links) and the metadata's `body` as the API gave it, with `source: "api"`.
+
+- A file is never changed or deleted, by the archiver or the backfill.
+- Only answers with `success: true` are saved. An event whose metadata fails is tried again on the next run, not
+  saved half. An id that never gets metadata is tried every day: Ninja Kiwi sometimes puts an event up again under a
+  new id, and then the other id has the rules.
+- The API only lists the last ~7 events, so a run that fails is caught up by the next ones. A failing run sends the
+  normal Actions e-mail.
+- An event is saved as soon as it is listed, while it runs, so the play counts in its metadata are from that day.
+
 `tools/boss-events/backfill.mjs` made the files from before the archiver; see
 [CONTRIBUTING.md](../../CONTRIBUTING.md#boss-events-archive).
+
+## `boss-events.json`
+
+All files in one, published with the website at
+<https://pedersebastian.github.io/CustomBossChallenge/boss-events.json> and built again on every deploy (it isn't
+committed). The Boss Creator's Past Events list (#146) reads it.
+
+```jsonc
+{
+  "formatVersion": 1,                     // of this file; a reader skips a newer version it doesn't know
+  "generated": "2026-11-12T06:17:42.000Z", // when it was built
+  "license": "...",                       // which events are under CC BY-NC-SA 4.0, see below
+  "events": [ ... ]                       // every file above, as it is, oldest first (by start, then id)
+}
+```
+
+Each event keeps its own `formatVersion`, `source`, `sourceUrls`, `license` and `lossy`. Events with
+`"license": "CC BY-NC-SA 4.0"` use Blooncyclopedia's content and are shared under that licence; the file's `license`
+field says so too.
 
 ## Credits and licence
 

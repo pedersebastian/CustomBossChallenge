@@ -90,7 +90,7 @@ jobs:
         with:
           node-version: 24
 
-      - name: Test the boss events backfill on saved samples
+      - name: Test the boss events backfill and archiver on saved samples
         run: node --test "tools/boss-events/*.test.mjs"
 
   release:

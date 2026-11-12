@@ -210,7 +210,8 @@ guards (`[GuardPatch]`), so a bug report's `Latest.log` shows it.
   to be run locally; the release check only sees their report.
 - **Property tests**: `dotnet test --project PropertyTests`, see above.
 - **Website**: `npm test` and `npm run build` in `web/`, see below.
-- **Boss events**: `node --test "tools/boss-events/*.test.mjs"`, the tests of the boss events backfill, see below.
+- **Boss events**: `node --test "tools/boss-events/*.test.mjs"`, the tests of the boss events backfill and archiver,
+  see below.
 
 The first two are PowerShell scripts that also run locally in Windows PowerShell:
 
@@ -367,6 +368,20 @@ as a palette PNG.
 `data/boss-events/` holds every official Boss Bloon Event, one file per event, for the Past Events list (#143). The
 format, the sources and their licences are in [data/boss-events/README.md](data/boss-events/README.md).
 
+New events are saved every day by the **Boss events** workflow (`.github/workflows/boss-events.yml`), which commits
+them to master as the Actions bot and then publishes `boss-events.json` with the website (it calls `pages.yml`, since
+its own commits don't start other workflows). It can also be run by hand from the Actions tab, e.g. to publish again.
+The script it runs works locally too (Node 24, no packages):
+
+```
+node tools/boss-events/archive.mjs --dry-run
+node tools/boss-events/archive.mjs
+node tools/boss-events/archive.mjs --bundle web/public/boss-events.json
+```
+
+The first prints the events the archive doesn't have yet, the second saves them, and the third builds
+`boss-events.json` from the files without going online (`web/public/boss-events.json` isn't committed).
+
 The events from before the archiver were added once with `tools/boss-events/backfill.mjs` (Node 24, no packages):
 
 ```
@@ -378,8 +393,9 @@ It downloads Blooncyclopedia's event history pages and [jxu/btd6-events](https:/
 the given commit, or its newest) into `tools/boss-events/.cache/` (not committed; `--refresh` downloads again), picks
 the best source for every event, and writes the files. Running it again changes nothing. It never changes a file the
 archiver saved from the API, and only replaces a file with a better source. What it skips or guesses is printed at the
-end. The tests (`node --test "tools/boss-events/*.test.mjs"`) run on the samples in `tools/boss-events/fixtures/`,
-and check the wiki's rules against Ninja Kiwi's for the same events.
+end. The tests (`node --test "tools/boss-events/*.test.mjs"`) run on the samples in `tools/boss-events/fixtures/`:
+they check the wiki's rules against Ninja Kiwi's for the same events, and that the archiver adds only new events,
+never touches a file it has, and skips bad answers.
 
 ## Translations
 

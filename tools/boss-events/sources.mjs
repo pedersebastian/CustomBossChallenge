@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 
 export const cacheDir = join(dirname(fileURLToPath(import.meta.url)), '.cache');
 
-const userAgent = 'CustomBossChallenge-backfill (+https://github.com/pedersebastian/CustomBossChallenge)';
+// Ninja Kiwi's API answers an HTML error page without a User-Agent naming the client
+export const userAgent = 'CustomBossChallenge-boss-events (+https://github.com/pedersebastian/CustomBossChallenge)';
 
 // The years Blooncyclopedia has an event history page for. The wiki stopped after Vortex42 (27 Dec 2025).
 export const wikiYears = [2021, 2022, 2023, 2024, 2025];
@@ -27,7 +28,8 @@ async function exists(path) {
     }
 }
 
-async function fetchText(url, accept) {
+/** The text at the URL; retries server errors twice, throws on any other error. */
+export async function fetchText(url, accept) {
     for (let attempt = 1; ; attempt++) {
         const response = await fetch(url, { headers: { 'User-Agent': userAgent, Accept: accept } });
         if (response.ok) return response.text();
