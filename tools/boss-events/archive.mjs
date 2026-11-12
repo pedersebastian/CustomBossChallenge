@@ -21,8 +21,10 @@ export const metadataUrl = (id, level) => `${apiUrl}/${id}/metadata/${level}`;
 export const bundleFormatVersion = 1;
 export const bundleLicense = 'Rules and events (c) Ninja Kiwi, from Ninja Kiwi\'s Open Data. Events with '
     + '"license": "CC BY-NC-SA 4.0" use content from Blooncyclopedia (https://www.bloonswiki.com/) and are shared under '
-    + 'CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/), with the pages they come from in '
-    + 'sourceUrls. See data/boss-events/README.md in https://github.com/pedersebastian/CustomBossChallenge.';
+    + 'CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/). Events with "license": "CC BY-SA 3.0" use '
+    + 'content from the Bloons wiki on Fandom (https://bloons.fandom.com/) and are shared under CC BY-SA 3.0 '
+    + '(https://creativecommons.org/licenses/by-sa/3.0/). The pages they come from are in sourceUrls. See '
+    + 'data/boss-events/README.md in https://github.com/pedersebastian/CustomBossChallenge.';
 
 const levels = ['standard', 'elite'];
 // Ids become file names
