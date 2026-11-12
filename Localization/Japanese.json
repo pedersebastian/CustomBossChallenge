@@ -135,5 +135,10 @@
   "CustomBossChallenge-RankedTime": "タイム",
   "CustomBossChallenge-RulesHeader": "ボスクリエイター",
   "CustomBossChallenge-RulesLine": "{0}：{1}",
-  "CustomBossChallenge-RulesNoChanges": "その他は通常のボスゲームと同じ"
+  "CustomBossChallenge-RulesNoChanges": "その他は通常のボスゲームと同じ",
+  "CustomBossChallenge-RulesTier": "ティア {0}、ラウンド{1}：{2}",
+  "CustomBossChallenge-RulesTierSpeed": "速度 {0}%",
+  "CustomBossChallenge-RulesTierHealth": "体力 {0}%",
+  "CustomBossChallenge-RulesTierSkulls": "ドクロ {0}個",
+  "CustomBossChallenge-RulesTierCustomSkulls": "ドクロ {0}%"
 }

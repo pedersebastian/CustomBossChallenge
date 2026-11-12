@@ -135,5 +135,10 @@
   "CustomBossChallenge-RankedTime": "Время",
   "CustomBossChallenge-RulesHeader": "Создатель боссов",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Всё остальное как в обычной игре с боссом"
+  "CustomBossChallenge-RulesNoChanges": "Всё остальное как в обычной игре с боссом",
+  "CustomBossChallenge-RulesTier": "Уровень {0}, раунд {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "скорость {0} %",
+  "CustomBossChallenge-RulesTierHealth": "здоровье {0} %",
+  "CustomBossChallenge-RulesTierSkulls": "черепов: {0}",
+  "CustomBossChallenge-RulesTierCustomSkulls": "черепа при {0} %"
 }

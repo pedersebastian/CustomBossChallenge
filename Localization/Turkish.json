@@ -135,5 +135,10 @@
   "CustomBossChallenge-RankedTime": "Süre",
   "CustomBossChallenge-RulesHeader": "Boss Oluşturucu",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Geri kalan her şey normal bir boss oyunundaki gibi"
+  "CustomBossChallenge-RulesNoChanges": "Geri kalan her şey normal bir boss oyunundaki gibi",
+  "CustomBossChallenge-RulesTier": "Kademe {0}, tur {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "%{0} hız",
+  "CustomBossChallenge-RulesTierHealth": "%{0} can",
+  "CustomBossChallenge-RulesTierSkulls": "{0} kafatası",
+  "CustomBossChallenge-RulesTierCustomSkulls": "%{0} kafatasları"
 }

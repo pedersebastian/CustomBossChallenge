@@ -135,5 +135,10 @@
   "CustomBossChallenge-RankedTime": "Tid",
   "CustomBossChallenge-RulesHeader": "Boss-skaber",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Alt andet som i et normalt boss-spil"
+  "CustomBossChallenge-RulesNoChanges": "Alt andet som i et normalt boss-spil",
+  "CustomBossChallenge-RulesTier": "Niveau {0}, runde {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0} % hastighed",
+  "CustomBossChallenge-RulesTierHealth": "{0} % helbred",
+  "CustomBossChallenge-RulesTierSkulls": "{0} kranier",
+  "CustomBossChallenge-RulesTierCustomSkulls": "kranier ved {0} %"
 }

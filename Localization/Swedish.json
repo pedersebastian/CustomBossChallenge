@@ -135,5 +135,10 @@
   "CustomBossChallenge-RankedTime": "Tid",
   "CustomBossChallenge-RulesHeader": "Bossskapare",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Allt annat som i ett vanligt bosspel"
+  "CustomBossChallenge-RulesNoChanges": "Allt annat som i ett vanligt bosspel",
+  "CustomBossChallenge-RulesTier": "Nivå {0}, runda {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0} % hastighet",
+  "CustomBossChallenge-RulesTierHealth": "{0} % hälsa",
+  "CustomBossChallenge-RulesTierSkulls": "{0} dödskallar",
+  "CustomBossChallenge-RulesTierCustomSkulls": "dödskallar vid {0} %"
 }

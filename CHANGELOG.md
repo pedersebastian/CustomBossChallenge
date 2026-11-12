@@ -23,7 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Boss Creator's options that differ from a normal boss game. The sliders (Boss Tiers, Speed per Tier, Health per
   Tier, Skull Count) are rows of the Modifiers list after the game's Boss Health and Boss Speed; the boss and Elite,
   spawn rounds, boss event rounds and custom skulls are lines in the Rules box. A setup with nothing else changed says
-  so. Advanced Mode's tier-by-tier list follows in #142.
+  so. In Advanced Mode (#142) the Rules box has a line per tier with its round, boss and what differs from the boss's
+  own (speed, health, skulls); a boss picked at random shows as Random until it arrives, like on the HUD.
 - **Warnings before Play** (#70): the Tier Preview has a line for each thing in the setup that is allowed but
   probably not meant, and they never stop Play: a start round only a few rounds before the first boss, tiers that come
   only a few rounds apart (like rounds 80 and 81), tiers held to

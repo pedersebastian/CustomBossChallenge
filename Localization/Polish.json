@@ -135,5 +135,10 @@
   "CustomBossChallenge-RankedTime": "Czas",
   "CustomBossChallenge-RulesHeader": "Kreator Bossów",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Wszystko inne jak w zwykłej grze z bossem"
+  "CustomBossChallenge-RulesNoChanges": "Wszystko inne jak w zwykłej grze z bossem",
+  "CustomBossChallenge-RulesTier": "Poziom {0}, runda {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0}% prędkości",
+  "CustomBossChallenge-RulesTierHealth": "{0}% zdrowia",
+  "CustomBossChallenge-RulesTierSkulls": "{0} czaszek",
+  "CustomBossChallenge-RulesTierCustomSkulls": "czaszki przy {0}%"
 }

@@ -135,5 +135,10 @@
   "CustomBossChallenge-RankedTime": "Tijd",
   "CustomBossChallenge-RulesHeader": "Bossmaker",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Al het andere zoals in een normaal bossspel"
+  "CustomBossChallenge-RulesNoChanges": "Al het andere zoals in een normaal bossspel",
+  "CustomBossChallenge-RulesTier": "Niveau {0}, ronde {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0} % snelheid",
+  "CustomBossChallenge-RulesTierHealth": "{0} % gezondheid",
+  "CustomBossChallenge-RulesTierSkulls": "{0} schedels",
+  "CustomBossChallenge-RulesTierCustomSkulls": "schedels bij {0} %"
 }

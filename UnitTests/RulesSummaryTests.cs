@@ -88,10 +88,68 @@ public class RulesSummaryTests
         Assert.Equal("Boss,NoChanges", Kinds(new BossOptions {SkullMode = SkullMode.Custom, CustomSkulls = "junk"}));
 
     [Fact]
-    public void Advanced_mode_has_no_boss_line()
+    public void Advanced_mode_has_a_line_per_tier_in_place_of_the_boss()
     {
-        Assert.Equal("NoChanges", Kinds(new BossOptions {TierBosses = "Lych,,Vortex"}));
-        Assert.Equal("Tiers", Kinds(new BossOptions {Tiers = 3, TierBosses = "Lych,,Vortex"}));
+        Assert.Equal("Tier,Tier,Tier,Tier,Tier,NoChanges", Kinds(new BossOptions {TierBosses = "Lych,,Vortex"}));
+        Assert.Equal("Tier,Tier,Tier,Tiers", Kinds(new BossOptions {Tiers = 3, TierBosses = "Lych,,Vortex"}));
+    }
+
+    private static object[] Tier(BossOptions options, int tier, int arrivedTier = int.MaxValue) =>
+        RulesSummary.Lines(options, arrivedTier).Where(line => line.Kind == RuleLine.Tier).ElementAt(tier - 1).Args;
+
+    [Fact]
+    public void A_tier_line_has_its_round_boss_speed_health_and_skulls()
+    {
+        var options = new BossOptions {Tiers = 3, SpawnRounds = "30, 45, 90", TierBosses = "Lych,VortexElite@120/80#4,Phayze#60%;30%"};
+        Assert.Equal([1, 30, BossType.Lych, false, false, 100, 100, SkullMode.Vanilla, ""], Tier(options, 1));
+        Assert.Equal([2, 45, BossType.Vortex, true, false, 120, 80, SkullMode.EvenlySpaced, 4], Tier(options, 2));
+        Assert.Equal([3, 90, BossType.Phayze, false, false, 100, 100, SkullMode.Custom, "60, 30"], Tier(options, 3));
+    }
+
+    [Fact]
+    public void A_tier_that_follows_the_setup_has_the_setup_boss()
+    {
+        var options = new BossOptions {Boss = BossType.Dreadbloon, Elite = true, Tiers = 2, TierBosses = "Lych,"};
+        Assert.Equal([2, 60, BossType.Dreadbloon, true, false, 100, 100, SkullMode.Vanilla, ""], Tier(options, 2));
+    }
+
+    [Fact]
+    public void A_tier_without_skulls_of_its_own_has_the_setup_skulls()
+    {
+        var options = new BossOptions {Tiers = 2, SkullMode = SkullMode.EvenlySpaced, SkullCount = 2, TierBosses = "Lych,Vortex#0"};
+        Assert.Equal(SkullMode.EvenlySpaced, Tier(options, 1)[7]);
+        Assert.Equal(2, Tier(options, 1)[8]);
+        Assert.Equal(0, Tier(options, 2)[8]);
+    }
+
+    [Fact]
+    public void Advanced_mode_has_no_spawn_rounds_or_skulls_line()
+    {
+        var options = new BossOptions
+        {
+            Tiers = 2, SpawnRounds = "30, 35", SkullMode = SkullMode.Custom, CustomSkulls = "50", TierBosses = "Lych,Vortex"
+        };
+        Assert.Equal("Tier,Tier,Tiers", Kinds(options));
+    }
+
+    [Theory]
+    [InlineData(0, true)]
+    [InlineData(1, true)]
+    [InlineData(2, false)]
+    [InlineData(5, false)]
+    public void A_random_tier_is_a_secret_until_its_boss_arrives(int arrivedTier, bool secret)
+    {
+        var options = new BossOptions {Tiers = 3, TierBosses = "Lych,Vortex,Phayze", RandomTiers = "2"};
+        Assert.Equal(secret, Tier(options, 2, arrivedTier)[4]);
+        Assert.Equal(false, Tier(options, 3, arrivedTier)[4]);
+    }
+
+    [Fact]
+    public void Tier_lines_are_rules_not_modifiers()
+    {
+        var options = new BossOptions {Tiers = 6, SpeedPerTier = 5, TierBosses = "Lych"};
+        Assert.Equal(6, RulesSummary.Rules(options).Count(line => line.Kind == RuleLine.Tier));
+        Assert.Equal("Tiers,SpeedPerTier", string.Join(",", RulesSummary.Modifiers(options).Select(l => l.Kind)));
     }
 
     [Fact]

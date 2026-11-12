@@ -135,5 +135,10 @@
   "CustomBossChallenge-RankedTime": "Time",
   "CustomBossChallenge-RulesHeader": "Boss Creator",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Everything else as in a normal boss game"
+  "CustomBossChallenge-RulesNoChanges": "Everything else as in a normal boss game",
+  "CustomBossChallenge-RulesTier": "Tier {0}, round {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0} % speed",
+  "CustomBossChallenge-RulesTierHealth": "{0} % health",
+  "CustomBossChallenge-RulesTierSkulls": "{0} skulls",
+  "CustomBossChallenge-RulesTierCustomSkulls": "skulls at {0} %"
 }

@@ -135,5 +135,10 @@
   "CustomBossChallenge-RankedTime": "Tempo",
   "CustomBossChallenge-RulesHeader": "Criador de Chefes",
   "CustomBossChallenge-RulesLine": "{0}: {1}",
-  "CustomBossChallenge-RulesNoChanges": "Todo o resto como em um jogo de chefe normal"
+  "CustomBossChallenge-RulesNoChanges": "Todo o resto como em um jogo de chefe normal",
+  "CustomBossChallenge-RulesTier": "Nível {0}, rodada {1}: {2}",
+  "CustomBossChallenge-RulesTierSpeed": "{0}% de velocidade",
+  "CustomBossChallenge-RulesTierHealth": "{0}% de vida",
+  "CustomBossChallenge-RulesTierSkulls": "{0} caveiras",
+  "CustomBossChallenge-RulesTierCustomSkulls": "caveiras em {0}%"
 }
