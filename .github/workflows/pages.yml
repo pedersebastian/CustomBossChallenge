@@ -48,11 +48,12 @@ jobs:
         run: npm test
 
       # Called by boss-events.yml, the checkout is the commit before the archiver's own. Only the data is taken from
-      # the newest master, never code, so nothing that runs here comes from another commit.
+      # the newest master, never code, so nothing that runs here comes from another commit. :/ is the repository root,
+      # since this job runs in web/.
       - name: Use the newest boss events archive on master
         run: |
           git fetch --depth=1 origin master
-          git checkout FETCH_HEAD -- data/boss-events
+          git checkout FETCH_HEAD -- :/data/boss-events
 
       - name: Build boss-events.json from the boss events archive
         run: node ../tools/boss-events/archive.mjs --bundle public/boss-events.json
