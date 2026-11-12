@@ -210,6 +210,7 @@ guards (`[GuardPatch]`), so a bug report's `Latest.log` shows it.
   to be run locally; the release check only sees their report.
 - **Property tests**: `dotnet test --project PropertyTests`, see above.
 - **Website**: `npm test` and `npm run build` in `web/`, see below.
+- **Boss events**: `node --test "tools/boss-events/*.test.mjs"`, the tests of the boss events backfill, see below.
 
 The first two are PowerShell scripts that also run locally in Windows PowerShell:
 
@@ -360,6 +361,25 @@ and the address in `web/.env` (`VITE_SITE_URL`, which link previews need in full
 `#code=…` never reaches the server, so every link shows the same card. The picture is made from
 `web/scripts/og-card.html` with Chrome; the command is at the top of that file. Keep it under ~100 KB, e.g. by saving it
 as a palette PNG.
+
+## Boss events archive
+
+`data/boss-events/` holds every official Boss Bloon Event, one file per event, for the Past Events list (#143). The
+format, the sources and their licences are in [data/boss-events/README.md](data/boss-events/README.md).
+
+The events from before the archiver were added once with `tools/boss-events/backfill.mjs` (Node 24, no packages):
+
+```
+node tools/boss-events/backfill.mjs --dry-run
+node tools/boss-events/backfill.mjs --jxu-commit bf88fabd02e01343e96812a6e7285fb3abca7ffb
+```
+
+It downloads Blooncyclopedia's event history pages and [jxu/btd6-events](https://github.com/jxu/btd6-events) (at
+the given commit, or its newest) into `tools/boss-events/.cache/` (not committed; `--refresh` downloads again), picks
+the best source for every event, and writes the files. Running it again changes nothing. It never changes a file the
+archiver saved from the API, and only replaces a file with a better source. What it skips or guesses is printed at the
+end. The tests (`node --test "tools/boss-events/*.test.mjs"`) run on the samples in `tools/boss-events/fixtures/`,
+and check the wiki's rules against Ninja Kiwi's for the same events.
 
 ## Translations
 

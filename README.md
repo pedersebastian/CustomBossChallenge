@@ -334,4 +334,10 @@ pull request (see [Translations](https://github.com/pedersebastian/CustomBossCha
 
 [MIT](LICENSE)
 
+The archive of past boss events in `data/boss-events/` is Ninja Kiwi's data, from
+[Ninja Kiwi's Open Data](https://data.ninjakiwi.com/), [jxu/btd6-events](https://github.com/jxu/btd6-events) and
+[Blooncyclopedia](https://www.bloonswiki.com/) (the files that use Blooncyclopedia's content are under
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)); see
+[its README](https://github.com/pedersebastian/CustomBossChallenge/blob/master/data/boss-events/README.md).
+
 [![Requires BTD6 Mod Helper](https://raw.githubusercontent.com/gurrenm3/BTD-Mod-Helper/master/banner.png)](https://github.com/gurrenm3/BTD-Mod-Helper#readme)
