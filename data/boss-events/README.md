@@ -75,7 +75,8 @@ blocked upgrade paths included, apart from the `maxLives`/`maxTowers` defaults a
 
 - Rules and events © Ninja Kiwi, from [Ninja Kiwi's Open Data](https://data.ninjakiwi.com/).
 - [jxu/btd6-events](https://github.com/jxu/btd6-events), which archived the API every week and holds the boss data
-  Ninja Kiwi gave its author.
+  Ninja Kiwi gave its author. Used with the author's permission
+  ([jxu/btd6-events#3](https://github.com/jxu/btd6-events/issues/3)); a link is the credit they asked for.
 - [Blooncyclopedia](https://www.bloonswiki.com/), whose content is under
   [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). Files with `"license": "CC BY-NC-SA 4.0"`
   use its content (rules, dates or scoring) and are shared under the same licence, with the pages they come from in
