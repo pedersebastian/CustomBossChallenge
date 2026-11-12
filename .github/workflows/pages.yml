@@ -15,11 +15,6 @@ on:
       - '.github/workflows/pages.yml'
   workflow_dispatch:
   workflow_call:
-    inputs:
-      ref:
-        description: 'The commit to build, e.g. the one the archiver just pushed'
-        required: false
-        type: string
 
 # Each job gets what it needs: only the deploy job can write to Pages or get an OIDC token, not npm ci and the build
 permissions: {}
@@ -40,9 +35,6 @@ jobs:
         working-directory: web
     steps:
       - uses: actions/checkout@v7
-        with:
-          # Empty, the commit that started the run
-          ref: ${{ inputs.ref }}
 
       - uses: actions/setup-node@v7
         with:
@@ -54,6 +46,13 @@ jobs:
 
       - name: Test that the website reads codes like the mod
         run: npm test
+
+      # Called by boss-events.yml, the checkout is the commit before the archiver's own. Only the data is taken from
+      # the newest master, never code, so nothing that runs here comes from another commit.
+      - name: Use the newest boss events archive on master
+        run: |
+          git fetch --depth=1 origin master
+          git checkout FETCH_HEAD -- data/boss-events
 
       - name: Build boss-events.json from the boss events archive
         run: node ../tools/boss-events/archive.mjs --bundle public/boss-events.json

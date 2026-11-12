@@ -59,8 +59,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      sha: ${{ steps.push.outputs.sha }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -72,7 +70,6 @@ jobs:
           path: new-events/
 
       - name: Commit and push the new files
-        id: push
         env:
           NAMES: ${{ needs.fetch.outputs.names }}
         run: |
@@ -91,7 +88,6 @@ jobs:
             git pull --rebase origin master
             git push origin HEAD:master
           fi
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   # A push with this workflow's token doesn't start pages.yml, so it is called here. Also run by hand, to publish again.
   deploy:
@@ -106,5 +102,3 @@ jobs:
       pages: write
       id-token: write
     uses: ./.github/workflows/pages.yml
-    with:
-      ref: ${{ needs.commit.outputs.sha || 'master' }}
