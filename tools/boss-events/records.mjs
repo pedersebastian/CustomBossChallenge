@@ -4,6 +4,7 @@ import { templatesNamed } from './wikitext.mjs';
 import { dcmToApi, formatVersion, makeNames, wikiEvent, wikiRulesToApi } from './convert.mjs';
 
 const wikiLicense = 'CC BY-NC-SA 4.0';
+const fandomLicense = 'CC BY-SA 3.0';
 const day = 24 * 60 * 60 * 1000;
 
 /**
@@ -101,27 +102,59 @@ export function buildRecords({ wiki, jxu, game, urls }) {
         else records.set(record.id, record);
     }
 
-    // Ninja Kiwi's models of events the wiki doesn't list. Dated only when the wiki's timeline has exactly one free
-    // week between the boss's previous and next event; the rest are left out.
+    // Ninja Kiwi's models of events the wiki doesn't list. Dated by knownEvents, or else only when the wiki's timeline
+    // has exactly one free week between the boss's previous and next event; the rest are left out.
     const timeline = [...records.values()].sort((a, b) => a.start - b.start);
     for (const [name, dcm] of dcmByName) {
         if (usedDcm.has(name)) continue;
-        const week = freeWeek(name, timeline);
+        const known = knownEvents[name];
+        const week = known ? { start: known.start, end: known.end } : freeWeek(name, timeline);
         if (!week || !dcm.json.normalDcm || !dcm.json.eliteDcm) {
             report.push(`${name}: in Ninja Kiwi's boss data but not on the wiki, and no free week to date it: left out`);
             continue;
         }
-        const entry = { id: name, name, bossType: dcm.json.bossType ?? bossTypeOf(name), ...week };
-        const record = envelope(entry, 'nk-dcm', [urls.jxuFileUrl(dcm.commit, dcm.path)], null);
-        record.lossy = ['id', 'dates', 'scoringType', 'maxParagons'];
+        const scoring = known?.scoringType
+            ? { normalScoringType: known.scoringType, eliteScoringType: known.scoringType } : {};
+        const entry = { id: known?.id ?? name, name, bossType: dcm.json.bossType ?? bossTypeOf(name), ...week, ...scoring };
+        const sourceUrls = [urls.jxuFileUrl(dcm.commit, dcm.path), ...(known ? [known.sourceUrl] : [])];
+        const record = envelope(entry, 'nk-dcm', sourceUrls, known ? fandomLicense : null);
+        record.lossy = [];
+        if (!known?.id) record.lossy.push('id');
+        if (!known || known.approximate) record.lossy.push('dates');
+        if (!known?.scoringType) record.lossy.push('scoringType');
+        record.lossy.push('maxParagons');
         record.standard = dcmToApi(dcm.json.normalDcm, name, null);
         record.elite = dcmToApi(dcm.json.eliteDcm, name, null);
         records.set(record.id, record);
-        report.push(`${name}: not on the wiki, dated by the free week ${new Date(week.start).toISOString().slice(0, 10)}`);
+        report.push(`${name}: not on the wiki, dated ${known ? 'by knownEvents' : 'by the free week'} `
+            + new Date(week.start).toISOString().slice(0, 10));
     }
 
     return { records: [...records.values()].sort((a, b) => a.start - b.start || a.id.localeCompare(b.id)), report };
 }
+
+// Events in Ninja Kiwi's boss data that Blooncyclopedia doesn't list, dated by hand (#152). The old Bloons wiki on Fandom
+// (CC BY-SA 3.0) lists them on its pages per game version. Its times say NZST; the weekly start, "8:00pm NZST", is
+// 08:00 UTC like in the API, and the other times are counted from it. An event's id ends with the time it was made,
+// in base 36 milliseconds.
+const fandomPage = (version, oldid) =>
+    `https://bloons.fandom.com/wiki/Boss_Bloon_Event_(BTD6)/List_of_Boss_Events/Version_${version}.0?oldid=${oldid}`;
+export const knownEvents = {
+    // Week 87a: pulled after about four hours and replaced by Vortex17EX (week 87b). Its id was made on 16 Mar 2023.
+    Vortex17: {
+        id: 'Vortex17_lfbrv7rb', start: Date.UTC(2023, 2, 18, 8), end: Date.UTC(2023, 2, 18, 12, 8),
+        sourceUrl: fandomPage(35, 458743),
+    },
+    // Week 62: the week the free week gave. The id isn't known.
+    Lych23: { start: Date.UTC(2022, 8, 24, 8), end: Date.UTC(2022, 8, 29, 3), sourceUrl: fandomPage(32, 458740) },
+    // Week 99, Least Cash: pulled early for exploits, so its times are approximate. Fandom has 9 Jun and an end marked
+    // "(?)"; BTD6 Index's Discord (#bosses) talked about it from 22:43 UTC on 8 Jun until it was gone at 19:30 UTC on
+    // 10 Jun. The id isn't known.
+    Bloonarius40: {
+        start: Date.UTC(2023, 5, 8, 22), end: Date.UTC(2023, 5, 10, 19, 30), approximate: true, scoringType: 'LeastCash',
+        sourceUrl: fandomPage(37, 458745),
+    },
+};
 
 // The archiver's API files (source "api") are never replaced; a backfill source only replaces itself or a worse one
 const sourceRank = { 'jxu-api': 1, 'nk-dcm': 2, bloonswiki: 3 };

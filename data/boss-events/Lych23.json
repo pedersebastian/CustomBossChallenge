@@ -6,9 +6,9 @@
   "start": 1664006400000,
   "end": 1664420400000,
   "source": "nk-dcm",
-  "sourceUrls": ["https://github.com/jxu/btd6-events/blob/bf88fabd02e01343e96812a6e7285fb3abca7ffb/BossDataDecrypted/Lych23.json"],
-  "license": null,
-  "lossy": ["id", "dates", "scoringType", "maxParagons"],
+  "sourceUrls": ["https://github.com/jxu/btd6-events/blob/bf88fabd02e01343e96812a6e7285fb3abca7ffb/BossDataDecrypted/Lych23.json", "https://bloons.fandom.com/wiki/Boss_Bloon_Event_(BTD6)/List_of_Boss_Events/Version_32.0?oldid=458740"],
+  "license": "CC BY-SA 3.0",
+  "lossy": ["id", "scoringType", "maxParagons"],
   "standard": {
     "name": "Lych23",
     "map": "CandyFalls",

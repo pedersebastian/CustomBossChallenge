@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { templates, templatesNamed } from './wikitext.mjs';
 import { dcmToApi, makeNames, roundSets, wikiEvent, wikiRulesToApi } from './convert.mjs';
-import { buildRecords, replaces } from './records.mjs';
+import { buildRecords, knownEvents, replaces } from './records.mjs';
 import { formatRecord } from './format.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -151,6 +151,37 @@ test('records: NK models the wiki lacks are dated only by a single free week', (
     assert.deepEqual(lych2.lossy, ['id', 'dates', 'scoringType', 'maxParagons']);
     assert.ok(!records.some(record => record.name === 'Phayze_2'));
     assert.ok(report.some(line => line.startsWith('Phayze_2:')));
+});
+
+test('records: NK models the wiki lacks are dated by knownEvents first (#152)', () => {
+    const dcm = json('dcm-Vortex10.json');
+    const files = new Map(['Vortex17', 'Lych23', 'Bloonarius40'].map(name =>
+        [`BossDataDecrypted/${name}.json`, { commit: 'head', json: dcm }]));
+    // No wiki events around them, so there is no free week: only the table dates them
+    const { records } = buildRecords({ wiki: [], jxu: { commit: 'head', files }, game, urls });
+    const byName = new Map(records.map(record => [record.name, record]));
+    assert.deepEqual([...byName.keys()], ['Lych23', 'Vortex17', 'Bloonarius40']);
+
+    const vortex17 = byName.get('Vortex17');
+    assert.equal(vortex17.id, knownEvents.Vortex17.id);
+    assert.equal(new Date(vortex17.start).toISOString(), '2023-03-18T08:00:00.000Z');
+    assert.equal(new Date(vortex17.end).toISOString(), '2023-03-18T12:08:00.000Z');
+    assert.deepEqual(vortex17.lossy, ['scoringType', 'maxParagons']);
+    assert.equal(vortex17.license, 'CC BY-SA 3.0');
+    assert.deepEqual(vortex17.sourceUrls, ['jxu/head/BossDataDecrypted/Vortex17.json', knownEvents.Vortex17.sourceUrl]);
+    // The id ends with the time it was made, in base 36 milliseconds: two days before the event
+    assert.equal(new Date(parseInt(vortex17.id.split('_')[1], 36)).toISOString().slice(0, 10), '2023-03-16');
+
+    const lych23 = byName.get('Lych23');
+    assert.equal(lych23.id, 'Lych23');
+    assert.deepEqual(lych23.lossy, ['id', 'scoringType', 'maxParagons']);
+
+    const bloonarius40 = byName.get('Bloonarius40');
+    assert.deepEqual(bloonarius40.lossy, ['id', 'dates', 'maxParagons']);
+    assert.equal(bloonarius40.normalScoringType, 'LeastCash');
+    assert.equal(bloonarius40.eliteScoringType, 'LeastCash');
+    assert.ok(bloonarius40.start < bloonarius40.end);
+    for (const record of records) assert.deepEqual(JSON.parse(formatRecord(record)), record);
 });
 
 test("the archiver's API files are never replaced", () => {
