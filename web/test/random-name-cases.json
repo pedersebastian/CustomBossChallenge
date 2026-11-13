@@ -1,0 +1,31 @@
+{
+  "comment": "The names Random gives a setup (Config/RandomNames.cs, web/src/studio/randomNames.ts): the setup's NameTraits (the rest as in a normal game) and every name the first rule that applies can give it, or [] for none. Read by web/test/random.test.ts and UnitTests/RandomNamesTests.cs, so the website and the mod name random setups alike. allNamesCount is how many names the rules can make with every boss.",
+  "allNamesCount": 154,
+  "cases": [
+    { "traits": { "Boss": "Lych" }, "names": [] },
+    { "traits": { "Boss": "Lych", "BossSpeed": 200, "BossHealth": 70, "Tiers": 7, "SpeedPerTier": 10, "HealthPerTier": 20 }, "names": [] },
+    { "traits": { "Boss": "Lych", "BossSpeed": 50, "BossHealth": 400, "Tiers": 1 }, "names": ["The Unkillable Snail", "Slow but Unstoppable"] },
+    { "traits": { "Boss": "Lych", "BossSpeed": 60, "BossHealth": 250 }, "names": ["The Unkillable Snail", "Slow but Unstoppable"] },
+    { "traits": { "Boss": "Lych", "BossSpeed": 400, "BossHealth": 50 }, "names": ["Fast and Fragile", "Paper Rocket"] },
+    { "traits": { "Boss": "Lych", "BossSpeed": 400, "Tiers": 1 }, "names": ["Blink and It's Gone", "Gone in a Flash"] },
+    { "traits": { "Boss": "Lych", "Tiers": 10, "HealthPerTier": 50 }, "names": ["The Long Haul", "It Just Keeps Going"] },
+    { "traits": { "Boss": "Elite Lych", "Elite": true, "AllFortified": true }, "names": ["Armoured and Angry", "Elite and Armoured"] },
+    { "traits": { "Boss": "Lych", "NoSkulls": true }, "names": ["No Skulls Allowed", "No Skulls Attached"] },
+    { "traits": { "Boss": "Lych", "BossSpeed": 300 }, "names": ["Turbo Lych", "Lych in a Hurry"] },
+    { "traits": { "Boss": "Elite Phayze", "Elite": true, "BossSpeed": 250 }, "names": ["Turbo Elite Phayze", "Elite Phayze in a Hurry"] },
+    { "traits": { "Boss": "Lych", "BossHealth": 300 }, "names": ["Heavyweight Lych", "Lych the Unbreakable"] },
+    { "traits": { "Boss": "Lych", "BossSpeed": 50 }, "names": ["Sleepy Lych", "Lych in Slow Motion"] },
+    { "traits": { "Boss": "Lych", "BossHealth": 50 }, "names": ["Paper Lych", "Fragile Lych"] },
+    { "traits": { "Boss": "Lych", "Tiers": 1 }, "names": ["One and Done", "Just the One"] },
+    { "traits": { "Boss": "Lych", "Tiers": 9 }, "names": ["Tier After Tier", "The Long Road"] },
+    { "traits": { "Boss": "Lych", "SpeedPerTier": 20 }, "names": ["Faster Every Time", "Picking Up Speed"] },
+    { "traits": { "Boss": "Lych", "HealthPerTier": 30 }, "names": ["Tougher Every Time", "Growing Pains"] },
+    { "traits": { "Boss": "Lych", "AllFortified": true }, "names": ["Hard Shell", "Fortified Everything"] },
+    { "traits": { "SameBoss": "Lych" }, "names": ["Lych, Lych, Lych...", "Nothing but Lych", "Lych on Repeat"] },
+    { "traits": { "SameBoss": "Lych", "Tiers": 2 }, "names": [] },
+    { "traits": { "SameBoss": "Blastapopoulos" }, "names": ["Nothing but Blastapopoulos", "Blastapopoulos on Repeat"] },
+    { "traits": { "BossSpeed": 300 }, "names": [] },
+    { "traits": { "BossSpeed": 300, "Tiers": 9 }, "names": ["Tier After Tier", "The Long Road"] },
+    { "traits": { "Boss": "Diamondback", "BossSpeed": 50, "BossHealth": 400, "NoSkulls": true, "AllFortified": true }, "names": ["The Unkillable Snail", "Slow but Unstoppable"] }
+  ]
+}

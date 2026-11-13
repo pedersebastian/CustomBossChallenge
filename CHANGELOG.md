@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Random and Reset in the Studio** (#12): the website's Studio has the Boss Creator's buttons above its rows.
+  **Random** randomizes the boss options exactly like the mod (the same chances and weights, Advanced staying
+  Advanced) and gives a setup that stands out the same describing name, unless you typed your own. The game's own
+  randomizer for the Challenge Editor's rules isn't part of the mod, so the Studio only picks a map, difficulty and
+  mode and keeps the other rules a new challenge has. **Reset Boss Options** puts the boss options back and keeps
+  the rules; **Reset** starts over with a new setup. Both ask first. The names are checked against the mod's in
+  shared test cases.
+
 ### Fixed
 
 - **CHIMPS boss event rounds on the website** (#139): the website and `@cbc/share-code` now know the CHIMPS

@@ -18,6 +18,19 @@ import { FOLLOWS } from "@cbc/share-code/tier-bosses";
 import type { StudioSetup } from "../src/studio/state";
 import { RULES, ruleInput, setRule } from "../src/studio/rules";
 import * as towers from "../src/studio/towers";
+import { randomizeSetup } from "../src/studio/random";
+
+/** A seeded random source (mulberry32), so the random setups are the same every run */
+function seeded(seed: number): () => number {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 const FILE = fileURLToPath(new URL("./website-codes.json", import.meta.url));
 
@@ -83,6 +96,9 @@ const SETUPS: [string, StudioSetup][] = [
   ["chimps: newest event rounds", make(rule("mode", "Clicks"), (s) => edit.setChimpsEventRounds(s, "Newest"))],
   ["chimps: earlier event rounds", make(rule("mode", "Clicks"), (s) => edit.setChimpsEventRounds(s, "Earlier"))],
   ["chimps: earlier, then off", make(rule("mode", "Clicks"), (s) => edit.setChimpsEventRounds(s, "Earlier"), (s) => edit.setChimpsEventRounds(s, "Off"))],
+  // The Random button, in Standard and in Advanced Mode, with a fixed seed
+  ...[1, 2, 3].map((seed): [string, StudioSetup] => [`random ${seed}`, make((s) => randomizeSetup(s, seeded(seed)))]),
+  ...[4, 5].map((seed): [string, StudioSetup] => [`random advanced ${seed}`, make(toAdvanced, (s) => randomizeSetup(s, seeded(seed)))]),
   // The Challenge Editor's rules, made with the Studio's own rule controls (#97)
   ["rules: game", make(rule("name", "  Hard Times "), rule("map", "Infernal"), rule("difficulty", "Hard"), rule("mode", "HalfCash"))],
   [

@@ -111,6 +111,19 @@ export const setParagonSlider = (setup: StudioSetup, position: number): StudioSe
     challenge.maxParagons = fromSlider(clamp(Math.round(position), 0, GAME.limits.paragons));
   });
 
+/**
+ * Every boss option back to a new setup's, Standard with Bloonarius; the Challenge Editor's rules, like the map and
+ * starting cash, stay (BossEditorSection.ResetAll and ResetBossValues)
+ */
+export const resetBossOptions = (setup: StudioSetup): StudioSetup =>
+  withChallenge({ ...setup, options: defaultOptions() }, (challenge) => {
+    const bloons = objectAt(challenge, "bloonModifiers");
+    bloons.bossSpeedMultiplier = 1;
+    objectAt(bloons, "healthMultipliers").boss = 1;
+    bloons.allFortified = false;
+    challenge.maxParagons = NO_LIMIT;
+  });
+
 // ---------- Tiers ----------
 
 export const setTiers = (setup: StudioSetup, tiers: number): StudioSetup => withOptions(setup, { Tiers: clampTiers(Math.round(tiers)) });
