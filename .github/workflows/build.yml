@@ -7,7 +7,9 @@
 #   below. The job summary and the release notes say what was used. See CONTRIBUTING.md for when to bump them;
 # - third-party actions are pinned to a commit, with the version in a comment, which Dependabot keeps up to date;
 # - values from outside (the tag, the description) reach run: scripts only through env, never through ${{ }};
-# - the GitHub release is made before Thunderstore, and a CHANGELOG that can't be pushed fails the release.
+# - the GitHub release is made before Thunderstore, and a CHANGELOG that can't be pushed fails the release;
+# - only the release job can write to the repository. It packs the DLL the build job made, with the other package
+#   files from the same tagged commit, and the checks only let a commit on the default branch be released.
 name: Build
 
 on:
@@ -56,13 +58,16 @@ jobs:
     with:
       tag: ${{ inputs.tag || github.ref_name }}
 
+  # Builds the DLL with a read-only token, also for a release; the release job packs and publishes it
   build:
     # Runs when the checks passed, or were skipped because this isn't a release
     needs: checks
     if: ${{ !failure() && !cancelled() }}
     permissions:
-      contents: write
+      contents: read
     runs-on: ubuntu-latest
+    outputs:
+      built-with: ${{ steps.built_with.outputs.text }}
 
     steps:
       - name: Clone Repo
@@ -138,6 +143,7 @@ jobs:
         run: dotnet build -c Release -p:BloonsTD6="../$BLOONSTD6" "$PROJECT_NAME/$PROJECT_NAME.csproj"
 
       - name: Say what the mod was built with
+        id: built_with
         env:
           DEPENDENCIES_PATH: ${{ env.BLOONSTD6 }}/MelonLoader/Il2CppAssemblies
         run: |
@@ -152,7 +158,7 @@ jobs:
             echo "| Mod Helper (and btd6.targets) | $MOD_HELPER_VERSION |"
             echo "| Game assemblies (btd6-ci-dependencies) | $sha: $game |"
           } >> "$GITHUB_STEP_SUMMARY"
-          echo "BUILT_WITH=Built with MelonLoader $MELONLOADER_VERSION and Mod Helper $MOD_HELPER_VERSION, against the game's assemblies from btd6-ci-dependencies $sha ($game)." >> "$GITHUB_ENV"
+          echo "text=Built with MelonLoader $MELONLOADER_VERSION and Mod Helper $MOD_HELPER_VERSION, against the game's assemblies from btd6-ci-dependencies $sha ($game)." >> "$GITHUB_OUTPUT"
 
       - name: Upload Mod DLL
         uses: actions/upload-artifact@v7
@@ -160,15 +166,45 @@ jobs:
           name: ${{ env.DLL_NAME }}
           path: ${{ env.BLOONSTD6 }}/Mods/${{ env.DLL_NAME }}
 
+  # Only for a release, once the checks and the build passed; the only job that can write to the repository. Every file
+  # it packs comes from the tagged commit: the DLL from the build job, the rest from its own checkout. One release at a
+  # time, so two runs for the same tag can't race on the CHANGELOG push.
+  release:
+    name: Release
+    needs: [checks, build]
+    if: needs.checks.result == 'success' && needs.build.result == 'success'
+    permissions:
+      contents: write
+    concurrency:
+      group: release
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone Repo
+        uses: actions/checkout@v7
+        with:
+          path: ${{ env.PROJECT_NAME }}
+
+      - name: Download Mod DLL
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ env.DLL_NAME }}
+          path: ${{ env.PROJECT_NAME }}/bin/Release
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
       - name: Process description input
-        if: env.IS_RELEASE == 'true' && env.RELEASE_DESC != ''
+        if: env.RELEASE_DESC != ''
         working-directory: ${{ env.PROJECT_NAME }}
         run: |
           perl -i -pe 's{^## \[Unreleased\]$}{"## [Unreleased]\n\n" . $ENV{RELEASE_DESC}}e' CHANGELOG.md
 
       - name: Check changelog for ${{ env.RELEASE_TAG }} section
         id: changelog_check
-        if: env.IS_RELEASE == 'true'
         working-directory: ${{ env.PROJECT_NAME }}
         run: |
           # The tag as plain text at the start of a line, not as a pattern
@@ -186,14 +222,15 @@ jobs:
 
       - name: Rotate changelog Unreleased section to ${{ env.RELEASE_TAG }}
         id: changelog_rotate
-        if: env.IS_RELEASE == 'true' && steps.changelog_check.outputs.has_section != 'true' && env.ACT != 'true'
+        if: steps.changelog_check.outputs.has_section != 'true' && env.ACT != 'true'
         uses: baynezy/ChangeLogger.Action@782ea8df5f0669e910de097106a6037147511d2d # 1.2.7.13
         with:
           tag: ${{ env.RELEASE_TAG }}
           log-path: ${{ env.PROJECT_NAME }}/CHANGELOG.md
           repo-path: ${{ env.PROJECT_NAME }}
 
-      # Fails the release when the push fails, so the notes aren't left under "Unreleased" on the default branch
+      # Fails the release when the push fails, so the notes aren't left under "Unreleased" on the default branch. The
+      # commit is made in a worktree of the default branch, so the package below is still made from the tagged commit.
       - name: Commit changelog changes if needed
         if: steps.changelog_rotate.outcome == 'success' && env.ACT != 'true'
         working-directory: ${{ env.PROJECT_NAME }}
@@ -202,34 +239,30 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git stash push -m "changelog_rotate" -- CHANGELOG.md
+          git diff -- CHANGELOG.md > "$RUNNER_TEMP/changelog.patch"
           git fetch origin "$DEFAULT_BRANCH"
-          git checkout "$DEFAULT_BRANCH"
-          git pull --rebase origin "$DEFAULT_BRANCH"
-          git stash pop
+          git worktree add --detach "$RUNNER_TEMP/default-branch" FETCH_HEAD
+          cd "$RUNNER_TEMP/default-branch"
+          if [ -s "$RUNNER_TEMP/changelog.patch" ]; then git apply --3way "$RUNNER_TEMP/changelog.patch"; fi
           git add CHANGELOG.md
           if git diff --cached --quiet; then
             echo "CHANGELOG.md on $DEFAULT_BRANCH is already up to date; nothing to commit."
           else
             git commit -m "Release $RELEASE_TAG"
-            git push origin "$DEFAULT_BRANCH"
-            echo "RELEASE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+            git push origin "HEAD:$DEFAULT_BRANCH"
           fi
 
       - name: Install Thunderstore CLI
-        if: env.IS_RELEASE == 'true'
         run: |
           dotnet tool install -g tcli --version 0.2.4
           echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
       - name: Setup Node
-        if: env.IS_RELEASE == 'true'
         uses: actions/setup-node@v7
         with:
           node-version: '24'
 
       - name: Prepare README and icon for Thunderstore
-        if: env.IS_RELEASE == 'true'
         working-directory: ${{ env.PROJECT_NAME }}
         env:
           LINK_BASE: "https://github.com/${{ github.repository }}/blob/HEAD"
@@ -283,7 +316,6 @@ jobs:
           cat README.md
 
       - name: Build Thunderstore Package
-        if: env.IS_RELEASE == 'true'
         working-directory: ${{ env.PROJECT_NAME }}
         run: |
           tcli build --package-version "$RELEASE_TAG" | tee tcli.log
@@ -298,30 +330,41 @@ jobs:
           echo "THUNDERSTORE_PACKAGE_NAME=$name" >> "$GITHUB_ENV"
 
       - name: Upload Thunderstore Package
-        if: env.IS_RELEASE == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: ${{ env.THUNDERSTORE_PACKAGE_NAME }}
           path: ${{ env.THUNDERSTORE_PACKAGE_PATH }}
 
-      # Before Thunderstore, so a release that fails late never leaves a package without its GitHub release
+      # Before Thunderstore, so a release that fails late never leaves a package without its GitHub release. A tag made
+      # here goes on the commit the DLL was built from; the checks made sure an existing tag is on that commit too.
       - name: Release
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
-        if: env.IS_RELEASE == 'true'
         with:
           tag_name: ${{ env.RELEASE_TAG }}
-          target_commitish: ${{ env.RELEASE_SHA || github.sha }}
-          files: ${{ env.BLOONSTD6 }}/Mods/${{ env.DLL_NAME }}
+          target_commitish: ${{ github.sha }}
+          files: ${{ env.PROJECT_NAME }}/bin/Release/${{ env.DLL_NAME }}
           body: |
             ${{ steps.changelog_read.outputs.changes || steps.changelog_rotate.outputs.release-notes || env.RELEASE_DESC }}
 
             ---
-            ${{ env.BUILT_WITH }}
+            ${{ needs.build.outputs.built-with }}
           fail_on_unmatched_files: true
           draft: ${{ env.ACT == 'true' }}
 
+      # A step's if can't see its own env, so this step finds out whether there is a token, without passing it on
+      - name: Check for a Thunderstore token
+        id: thunderstore_token
+        env:
+          TCLI_AUTH_TOKEN: ${{ secrets.TCLI_AUTH_TOKEN }}
+        run: |
+          if [ -n "$TCLI_AUTH_TOKEN" ]; then
+            echo "set=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::No TCLI_AUTH_TOKEN secret, so the package isn't published to Thunderstore; upload it by hand"
+          fi
+
       - name: Publish Thunderstore Package
-        if: env.IS_RELEASE == 'true' && env.TCLI_AUTH_TOKEN != '' && env.ACT != 'true'
+        if: steps.thunderstore_token.outputs.set == 'true' && env.ACT != 'true'
         env:
           TCLI_AUTH_TOKEN: ${{ secrets.TCLI_AUTH_TOKEN }}
         working-directory: ${{ env.PROJECT_NAME }}
