@@ -1778,3 +1778,8 @@ input:focus-visible {
 .studio-row > .studio-row-help {
   grid-column: 1 / -1;
 }
+
+/* Random and the resets above the Boss Creator's rows, like the Challenge Editor's buttons */
+.studio-toolbar {
+  margin: 0 0 14px;
+}

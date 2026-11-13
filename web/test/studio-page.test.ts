@@ -136,6 +136,40 @@ describe("the Studio page", () => {
     expect(read.options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Newest" });
   });
 
+  const toolButton = (text: string): HTMLButtonElement =>
+    [...form.querySelectorAll<HTMLButtonElement>(".studio-toolbar button")].find((b) => b.textContent === text)!;
+
+  it("has Random, Reset Boss Options and Reset, and the resets ask first", async () => {
+    await openCode(gauntlet);
+    // happy-dom has no confirm dialog
+    const confirm = vi.fn<(message?: string) => boolean>();
+    vi.stubGlobal("confirm", confirm);
+    const before = studio.setup();
+
+    confirm.mockReturnValueOnce(false);
+    toolButton("Reset Boss Options").click();
+    expect(studio.setup()).toBe(before);
+
+    confirm.mockReturnValueOnce(true);
+    toolButton("Reset Boss Options").click();
+    expect(studio.setup().options).toEqual(newSetup().options);
+    // The Challenge Editor's rules stay
+    expect(studio.setup().challenge.map).toBe(before.challenge.map);
+    expect(tab("Standard").getAttribute("aria-pressed")).toBe("true");
+
+    toolButton("Random").click();
+    await studio.flush();
+    const read = await decode(studio.code());
+    if (!read.ok) throw new Error(read.reason);
+    expect(read.options).toEqual(studio.setup().options);
+
+    confirm.mockReturnValueOnce(true);
+    toolButton("Reset").click();
+    expect(studio.setup()).toEqual(newSetup());
+    expect(confirm).toHaveBeenCalledTimes(3);
+    vi.unstubAllGlobals();
+  });
+
   it("copies the code it shows", async () => {
     await studio.load(newSetup(), null);
     button("Copy code").click();

@@ -32,6 +32,13 @@ import { setUpTierEditor } from "./tiers";
 import { setUpBossPicker } from "./bossPicker";
 import { icon } from "./icons";
 import { setUpRulesSection } from "./rulesSection";
+import { randomizeSetup } from "./random";
+
+/** What Reset Boss Options asks first (Texts.ResetBossOptionsQuestion, without Undo, which the Studio doesn't have) */
+const RESET_BOSS_QUESTION =
+  "Put every boss option back to its default? The Challenge Editor rules, like the map and starting cash, stay as they are.";
+/** What Reset asks first */
+const RESET_QUESTION = "Start over with a new setup? Every boss option and every Challenge Editor rule goes back to its default.";
 
 /** The CHIMPS dropdown's entries as the Boss Creator names them (Texts.EventRoundsOff, ChimpsRoundsNewest, ...) */
 const CHIMPS_EVENT_NAMES: Record<edit.ChimpsEventChoice, string> = {
@@ -105,6 +112,32 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     ),
     modeHelp,
   );
+
+  // The Challenge Editor's Random and Reset, and the Boss Creator's Reset Boss Options, which ask first like the game
+  const randomButton = h("button", { class: "button small", type: "button" }, "Random");
+  randomButton.addEventListener("click", () =>
+    change((s) => {
+      memory = edit.NO_MEMORY;
+      return randomizeSetup(s);
+    }),
+  );
+  const resetBossButton = h("button", { class: "button small blue", type: "button" }, "Reset Boss Options");
+  resetBossButton.addEventListener("click", () => {
+    if (!window.confirm(RESET_BOSS_QUESTION)) return;
+    change((s) => {
+      memory = edit.NO_MEMORY;
+      return edit.resetBossOptions(s);
+    });
+  });
+  const resetButton = h("button", { class: "button small orange", type: "button" }, "Reset");
+  resetButton.addEventListener("click", () => {
+    if (!window.confirm(RESET_QUESTION)) return;
+    change(() => {
+      memory = edit.NO_MEMORY;
+      return edit.newSetup();
+    });
+  });
+  const toolbar = h("div", { class: "actions studio-toolbar" }, randomButton, resetBossButton, resetButton);
 
   const tierEditor = setUpTierEditor(change, () => setup, () =>
     change((s) => {
@@ -203,7 +236,7 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
   rows.push(skullPreview);
   // The Challenge Editor's own rules after the Boss Creator's (#97)
   const rulesSection = setUpRulesSection(change, () => setup);
-  form.replaceChildren(modeRow, ...rows, rulesSection.root);
+  form.replaceChildren(toolbar, modeRow, ...rows, rulesSection.root);
   form.addEventListener("submit", (event) => event.preventDefault());
 
   /** Shows the setup in every control, and only the rows that apply (BossEditorSection.Relayout) */

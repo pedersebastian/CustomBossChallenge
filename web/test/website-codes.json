@@ -497,6 +497,124 @@
       }
     },
     {
+      "name": "random 1",
+      "code": "CBC1:HcoxDsIwDEbhu_xzFiQmjwjEhGDgAsZOi0Vio6ZIVFXujsr6vrciQCsO0RoIR-Marg-WFxLulqcG2vcE2abKbxBOLk_2Oeu5sGYkqA2DyafMy6bcFiTU0AzChUeTq5d_4u-NJx7DG2jX-w8",
+      "options": {
+        "Boss": "Diamondback",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 4,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "map": "EnchantedGlade",
+        "difficulty": "Easy",
+        "mode": "MagicOnly",
+        "maxParagons": 1
+      }
+    },
+    {
+      "name": "random 2",
+      "code": "CBC2:NY_LbsIwEEV_JbprCwECFl62RWITgUR-YCAOGXUcR360RJH_HTm0u9G5mjl3ZjjoGR8uBGh8eUPtTZwboHD9TiK1aw00PlOIzkL9DUtUFg57VW3XUGjY-AB9UDgZkthfjC8IerfOCvfisDRC4zqyyC9NUGi56_ieJE7QOFIozL59NQtH8tN5kEKXSrVruXtrZvSLpU4SeZR_eFu-2Kw2OSsMZMulxqVHb3x1_DF-qhq2pljoeSFPDzcE6G3OLw",
+      "options": {
+        "Boss": "Dreadbloon",
+        "Elite": false,
+        "SkullMode": "Custom",
+        "SkullCount": 3,
+        "CustomSkulls": "65, 20",
+        "Tiers": 6,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 40,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "map": "Spillway",
+        "difficulty": "Easy",
+        "mode": "MilitaryOnly",
+        "bloonModifiers": {
+          "healthMultipliers": {
+            "boss": 1.1
+          }
+        },
+        "name": "Tougher Every Time",
+        "maxParagons": 2
+      }
+    },
+    {
+      "name": "random 3",
+      "code": "CBC2:HY3BCsIwEAV_pbxzED3oIUdB8BIQ6w-kzRYX0mzJpkop-XeJ52Fmdgjsjjv5WN4Pyi-mDHs6V4OxgdkvsHCkHgaBp4nHNZYNFjevGwxmCQSLJ30oK8FgiCLJSeCJKWtrDKLaL0TBrbHwEv-L4-FSDZKfm31tjs-8asep66N8OyeFJaHWHw",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 15,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "map": "Mesa",
+        "difficulty": "Easy",
+        "mode": "Reverse",
+        "bloonModifiers": {
+          "bossSpeedMultiplier": 0.6
+        },
+        "name": "Bloonarius in Slow Motion"
+      }
+    },
+    {
+      "name": "random advanced 4",
+      "code": "CBC3:bY8xr4JAEIT_yxK6TdhDsTgbQrSzMMb46hXOcPFgyd2RiIb_buRZWk0x38xkXiCgX7B3NhrQ0Y8G4WyNryQEE0DDRXw0j8XHynGIPMggo5OAx5anp_lKqRRlShEeprotFVGmckoKSrd5kWLlRHr2dgz_HFGy-l23LCWbYsltc0pxZ7mTvrlyfccT9410C1OqNWVrIpgR6s-HjgfQ8Cf-HloZAKGxt5utRxcn0LDnMME8vwE",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": true,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "TierBosses": "VortexElite,Blastapopoulos,Phayze,Phayze@110/110,Lych@100/120#50%;25%,Bloonarius@110/100#3,Blastapopoulos,PhayzeElite#65%;25%;20%,Diamondback,RandomElite@140/400",
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "map": "Workshop",
+        "difficulty": "Easy"
+      }
+    },
+    {
+      "name": "random advanced 5",
+      "code": "CBC3:TY9BTsMwEEXv8iPvLHUMTQvOpmqLxLICLjBNXLAa25UdS5Qqd0dOEcp25v33Z24I0DdsQ0rQOHzx9cdA4qW3g4EeYjYSH9bEApiCbPsQPEebU7WuRbMm0axINHUt5N6yC747cnuulJyBT3_QksRsPHVMksdayDf2XXBzx7TfKKKFWtJct5pTG6VooYiqBxKN-hdVSu6j4e5YYvem53LBvQ2jRFv-dnyBxnv2Z-N3oc_OJ0h09nSybe6HKzReOXaQcPx94MifwSdoGsdf",
+      "options": {
+        "Boss": "Phayze",
+        "Elite": true,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "TierBosses": "Bloonarius#75%;70%;60%;55%,Diamondback#1,Bloonarius#80%;60%;40%,BloonariusElite#75%;35%,Random,DiamondbackElite@100/140,Bloonarius#6,Diamondback@110/100#20%;15%,Random#1,DreadbloonElite#90%;45%;35%",
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "map": "SunkenColumns",
+        "difficulty": "Hard",
+        "maxParagons": 0
+      }
+    },
+    {
       "name": "rules: game",
       "code": "CBC1:LckxCoAwDAXQq8ifc4KsLrp7gdAmWGhaqTpI6d0FcXy8jgrugxDAHS4HGGsxbUUyCDGZpXDn6wFjkRZB8Br1U7ZZzh2EIq7_T1tyPTHGCw",
       "options": {

@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using CustomBossChallenge.Config;
 using Xunit;
 
@@ -133,6 +136,41 @@ public class RandomNamesTests
                 $"'{c}' in {name}, which the game's name field drops"));
         });
     }
+
+    private static JObject NameCases()
+    {
+        var folder = new DirectoryInfo(AppContext.BaseDirectory);
+        while (folder != null && !File.Exists(Path.Combine(folder.FullName, "web", "test", "random-name-cases.json"))) folder = folder.Parent;
+        if (folder == null) throw new FileNotFoundException("web/test/random-name-cases.json not found above " + AppContext.BaseDirectory);
+        return JObject.Parse(File.ReadAllText(Path.Combine(folder.FullName, "web", "test", "random-name-cases.json")));
+    }
+
+    /// <summary>
+    /// The setups and names in web/test/random-name-cases.json, which the website's Random (#12) names alike
+    /// </summary>
+    public static IEnumerable<object[]> SharedCases() =>
+        ((JArray) NameCases()["cases"]!).Select(entry => new object[] {entry["traits"]!.ToString(Newtonsoft.Json.Formatting.None), entry["names"]!.ToString(Newtonsoft.Json.Formatting.None)});
+
+    [Theory]
+    [MemberData(nameof(SharedCases))]
+    public void Names_are_given_like_on_the_website(string traits, string names)
+    {
+        var setup = JObject.Parse(traits).ToObject<NameTraits>()!;
+        var expected = JArray.Parse(names).Select(name => (string) name!).Order().ToList();
+        var given = Enumerable.Range(1, 200).Select(seed => Name(setup, seed)).Distinct().ToList();
+        if (expected.Count == 0)
+        {
+            Assert.Equal(new string?[] {null}, given);
+            return;
+        }
+
+        Assert.Equal(expected, given.Select(name => name!).Order().ToList());
+        Assert.All(expected, name => Assert.True(RandomNames.Fits(name, setup), name));
+    }
+
+    [Fact]
+    public void As_many_names_as_on_the_website() =>
+        Assert.Equal((int) NameCases()["allNamesCount"]!, RandomNames.AllNames.Count());
 
     [Theory]
     [InlineData("My Own Challenge")]
