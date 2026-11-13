@@ -82,6 +82,17 @@ public class BossEventRoundsGameTest : CustomBossTest
         yield return Play(advanced, standard);
         AssertRounds(expected, $"Advanced Mode, each tier with its own boss's round ({second} on tier 2)");
 
+        // CHIMPS with the boss's own event rounds plays them exactly like Standard, also each tier's own in Advanced
+        var own = on with {Boss = BossType.Dreadbloon, ChimpsRounds = ChimpsRounds.Own};
+        yield return Play(own, chimps);
+        AssertRounds(merged[BossType.Dreadbloon], "CHIMPS with the boss's own rounds plays Dreadbloon's");
+        Assert(InGameData.CurrentGame.dcModel.roundSets.Contains("dreadbloon"), "The game merges the boss's own set in CHIMPS");
+        Assert(!InGame.instance.GetGameModel().towerSellEnabled, "Still no selling in CHIMPS");
+        yield return Play(advanced with {ChimpsRounds = ChimpsRounds.Own}, chimps);
+        AssertRounds(expected, $"Advanced Mode in CHIMPS with the boss's own rounds ({second} on tier 2)");
+        yield return Restart();
+        AssertRounds(expected, "The same in CHIMPS after a restart");
+
         // Vortex first brings its extra rounds along
         yield return Play(on with {Tiers = 2, TierBosses = "Vortex,Lych"}, BaseDcm());
         var vortexFirst = Rounds(InGame.instance.GetGameModel().roundSet);
@@ -400,6 +411,14 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         Assert(chimpsRounds.gameObject.activeInHierarchy && !section.BossEventRounds.gameObject.activeSelf,
             "CHIMPS shows the dropdown in place of the tick");
         Assert(section.ChimpsRoundsInfo.gameObject.activeInHierarchy, "The dropdown's i explains the round sets (#157)");
+        section.ChimpsRoundsInfo.Button.onClick.Invoke();
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? infoPopup = null;
+        yield return WaitFor(() => (infoPopup = Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()) != null,
+            "Opening the CHIMPS info popup");
+        Assert(infoPopup!.body.text.Contains(Menus.Texts.ChimpsRoundsInfo.T()), $"CHIMPS info popup text: {infoPopup.body.text}");
+        AssertEquals(Menus.Texts.ChimpsRoundsInfo.T().Split("\n\n").Length, 5, "Both CHIMPS sets, the boss rounds and the boss's own rounds");
+        infoPopup.TryHidePop();
+        yield return new WaitForSecondsRealtime(1);
         AssertEquals(chimpsRounds.Dropdown.options.Count, 4, "Off, newest, earlier and the boss's own");
         AssertEquals(chimpsRounds.Dropdown.captionText.text, Menus.Texts.ChimpsRoundsNewest.T(),
             $"The entry's text as it is, not taken for a key (option '{chimpsRounds.Dropdown.options[1].text}')");
