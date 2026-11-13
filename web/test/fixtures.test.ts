@@ -8,6 +8,7 @@ import { roundHalfEven } from "@cbc/share-code/dotnet";
 import { formatPercent } from "@cbc/share-code/skulls";
 import { endRound } from "@cbc/share-code/tiers";
 import { skulls, tierCards } from "../src/preview/compute";
+import { warningsOf } from "../src/preview/warnings";
 import { EXAMPLES } from "../src/data/types";
 
 const round6 = (value: number) => roundHalfEven(value, 6);
@@ -42,6 +43,9 @@ describe("codes the mod reads", () => {
 
       expect((skulls(result.options).percents ?? []).map(formatPercent)).toEqual(fixture.skulls);
       expect(playProblem(result.challenge, rounds) === null ? null : "yes").toBe(fixture.playProblem);
+
+      // The Tier Preview's warnings, from the game's own boss models in the mod (#186)
+      expect(warningsOf(result.options, result.challenge)).toEqual(fixture.warnings);
     });
   }
 });

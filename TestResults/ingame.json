@@ -1,14 +1,14 @@
 {
   "modVersion": "2.11.0",
   "gameVersion": "57.4",
-  "commit": "1cec0f70013e78031cb7be26489cd661108a19cc",
+  "commit": "972b61ccc7decc095f47e6ebfb92cc3346470f05",
   "dirty": true,
-  "sourceHash": "e725aaffec25edf9b9cc332a171d67a1a891db41341e6811098152e5aa4f51a5",
+  "sourceHash": "9bebc0426689fe5d15f87b719c1906471b86f036e52c4088e276babf51736b96",
   "passed": 72,
   "failed": [],
   "skipped": {},
   "onRequest": {
     "ContinueAfterCrashTest": "needs CBC_CRASH_PHASE and CBC_CRASH_FOLDER, see CONTRIBUTING.md"
   },
-  "finished": "2026-11-13T16:50:54Z"
+  "finished": "2026-11-13T18:06:48Z"
 }

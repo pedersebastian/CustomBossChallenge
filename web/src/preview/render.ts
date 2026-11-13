@@ -7,10 +7,11 @@ import { playProblem, type Challenge } from "@cbc/share-code";
 import { SKULL_MODE_NAMES, bossOf, effectiveSpawnRounds, isMixed, tierBossName, tierSkullMode, type BossOptions } from "@cbc/share-code";
 import { formatDecimals } from "@cbc/share-code/dotnet";
 import { formatPercent } from "@cbc/share-code/skulls";
-import { clampTiers, endRound, formatHealth, maxModelHealth } from "@cbc/share-code/tiers";
+import { clampTiers, endRound, maxModelHealth } from "@cbc/share-code/tiers";
 import { normalGame, skulls, tierCards } from "./compute";
 import { renderTimeline } from "./timeline";
-import { chimpsEventWarning, eventRoundsText } from "./eventRounds";
+import { eventRoundsText } from "./eventRounds";
+import { warningText, warningTexts } from "./warnings";
 import { renderCurves } from "../compare/chart";
 import { tierPairs } from "../compare/diff";
 import { tierGlow, tierGlowStyle } from "./tierLook";
@@ -61,10 +62,9 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
   );
 
   if (problem) root.append(h("p", { class: "warning" }, `In the game, Play refuses this setup: ${problem}`));
-  const chimpsWarning = chimpsEventWarning(options, challenge.mode);
-  if (chimpsWarning) root.append(h("p", { class: "warning" }, chimpsWarning));
 
-  root.append(renderTiers(options, challenge));
+  // Under the Tier Preview, the warnings the Boss Creator shows there before Play (#186)
+  root.append(renderTiers(options, challenge, warningTexts(options, challenge)));
   if (compact) return root;
 
   // With a boss per tier the bosses' own skulls differ between tiers, so the skulls follow the card pointed at or
@@ -126,7 +126,11 @@ function renderBadge(options: BossOptions): HTMLElement {
 }
 
 /** The Tier Preview: a card per tier with its round, speed and health, like Menus/TierStrip.cs (the Studio shows it too) */
-export function renderTiers(options: BossOptions, challenge: Challenge): HTMLElement {
+/**
+ * The Tier Preview, with the Boss Creator's warnings under it. Without `notes`, as for the Studio's own preview row,
+ * which only knows Boss Speed and Boss Health, it says only when tiers are held to the game's health limit.
+ */
+export function renderTiers(options: BossOptions, challenge: Challenge, notes?: string[]): HTMLElement {
   const cards = tierCards(options, challenge);
   const strip = h("div", { class: "tiers", role: "list" });
   for (const card of cards) {
@@ -162,16 +166,13 @@ export function renderTiers(options: BossOptions, challenge: Challenge): HTMLEle
   }
 
   const wrapper = h("div", { class: "block" }, h("h4", {}, "Tier Preview"), strip);
-  if (cards.some((card) => card.capped)) {
+  let shown = notes;
+  if (shown === undefined && cards.some((card) => card.capped)) {
+    // The mod's own warning: Boss Health below 100 % doesn't lower the limit (SetupWarnings.Check)
     const bossHealth = Math.fround(challenge.bossHealth);
-    wrapper.append(
-      h(
-        "p",
-        { class: "note harder" },
-        `Health stops at ${formatHealth(maxModelHealth(bossHealth) * bossHealth)} per tier, the game's limit: some tiers get less than the settings ask for.`,
-      ),
-    );
+    shown = [warningText({ kind: "HealthCapped", args: [maxModelHealth(bossHealth) * Math.max(bossHealth, 1)] })];
   }
+  for (const note of shown ?? []) wrapper.append(h("p", { class: "note harder" }, note));
   return wrapper;
 }
 

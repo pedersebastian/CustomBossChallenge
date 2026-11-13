@@ -76,6 +76,22 @@ if (result.ok) {
 }
 ```
 
+The Boss Creator also warns about setups that are allowed but probably not what the player meant: a start round just
+before the first boss, tiers a few rounds apart, tiers held to the game's health limit, and so on. `warnings` has the
+same checks. It doesn't know the game's boss models, so give their health and speed per tier for the checks that need
+them, or leave them out:
+
+```ts
+import { decode, encode, defaultOptions, warnings } from "@cbc/share-code";
+
+// Tiers on rounds 80 and 81 leave little time to beat tier 3
+const result = await decode(await encode({ ...defaultOptions(), SpawnRounds: "40, 60, 80, 81, 100" }));
+if (result.ok) {
+  const found = warnings.setupWarnings(warnings.factsOf(result.options, result.challenge));
+  console.log(found.map((warning) => warning.kind)); // ["TiersClose"]
+}
+```
+
 ## What else is here
 
 - **Options:** `defaultOptions`, `readOptions`, `typedOptions` and `sanitize` read and keep the Boss Creator's options
@@ -84,16 +100,16 @@ if (result.ok) {
 - **Challenge:** `filterChallenge` keeps only what a code may set (the mod's `CodeFormat.ChallengeFields`).
   `cleanName` cleans a name like the mod does.
 - **Helpers:** `tiers` (spawn rounds, health and speed per tier), `skulls`, `tierBosses` (the per-tier tokens like
-  `"LychElite@120/80#4"`) and `limits` (the mod's clamping). Each is also on its own path, e.g.
-  `@cbc/share-code/tiers`.
+  `"LychElite@120/80#4"`), `limits` (the mod's clamping) and `warnings` (the Boss Creator's warnings before Play). Each
+  is also on its own path, e.g. `@cbc/share-code/tiers`.
 - **Data:** `data` holds the game data the codes are made against (`gameVersion`, the default challenge, the maps,
   modes and limits), and `PREFIXES`, `LIMITS` and `defaultChallenge()` give parts of it.
 
 ## Same as the mod
 
 - **The mod is the reference.** Each part is a port of the mod's C#: `Persistence/CodeFormat.cs` and `SetupCode.cs`,
-  and `Config/BossOptions.cs`, `ChallengeLimits.cs`, `TierMath.cs`, `SkullMath.cs` and `TierBossMath.cs`. The comments
-  name the C# each function follows.
+  and `Config/BossOptions.cs`, `ChallengeLimits.cs`, `TierMath.cs`, `SkullMath.cs`, `TierBossMath.cs` and
+  `SetupWarnings.cs`. The comments name the C# each function follows.
 - **Same JSON, not the same bytes.** The mod packs a code with .NET's `DeflateStream` and this package with the
   browser's `CompressionStream`. The JSON inside is the same, key for key, and the mod reads any raw deflate.
 - **Shared test vectors.** The website's tests (`web/test`) and the mod's C# tests (`UnitTests/`, `PropertyTests/`)
@@ -101,7 +117,7 @@ if (result.ok) {
   - codes made in the game, with what the mod reads from them
   - 200 random codes from the property tests
   - codes this package made, which the mod's `CodeFormat` must load unchanged
-  - cases for links, skulls, options and tier bosses
+  - cases for links, skulls, options, tier bosses and the warnings before Play
 
   CI runs both sides.
 - **Game data.** `src/data.json` is a copy of part of `web/src/data/game.json`, which the mod's `WebDataTest` writes

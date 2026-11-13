@@ -12,6 +12,7 @@
     "./skulls": "./src/math/skulls.ts",
     "./tier-bosses": "./src/math/tierBosses.ts",
     "./limits": "./src/math/limits.ts",
+    "./warnings": "./src/math/warnings.ts",
     "./dotnet": "./src/math/dotnet.ts",
     "./data": "./src/data.ts"
   }

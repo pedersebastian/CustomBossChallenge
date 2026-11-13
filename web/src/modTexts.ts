@@ -33,6 +33,12 @@ export const MOD_TEXTS = {
   ChimpsRoundsNewest: "Newest CHIMPS events (no regrow, dense)",
   ChimpsRoundsEarlier: "Earlier CHIMPS events (regrow, DDTs)",
   ChimpsRoundsOwn: "Boss's own event rounds (like other modes)",
+  // The warnings under the Tier Preview (#186), with the values Texts.Warning puts in for {0}, {1} and {2}
+  StartRoundClose: "The game starts on round {0}, only {1} rounds before the first boss on round {2}.",
+  TiersClose: "Tiers come only a few rounds apart on rounds {0}, which leaves little time to beat each one.",
+  HealthCap: "Health stops at {0} per tier, the game's limit: some tiers get less than the settings ask for.",
+  SameTiers: "Tiers {0} end up the same: their speed and health have reached the game's limits.",
+  HardSetup: "These rules together make a very hard challenge.",
   ChimpsEventRoundsNewest:
     "Boss Event Rounds in CHIMPS: much harder than the normal rounds, with no regrow but dense floods that test your damage.",
   ChimpsEventRoundsEarlier:
