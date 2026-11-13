@@ -18,6 +18,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   mode and keeps the other rules a new challenge has. **Reset Boss Options** puts the boss options back and keeps
   the rules; **Reset** starts over with a new setup. Both ask first. The names are checked against the mod's in
   shared test cases.
+- **Info buttons** (#157): the Boss Creator's CHIMPS dropdown has an **i** of its own that explains how the two CHIMPS
+  round sets differ: the newest have no regrow but denser rounds with more raw RBE (a damage check, most of all on
+  rounds 41 to 120), the earlier ones have regrow, camo regrow and DDTs spread over longer rounds (a detection check),
+  and the boss rounds are nearly the same. Every row of the website's Studio has an **i** too, showing the Boss
+  Creator's explanation of the option, and the CHIMPS dropdown has its own. Shared tests keep the Studio's texts the
+  same as the mod's.
+
+### Changed
+
+- **CHIMPS round sets named by what they throw at you** (#157): the dropdown says "Newest CHIMPS events (no regrow,
+  dense)" and "Earlier CHIMPS events (regrow, DDTs)" instead of "hard" and "harder", which was only partly true. The
+  Boss Event Rounds explanation has a sentence per set, and the Tier Preview's CHIMPS warning names what the picked set
+  tests. In every language.
 
 ### Fixed
 

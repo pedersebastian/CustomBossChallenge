@@ -1191,8 +1191,65 @@ input:focus-visible {
   display: none;
 }
 
-.studio-row > label {
+.studio-row > label,
+.studio-row-name > label {
   font-weight: 800;
+}
+
+/* A row's name and its i (#157) */
+.studio-row-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* The i that shows a row's explanation, like the Boss Creator's info buttons (#157) */
+.studio-info {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 2px solid var(--outline);
+  border-radius: 50%;
+  background: var(--blue);
+  color: var(--text);
+  font: 700 0.95rem/1 Georgia, "Times New Roman", serif;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.studio-info:hover {
+  background: var(--sea-end);
+}
+
+.studio-info[aria-expanded="true"] {
+  background: var(--gold);
+  color: var(--outline);
+}
+
+.studio-info:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* The explanation under the whole row */
+.studio-info-text {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--panel-inner);
+}
+
+.studio-info-text[hidden] {
+  display: none;
+}
+
+.studio-info-text p {
+  margin: 0;
+}
+
+.studio-info-text p + p {
+  margin-top: 0.6em;
 }
 
 .studio-control {

@@ -83,12 +83,25 @@ public static class Texts
     public static readonly string BossEventRoundsInfo = Key(nameof(BossEventRoundsInfo),
         "Tick to play the rounds of the official boss events for this boss instead of the normal rounds. In the " +
         "events the tiers arrive on rounds 40, 60, 80, 100 and 120 with bloons made for them; with other Spawn " +
-        "Rounds those rounds move with the tiers. In Advanced Mode every tier arrives on the round made for its own boss, " +
-        "and the other rounds follow the first tier's boss. In CHIMPS, pick the rounds of the newest CHIMPS boss event " +
-        "(Diamondback, 2026) or the earlier ones (Bloonarius and Dreadbloon), the same for every boss.");
+        "Rounds those rounds move with the tiers. In Advanced Mode every tier arrives on the round made for its own " +
+        "boss, and the other rounds follow the first tier's boss. In CHIMPS, pick the rounds of the newest CHIMPS " +
+        "boss event (Diamondback, 2026) or the earlier ones (Bloonarius and Dreadbloon), the same for every boss. " +
+        "The newest have no regrow but denser rounds that test your damage; the earlier ones have regrow, camo " +
+        "regrow and DDTs that test your detection. The i next to the dropdown tells more.");
     public static readonly string EventRoundsOff = Key(nameof(EventRoundsOff), "Off");
-    public static readonly string ChimpsRoundsNewest = Key(nameof(ChimpsRoundsNewest), "Newest CHIMPS events (hard)");
-    public static readonly string ChimpsRoundsEarlier = Key(nameof(ChimpsRoundsEarlier), "Earlier CHIMPS events (harder)");
+    public static readonly string ChimpsRoundsNewest = Key(nameof(ChimpsRoundsNewest), "Newest CHIMPS events (no regrow, dense)");
+    public static readonly string ChimpsRoundsEarlier = Key(nameof(ChimpsRoundsEarlier), "Earlier CHIMPS events (regrow, DDTs)");
+    /// <summary>What the two CHIMPS round sets throw at the player, behind the i next to the dropdown (#157)</summary>
+    public static readonly string ChimpsRoundsInfo = Key(nameof(ChimpsRoundsInfo),
+        "Both CHIMPS round sets are much harder than the normal rounds, in different ways: neither is simply harder " +
+        "than the other. Only 9 of their 140 rounds are the same.\n\nNewest CHIMPS events (Diamondback, 2026): no " +
+        "regrow bloons at all. The bloons come in fewer, bigger groups and the rounds last about half as long, so " +
+        "more arrive at once. The pressure comes from MOAB-class bloons and big floods of plain bloons, like 1372 " +
+        "Greens on round 49. It tests your damage, most of all from round 41 to 120.\n\nEarlier CHIMPS events " +
+        "(Bloonarius 2024, Dreadbloon 2025): many regrow and camo regrow bloons, DDTs on rounds 85, 87 and 93 and " +
+        "extra BADs late in the game, spread over longer rounds. It tests your camo detection and popping regrow " +
+        "bloons before they grow back.\n\nThe boss rounds (40, 60, 80, 100, 120 and 140) are nearly the same in both " +
+        "sets.");
     public static readonly string SpawnRounds = Key(nameof(SpawnRounds), "Spawn Rounds");
     public static readonly string SpawnRoundsInfo = Key(nameof(SpawnRoundsInfo),
         "The round each tier arrives on, separated by commas, e.g. 40, 60, 80. Missing rounds continue every 20 " +
@@ -206,9 +219,12 @@ public static class Texts
         "Tiers {0} end up the same: their speed and health have reached the game's limits.");
     public static readonly string HardSetup = Key(nameof(HardSetup),
         "These rules together make a very hard challenge.");
-    public static readonly string ChimpsEventRounds = Key(nameof(ChimpsEventRounds),
-        "Boss Event Rounds in CHIMPS play the rounds of the CHIMPS boss events, which are much harder than the normal " +
-        "rounds.");
+    public static readonly string ChimpsEventRoundsNewest = Key(nameof(ChimpsEventRoundsNewest),
+        "Boss Event Rounds in CHIMPS: much harder than the normal rounds, with no regrow but dense floods that test " +
+        "your damage.");
+    public static readonly string ChimpsEventRoundsEarlier = Key(nameof(ChimpsEventRoundsEarlier),
+        "Boss Event Rounds in CHIMPS: much harder than the normal rounds, with regrow, camo regrow and DDTs that " +
+        "test your detection.");
 
     public static readonly string UnsupportedMode = Key(nameof(UnsupportedMode),
         "The {0} game mode can't be used for boss games.");
@@ -319,7 +335,9 @@ public static class Texts
         Config.SetupWarning.HealthCapped => HealthCap.T(TierStrip.FormatHealth((double) warning.Args[0])),
         Config.SetupWarning.TiersClose => TiersClose.T(warning.Args[0]),
         Config.SetupWarning.SameTiers => SameTiers.T(warning.Args[0]),
-        Config.SetupWarning.ChimpsEventRounds => ChimpsEventRounds.T(),
+        Config.SetupWarning.ChimpsEventRounds => warning.Args is [Config.ChimpsRounds.Earlier]
+            ? ChimpsEventRoundsEarlier.T()
+            : ChimpsEventRoundsNewest.T(),
         _ => HardSetup.T()
     };
 

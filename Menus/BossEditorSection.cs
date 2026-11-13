@@ -77,6 +77,10 @@ public sealed class BossEditorSection
     /// <see cref="ChimpsEntry"/>'s.
     /// </summary>
     public ModHelperDropdown ChimpsEventRounds { get; private set; } = null!;
+
+    /// <summary>The i next to <see cref="ChimpsEventRounds"/>: what each CHIMPS round set tests (#157)</summary>
+    public ModHelperButton ChimpsRoundsInfo { get; private set; } = null!;
+
     public GameObject BossEventRoundsRow { get; private set; } = null!;
 
     /// <summary>
@@ -333,7 +337,7 @@ public sealed class BossEditorSection
         chimpsEntries.Add(Texts.EventRoundsOff.T());
         chimpsEntries.Add(Texts.ChimpsRoundsNewest.T());
         chimpsEntries.Add(Texts.ChimpsRoundsEarlier.T());
-        ChimpsEventRounds = ModHelperDropdown.Create(EditorRows.ControlInfo("ChimpsEventRounds", 1300, 150),
+        ChimpsEventRounds = ModHelperDropdown.Create(EditorRows.ControlInfo("ChimpsEventRounds", ChimpsDropdownWidth, 150),
             chimpsEntries, 500, new Action<int>(index => UpdateOptions("ChimpsEventRounds", o => o with
             {
                 BossEventRounds = index > 0,
@@ -359,6 +363,11 @@ public sealed class BossEditorSection
         for (var i = 0; i < chimpsEntries.Count; i++) ChimpsEventRounds.Dropdown.options[i].text = chimpsEntries[i];
         ChimpsEventRounds.Dropdown.RefreshShownValue();
         ChimpsEventRounds.gameObject.SetActive(false);
+        // The two sets differ in what they test, not in how hard they are, so the i right of the dropdown tells how (#157)
+        ChimpsRoundsInfo = EditorRows.AddChoiceInfo(BossEventRoundsRow, "ChimpsRoundsInfo",
+            EditorRows.ControlRight(ChimpsDropdownWidth) + EditorRows.ChoiceInfoSize / 2 + 30,
+            Texts.BossEventRounds, Texts.ChimpsRoundsInfo);
+        ChimpsRoundsInfo.gameObject.SetActive(false);
 
         skullModeRow = EditorRows.LabelRow(template, rows, "SkullModeRow", Texts.Skulls.T(), VanillaSprites.CrossboneSkull);
         var modes = new Il2CppSystem.Collections.Generic.List<string>();
@@ -451,6 +460,9 @@ public sealed class BossEditorSection
         stripRow.transform.SetSiblingIndex(bossRow.transform.GetSiblingIndex() + 1);
         MaxParagons.Row.transform.SetSiblingIndex(skullStripRow.transform.GetSiblingIndex());
     }
+
+    /// <summary>The CHIMPS dropdown's width, leaving room for its i on the right (#157)</summary>
+    public const float ChimpsDropdownWidth = 1180;
 
     public const float SavedListWidth = 760;
     public const float SavedListHeight = 750;
@@ -554,6 +566,7 @@ public sealed class BossEditorSection
                 else BossEventRounds.Toggle.isOn = false;
             }
         });
+        focusStops.Add(FocusStop.ForButton("ChimpsRoundsInfo", ChimpsRoundsInfo.Button));
         var skullMode = FocusStop.ForDropdown("SkullMode", SkullMode.Dropdown);
         skullMode.Reset = ResetSkulls;
         focusStops.Add(skullMode);
@@ -1406,6 +1419,7 @@ public sealed class BossEditorSection
         var chimps = mode == BossOptions.ChimpsMode;
         BossEventRounds.gameObject.SetActive(!chimps);
         ChimpsEventRounds.gameObject.SetActive(chimps);
+        ChimpsRoundsInfo.gameObject.SetActive(chimps);
         var options = shown ?? BossMode.Options;
         BossEventRounds.SetChecked(options.BossEventRounds, false);
         ChimpsEventRounds.Dropdown.SetValueWithoutNotify(ChimpsIndex(options));
