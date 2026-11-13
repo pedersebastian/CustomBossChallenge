@@ -231,6 +231,13 @@ workflow by hand with a `tag`) it first runs all of `checks.yml`, the **Release 
 when every check passes does it build the DLL, publish it to Thunderstore and create the GitHub release. A tag whose
 checks fail releases nothing: fix the problem, delete the tag and push it again.
 
+Only a commit on the default branch can be released, and an existing tag must be on the commit the run builds, so tag
+a merged commit on `master`. The **build** job makes the DLL with a read-only token, on every push and pull request.
+Only the **release** job can write to the repository: it packs that DLL with `README.md`, `Icon.png`, `CHANGELOG.md`
+and `LICENSE` from the same tagged commit, and pushes the rotated `CHANGELOG.md` from a worktree of the default branch.
+One release runs at a time. Without a `TCLI_AUTH_TOKEN` secret the package isn't published to Thunderstore; the run
+warns, and the package is in its artifacts to upload by hand.
+
 Mod Helper wrote the first `build.yml`, but `GenerateActionsWorkflow` is `false` in the csproj, so it no longer writes
 it again and changes to it are kept. Everything it downloads is pinned, so a release can be built again the same way:
 
