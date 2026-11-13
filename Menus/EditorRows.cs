@@ -231,6 +231,22 @@ public static class EditorRows
         return button;
     }
 
+    /// <summary>The width of the frame around an opened dropdown list</summary>
+    public const float ListFrame = 6;
+
+    /// <summary>
+    /// A white frame around the dropdown's opened list, so it stands out from the rows behind it
+    /// </summary>
+    public static void FrameList(ModHelperDropdown dropdown)
+    {
+        var outline = dropdown.TemplatePanel.gameObject.AddComponent<Outline>();
+        outline.effectColor = Color.white;
+        outline.effectDistance = new Vector2(ListFrame, -ListFrame);
+        var inner = dropdown.TemplatePanel.gameObject.AddComponent<Outline>();
+        inner.effectColor = Color.white;
+        inner.effectDistance = new Vector2(-ListFrame, ListFrame);
+    }
+
     /// <summary>Where the right edge of a control made with <see cref="ControlInfo"/> and no offset is</summary>
     public static float ControlRight(float width) => ControlX - (ControlWidth - width) / 2 + width / 2;
 

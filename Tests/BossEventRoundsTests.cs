@@ -420,6 +420,8 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         infoPopup.TryHidePop();
         yield return new WaitForSecondsRealtime(1);
         AssertEquals(chimpsRounds.Dropdown.options.Count, 4, "Off, newest, earlier and the boss's own");
+        Assert(chimpsRounds.TemplatePanel.RectTransform.sizeDelta.y >= 4 * Menus.BossEditorSection.ChimpsItemHeight,
+            $"The opened list has room for all four entries: {chimpsRounds.TemplatePanel.RectTransform.sizeDelta.y}");
         AssertEquals(chimpsRounds.Dropdown.captionText.text, Menus.Texts.ChimpsRoundsNewest.T(),
             $"The entry's text as it is, not taken for a key (option '{chimpsRounds.Dropdown.options[1].text}')");
         AssertEquals(chimpsRounds.Dropdown.value, 1, "Ticked shows the newest CHIMPS rounds");
@@ -478,6 +480,13 @@ public class BossEventRoundsCreatorTest : CustomBossTest
                 yield return new WaitForSecondsRealtime(1);
                 yield return ScreenshotTour.Capture(folder, $"chimps-dropdown-{(int) (at * 100)}");
             }
+            // The opened list, with every entry in full
+            scroll.verticalNormalizedPosition = 0.45f;
+            chimpsRounds.Dropdown.Show();
+            yield return new WaitForSecondsRealtime(1);
+            yield return ScreenshotTour.Capture(folder, "chimps-dropdown-open");
+            chimpsRounds.Dropdown.Hide();
+            yield return new WaitForSecondsRealtime(0.5f);
             scroll.verticalNormalizedPosition = position;
         }
         Assert(Menus.BossEditorSection.PlayProblem(section.Editor.dcm, BossMode.Options) == null, "The warning doesn't stop Play");
