@@ -96,6 +96,21 @@ describe("edit functions", () => {
   });
 });
 
+describe("CHIMPS event rounds (#139)", () => {
+  it("picks the CHIMPS events' rounds like the Boss Creator's dropdown", () => {
+    const setup = fresh();
+    expect(edit.chimpsEventChoice(setup)).toBe("Off");
+    const earlier = edit.setChimpsEventRounds(setup, "Earlier");
+    expect(earlier.options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Earlier" });
+    expect(edit.chimpsEventChoice(earlier)).toBe("Earlier");
+    expect(edit.chimpsEventChoice(edit.setChimpsEventRounds(earlier, "Newest"))).toBe("Newest");
+    // Off keeps which rounds were picked, like the game
+    const off = edit.setChimpsEventRounds(earlier, "Off");
+    expect(off.options).toMatchObject({ BossEventRounds: false, ChimpsRounds: "Earlier" });
+    expect(edit.chimpsEventChoice(off)).toBe("Off");
+  });
+});
+
 describe("Advanced Mode (#95)", () => {
   /** Lych Elite at 150 % speed, 80 % health and 4 skulls in Standard */
   const standard = () =>

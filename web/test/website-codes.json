@@ -438,6 +438,65 @@
       "challenge": {}
     },
     {
+      "name": "chimps: newest event rounds",
+      "code": "CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTa3VUUoGSebmp6QqWSk552QmZxcr1dYCAA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": true
+      },
+      "challenge": {
+        "mode": "Clicks"
+      }
+    },
+    {
+      "name": "chimps: earlier event rounds",
+      "code": "CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTdVRcs7IzC0ohokpuSYW5WSmFinV6iglg3Tl5qekKlkpOedkJmcXK9XWAgA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": true,
+        "ChimpsRounds": "Earlier"
+      },
+      "challenge": {
+        "mode": "Clicks"
+      }
+    },
+    {
+      "name": "chimps: earlier, then off",
+      "code": "CBC1:q1bKV7KqVnLOyMwtKA7KL81LKVayUnJNLMrJTC1SqtVRSgZJ5-anpCpZKTnnZCZnFyvV1gIA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false,
+        "ChimpsRounds": "Earlier"
+      },
+      "challenge": {
+        "mode": "Clicks"
+      }
+    },
+    {
       "name": "rules: game",
       "code": "CBC1:LckxCoAwDAXQq8ifc4KsLrp7gdAmWGhaqTpI6d0FcXy8jgrugxDAHS4HGGsxbUUyCDGZpXDn6wFjkRZB8Br1U7ZZzh2EIq7_T1tyPTHGCw",
       "options": {

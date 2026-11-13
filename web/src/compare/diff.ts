@@ -1,5 +1,6 @@
 // Compares two setups (issue #35): every option side by side, which ones differ, and a short verdict where it's clear
 
+import { eventRoundsText } from "../preview/eventRounds";
 import { GAME, towerName } from "../data/types";
 import type { Challenge } from "@cbc/share-code";
 import {
@@ -9,7 +10,6 @@ import {
   SKULL_MODE_NAMES,
   tierBossName,
   tierSkullMode,
-  usesBossEventRounds,
   type BossOptions,
   type SkullMode,
 } from "@cbc/share-code";
@@ -81,7 +81,7 @@ export function compareRows(a: Setup, b: Setup): Row[] {
   add("Tiers", "Speed per Tier", (s) => perTier(s.options.SpeedPerTier));
   add("Tiers", "Health per Tier", (s) => perTier(s.options.HealthPerTier));
   add("Tiers", "Spawn rounds", (s) => effectiveSpawnRounds(s.options).join(", "));
-  add("Tiers", "Boss Event Rounds", (s) => yesNo(usesBossEventRounds(s.options)));
+  add("Tiers", "Boss Event Rounds", (s) => eventRoundsText(s.options, s.challenge.mode));
   // With Advanced Mode on either side, each tier's boss
   if (isMixed(a.options) || isMixed(b.options)) {
     add("Tiers", "Advanced Mode", (s) => yesNo(isMixed(s.options)));

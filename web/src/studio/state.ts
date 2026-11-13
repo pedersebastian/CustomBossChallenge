@@ -143,6 +143,20 @@ export const resetSpawnRounds = (setup: StudioSetup): StudioSetup => withOptions
 
 export const setBossEventRounds = (setup: StudioSetup, on: boolean): StudioSetup => withOptions(setup, { BossEventRounds: on });
 
+/** The CHIMPS dropdown's entries in the Boss Creator: Off, the newest CHIMPS events' rounds or the earlier ones' (#139) */
+export const CHIMPS_EVENT_CHOICES = ["Off", "Newest", "Earlier"] as const;
+export type ChimpsEventChoice = (typeof CHIMPS_EVENT_CHOICES)[number];
+
+/** The CHIMPS dropdown's entry for the setup (BossEditorSection.ChimpsIndex) */
+export const chimpsEventChoice = (setup: StudioSetup): ChimpsEventChoice =>
+  !setup.options.BossEventRounds ? "Off" : setup.options.ChimpsRounds === "Earlier" ? "Earlier" : "Newest";
+
+/** Picks an entry of the CHIMPS dropdown; Off keeps which rounds were picked, like the game */
+export const setChimpsEventRounds = (setup: StudioSetup, choice: ChimpsEventChoice): StudioSetup =>
+  choice === "Off"
+    ? withOptions(setup, { BossEventRounds: false })
+    : withOptions(setup, { BossEventRounds: true, ChimpsRounds: choice });
+
 // ---------- Skulls ----------
 
 export const setSkullMode = (setup: StudioSetup, mode: SkullMode): StudioSetup => withOptions(setup, { SkullMode: mode });

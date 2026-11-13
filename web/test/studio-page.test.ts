@@ -8,6 +8,7 @@ import { h } from "../src/dom";
 import { EXAMPLES } from "../src/data/types";
 import { setUpStudio, type Studio } from "../src/studio/render";
 import { newSetup } from "../src/studio/state";
+import { encode } from "./encode";
 
 let studio: Studio;
 let form: HTMLFormElement;
@@ -102,6 +103,37 @@ describe("the Studio page", () => {
     mode.value = "Custom";
     mode.dispatchEvent(new Event("change"));
     expect(rowOf("Skulls at Boss HP %").hidden).toBe(false);
+  });
+
+  it("in CHIMPS, has the Boss Creator's dropdown for the event rounds and keeps Earlier (#139)", async () => {
+    const eventRows = (): HTMLElement[] =>
+      [...form.querySelectorAll<HTMLElement>(":scope > .studio-row")].filter((r) => r.querySelector("label")?.textContent === "Boss Event Rounds");
+    await studio.load(newSetup(), null);
+    expect(eventRows().map((r) => r.hidden)).toEqual([false, true]);
+
+    await openCode(await encode({ c: { mode: "Clicks" }, o: { BossEventRounds: true, ChimpsRounds: "Earlier" } }, "CBC4:"));
+    const [tick, dropdown] = eventRows();
+    expect(tick.hidden).toBe(true);
+    expect(dropdown.hidden).toBe(false);
+    const select = dropdown.querySelector("select")!;
+    expect(select.value).toBe("Earlier");
+    expect(preview.textContent).toContain("CHIMPS boss events");
+
+    // Another change keeps the earlier rounds in the code
+    const tiers = rowOf("Boss Tiers").querySelector("input")!;
+    tiers.value = "3";
+    tiers.dispatchEvent(new Event("input"));
+    await studio.flush();
+    let read = await decode(studio.code());
+    if (!read.ok) throw new Error(read.reason);
+    expect(read.options).toMatchObject({ Tiers: 3, BossEventRounds: true, ChimpsRounds: "Earlier" });
+
+    select.value = "Newest";
+    select.dispatchEvent(new Event("change"));
+    await studio.flush();
+    read = await decode(studio.code());
+    if (!read.ok) throw new Error(read.reason);
+    expect(read.options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Newest" });
   });
 
   it("copies the code it shows", async () => {

@@ -150,6 +150,7 @@ public sealed record BossOptions
         {
             Boss = System.Enum.IsDefined(Boss) ? Boss : defaults.Boss,
             SkullMode = System.Enum.IsDefined(SkullMode) ? SkullMode : defaults.SkullMode,
+            ChimpsRounds = System.Enum.IsDefined(ChimpsRounds) ? ChimpsRounds : defaults.ChimpsRounds,
             SkullCount = System.Math.Clamp(SkullCount, 0, SkullMath.MaxSkulls),
             CustomSkulls = SkullMath.NormalizeCustom(CustomSkulls, defaults.CustomSkulls),
             Tiers = TierMath.ClampTiers(Tiers),

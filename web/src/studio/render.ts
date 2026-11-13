@@ -4,7 +4,7 @@
 import { decode } from "@cbc/share-code";
 import { encode } from "@cbc/share-code";
 import { compareLinkTo, hashFor, linkTo } from "../code/link";
-import { SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, isMixed, type SkullMode } from "@cbc/share-code";
+import { CHIMPS_MODE, SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, isMixed, type SkullMode } from "@cbc/share-code";
 import { copyWithFeedback, h } from "../dom";
 import { GAME } from "../data/types";
 import { paragonsText, fromSlider } from "../math/paragons";
@@ -32,6 +32,13 @@ import { setUpTierEditor } from "./tiers";
 import { setUpBossPicker } from "./bossPicker";
 import { icon } from "./icons";
 import { setUpRulesSection } from "./rulesSection";
+
+/** The CHIMPS dropdown's entries as the Boss Creator names them (Texts.EventRoundsOff, ChimpsRoundsNewest, ...) */
+const CHIMPS_EVENT_NAMES: Record<edit.ChimpsEventChoice, string> = {
+  Off: "Off",
+  Newest: "Newest CHIMPS events (hard)",
+  Earlier: "Earlier CHIMPS events (harder)",
+};
 
 /** How long to wait after the last change before making the code and the preview again */
 export const UPDATE_DELAY = 150;
@@ -163,6 +170,14 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     reset("Spawn Rounds", () => change(edit.resetSpawnRounds)),
   );
   const eventRounds = checkbox("Boss Event Rounds", (s) => s.options.BossEventRounds, edit.setBossEventRounds);
+  // In CHIMPS the tick is a dropdown, like in the Boss Creator (#139)
+  const chimpsEventRounds = select(
+    "Boss Event Rounds",
+    edit.CHIMPS_EVENT_CHOICES,
+    (choice) => CHIMPS_EVENT_NAMES[choice as edit.ChimpsEventChoice],
+    edit.chimpsEventChoice,
+    (s, choice) => edit.setChimpsEventRounds(s, choice as edit.ChimpsEventChoice),
+  );
 
   const skullMode = select(
     "Skulls",
@@ -177,7 +192,7 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
 
   const controls: Control[] = [
     boss, bossSpeed, bossHealth, maxParagons, tiers, speedPerTier, healthPerTier,
-    firstRound, roundsBetween, spawnRounds, eventRounds, skullMode, skullCount, customSkulls,
+    firstRound, roundsBetween, spawnRounds, eventRounds, chimpsEventRounds, skullMode, skullCount, customSkulls,
   ];
   // Where the Boss Creator has them (#133): the Tier Preview right after the tier rows, which in Advanced Mode is the
   // strip that opens each tier's picker, and the Skull Preview under the skull rows
@@ -208,6 +223,9 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     bossSpeed.row.hidden = mixed && edit.bossSpeed(setup) === 100;
     bossHealth.row.hidden = mixed && edit.bossHealth(setup) === 100;
     skullMode.row.hidden = mixed;
+    const chimps = setup.challenge.mode === CHIMPS_MODE;
+    eventRounds.row.hidden = chimps;
+    chimpsEventRounds.row.hidden = !chimps;
     skullCount.row.hidden = mixed || setup.options.SkullMode !== "EvenlySpaced";
     customSkulls.row.hidden = mixed || setup.options.SkullMode !== "Custom";
 
