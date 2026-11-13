@@ -50,7 +50,7 @@ To build your own tools for share codes, see the [share-code package](web/packag
     boss event (Diamondback, 2026) or the earlier ones (Bloonarius and Dreadbloon), the same for every boss. Neither
     set is simply harder (#157): the newest have no regrow but denser rounds with more raw RBE, a check of your damage
     most of all on rounds 41 to 120; the earlier ones have regrow, camo regrow and DDTs (rounds 85, 87 and 93) spread
-    over longer rounds, a check of your detection. The boss rounds are nearly the same. The **i** next to the dropdown
+    over longer rounds, a check of your detection. The rounds made for the bosses are nearly the same, wherever your Spawn Rounds put them. The **i** next to the dropdown
     explains this in the game. The mod brings those round sets along, since the game only gets them during an event: from
     [Blooncyclopedia](https://www.bloonswiki.com/Stats:Bloons_TD_6/Roundsets/chimpsbloonarius) and
     [BTD6 API Explorer](https://github.com/HalfHydra/BTD6-API-Explorer).

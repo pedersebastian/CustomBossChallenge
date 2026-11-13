@@ -125,7 +125,7 @@
   "CustomBossChallenge-EventRoundsOff": "关闭",
   "CustomBossChallenge-ChimpsRoundsNewest": "最新 CHIMPS 活动（无再生，密集）",
   "CustomBossChallenge-ChimpsRoundsEarlier": "更早的 CHIMPS 活动（再生，DDT）",
-  "CustomBossChallenge-ChimpsRoundsInfo": "两套 CHIMPS 回合都比普通回合难得多，但难在不同的地方：没有哪一套只是更难。它们的 140 个回合中只有 9 个相同。\n\n最新 CHIMPS 活动（Diamondback，2026）：完全没有再生气球。气球以更少、更大的组出现，回合时长约为一半，所以同时涌来的更多。压力来自 MOAB 级气球和大量普通气球，比如第 49 回合的 1372 个绿气球。它考验你的伤害，尤其是第 41 到 120 回合。\n\n更早的 CHIMPS 活动（Bloonarius 2024，Dreadbloon 2025）：大量再生和迷彩再生气球，第 85、87、93 回合有 DDT，后期还有额外的 BAD，分布在更长的回合中。它考验你的迷彩侦测，以及能否在再生气球长回去之前打爆它们。\n\nBoss 回合（40、60、80、100、120 和 140）在两套中几乎相同。",
+  "CustomBossChallenge-ChimpsRoundsInfo": "两套 CHIMPS 回合都比普通回合难得多，但难在不同的地方：没有哪一套只是更难。它们的 140 个回合中只有 9 个相同。\n\n最新 CHIMPS 活动（Diamondback，2026）：完全没有再生气球。气球以更少、更大的组出现，回合时长约为一半，所以同时涌来的更多。压力来自 MOAB 级气球和大量普通气球，比如第 49 回合的 1372 个绿气球。它考验你的伤害，尤其是第 41 到 120 回合。\n\n更早的 CHIMPS 活动（Bloonarius 2024，Dreadbloon 2025）：大量再生和迷彩再生气球，第 85、87、93 回合有 DDT，后期还有额外的 BAD，分布在更长的回合中。它考验你的迷彩侦测，以及能否在再生气球长回去之前打爆它们。\n\n为 Boss 设计的回合（活动中为第 40、60、80、100、120 和 140 回合）在两套中几乎相同。使用其他出场回合时，它们会随层级一起移动。",
   "CustomBossChallenge-Ranked Practice Category": "排位练习",
   "CustomBossChallenge-ShowRankedStats Setting Name": "显示排位数据",
   "CustomBossChallenge-ShowRankedStats Setting Description": "在自定义首领游戏中显示排位首领活动所计的数据：各首领存活时间的总和、无首领回合拖延的惩罚，以及已用升级等级和已用金钱。获胜后还会显示每个阶段的用时，这样 Least Tiers 或 Least Cash 的尝试也能按时间比较。自定义游戏仍不计排名。",

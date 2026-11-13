@@ -100,8 +100,8 @@ public static class Texts
         "Greens on round 49. It tests your damage, most of all from round 41 to 120.\n\nEarlier CHIMPS events " +
         "(Bloonarius 2024, Dreadbloon 2025): many regrow and camo regrow bloons, DDTs on rounds 85, 87 and 93 and " +
         "extra BADs late in the game, spread over longer rounds. It tests your camo detection and popping regrow " +
-        "bloons before they grow back.\n\nThe boss rounds (40, 60, 80, 100, 120 and 140) are nearly the same in both " +
-        "sets.");
+        "bloons before they grow back.\n\nThe rounds made for the bosses, rounds 40, 60, 80, 100, 120 and 140 in the " +
+        "events, are nearly the same in both sets. With other Spawn Rounds they move with the tiers.");
     public static readonly string SpawnRounds = Key(nameof(SpawnRounds), "Spawn Rounds");
     public static readonly string SpawnRoundsInfo = Key(nameof(SpawnRoundsInfo),
         "The round each tier arrives on, separated by commas, e.g. 40, 60, 80. Missing rounds continue every 20 " +
