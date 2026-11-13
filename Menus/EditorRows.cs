@@ -232,19 +232,91 @@ public static class EditorRows
     }
 
     /// <summary>The width of the frame around an opened dropdown list</summary>
-    public const float ListFrame = 6;
+    public const float ListFrame = 8;
+
+    /// <summary>The radius of the opened list's rounded corners</summary>
+    public const int ListFrameRadius = 28;
+
+    /// <summary>The name of the frame's object, the last child of the dropdown's list</summary>
+    public const string ListFrameName = "ListFrame";
+
+    private static Sprite? listFillSprite;
+    private static Sprite? listFrameSprite;
 
     /// <summary>
-    /// A white frame around the dropdown's opened list, so it stands out from the rows behind it
+    /// Rounded corners and a white frame for the dropdown's opened list, so it stands out from the rows behind it. The
+    /// list masks its entries with its own shape, so the entries get the rounded corners too and the frame lies just
+    /// inside the edge.
     /// </summary>
     public static void FrameList(ModHelperDropdown dropdown)
     {
-        var outline = dropdown.TemplatePanel.gameObject.AddComponent<Outline>();
-        outline.effectColor = Color.white;
-        outline.effectDistance = new Vector2(ListFrame, -ListFrame);
-        var inner = dropdown.TemplatePanel.gameObject.AddComponent<Outline>();
-        inner.effectColor = Color.white;
-        inner.effectDistance = new Vector2(-ListFrame, ListFrame);
+        var list = dropdown.TemplatePanel.gameObject;
+        // The game's canvas counts far fewer pixels per unit than a sprite's 100, which would shrink the corners to
+        // a few units: this gives them their size in units
+        var unitScale = (list.GetComponentInParent<Canvas>()?.referencePixelsPerUnit ?? 100) / 100f;
+        var background = list.GetComponent<Image>();
+        if (background != null)
+        {
+            background.sprite = listFillSprite ??= RoundedSprite(false);
+            background.type = Image.Type.Sliced;
+            background.pixelsPerUnitMultiplier = unitScale;
+        }
+
+        var frame = new GameObject(ListFrameName);
+        frame.transform.SetParent(list.transform, false);
+        var rect = frame.AddComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+        var image = frame.AddComponent<Image>();
+        image.sprite = listFrameSprite ??= RoundedSprite(true);
+        image.type = Image.Type.Sliced;
+        image.pixelsPerUnitMultiplier = unitScale;
+        image.color = Color.white;
+        image.raycastTarget = false;
+        frame.transform.SetAsLastSibling();
+
+        // The entries keep clear of the frame
+        var text = dropdown.Dropdown.itemText;
+        if (text != null) text.margin = new Vector4(ListFrame * 3, 0, ListFrame * 3, 0);
+    }
+
+    /// <summary>
+    /// A white square with rounded corners, or only its <see cref="ListFrame"/> wide edge, sliced so the corners keep
+    /// their shape at any size
+    /// </summary>
+    private static Sprite RoundedSprite(bool ring)
+    {
+        const int size = ListFrameRadius * 2 + 4;
+        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+        {
+            wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear, hideFlags = HideFlags.DontUnloadUnusedAsset
+        };
+        var half = size / 2f;
+        for (var y = 0; y < size; y++)
+        for (var x = 0; x < size; x++)
+        {
+            var point = new Vector2(x + 0.5f - half, y + 0.5f - half);
+            var alpha = Mathf.Clamp01(0.5f - RoundedBox(point, half, ListFrameRadius));
+            if (ring) alpha -= Mathf.Clamp01(0.5f - RoundedBox(point, half - ListFrame, ListFrameRadius - ListFrame));
+            texture.SetPixel(x, y, new Color(1, 1, 1, Mathf.Clamp01(alpha)));
+        }
+        texture.Apply();
+        var border = ListFrameRadius + 1;
+        var sprite = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100, 0,
+            SpriteMeshType.FullRect, new Vector4(border, border, border, border));
+        sprite.name = ring ? "CbcListFrame" : "CbcListFill";
+        sprite.hideFlags = HideFlags.DontUnloadUnusedAsset;
+        return sprite;
+    }
+
+    /// <summary>How far <paramref name="point"/> is outside a square of half size <paramref name="half"/> with rounded corners</summary>
+    private static float RoundedBox(Vector2 point, float half, float radius)
+    {
+        var qx = Mathf.Abs(point.x) - half + radius;
+        var qy = Mathf.Abs(point.y) - half + radius;
+        return new Vector2(Mathf.Max(qx, 0), Mathf.Max(qy, 0)).magnitude + Mathf.Min(Mathf.Max(qx, qy), 0) - radius;
     }
 
     /// <summary>Where the right edge of a control made with <see cref="ControlInfo"/> and no offset is</summary>

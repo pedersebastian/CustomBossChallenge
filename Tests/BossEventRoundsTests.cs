@@ -422,6 +422,7 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         AssertEquals(chimpsRounds.Dropdown.options.Count, 4, "Off, newest, earlier and the boss's own");
         Assert(chimpsRounds.TemplatePanel.RectTransform.sizeDelta.y >= 4 * Menus.BossEditorSection.ChimpsItemHeight,
             $"The opened list has room for all four entries: {chimpsRounds.TemplatePanel.RectTransform.sizeDelta.y}");
+        Assert(chimpsRounds.TemplatePanel.transform.Find(Menus.EditorRows.ListFrameName) != null, "The opened list has its frame");
         AssertEquals(chimpsRounds.Dropdown.captionText.text, Menus.Texts.ChimpsRoundsNewest.T(),
             $"The entry's text as it is, not taken for a key (option '{chimpsRounds.Dropdown.options[1].text}')");
         AssertEquals(chimpsRounds.Dropdown.value, 1, "Ticked shows the newest CHIMPS rounds");
