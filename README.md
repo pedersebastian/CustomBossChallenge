@@ -51,7 +51,7 @@ To build your own tools for share codes, see the [share-code package](web/packag
     set is simply harder (#157): the newest have no regrow but denser rounds with more raw RBE, a check of your damage
     most of all on rounds 41 to 120; the earlier ones have regrow, camo regrow and DDTs (rounds 85, 87 and 93) spread
     over longer rounds, a check of your detection. The rounds made for the bosses are nearly the same, wherever your Spawn Rounds put them. The **i** next to the dropdown
-    explains this in the game. You can also pick the boss's own event rounds, like in the other modes. The mod brings
+    explains this in the game, and the **CHIMPS Throwback** example plays the earlier ones. You can also pick the boss's own event rounds, like in the other modes. The mod brings
     the CHIMPS round sets along, since the game only gets them during an event: from
     [Blooncyclopedia](https://www.bloonswiki.com/Stats:Bloons_TD_6/Roundsets/chimpsbloonarius) and
     [BTD6 API Explorer](https://github.com/HalfHydra/BTD6-API-Explorer).
@@ -168,7 +168,7 @@ The **Saved Setups** row keeps your favourite setups in the game, so you can swi
   replaces your current one.
 - **Delete** removes the picked setup, after asking.
 - After your own setups, the list has a few **examples** to try, marked in gold with "Example:", such as Marathon
-  Lych and Glass Cannon. Load one, change it and save it as your own; the examples themselves can't be deleted. The
+  Lych and Glass Cannon, or CHIMPS Throwback for CHIMPS with the earlier CHIMPS boss events' rounds. Load one, change it and save it as your own; the examples themselves can't be deleted. The
   [website](https://pedersebastian.github.io/CustomBossChallenge/) has the same ones as share codes.
 
 Up to 50 setups are kept, in `BloonsTD6/UserData/CustomBossChallenge/SavedSetups.json`.

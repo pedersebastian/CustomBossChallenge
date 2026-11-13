@@ -63,6 +63,13 @@ public static class ExampleSetups
                 dcm.difficulty = "Hard";
                 dcm.map = "Infernal";
             }),
+        Example("ChimpsThrowback", "CHIMPS Throwback",
+            "CHIMPS with the earlier boss event rounds: regrow, camo regrow and DDTs, no selling, no continues.",
+            new BossOptions {Boss = BossType.Bloonarius, BossEventRounds = true, ChimpsRounds = ChimpsRounds.Earlier}, dcm =>
+            {
+                dcm.difficulty = "Hard";
+                dcm.mode = BossOptions.ChimpsMode;
+            }),
         Example("BossGauntlet", "Boss Gauntlet", "Seven tiers, seven bosses: every boss in the game, one after the other.",
             new BossOptions {Tiers = 7, TierBosses = "Bloonarius,Lych,Vortex,Dreadbloon,Phayze,Blastapopoulos,Diamondback"},
             _ => { })
