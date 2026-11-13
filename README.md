@@ -211,7 +211,7 @@ CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJS
 And the Boss Gauntlet example, a different boss on each of its 7 tiers, is a `CBC3:` code:
 
 ```
-CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg2iiTKoSreNzfjS3LhD46ZyU_d4WOm7ctoI2mhVVapURTHQIskP5F7Q0Nw_SLRwj15tE83qqlELoCgzB7McB4urf0A
+CBC3:HY2xCsMwDER_pWjWUDK04DEESiFDh5BdSQQ2dSxjOdA05N9rd7u7B_cOEDAHDI6TgrnjP7WiyqVC60UCJbcp9vtscZSU-YNdYlqmyvBlaf8ytp40U5QomxfFztEqYZlofsOJMFfFSrE8PsNguReJgBBo5SoptsuDtpA95zIr8wKmuTa38_wB
 ```
 
 ![Share Code](docs/share-code.jpg)
