@@ -47,6 +47,7 @@ const CHIMPS_EVENT_NAMES: Record<edit.ChimpsEventChoice, string> = {
   Off: MOD_TEXTS.EventRoundsOff,
   Newest: MOD_TEXTS.ChimpsRoundsNewest,
   Earlier: MOD_TEXTS.ChimpsRoundsEarlier,
+  Own: MOD_TEXTS.ChimpsRoundsOwn,
 };
 
 /** How long to wait after the last change before making the code and the preview again */

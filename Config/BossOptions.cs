@@ -102,19 +102,27 @@ public sealed record BossOptions
     /// </summary>
     public const string ChimpsBloonariusRoundSet = "chimpsbloonarius";
 
-    /// <summary>The round set of the CHIMPS boss events <paramref name="chimps"/> picks</summary>
-    public static string ChimpsEventRoundSet(ChimpsRounds chimps) =>
-        chimps == ChimpsRounds.Earlier ? ChimpsBloonariusRoundSet : ChimpsBossRoundSet;
+    /// <summary>
+    /// The round set of the CHIMPS boss events <paramref name="chimps"/> picks, or null for the boss's own event rounds
+    /// (<see cref="ChimpsRounds.Own"/>)
+    /// </summary>
+    public static string? ChimpsEventRoundSet(ChimpsRounds chimps) => chimps switch
+    {
+        ChimpsRounds.Own => null,
+        ChimpsRounds.Earlier => ChimpsBloonariusRoundSet,
+        _ => ChimpsBossRoundSet
+    };
 
     /// <summary>Whether <paramref name="name"/> is one of the CHIMPS boss events' round sets</summary>
     public static bool IsChimpsEventRoundSet(string? name) => name is ChimpsBossRoundSet or ChimpsBloonariusRoundSet;
 
     /// <summary>
     /// The event round set a tier with <paramref name="boss"/> plays in <paramref name="mode"/>: the CHIMPS events'
-    /// set <paramref name="chimps"/> picks in CHIMPS, the boss's own set in every other mode
+    /// set <paramref name="chimps"/> picks in CHIMPS, the boss's own set in every other mode and in CHIMPS with
+    /// <see cref="ChimpsRounds.Own"/>
     /// </summary>
     public static string EventRoundSet(BossType boss, string? mode, ChimpsRounds chimps = ChimpsRounds.Newest) =>
-        mode == ChimpsMode ? ChimpsEventRoundSet(chimps) : BossEventRoundSet(boss);
+        (mode == ChimpsMode ? ChimpsEventRoundSet(chimps) : null) ?? BossEventRoundSet(boss);
 
     /// <summary>The event round set <paramref name="tier"/> plays in <paramref name="mode"/></summary>
     public string EventRoundSetIn(int tier, string? mode) => EventRoundSet(BossOf(tier).Boss, mode, ChimpsRounds);
@@ -241,7 +249,8 @@ public sealed record BossOptions
 }
 
 /// <summary>
-/// The CHIMPS boss events' round sets Boss Event Rounds can play in CHIMPS (#139)
+/// The round sets Boss Event Rounds can play in CHIMPS (#139): one of the CHIMPS boss events', or the boss's own. New
+/// values go at the end, so the numbers in saves and codes keep their meaning.
 /// </summary>
 public enum ChimpsRounds
 {
@@ -249,5 +258,11 @@ public enum ChimpsRounds
     Newest,
 
     /// <summary>The earlier CHIMPS boss events' rounds, "chimpsbloonarius" (Bloonarius 2024, Dreadbloon 2025)</summary>
-    Earlier
+    Earlier,
+
+    /// <summary>
+    /// The boss's own event rounds, as in the other modes and in CHIMPS before 2.11; in Advanced Mode every tier gets the
+    /// round made for its own boss
+    /// </summary>
+    Own
 }

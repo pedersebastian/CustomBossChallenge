@@ -7,6 +7,21 @@
       "warnings": []
     },
     {
+      "name": "CHIMPS with the newest CHIMPS events' rounds",
+      "facts": { "Mode": "Clicks", "Options": { "BossEventRounds": true } },
+      "warnings": ["ChimpsEventRounds"]
+    },
+    {
+      "name": "CHIMPS with the earlier CHIMPS events' rounds",
+      "facts": { "Mode": "Clicks", "Options": { "BossEventRounds": true, "ChimpsRounds": "Earlier" } },
+      "warnings": ["ChimpsEventRounds"]
+    },
+    {
+      "name": "CHIMPS with the boss's own event rounds has no CHIMPS warning",
+      "facts": { "Mode": "Clicks", "Options": { "BossEventRounds": true, "ChimpsRounds": "Own" } },
+      "warnings": []
+    },
+    {
       "name": "Start round 36, four rounds before the first boss",
       "facts": { "StartRound": 36 },
       "warnings": ["StartRoundClose"]

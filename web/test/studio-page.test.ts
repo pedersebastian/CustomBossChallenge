@@ -146,7 +146,7 @@ describe("the Studio page", () => {
 
     const chimps = [...form.querySelectorAll<HTMLElement>(":scope > .studio-row")].find((r) => !r.hidden && r.querySelector("select option[value=Earlier]"))!;
     const options = [...chimps.querySelectorAll("option")].map((o) => o.textContent);
-    expect(options).toEqual(["Off", "Newest CHIMPS events (no regrow, dense)", "Earlier CHIMPS events (regrow, DDTs)"]);
+    expect(options).toEqual(["Off", "Newest CHIMPS events (no regrow, dense)", "Earlier CHIMPS events (regrow, DDTs)", "Boss's own event rounds (like other modes)"]);
     const choiceInfo = chimps.querySelector<HTMLButtonElement>(".studio-control > .studio-info")!;
     expect(choiceInfo.previousElementSibling?.tagName).toBe("SELECT");
     expect(choiceInfo.getAttribute("aria-label")).toBe("About the CHIMPS round sets");
@@ -155,8 +155,9 @@ describe("the Studio page", () => {
     choiceInfo.click();
     expect(panel.hidden).toBe(false);
     expect(choiceInfo.getAttribute("aria-expanded")).toBe("true");
-    expect(panel.querySelectorAll("p")).toHaveLength(4);
+    expect(panel.querySelectorAll("p")).toHaveLength(5);
     expect(panel.textContent).toContain("no regrow bloons at all");
+    expect(panel.textContent).toContain("Boss's own event rounds:");
     choiceInfo.click();
     expect(panel.hidden).toBe(true);
     expect(choiceInfo.getAttribute("aria-expanded")).toBe("false");

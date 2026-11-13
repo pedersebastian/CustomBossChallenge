@@ -6,6 +6,7 @@ import { NO_LIMIT, fromSlider, toSlider } from "../src/math/paragons";
 import { GAME } from "../src/data/types";
 import { effectiveSpawnRounds } from "@cbc/share-code";
 import * as edit from "../src/studio/state";
+import { chimpsEventWarning, eventRoundsText } from "../src/preview/eventRounds";
 import { FOLLOWS } from "@cbc/share-code/tier-bosses";
 
 const fresh = edit.newSetup;
@@ -108,6 +109,23 @@ describe("CHIMPS event rounds (#139)", () => {
     const off = edit.setChimpsEventRounds(earlier, "Off");
     expect(off.options).toMatchObject({ BossEventRounds: false, ChimpsRounds: "Earlier" });
     expect(edit.chimpsEventChoice(off)).toBe("Off");
+  });
+
+  it("picks the boss's own event rounds, the dropdown's last entry", () => {
+    expect(edit.CHIMPS_EVENT_CHOICES).toEqual(["Off", "Newest", "Earlier", "Own"]);
+    const own = edit.setChimpsEventRounds(fresh(), "Own");
+    expect(own.options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Own" });
+    expect(edit.chimpsEventChoice(own)).toBe("Own");
+  });
+
+  it("warns only about the CHIMPS events' rounds, like SetupWarnings", () => {
+    const on = edit.setChimpsEventRounds(fresh(), "Newest").options;
+    const own = edit.setChimpsEventRounds(fresh(), "Own").options;
+    expect(chimpsEventWarning(on, "Clicks")).not.toBeNull();
+    expect(chimpsEventWarning({ ...on, ChimpsRounds: "Earlier" }, "Clicks")).not.toBeNull();
+    expect(chimpsEventWarning(own, "Clicks")).toBeNull();
+    expect(eventRoundsText(own, "Clicks")).toBe("Boss's own event rounds");
+    expect(eventRoundsText(own, "Standard")).toBe("Yes");
   });
 });
 

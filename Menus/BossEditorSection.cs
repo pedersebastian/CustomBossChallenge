@@ -337,13 +337,22 @@ public sealed class BossEditorSection
         chimpsEntries.Add(Texts.EventRoundsOff.T());
         chimpsEntries.Add(Texts.ChimpsRoundsNewest.T());
         chimpsEntries.Add(Texts.ChimpsRoundsEarlier.T());
-        ChimpsEventRounds = ModHelperDropdown.Create(EditorRows.ControlInfo("ChimpsEventRounds", ChimpsDropdownWidth, 150),
-            chimpsEntries, 500, new Action<int>(index => UpdateOptions("ChimpsEventRounds", o => o with
+        chimpsEntries.Add(Texts.ChimpsRoundsOwn.T());
+        // The opened list has room for every entry, so none of them is cut off or needs scrolling
+        ChimpsEventRounds = ModHelperDropdown.Create(EditorRows.ControlInfo("ChimpsEventRounds", ChimpsDropdownWidth, ChimpsItemHeight),
+            chimpsEntries, chimpsEntries.Count * ChimpsItemHeight, new Action<int>(index => UpdateOptions("ChimpsEventRounds", o => o with
             {
                 BossEventRounds = index > 0,
-                ChimpsRounds = index > 1 ? Config.ChimpsRounds.Earlier : index == 1 ? Config.ChimpsRounds.Newest : o.ChimpsRounds
+                ChimpsRounds = index switch
+                {
+                    1 => Config.ChimpsRounds.Newest,
+                    2 => Config.ChimpsRounds.Earlier,
+                    3 => Config.ChimpsRounds.Own,
+                    _ => o.ChimpsRounds
+                }
             })), VanillaSprites.BlueInsertPanelRound, 60);
         ChimpsEventRounds.transform.SetParent(BossEventRoundsRow.transform, false);
+        EditorRows.FrameList(ChimpsEventRounds);
         // The entries are longer than the skull modes: they shrink to fit instead of running past the arrow
         foreach (var text in new[] {ChimpsEventRounds.Dropdown.captionText, ChimpsEventRounds.Dropdown.itemText})
         {
@@ -381,6 +390,7 @@ public sealed class BossEditorSection
                 Relayout();
             }), VanillaSprites.BlueInsertPanelRound, 70);
         SkullMode.transform.SetParent(skullModeRow.transform, false);
+        EditorRows.FrameList(SkullMode);
         ResetSkullsButton = EditorRows.ResetButton(skullModeRow, "ResetSkulls", ResetSkulls);
 
         SkullCount = SliderRow.Clone(template, rows, "SkullCountRow", Texts.SkullCount.T(), VanillaSprites.CrossboneSkull,
@@ -413,6 +423,7 @@ public sealed class BossEditorSection
                 if (index >= 0 && index < savedNames.Count + Examples.Count) Select(index);
             }), VanillaSprites.BlueInsertPanelRound, 60);
         SavedList.transform.SetParent(savedRow.transform, false);
+        EditorRows.FrameList(SavedList);
         // Long names, and "Example:" in front of the examples, shrink a little and then end in "…" instead of
         // running past the list
         foreach (var text in new[] {SavedList.Dropdown.captionText, SavedList.Dropdown.itemText})
@@ -463,6 +474,9 @@ public sealed class BossEditorSection
 
     /// <summary>The CHIMPS dropdown's width, leaving room for its i on the right (#157)</summary>
     public const float ChimpsDropdownWidth = 1180;
+
+    /// <summary>The height of the CHIMPS dropdown and of each entry in its opened list</summary>
+    public const float ChimpsItemHeight = 150;
 
     public const float SavedListWidth = 760;
     public const float SavedListHeight = 750;
@@ -1425,16 +1439,21 @@ public sealed class BossEditorSection
         ChimpsEventRounds.Dropdown.SetValueWithoutNotify(ChimpsIndex(options));
     }
 
-    /// <summary>The CHIMPS dropdown's entry for <paramref name="options"/>: Off, Newest or Earlier</summary>
-    public static int ChimpsIndex(BossOptions options) =>
-        !options.BossEventRounds ? 0 : options.ChimpsRounds == Config.ChimpsRounds.Earlier ? 2 : 1;
+    /// <summary>The CHIMPS dropdown's entry for <paramref name="options"/>: Off, Newest, Earlier or the boss's own</summary>
+    public static int ChimpsIndex(BossOptions options) => !options.BossEventRounds ? 0 : options.ChimpsRounds switch
+    {
+        Config.ChimpsRounds.Earlier => 2,
+        Config.ChimpsRounds.Own => 3,
+        _ => 1
+    };
 
     /// <summary>The text of the CHIMPS dropdown's entry for <paramref name="options"/></summary>
     public static string ChimpsEntry(BossOptions options) => ChimpsIndex(options) switch
     {
         0 => Texts.EventRoundsOff,
         1 => Texts.ChimpsRoundsNewest,
-        _ => Texts.ChimpsRoundsEarlier
+        2 => Texts.ChimpsRoundsEarlier,
+        _ => Texts.ChimpsRoundsOwn
     };
 
     /// <summary>

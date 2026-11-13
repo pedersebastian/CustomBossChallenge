@@ -87,11 +87,16 @@ public static class Texts
         "boss, and the other rounds follow the first tier's boss. In CHIMPS, pick the rounds of the newest CHIMPS " +
         "boss event (Diamondback, 2026) or the earlier ones (Bloonarius and Dreadbloon), the same for every boss. " +
         "The newest have no regrow but denser rounds that test your damage; the earlier ones have regrow, camo " +
-        "regrow and DDTs that test your detection. The i next to the dropdown tells more.");
+        "regrow and DDTs that test your detection. The i next to the dropdown tells more. The dropdown also has the " +
+        "boss's own event rounds, as in the other modes.");
     public static readonly string EventRoundsOff = Key(nameof(EventRoundsOff), "Off");
     public static readonly string ChimpsRoundsNewest = Key(nameof(ChimpsRoundsNewest), "Newest CHIMPS events (no regrow, dense)");
     public static readonly string ChimpsRoundsEarlier = Key(nameof(ChimpsRoundsEarlier), "Earlier CHIMPS events (regrow, DDTs)");
-    /// <summary>What the two CHIMPS round sets throw at the player, behind the i next to the dropdown (#157)</summary>
+    public static readonly string ChimpsRoundsOwn = Key(nameof(ChimpsRoundsOwn), "Boss's own event rounds (like other modes)");
+    /// <summary>
+    /// What the two CHIMPS round sets throw at the player, behind the i next to the dropdown (#157), and what the boss's
+    /// own event rounds are
+    /// </summary>
     public static readonly string ChimpsRoundsInfo = Key(nameof(ChimpsRoundsInfo),
         "Both CHIMPS round sets are much harder than the normal rounds, in different ways: neither is simply harder " +
         "than the other. Only 9 of their 140 rounds are the same.\n\nNewest CHIMPS events (Diamondback, 2026): no " +
@@ -101,7 +106,9 @@ public static class Texts
         "(Bloonarius 2024, Dreadbloon 2025): many regrow and camo regrow bloons, DDTs on rounds 85, 87 and 93 and " +
         "extra BADs late in the game, spread over longer rounds. It tests your camo detection and popping regrow " +
         "bloons before they grow back.\n\nThe rounds made for the bosses, rounds 40, 60, 80, 100, 120 and 140 in the " +
-        "events, are nearly the same in both sets. With other Spawn Rounds they move with the tiers.");
+        "events, are nearly the same in both sets. With other Spawn Rounds they move with the tiers.\n\nBoss's own " +
+        "event rounds: the rounds of the boss's events in the other modes, as CHIMPS played them before 2.11, close to " +
+        "the normal rounds. In Advanced Mode every tier arrives on the round made for its own boss.");
     public static readonly string SpawnRounds = Key(nameof(SpawnRounds), "Spawn Rounds");
     public static readonly string SpawnRoundsInfo = Key(nameof(SpawnRoundsInfo),
         "The round each tier arrives on, separated by commas, e.g. 40, 60, 80. Missing rounds continue every 20 " +

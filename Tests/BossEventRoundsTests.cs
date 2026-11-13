@@ -82,6 +82,17 @@ public class BossEventRoundsGameTest : CustomBossTest
         yield return Play(advanced, standard);
         AssertRounds(expected, $"Advanced Mode, each tier with its own boss's round ({second} on tier 2)");
 
+        // CHIMPS with the boss's own event rounds plays them exactly like Standard, also each tier's own in Advanced
+        var own = on with {Boss = BossType.Dreadbloon, ChimpsRounds = ChimpsRounds.Own};
+        yield return Play(own, chimps);
+        AssertRounds(merged[BossType.Dreadbloon], "CHIMPS with the boss's own rounds plays Dreadbloon's");
+        Assert(InGameData.CurrentGame.dcModel.roundSets.Contains("dreadbloon"), "The game merges the boss's own set in CHIMPS");
+        Assert(!InGame.instance.GetGameModel().towerSellEnabled, "Still no selling in CHIMPS");
+        yield return Play(advanced with {ChimpsRounds = ChimpsRounds.Own}, chimps);
+        AssertRounds(expected, $"Advanced Mode in CHIMPS with the boss's own rounds ({second} on tier 2)");
+        yield return Restart();
+        AssertRounds(expected, "The same in CHIMPS after a restart");
+
         // Vortex first brings its extra rounds along
         yield return Play(on with {Tiers = 2, TierBosses = "Vortex,Lych"}, BaseDcm());
         var vortexFirst = Rounds(InGame.instance.GetGameModel().roundSet);
@@ -394,12 +405,24 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         AssertEquals(editor.dcm.mode, BossOptions.ChimpsMode, "CHIMPS picked");
         Assert(Warned(), "CHIMPS with Boss Event Rounds warns about the CHIMPS events' rounds");
 
-        // In CHIMPS the tick makes room for a dropdown: Off, the newest CHIMPS event's rounds or the earlier ones'
+        // In CHIMPS the tick makes room for a dropdown: Off, the newest CHIMPS event's rounds, the earlier ones' or the
+        // boss's own
         var chimpsRounds = section.ChimpsEventRounds;
         Assert(chimpsRounds.gameObject.activeInHierarchy && !section.BossEventRounds.gameObject.activeSelf,
             "CHIMPS shows the dropdown in place of the tick");
         Assert(section.ChimpsRoundsInfo.gameObject.activeInHierarchy, "The dropdown's i explains the round sets (#157)");
-        AssertEquals(chimpsRounds.Dropdown.options.Count, 3, "Off, newest and earlier");
+        section.ChimpsRoundsInfo.Button.onClick.Invoke();
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? infoPopup = null;
+        yield return WaitFor(() => (infoPopup = Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()) != null,
+            "Opening the CHIMPS info popup");
+        Assert(infoPopup!.body.text.Contains(Menus.Texts.ChimpsRoundsInfo.T()), $"CHIMPS info popup text: {infoPopup.body.text}");
+        AssertEquals(Menus.Texts.ChimpsRoundsInfo.T().Split("\n\n").Length, 5, "Both CHIMPS sets, the boss rounds and the boss's own rounds");
+        infoPopup.TryHidePop();
+        yield return new WaitForSecondsRealtime(1);
+        AssertEquals(chimpsRounds.Dropdown.options.Count, 4, "Off, newest, earlier and the boss's own");
+        Assert(chimpsRounds.TemplatePanel.RectTransform.sizeDelta.y >= 4 * Menus.BossEditorSection.ChimpsItemHeight,
+            $"The opened list has room for all four entries: {chimpsRounds.TemplatePanel.RectTransform.sizeDelta.y}");
+        Assert(chimpsRounds.TemplatePanel.transform.Find(Menus.EditorRows.ListFrameName) != null, "The opened list has its frame");
         AssertEquals(chimpsRounds.Dropdown.captionText.text, Menus.Texts.ChimpsRoundsNewest.T(),
             $"The entry's text as it is, not taken for a key (option '{chimpsRounds.Dropdown.options[1].text}')");
         AssertEquals(chimpsRounds.Dropdown.value, 1, "Ticked shows the newest CHIMPS rounds");
@@ -420,6 +443,18 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         BossHistory.Redo(editor);
         yield return null;
         Assert(BossMode.Options.ChimpsRounds == ChimpsRounds.Earlier && chimpsRounds.Dropdown.value == 2, "Redo picks the earlier again");
+        chimpsRounds.Dropdown.value = 3;
+        yield return null;
+        Assert(BossMode.Options is {BossEventRounds: true, ChimpsRounds: ChimpsRounds.Own}, "Picking the boss's own rounds");
+        Assert(!Warned(), "The boss's own rounds don't warn about the CHIMPS events' rounds");
+        AssertEquals(BossMode.Options.BaseEventRoundSetIn(BossOptions.ChimpsMode), BossOptions.BossEventRoundSet(BossMode.Options.Boss),
+            "The boss's own rounds play the boss's own set");
+        var ownCode = SetupCode.Encode(BossMode.Options, editor.dcm);
+        Assert(ownCode.StartsWith(SetupCode.Version5Prefix), $"The boss's own rounds in CHIMPS give a version 5 code: {ownCode}");
+        Assert(SetupCode.TryDecode(ownCode, out var ownRead, out _, out var ownProblem), $"The code reads back: {ownProblem}");
+        AssertEquals(ownRead, BossMode.Options, "The boss's own rounds read back from the code");
+        Assert(Menus.BossEditorSection.Summary(ownRead, editor.dcm).Contains(Menus.Texts.ChimpsRoundsOwn.T()),
+            "The summary names the boss's own rounds");
         chimpsRounds.Dropdown.value = 0;
         yield return null;
         Assert(!BossMode.Options.BossEventRounds, "Off turns Boss Event Rounds off");
@@ -446,6 +481,13 @@ public class BossEventRoundsCreatorTest : CustomBossTest
                 yield return new WaitForSecondsRealtime(1);
                 yield return ScreenshotTour.Capture(folder, $"chimps-dropdown-{(int) (at * 100)}");
             }
+            // The opened list, with every entry in full
+            scroll.verticalNormalizedPosition = 0.45f;
+            chimpsRounds.Dropdown.Show();
+            yield return new WaitForSecondsRealtime(1);
+            yield return ScreenshotTour.Capture(folder, "chimps-dropdown-open");
+            chimpsRounds.Dropdown.Hide();
+            yield return new WaitForSecondsRealtime(0.5f);
             scroll.verticalNormalizedPosition = position;
         }
         Assert(Menus.BossEditorSection.PlayProblem(section.Editor.dcm, BossMode.Options) == null, "The warning doesn't stop Play");

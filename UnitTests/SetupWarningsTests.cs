@@ -209,6 +209,17 @@ public class SetupWarningsTests
             })
             .Single(w => w.Kind == SetupWarning.ChimpsEventRounds).Args);
 
+    [Theory]
+    [InlineData(ChimpsRounds.Newest, true)]
+    [InlineData(ChimpsRounds.Earlier, true)]
+    [InlineData(ChimpsRounds.Own, false)]
+    public void ChimpsEventRounds_warns_only_for_the_chimps_events_rounds(ChimpsRounds chimps, bool warned) =>
+        Assert.Equal(warned, SetupWarnings.Check(new SetupFacts
+            {
+                Mode = "Clicks", Options = new BossOptions {BossEventRounds = true, ChimpsRounds = chimps}
+            })
+            .Any(w => w.Kind == SetupWarning.ChimpsEventRounds));
+
     [Fact]
     public void ChimpsEventRounds_comes_just_before_HardSetup()
     {

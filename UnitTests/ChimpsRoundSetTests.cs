@@ -28,6 +28,24 @@ public class ChimpsRoundSetTests
     }
 
     [Theory]
+    [MemberData(nameof(Bosses))]
+    public void Chimps_can_play_the_boss_own_rounds_like_the_other_modes(BossType boss)
+    {
+        Assert.Equal(BossOptions.BossEventRoundSet(boss), BossOptions.EventRoundSet(boss, "Clicks", ChimpsRounds.Own));
+        Assert.Null(BossOptions.ChimpsEventRoundSet(ChimpsRounds.Own));
+        Assert.False(BossOptions.IsChimpsEventRoundSet(BossOptions.EventRoundSet(boss, "Clicks", ChimpsRounds.Own)));
+    }
+
+    [Fact]
+    public void With_the_boss_own_rounds_every_tier_gets_its_own_boss_round_in_chimps()
+    {
+        var options = new BossOptions {Tiers = 3, TierBosses = "Phayze,Lych,Vortex", ChimpsRounds = ChimpsRounds.Own};
+        Assert.Equal("phayze", options.BaseEventRoundSetIn("Clicks"));
+        Assert.Equal("lych", options.EventRoundSetIn(2, "Clicks"));
+        Assert.Equal("vortex", options.EventRoundSetIn(3, "Clicks"));
+    }
+
+    [Theory]
     [InlineData(null)]
     [InlineData("Standard")]
     [InlineData("Impoppable")]
@@ -153,6 +171,25 @@ public class ChimpsRoundSetTests
         var read = CodeFormat.Apply(defaults.DeepClone(), typed).ToObject<BossOptions>(Serializer);
         Assert.Equal(options, read);
     }
+
+    [Fact]
+    public void The_boss_own_rounds_go_into_codes_and_read_back()
+    {
+        var options = new BossOptions {BossEventRounds = true, ChimpsRounds = ChimpsRounds.Own};
+        var defaults = Json(new BossOptions());
+        var diff = (JObject) CodeFormat.Diff(Json(options), defaults)!;
+        Assert.Equal("Own", (string?) diff["ChimpsRounds"]);
+        var read = CodeFormat.Apply(defaults.DeepClone(), CodeFormat.TypedOptions(diff)).ToObject<BossOptions>(Serializer);
+        Assert.Equal(options, read);
+        Assert.True(CodeFormat.TryUnpack(CodeFormat.Pack("{\"o\":" + diff.ToString(Formatting.None) + ",\"c\":{}}",
+            CodeFormat.Version5Prefix), out _, out var problem, out _), $"{problem}");
+    }
+
+    [Theory]
+    [InlineData(2, ChimpsRounds.Own)]
+    [InlineData(3, ChimpsRounds.Newest)]
+    public void A_number_keeps_its_meaning_and_an_unknown_one_plays_the_newest(int number, ChimpsRounds expected) =>
+        Assert.Equal(expected, new BossOptions {ChimpsRounds = (ChimpsRounds) number}.Sanitized().ChimpsRounds);
 
     [Fact]
     public void A_chimps_set_that_isnt_one_cant_be_read() =>

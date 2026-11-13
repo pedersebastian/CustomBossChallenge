@@ -21,10 +21,11 @@ export const SKULL_MODE_NAMES: Record<SkullMode, string> = { Vanilla: "Vanilla",
 export const BOSSES = DATA.bosses;
 
 /**
- * Which CHIMPS boss events' rounds Boss Event Rounds play in CHIMPS (#139): the newest event's ("chimpsboss",
- * Diamondback, 2026) or the earlier ones' ("chimpsbloonarius", Bloonarius 2024 and Dreadbloon 2025)
+ * Which rounds Boss Event Rounds play in CHIMPS (#139): the newest CHIMPS event's ("chimpsboss", Diamondback, 2026),
+ * the earlier ones' ("chimpsbloonarius", Bloonarius 2024 and Dreadbloon 2025) or the boss's own, as in the other modes
+ * (codes from 2.12, CBC5). New values go at the end, so the numbers keep their meaning.
  */
-export const CHIMPS_ROUNDS = ["Newest", "Earlier"] as const;
+export const CHIMPS_ROUNDS = ["Newest", "Earlier", "Own"] as const;
 export type ChimpsRounds = (typeof CHIMPS_ROUNDS)[number];
 
 /** The game mode of CHIMPS in the challenge (BossOptions.ChimpsMode) */
@@ -241,10 +242,12 @@ export const usesBossEventRounds = (options: BossOptions): boolean => options.Bo
 
 /**
  * The round set Boss Event Rounds play in <mode>: in CHIMPS the CHIMPS events' set ChimpsRounds picks, for every
- * boss, otherwise null for each boss's own (BossOptions.EventRoundSet)
+ * boss, otherwise null for each boss's own, also in CHIMPS with "Own" (BossOptions.EventRoundSet)
  */
-export const chimpsEventRoundSet = (options: BossOptions, mode: string): string | null =>
-  mode !== CHIMPS_MODE ? null : options.ChimpsRounds === "Earlier" ? "chimpsbloonarius" : "chimpsboss";
+export function chimpsEventRoundSet(options: BossOptions, mode: string): string | null {
+  if (mode !== CHIMPS_MODE || options.ChimpsRounds === "Own") return null;
+  return options.ChimpsRounds === "Earlier" ? "chimpsbloonarius" : "chimpsboss";
+}
 
 /** What a tier was set to: the setup's boss (boss null), a boss of its own, or Random (BossOptions.EntryOf) */
 export const entryOf = (options: BossOptions, tier: number): TierBoss =>

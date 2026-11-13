@@ -19,6 +19,7 @@ describe("the public API", () => {
       { ...defaultOptions(), HealthPerTier: 20 },
       { ...defaultOptions(), Tiers: 3, TierBosses: tierBosses.formatTierBosses(tierBosses.parseTierBosses("Vortex,RandomElite,Lych@150/80#4")) },
       { ...defaultOptions(), BossEventRounds: true },
+      { ...defaultOptions(), BossEventRounds: true, ChimpsRounds: "Own" as const },
     ];
     const made = await Promise.all(setups.map((options) => encode(options)));
     expect(made.map((code) => code.slice(0, 5))).toEqual([...PREFIXES]);

@@ -93,9 +93,9 @@ public class SetupCodeTest : CustomBossTest
         Assert(SetupCode.TryDecode(SetupCode.Pack(SetupCode.Contents(code)), out var asVersion1, out _, out _),
             "The same contents must also read as version 1");
         AssertEquals(asVersion1, options, "Options read as version 1");
-        Assert(!SetupCode.TryDecode("CBC5:" + code[SetupCode.PrefixLength..], out _, out _, out var version5),
-            "A version 5 code must not decode");
-        AssertEquals(version5, CodeProblem.TooNew, "Problem of a version 5 code");
+        Assert(!SetupCode.TryDecode("CBC6:" + code[SetupCode.PrefixLength..], out _, out _, out var version6),
+            "A version 6 code must not decode");
+        AssertEquals(version6, CodeProblem.TooNew, "Problem of a version 6 code");
 
         // Codes from before 2.3 had Extra Tier Health; it becomes Health per Tier
         Assert(SetupCode.TryDecode(SetupCode.Pack("{\"o\":{\"Tiers\":7,\"ExtraTierHealth\":225},\"c\":{}}"), out var old, out _, out _),

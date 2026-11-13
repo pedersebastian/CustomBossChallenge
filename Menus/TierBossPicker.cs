@@ -173,6 +173,7 @@ public sealed class TierBossPicker
             new Action<int>(index => SetValues(Shown() with {Skulls = (Config.SkullMode) index}, "SkullMode")),
             VanillaSprites.BlueInsertPanelRound, 70);
         SkullMode.transform.SetParent(skullModeRow.transform, false);
+        EditorRows.FrameList(SkullMode);
         ResetSkulls = EditorRows.ResetButton(skullModeRow, "ResetSkulls", () => SetValues(Shown() with
         {
             Skulls = Config.SkullMode.Vanilla, SkullCount = SkullMath.DefaultCount, CustomSkulls = SkullMath.DefaultCustom

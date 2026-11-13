@@ -73,6 +73,15 @@ describe("differences", () => {
     expect(compareRows(c, d).find((row) => row.label === "Boss Event Rounds")?.a).toBe("Yes");
   });
 
+  it("tells when CHIMPS plays the boss's own event rounds", async () => {
+    const chimps = { c: { mode: "Clicks" } };
+    const a = await setup(await encode({ ...chimps, o: { BossEventRounds: true } }, "CBC4:"));
+    const b = await setup(await encode({ ...chimps, o: { BossEventRounds: true, ChimpsRounds: "Own" } }, "CBC5:"));
+    expect(differences(a, b)).toEqual([
+      { group: "Tiers", label: "Boss Event Rounds", a: "Newest CHIMPS events", b: "Boss's own event rounds", same: false },
+    ]);
+  });
+
   it("reads a version 1 code like the same setup as a version 2 code", async () => {
     // CBC1 codes from before 2.3 have Extra Tier Health, which became Health per Tier
     const a = await setup(await encode({ o: { Tiers: 7, ExtraTierHealth: 300 } }, "CBC1:"));
