@@ -2,27 +2,27 @@
   {
     "name": "Marathon Lych",
     "description": "Ten tiers of Elite Lych, each 30 % tougher than the last. Bring snacks.",
-    "code": "CBC2:q1bKV7KqVnLKLy5WslLyqUzOUNJRcs3JLElVsiopKk3VUQrJTC0Cyhka6Ch5pCbmlGQEpBaBxJSsjA1qdZSSQdrzEnOB6pV8E4sSSzLy8xSg5hSnpqYoWRkZGJnV1gIA"
+    "code": "CBC2:LYyxCoQwEAV_5Xh1ipwHFlseHFh4cIU_sHgLETSRZC1E8u-uYDvDzIEEOvBOpYDQ72OAw2eeVECaN3EYJsnmnt6hE541_CRfDPTy1WG88oVXqzveosrfBpEX6_HlzBpSfNzfImap8U1b6wk"
   },
   {
     "name": "Speed Demon Vortex",
     "description": "Vortex gets 40 % faster every tier, with three evenly spaced skulls.",
-    "code": "CBC4:PY09C8IwGIT_Srk5QynikFF0FMRK99LcIKZ5Sz6KpeS_m3RwvbvnuR0CveMiIUBjEB_5hUL_SdbexbCEt5XObv0yTjS1WkjzoH-96aFPrTrgOopPSc4UT_SJWWGqZjfOVXJQzZWzuOb_EkoG3bXdOecf"
+    "code": "CBC4:Pc3NCsIwEATgVyl7zqEU8ZCj6E1BrPQemkHEJBvyUywl727Sg9eZnW83YpIbnThGkjRxSPiSoPGTjbmxRg0vC5xZR69m6FZ5QN8Rnm8Ekode7ON2lB6cna5OChlF0Nxkq3w1rvyKdeuUbeJOdGdYdt3_ZawZyaEfjqX8AA"
   },
   {
     "name": "Glass Cannon",
     "description": "One Bloonarius at three times the speed and a tenth of the health. Blink and it's gone.",
-    "code": "CBC1:RYwxCsJAEEWvIr9ewiaCxbQpUqXSC6xmJAuTmeDEKuzd3SBo-d9_vB0G2nHL_HJQWwIex76LmY425ef3qMTcryvzNL5ly6tUDjo3MWDmJNv8xz8dFJu21KSmhUEYJLmf-qRqigCvMVAXu0spHw"
+    "code": "CBC1:RY3BCsIwEER_ReZcSlrBwx714Kkg1B_Y2kgDaTZk21PIv5si6HEeM28yBJTxdDYpqCsNXkdeOYJw9SKBk9v1kdxq0WA6yCCze38HGZOojtHaedj95qKvHHRuTYPFst-WP_7VQabtSr0KXKWEu2fV041DkFA_tMpAvekvpXwA"
   },
   {
     "name": "No Skulls, No Mercy",
     "description": "Elite Phayze without a single skull, every bloon fortified and no selling.",
-    "code": "CBC1:NY0xDsIwDEWvUnnOUHVgyAgqWxFST5AmBiJMjJK0Uqlyd5wiNuv7_fc3YNAbHDkl0HB9mPWDoKAnnxF0jjMqGJ8z0cBOAugXDLSOb2PRCbe_TjyHDLotCmyVTcQchPc3j1G0GxiiM8dcA_ezCut8MhPhiEQ-3P9jwbzqzoWb3Z1UI-eA0a4yl7D2u7Y7lPIF"
+    "code": "CBC1:NY0xDoMwDEWvgjxnQAwdMlLRjaoqJwjEbaOaGCUBiSLuXoeqm_X9338bMOgNao4RNNxeZv0gKGjIJQSdwowKuvdM1LKVAJoFPa3dZAa00jteZ559Al3uCoY8NppJmnezOJ-3emL2gruHwyCWDQzRhUPKgf1JBLUump6wQyLnn3-3N2PWXrk4VFEVcrYYhlWWI2a-KqvTvn8B"
   },
   {
     "name": "Speedrun Dreadbloon",
     "description": "All five tiers by round 40: a new Dreadbloon every five rounds from round 20.",
-    "code": "CBC4:q1bKV7KqVnLKLy5WslJyKUpNTEnKyc_PU9JRCi5ILM8Lyi_NSwFJGRnoKBiZ6igYA2ljIG1iAFQC0uZalppXAlNWUlSaWqujlAwyMy8xNxWoMbggNTWlqDRPAcXwYqCgkpWRgZFZbS0A"
+    "code": "CBC4:VY2xDsIwDER_JfKcIUqBIWMLP0C_wBCrS2tHSVOGKv-OMzAwnXz3zneCQDhhlFIgwD0TxtcqwmBhTvjhp1SOPfLOGn-1ZlAdVC9OkV57HMT7D9tzpWbh3X9umLQ3YV5EUcaN9JwTUcyVzd9UUROCd_7W2hc"
   },
   {
     "name": "Paragon Ban",
@@ -30,8 +30,13 @@
     "code": "CBC4:Lcw9CsMwDIbhqxTNHkKGDh4NgXYrvYGI5WJwJOOf0hB89yql66tPzwEC9gAntYIFl7A2zJKlJ6lgYEmxEdhWOpnfaHkTt6d09ro_8zCwnsKGWYE7ByqMSV99DCGuPbVd-w2L18a4qQYPLPgSvjhkjZXIg52n-WpU-fyPyk9jfAE"
   },
   {
+    "name": "CHIMPS Throwback",
+    "description": "CHIMPS with the earlier boss event rounds: regrow, camo regrow and DDTs, no selling, no continues.",
+    "code": "CBC4:NctBCsIwEIXhq8iss5AuXGRpKdSFIK0XiMmUhiaZkkkVKbm7o-Dy_x5vBwK9w5mYuyemMtCWHIMueUMF7ezjyn-DzuTgMUNVYL-vaFbRAZlyAQXOT5O3Wyhv0d5kJxbJoVQbvF1YOpn46_5yvY2H-5zp9TB2kYURHejm2Jxq_QA"
+  },
+  {
     "name": "Boss Gauntlet",
     "description": "Seven tiers, seven bosses: every boss in the game, one after the other.",
-    "code": "CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg2iiTKoSreNzfjS3LhD46ZyU_d4WOm7ctoI2mhVVapURTHQIskP5F7Q0Nw_SLRwj15tE83qqlELoCgzB7McB4urf0A"
+    "code": "CBC3:HY2xCsMwDER_pWjWUDK04DEESiFDh5BdSQQ2dSxjOdA05N9rd7u7B_cOEDAHDI6TgrnjP7WiyqVC60UCJbcp9vtscZSU-YNdYlqmyvBlaf8ytp40U5QomxfFztEqYZlofsOJMFfFSrE8PsNguReJgBBo5SoptsuDtpA95zIr8wKmuTa38_wB"
   }
 ]

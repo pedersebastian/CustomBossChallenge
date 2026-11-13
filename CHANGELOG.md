@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **CHIMPS Throwback example** (#162): a new example setup plays Bloonarius in CHIMPS on Hard with Boss Event Rounds
+  and the earlier CHIMPS boss events' rounds (regrow, camo regrow and DDTs), in the Boss Creator and on the website.
+- **A map for every example**: the examples no longer all play Monkey Meadow. Marathon Lych plays Haunted, Speed
+  Demon Vortex Logs, Glass Cannon Bloonarius Prime, No Skulls, No Mercy Ravine, Speedrun Dreadbloon Cargo, CHIMPS
+  Throwback Resort and Boss Gauntlet In The Loop; Paragon Ban stays on Infernal.
 - **The boss's own event rounds in CHIMPS**: the CHIMPS Boss Event Rounds dropdown has a fourth entry, "Boss's own
   event rounds", which plays the boss's own event rounds like the other modes (and CHIMPS before 2.11), with every
   tier of Advanced Mode on the round made for its own boss. It has no warning about the CHIMPS events' rounds. The

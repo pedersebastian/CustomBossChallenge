@@ -33,18 +33,19 @@ public static class ExampleSetups
     public static readonly IReadOnlyList<ExampleSetup> All = new[]
     {
         Example("MarathonLych", "Marathon Lych", "Ten tiers of Elite Lych, each 30 % tougher than the last. Bring snacks.",
-            new BossOptions {Boss = BossType.Lych, Elite = true, Tiers = 10, HealthPerTier = 30}, _ => { }),
+            new BossOptions {Boss = BossType.Lych, Elite = true, Tiers = 10, HealthPerTier = 30}, dcm => dcm.map = "Haunted"),
         Example("SpeedDemonVortex", "Speed Demon Vortex",
             "Vortex gets 40 % faster every tier, with three evenly spaced skulls.",
             new BossOptions {Boss = BossType.Vortex, SpeedPerTier = 40, SkullMode = SkullMode.EvenlySpaced, SkullCount = 3,
                 BossEventRounds = true},
-            _ => { }),
+            dcm => dcm.map = "Logs"),
         Example("GlassCannon", "Glass Cannon",
             "One Bloonarius at three times the speed and a tenth of the health. Blink and it's gone.",
             new BossOptions {Boss = BossType.Bloonarius, Tiers = 1}, dcm =>
             {
                 dcm.bloonModifiers.bossSpeedMultiplier = 3;
                 dcm.bloonModifiers.healthMultipliers.boss = 0.1f;
+                dcm.map = "BloonariusPrime";
             }),
         Example("NoSkullsNoMercy", "No Skulls, No Mercy",
             "Elite Phayze without a single skull, every bloon fortified and no selling.",
@@ -52,10 +53,12 @@ public static class ExampleSetups
             {
                 dcm.bloonModifiers.allFortified = true;
                 dcm.disableSelling = true;
+                dcm.map = "Ravine";
             }),
         Example("SpeedrunDreadbloon", "Speedrun Dreadbloon",
             "All five tiers by round 40: a new Dreadbloon every five rounds from round 20.",
-            new BossOptions {Boss = BossType.Dreadbloon, SpawnRounds = "20, 25, 30, 35, 40", BossEventRounds = true}, _ => { }),
+            new BossOptions {Boss = BossType.Dreadbloon, SpawnRounds = "20, 25, 30, 35, 40", BossEventRounds = true},
+            dcm => dcm.map = "Cargo"),
         Example("ParagonBan", "Paragon Ban", "Elite Blastapopoulos on Infernal, Hard, and not a single paragon allowed.",
             new BossOptions {Boss = BossType.Blastapopoulos, Elite = true, BossEventRounds = true}, dcm =>
             {
@@ -63,9 +66,17 @@ public static class ExampleSetups
                 dcm.difficulty = "Hard";
                 dcm.map = "Infernal";
             }),
+        Example("ChimpsThrowback", "CHIMPS Throwback",
+            "CHIMPS with the earlier boss event rounds: regrow, camo regrow and DDTs, no selling, no continues.",
+            new BossOptions {Boss = BossType.Bloonarius, BossEventRounds = true, ChimpsRounds = ChimpsRounds.Earlier}, dcm =>
+            {
+                dcm.difficulty = "Hard";
+                dcm.mode = BossOptions.ChimpsMode;
+                dcm.map = "Resort";
+            }),
         Example("BossGauntlet", "Boss Gauntlet", "Seven tiers, seven bosses: every boss in the game, one after the other.",
             new BossOptions {Tiers = 7, TierBosses = "Bloonarius,Lych,Vortex,Dreadbloon,Phayze,Blastapopoulos,Diamondback"},
-            _ => { })
+            dcm => dcm.map = "InTheLoop")
     };
 
     /// <summary>

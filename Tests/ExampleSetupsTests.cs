@@ -80,7 +80,22 @@ public class ExampleSetupsTest : CustomBossTest
             yield return ClosePopup(popup, true);
             AssertEquals(BossMode.Options, example.Options, $"Loaded options of {example.EnglishName}");
             AssertEquals(editor!.dcm.name, example.Name, $"Loaded name of {example.EnglishName}");
+
+            // A CHIMPS example shows its CHIMPS round set in the dropdown that replaces the Boss Event Rounds tick (#162)
+            var chimps = ExampleSetups.Build(example).Dcm.mode == BossOptions.ChimpsMode;
+            yield return null;
+            AssertEquals(editor.dcm.mode == BossOptions.ChimpsMode, chimps, $"Loaded mode of {example.EnglishName}");
+            AssertEquals(section.ChimpsEventRounds.gameObject.activeSelf, chimps,
+                $"CHIMPS round sets shown for {example.EnglishName}");
+            if (chimps)
+                AssertEquals(section.ChimpsEventRounds.Dropdown.value, BossEditorSection.ChimpsIndex(example.Options),
+                    $"CHIMPS round set of {example.EnglishName}");
         }
+
+        Assert(ExampleSetups.All.Any(example => example.Options.BossEventRounds &&
+                                                example.Options.ChimpsRounds == ChimpsRounds.Earlier &&
+                                                ExampleSetups.Build(example).Dcm.mode == BossOptions.ChimpsMode),
+            "An example plays the earlier CHIMPS boss events' rounds");
 
         Assert(!File.Exists(BossMode.Saved.FilePath), "Loading examples must not write the saved setups file");
 
