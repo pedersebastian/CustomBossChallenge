@@ -16,10 +16,14 @@ public static class DcmJson
     /// </summary>
     private static readonly JsonSerializerSettings ReadSettings = new() {TypeNameHandling = TypeNameHandling.None};
 
-    public static string Serialize(DailyChallengeModel dcm)
-    {
-        var copy = dcm.Clone();
+    public static string Serialize(DailyChallengeModel dcm) => SerializeCopy(dcm.Clone());
 
+    /// <summary>
+    /// Like <see cref="Serialize"/>, for a copy the caller made and no longer needs, which is changed instead of being
+    /// copied again
+    /// </summary>
+    internal static string SerializeCopy(DailyChallengeModel copy)
+    {
         // Never used by Boss Creator, and polymorphic models don't round trip without type names
         copy.customMapModel = null;
         copy.simulationBehaviorsMod = null;

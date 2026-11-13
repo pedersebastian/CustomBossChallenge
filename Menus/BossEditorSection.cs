@@ -155,6 +155,16 @@ public sealed class BossEditorSection
     private float appliedHeight;
     private bool refreshing;
 
+    /// <summary>
+    /// Which rows were shown and how high they were when the section was last fitted, see <see cref="FitIfChanged"/>
+    /// </summary>
+    private string? fittedLayout;
+
+    /// <summary>
+    /// How often the section was fitted into the editor this session, for the tests (#184)
+    /// </summary>
+    internal static int Fits { get; private set; }
+
     private TMP_Text? titleText;
     private string? originalTitleKey;
 
@@ -387,7 +397,6 @@ public sealed class BossEditorSection
             modes, 500, new Action<int>(index =>
             {
                 UpdateOptions("SkullMode", o => o with {SkullMode = (Config.SkullMode) index});
-                Relayout();
             }), VanillaSprites.BlueInsertPanelRound, 70);
         SkullMode.transform.SetParent(skullModeRow.transform, false);
         EditorRows.FrameList(SkullMode);
@@ -1089,7 +1098,9 @@ public sealed class BossEditorSection
         if (changed == BossMode.Options) return;
         BossHistory.RecordChange(Editor, control);
         BossMode.Options = changed;
-        if (!refreshing) Relayout();
+        if (refreshing) return;
+        ShowRowContent();
+        FitIfChanged();
     }
 
     private void SelectBoss(BossType boss)
@@ -1463,7 +1474,8 @@ public sealed class BossEditorSection
     {
         // The boss's own skulls follow the boss and Elite
         Skulls.Show(BossMode.Options);
-        if (Strip.Show(BossMode.Options, Editor.dcm) && !refreshing) Relayout();
+        Strip.Show(BossMode.Options, Editor.dcm);
+        if (!refreshing) FitIfChanged();
     }
 
     private static string ShownSkulls(BossOptions options) =>
@@ -1485,9 +1497,20 @@ public sealed class BossEditorSection
         UpdateOptions(control, o => o with {SpawnRounds = TierMath.EvenRounds((int) FirstSpawnRound.Value, (int) RoundsBetween.Value)});
 
     /// <summary>
-    /// Shows only the rows that apply, and makes room for the section in the editor's scroll area
+    /// Shows only the rows that apply, and makes room for the section in the editor's scroll area. Always lays the
+    /// section out again; a change to one option uses <see cref="FitIfChanged"/> instead, which only does when a row
+    /// was shown, hidden or changed height (#184).
     /// </summary>
     public void Relayout()
+    {
+        ShowRowContent();
+        FitSection();
+    }
+
+    /// <summary>
+    /// Shows the rows that apply and what they show
+    /// </summary>
+    private void ShowRowContent()
     {
         var options = BossMode.Options;
         BossTypeRow.SetActive(!options.Mixed);
@@ -1507,6 +1530,40 @@ public sealed class BossEditorSection
         ShowSpawnRounds();
         Strip.Show(options, Editor.dcm);
         Skulls.Show(options);
+    }
+
+    /// <summary>
+    /// Which rows are shown and how high they are, as text, to see whether the section must be fitted again
+    /// </summary>
+    private string RowLayout()
+    {
+        var layout = new System.Text.StringBuilder(Section.activeSelf ? "1" : "0");
+        for (var i = 0; i < rows.childCount; i++)
+        {
+            var row = rows.GetChild(i);
+            layout.Append(row.gameObject.activeSelf ? '|' : '-');
+            if (row.gameObject.activeSelf) layout.Append(row.GetComponent<RectTransform>().sizeDelta.y.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture));
+        }
+
+        return layout.ToString();
+    }
+
+    /// <summary>
+    /// Fits the section again only when a row was shown, hidden or changed height since it was last fitted. Laying out
+    /// the editor's whole settings area is slow, and dragging a slider changes an option many times a second (#184).
+    /// </summary>
+    private void FitIfChanged()
+    {
+        if (RowLayout() != fittedLayout) FitSection();
+    }
+
+    /// <summary>
+    /// Makes the section as high as its shown rows, and room for it in the editor's scroll area
+    /// </summary>
+    private void FitSection()
+    {
+        Fits++;
+        fittedLayout = RowLayout();
 
         // Rows are as high as the slider rows they copy, except the tier strip and the skull bar
         var visible = Enumerable.Range(0, rows.childCount).Select(rows.GetChild).Where(row => row.gameObject.activeSelf).ToList();

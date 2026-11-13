@@ -48,6 +48,11 @@ public static class BossHistory
 
     private static float nextRulesCheck;
 
+    /// <summary>
+    /// How often the rules' challenge was copied to go back to, for the tests (#184)
+    /// </summary>
+    internal static int RulesSnapshots { get; private set; }
+
     public static int UndoCount => History.UndoCount;
     public static int RedoCount => History.RedoCount;
 
@@ -77,9 +82,16 @@ public static class BossHistory
             History.Record(BossOnly(editor.dcm) with {Setup = lastRulesSetup, RulesOnly = true}, null, DateTime.UtcNow);
         }
 
+        // Only a change needs a new copy to go back to: until the rules change, the one from before is the same as far
+        // as a step of the rules goes, which puts back only the rules (#184)
+        if (resync || lastRulesSetup == null || rules != lastRules)
+        {
+            lastRulesSetup = editor.dcm.Clone();
+            RulesSnapshots++;
+        }
+
         resync = false;
         lastRules = rules;
-        lastRulesSetup = editor.dcm.Clone();
     }
 
     /// <summary>
@@ -96,7 +108,7 @@ public static class BossHistory
             if (copy.bloonModifiers.healthMultipliers != null) copy.bloonModifiers.healthMultipliers.boss = 1;
         }
 
-        return DcmJson.Serialize(copy);
+        return DcmJson.SerializeCopy(copy);
     }
 
     /// <summary>
