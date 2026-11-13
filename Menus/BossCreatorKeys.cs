@@ -31,6 +31,12 @@ public static class BossCreatorKeys
     private static int fieldFocusedFrame = -10;
     private static TMP_InputField? pendingFocus;
 
+    /// <summary>
+    /// The text field the frame was last put on for typing, and its stop, so it is only looked up when that changes
+    /// </summary>
+    private static IntPtr frameField;
+    private static FocusStop? frameFieldStop;
+
     public static void Update()
     {
         if (pendingFocus != null)
@@ -65,7 +71,14 @@ public static class BossCreatorKeys
         if (focused != null)
         {
             fieldFocusedFrame = Time.frameCount;
-            Show(section.FocusStops.FirstOrDefault(stop => stop.Field != null && stop.Field.Pointer == focused.Pointer));
+
+            // The frame goes to the field once; while the same field is typed in, it stays there (#183)
+            if (focused.Pointer != frameField || Current != frameFieldStop || frameFieldStop is {Available: false})
+            {
+                frameField = focused.Pointer;
+                frameFieldStop = StopOf(section, focused);
+                Show(frameFieldStop);
+            }
         }
         else if (Current is {Field: not null} || Current is {Available: false})
         {
@@ -232,8 +245,7 @@ public static class BossCreatorKeys
         return BossMode.Active && section != null && section.Section.activeInHierarchy ? section : null;
     }
 
-    private static FocusStop? StopOf(BossEditorSection section, TMP_InputField? field) =>
-        field == null ? null : section.FocusStops.FirstOrDefault(stop => stop.Field != null && stop.Field.Pointer == field.Pointer);
+    private static FocusStop? StopOf(BossEditorSection section, TMP_InputField? field) => section.StopOf(field);
 
     /// <summary>
     /// The text field that has the keyboard, the section's or one of the editor's own

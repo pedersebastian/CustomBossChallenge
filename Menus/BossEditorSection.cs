@@ -512,6 +512,21 @@ public sealed class BossEditorSection
     public IReadOnlyList<FocusStop> FocusStops => focusStops.Where(stop => stop.Available).ToList();
 
     /// <summary>
+    /// The available stop of <paramref name="field"/>, or null; without making a list, as the keyboard looks it up
+    /// while a field is being typed in (#183)
+    /// </summary>
+    public FocusStop? StopOf(TMP_InputField? field)
+    {
+        if (field == null) return null;
+        foreach (var stop in focusStops)
+        {
+            if (stop.Field != null && stop.Field.Pointer == field.Pointer && stop.Available) return stop;
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// The text fields among <see cref="FocusStops"/>
     /// </summary>
     public IReadOnlyList<TMP_InputField> InputFields => FocusStops.Where(stop => stop.Field != null).Select(stop => stop.Field!).ToList();

@@ -128,7 +128,7 @@ public static class BossHud
 
         var options = MixedOptions;
         var manager = Manager;
-        var ui = options != null && manager != null ? Object.FindObjectOfType<BossUI>() : null;
+        var ui = options != null && manager != null ? BossUi() : null;
         if (ui == null || options == null || manager == null)
         {
             if (Lineup != null) Object.Destroy(Lineup.gameObject);
@@ -139,8 +139,42 @@ public static class BossHud
         }
 
         var tiers = TierMath.ClampTiers(options.Tiers);
-        if (Lineup == null || lineupTiers != tiers) BuildLineup(Canvas(ui), tiers);
+        if (Lineup == null || lineupTiers != tiers)
+        {
+            BuildLineup(Canvas(ui), tiers);
+            shownState = null;
+        }
+
+        // Only what changed since the last look is drawn again (#183)
+        var state = new LineupState(options, tiers, LineupShown, manager.CurrentBoss != null ? MixedBosses.ShownTier(manager, options) : 0,
+            CustomBossState.HighestDefeatedTier, MixedBosses.ArrivedTier(manager));
+        if (state == shownState) return;
+        shownState = state;
         Refresh(options, manager);
+    }
+
+    /// <summary>
+    /// What the line-up shows: the setup, whether it is unfolded, the tier alive, the tiers beaten and the highest
+    /// that has arrived, which decides the secret ones
+    /// </summary>
+    private readonly record struct LineupState(BossOptions Options, int Tiers, bool Shown, int Alive, int Defeated, int Arrived);
+
+    private static LineupState? shownState;
+
+    /// <summary>
+    /// How often the line-up was drawn again this session, for the tests (#183)
+    /// </summary>
+    internal static int Refreshes { get; private set; }
+
+    /// <summary>
+    /// The game's boss panel, looked for in the scene only when the one found before is gone with its match
+    /// </summary>
+    private static BossUI? bossUi;
+
+    private static BossUI? BossUi()
+    {
+        if (bossUi == null) bossUi = Object.FindObjectOfType<BossUI>();
+        return bossUi != null ? bossUi : null;
     }
 
     /// <summary>
@@ -203,6 +237,7 @@ public static class BossHud
 
     private static void Refresh(BossOptions options, BossBloonManager manager)
     {
+        Refreshes++;
         var shown = LineupShown;
         var rect = Lineup!.RectTransform;
         var cell = Cells.Count > 0 ? Cells[0].Panel.RectTransform.sizeDelta.y : 0;
@@ -235,7 +270,7 @@ public static class BossHud
         var options = MixedOptions;
         if (options == null || CustomBossState.Resuming) return;
 
-        var ui = Object.FindObjectOfType<BossUI>();
+        var ui = BossUi();
         if (ui == null) return;
         if (Banner == null) BuildBanner(Canvas(ui));
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BTD_Mod_Helper;
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
 using CustomBossChallenge.Config;
@@ -38,6 +39,37 @@ public static class RankedHud
     private static readonly List<ModHelperText> Values = new();
 
     /// <summary>
+    /// The times the panel shows now, in hundredths of a second as they are written, so a time is only written again
+    /// when it shows something else (#183)
+    /// </summary>
+    private static long shownBossTime = -1;
+    private static long shownPenalty = -1;
+
+    /// <summary>
+    /// The game's lives and cash, found once per match: looking for them by their path searches the whole scene
+    /// </summary>
+    private static RectTransform? leftHud;
+
+    /// <summary>
+    /// Looks in a row that didn't find the lives and cash, to say once when a game update moved them
+    /// </summary>
+    private static int missedLookups;
+
+    private static bool toldNoHud;
+
+    /// <summary>
+    /// How often the lives and cash were looked for in the scene this session, for the tests (#183)
+    /// </summary>
+    internal static int HudLookups { get; private set; }
+
+    /// <summary>
+    /// Reused for every look at a frame's corners, so following the HUD and the card makes no garbage
+    /// </summary>
+    private static Il2CppStructArray<Vector3>? corners;
+
+    private static Il2CppStructArray<Vector3> Corners => corners ??= new Il2CppStructArray<Vector3>(4);
+
+    /// <summary>
     /// The panel in the game, or null; Unity's own null check, as it is destroyed with the match
     /// </summary>
     public static ModHelperPanel? Panel => panel != null ? panel : null;
@@ -56,7 +88,9 @@ public static class RankedHud
     /// <summary>
     /// The time every boss was alive so far, added up
     /// </summary>
-    public static TimeSpan? BossTime => Manager is { } manager
+    public static TimeSpan? BossTime => BossTimeOf(Manager);
+
+    private static TimeSpan? BossTimeOf(BossBloonManager? manager) => manager != null
         ? TimeSpanOf(manager.GetBossTotalCompletionTime()) - TimeSpanOf(manager.GetPenaltyTime())
         : null;
 
@@ -81,7 +115,10 @@ public static class RankedHud
     /// The penalty for time spent on a round without a boss after its bloons are all out, past the events' grace
     /// time of 10 s + 0.25 s per round. The game counts it in custom games too and keeps it in its map saves.
     /// </summary>
-    public static TimeSpan PenaltyTime => Manager is { } manager ? TimeSpanOf(manager.GetPenaltyTime()) : TimeSpan.Zero;
+    public static TimeSpan PenaltyTime => PenaltyOf(Manager);
+
+    private static TimeSpan PenaltyOf(BossBloonManager? manager) =>
+        manager != null ? TimeSpanOf(manager.GetPenaltyTime()) : TimeSpan.Zero;
 
     /// <summary>
     /// Upgrade tiers used, as the Least Tiers events count them
@@ -109,7 +146,9 @@ public static class RankedHud
     };
 
     /// <summary>
-    /// Builds, refreshes or removes the panel; called every frame
+    /// Builds, refreshes or removes the panel; called every frame. The times count in hundredths, so they are looked at
+    /// every frame and written when they change; the upgrade tiers and cash only change with what the player does, and
+    /// are looked at every <see cref="CheckInterval"/> (#183).
     /// </summary>
     /// <param name="now">Look now, not only every <see cref="CheckInterval"/></param>
     public static void Update(bool now = false)
@@ -127,12 +166,47 @@ public static class RankedHud
 
             if (Panel == null) Build(hud);
             Place(Panel!, hud);
+            ShowUsed();
         }
 
         FollowCard();
         if (Panel == null) return;
-        var lines = PanelLines();
-        for (var i = 0; i < lines.Count && i < Values.Count; i++) Values[i].Text.text = lines[i].Value;
+        ShowTimes(Manager);
+    }
+
+    /// <summary>
+    /// The bosses' time and the penalty, each written only when it shows another hundredth
+    /// </summary>
+    private static void ShowTimes(BossBloonManager? manager)
+    {
+        if (Values.Count < 2) return;
+        var bossTime = BossTimeOf(manager) ?? TimeSpan.Zero;
+        var boss = Hundredths(bossTime);
+        if (boss != shownBossTime)
+        {
+            shownBossTime = boss;
+            Values[0].Text.text = RankedTime.Format(bossTime);
+        }
+
+        var penalty = PenaltyOf(manager);
+        var shown = Hundredths(penalty);
+        if (shown != shownPenalty)
+        {
+            shownPenalty = shown;
+            Values[1].Text.text = "+" + RankedTime.Format(penalty);
+        }
+    }
+
+    private static long Hundredths(TimeSpan time) => time.Ticks / (TimeSpan.TicksPerMillisecond * 10);
+
+    /// <summary>
+    /// The upgrade tiers and cash used
+    /// </summary>
+    private static void ShowUsed()
+    {
+        if (Values.Count < 4) return;
+        Values[2].Text.text = TiersUsed.ToString("N0");
+        Values[3].Text.text = "$" + CashUsed.ToString("N0");
     }
 
     /// <summary>
@@ -140,10 +214,33 @@ public static class RankedHud
     /// </summary>
     private const string LeftHudPath = "InGame/UIRect/MainHudLeftAlign(Clone)/LeftGroup";
 
+    /// <summary>
+    /// How many looks in a row may miss the lives and cash before the log says so: a match that is still loading
+    /// doesn't have them yet
+    /// </summary>
+    private const int MissedLookupsToTell = 40;
+
     private static RectTransform? LeftHud()
     {
+        if (leftHud != null) return leftHud;
+
+        HudLookups++;
         var hud = GameObject.Find(LeftHudPath);
-        return hud != null ? hud.GetComponent<RectTransform>() : null;
+        leftHud = hud != null ? hud.GetComponent<RectTransform>() : null;
+        if (leftHud != null)
+        {
+            missedLookups = 0;
+            return leftHud;
+        }
+
+        // A game update that moved the lives and cash would only hide the panel; say so once
+        if (++missedLookups >= MissedLookupsToTell && !toldNoHud)
+        {
+            toldNoHud = true;
+            ModHelper.Warning<CustomBossChallenge>($"{LeftHudPath} not found, the ranked stats panel can't be shown");
+        }
+
+        return null;
     }
 
     private static RectTransform Canvas(Component near) =>
@@ -165,6 +262,7 @@ public static class RankedHud
         group.interactable = false;
         Values.Clear();
         Values.AddRange(AddLines(panel, lines, width, lineHeight));
+        shownBossTime = shownPenalty = -1;
     }
 
     /// <summary>
@@ -173,7 +271,7 @@ public static class RankedHud
     /// </summary>
     private static void Place(ModHelperPanel ours, RectTransform hud)
     {
-        var corners = new Il2CppStructArray<Vector3>(4);
+        var corners = Corners;
         hud.GetWorldCorners(corners);
         var left = corners[0].x;
         var bottom = corners[0].y;
@@ -229,6 +327,14 @@ public static class RankedHud
     private static RectTransform? summaryCard;
 
     /// <summary>
+    /// What the card shows and the gap to keep from it, looked up every <see cref="CheckInterval"/> while the summary
+    /// follows the card, not every frame (#183)
+    /// </summary>
+    private static readonly List<UnityEngine.UI.Graphic> CardGraphics = new();
+    private static float cardGap;
+    private static float nextCardCheck;
+
+    /// <summary>
     /// The victory summary, or null
     /// </summary>
     public static ModHelperPanel? Summary => summary != null ? summary : null;
@@ -256,6 +362,7 @@ public static class RankedHud
         summary.transform.SetAsLastSibling();
         AddLines(summary, lines, width, lineHeight);
         summaryCard = SummaryCard(screen);
+        nextCardCheck = 0;
         FollowCard();
     }
 
@@ -268,13 +375,15 @@ public static class RankedHud
     /// <summary>
     /// What the card shows on the screen, in world space: its texts and pictures reach past its own frame
     /// </summary>
-    public static Rect? CardBounds(RectTransform card)
+    public static Rect? CardBounds(RectTransform card) => Bounds(card.GetComponentsInChildren<UnityEngine.UI.Graphic>());
+
+    private static Rect? Bounds(IEnumerable<UnityEngine.UI.Graphic> graphics)
     {
-        var corners = new Il2CppStructArray<Vector3>(4);
+        var corners = Corners;
         Rect? bounds = null;
-        foreach (var graphic in card.GetComponentsInChildren<UnityEngine.UI.Graphic>())
+        foreach (var graphic in graphics)
         {
-            if (!graphic.isActiveAndEnabled) continue;
+            if (graphic == null || !graphic.isActiveAndEnabled) continue;
             graphic.rectTransform.GetWorldCorners(corners);
             for (var i = 0; i < 4; i++)
             {
@@ -292,10 +401,18 @@ public static class RankedHud
     /// </summary>
     private static void FollowCard()
     {
-        if (Summary == null || summaryCard == null || CardBounds(summaryCard) is not { } card) return;
-        var canvas = Canvas(Summary);
-        var gap = canvas.rect.height * 0.02f * canvas.lossyScale.x;
-        Summary.transform.position = new Vector3(card.xMax + gap, card.center.y, Summary.transform.position.z);
+        if (Summary == null || summaryCard == null) return;
+        if (Time.unscaledTime >= nextCardCheck)
+        {
+            nextCardCheck = Time.unscaledTime + CheckInterval;
+            CardGraphics.Clear();
+            foreach (var graphic in summaryCard.GetComponentsInChildren<UnityEngine.UI.Graphic>()) CardGraphics.Add(graphic);
+            var canvas = Canvas(Summary);
+            cardGap = canvas.rect.height * 0.02f * canvas.lossyScale.x;
+        }
+
+        if (Bounds(CardGraphics) is not { } card) return;
+        Summary.transform.position = new Vector3(card.xMax + cardGap, card.center.y, Summary.transform.position.z);
     }
 
     /// <summary>
