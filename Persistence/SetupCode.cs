@@ -20,6 +20,7 @@ public static class SetupCode
     public const string Version2Prefix = CodeFormat.Version2Prefix;
     public const string Version3Prefix = CodeFormat.Version3Prefix;
     public const string Version4Prefix = CodeFormat.Version4Prefix;
+    public const string Version5Prefix = CodeFormat.Version5Prefix;
     public const int PrefixLength = CodeFormat.PrefixLength;
     public const int MaxLength = CodeFormat.MaxLength;
     public const int MaxJsonLength = CodeFormat.MaxJsonLength;
@@ -40,10 +41,17 @@ public static class SetupCode
     /// The oldest code version that holds everything in <paramref name="options"/>
     /// </summary>
     public static string PrefixFor(BossOptions options) =>
-        NeedsVersion4(options) ? Version4Prefix
+        NeedsVersion5(options) ? Version5Prefix
+        : NeedsVersion4(options) ? Version4Prefix
         : NeedsVersion3(options) ? Version3Prefix
         : NeedsVersion2(options) ? Version2Prefix
         : Prefix;
+
+    /// <summary>
+    /// Whether the code uses an option that version 4 readers (2.10-2.11) don't know: the boss's own event rounds in
+    /// CHIMPS. The value is in the code even with Boss Event Rounds off, and 2.11 can't read it.
+    /// </summary>
+    public static bool NeedsVersion5(BossOptions options) => options.ChimpsRounds == ChimpsRounds.Own;
 
     /// <summary>
     /// Whether the code uses an option that version 3 readers (2.9) don't know

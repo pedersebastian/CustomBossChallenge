@@ -337,11 +337,18 @@ public sealed class BossEditorSection
         chimpsEntries.Add(Texts.EventRoundsOff.T());
         chimpsEntries.Add(Texts.ChimpsRoundsNewest.T());
         chimpsEntries.Add(Texts.ChimpsRoundsEarlier.T());
+        chimpsEntries.Add(Texts.ChimpsRoundsOwn.T());
         ChimpsEventRounds = ModHelperDropdown.Create(EditorRows.ControlInfo("ChimpsEventRounds", ChimpsDropdownWidth, 150),
             chimpsEntries, 500, new Action<int>(index => UpdateOptions("ChimpsEventRounds", o => o with
             {
                 BossEventRounds = index > 0,
-                ChimpsRounds = index > 1 ? Config.ChimpsRounds.Earlier : index == 1 ? Config.ChimpsRounds.Newest : o.ChimpsRounds
+                ChimpsRounds = index switch
+                {
+                    1 => Config.ChimpsRounds.Newest,
+                    2 => Config.ChimpsRounds.Earlier,
+                    3 => Config.ChimpsRounds.Own,
+                    _ => o.ChimpsRounds
+                }
             })), VanillaSprites.BlueInsertPanelRound, 60);
         ChimpsEventRounds.transform.SetParent(BossEventRoundsRow.transform, false);
         // The entries are longer than the skull modes: they shrink to fit instead of running past the arrow
@@ -1425,16 +1432,21 @@ public sealed class BossEditorSection
         ChimpsEventRounds.Dropdown.SetValueWithoutNotify(ChimpsIndex(options));
     }
 
-    /// <summary>The CHIMPS dropdown's entry for <paramref name="options"/>: Off, Newest or Earlier</summary>
-    public static int ChimpsIndex(BossOptions options) =>
-        !options.BossEventRounds ? 0 : options.ChimpsRounds == Config.ChimpsRounds.Earlier ? 2 : 1;
+    /// <summary>The CHIMPS dropdown's entry for <paramref name="options"/>: Off, Newest, Earlier or the boss's own</summary>
+    public static int ChimpsIndex(BossOptions options) => !options.BossEventRounds ? 0 : options.ChimpsRounds switch
+    {
+        Config.ChimpsRounds.Earlier => 2,
+        Config.ChimpsRounds.Own => 3,
+        _ => 1
+    };
 
     /// <summary>The text of the CHIMPS dropdown's entry for <paramref name="options"/></summary>
     public static string ChimpsEntry(BossOptions options) => ChimpsIndex(options) switch
     {
         0 => Texts.EventRoundsOff,
         1 => Texts.ChimpsRoundsNewest,
-        _ => Texts.ChimpsRoundsEarlier
+        2 => Texts.ChimpsRoundsEarlier,
+        _ => Texts.ChimpsRoundsOwn
     };
 
     /// <summary>

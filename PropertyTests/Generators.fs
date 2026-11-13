@@ -210,7 +210,8 @@ let private mixed (options: JObject) =
     not (isNull options["TierBosses"]) && options["TierBosses"].Type <> JTokenType.Null
 
 let prefix (options: JObject) =
-    if options.Value<bool>("BossEventRounds") then CodeFormat.Version4Prefix
+    if options.Value<string>("ChimpsRounds") = "Own" then CodeFormat.Version5Prefix
+    elif options.Value<bool>("BossEventRounds") then CodeFormat.Version4Prefix
     elif mixed options then CodeFormat.Version3Prefix
     elif options.Value<int>("SpeedPerTier") <> 0 || options.Value<int>("HealthPerTier") <> 0
     then CodeFormat.Version2Prefix

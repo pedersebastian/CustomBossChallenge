@@ -67,7 +67,7 @@ Share codes are also tested with random data, in F# with [FsCheck](https://fsche
 `PropertyTests/`. Thousands of random setups the Boss Creator can make, and broken codes, check that:
 
 - a code reads back as exactly the setup it was made from, and encoding that setup again gives the same code;
-- codes use the oldest version that holds the setup (`CBC1:` to `CBC4:`), and only characters chat apps leave
+- codes use the oldest version that holds the setup (`CBC1:` to `CBC5:`), and only characters chat apps leave
   alone;
 - broken codes (cut short, changed, junk, too big once unpacked) are refused as `Invalid` or `TooNew` and never throw;
 - a hand made challenge only keeps the fields `CodeFormat.ChallengeFields` allows, with their types, and nothing the

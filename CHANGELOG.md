@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The boss's own event rounds in CHIMPS**: the CHIMPS Boss Event Rounds dropdown has a fourth entry, "Boss's own
+  event rounds", which plays the boss's own event rounds like the other modes (and CHIMPS before 2.11), with every
+  tier of Advanced Mode on the round made for its own boss. It has no warning about the CHIMPS events' rounds. The
+  website's Studio, preview and Compare know it too. Codes with it start with `CBC5:`, so 2.11 asks for an update
+  instead of failing to read them.
 - **Random and Reset in the Studio** (#12): the website's Studio has the Boss Creator's buttons above its rows.
   **Random** randomizes the boss options exactly like the mod (the same chances and weights, Advanced staying
   Advanced) and gives a setup that stands out the same describing name, unless you typed your own. The game's own

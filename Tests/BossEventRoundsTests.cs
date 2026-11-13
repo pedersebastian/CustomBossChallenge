@@ -394,12 +394,13 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         AssertEquals(editor.dcm.mode, BossOptions.ChimpsMode, "CHIMPS picked");
         Assert(Warned(), "CHIMPS with Boss Event Rounds warns about the CHIMPS events' rounds");
 
-        // In CHIMPS the tick makes room for a dropdown: Off, the newest CHIMPS event's rounds or the earlier ones'
+        // In CHIMPS the tick makes room for a dropdown: Off, the newest CHIMPS event's rounds, the earlier ones' or the
+        // boss's own
         var chimpsRounds = section.ChimpsEventRounds;
         Assert(chimpsRounds.gameObject.activeInHierarchy && !section.BossEventRounds.gameObject.activeSelf,
             "CHIMPS shows the dropdown in place of the tick");
         Assert(section.ChimpsRoundsInfo.gameObject.activeInHierarchy, "The dropdown's i explains the round sets (#157)");
-        AssertEquals(chimpsRounds.Dropdown.options.Count, 3, "Off, newest and earlier");
+        AssertEquals(chimpsRounds.Dropdown.options.Count, 4, "Off, newest, earlier and the boss's own");
         AssertEquals(chimpsRounds.Dropdown.captionText.text, Menus.Texts.ChimpsRoundsNewest.T(),
             $"The entry's text as it is, not taken for a key (option '{chimpsRounds.Dropdown.options[1].text}')");
         AssertEquals(chimpsRounds.Dropdown.value, 1, "Ticked shows the newest CHIMPS rounds");
@@ -420,6 +421,18 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         BossHistory.Redo(editor);
         yield return null;
         Assert(BossMode.Options.ChimpsRounds == ChimpsRounds.Earlier && chimpsRounds.Dropdown.value == 2, "Redo picks the earlier again");
+        chimpsRounds.Dropdown.value = 3;
+        yield return null;
+        Assert(BossMode.Options is {BossEventRounds: true, ChimpsRounds: ChimpsRounds.Own}, "Picking the boss's own rounds");
+        Assert(!Warned(), "The boss's own rounds don't warn about the CHIMPS events' rounds");
+        AssertEquals(BossMode.Options.BaseEventRoundSetIn(BossOptions.ChimpsMode), BossOptions.BossEventRoundSet(BossMode.Options.Boss),
+            "The boss's own rounds play the boss's own set");
+        var ownCode = SetupCode.Encode(BossMode.Options, editor.dcm);
+        Assert(ownCode.StartsWith(SetupCode.Version5Prefix), $"The boss's own rounds in CHIMPS give a version 5 code: {ownCode}");
+        Assert(SetupCode.TryDecode(ownCode, out var ownRead, out _, out var ownProblem), $"The code reads back: {ownProblem}");
+        AssertEquals(ownRead, BossMode.Options, "The boss's own rounds read back from the code");
+        Assert(Menus.BossEditorSection.Summary(ownRead, editor.dcm).Contains(Menus.Texts.ChimpsRoundsOwn.T()),
+            "The summary names the boss's own rounds");
         chimpsRounds.Dropdown.value = 0;
         yield return null;
         Assert(!BossMode.Options.BossEventRounds, "Off turns Boss Event Rounds off");

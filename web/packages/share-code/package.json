@@ -2,7 +2,7 @@
   "name": "@cbc/share-code",
   "private": true,
   "version": "0.1.0",
-  "description": "Read, check and make Custom Boss Challenge share codes (CBC1: to CBC4:) exactly like the BTD6 mod does",
+  "description": "Read, check and make Custom Boss Challenge share codes (CBC1: to CBC5:) exactly like the BTD6 mod does",
   "type": "module",
   "license": "MIT",
   "sideEffects": false,

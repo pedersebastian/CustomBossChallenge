@@ -88,6 +88,11 @@ describe("prefixFor", () => {
     [{ TierBosses: "Lych" }, "CBC3:"],
     [{ TierBosses: "Lych", BossEventRounds: true }, "CBC4:"],
     [{ BossEventRounds: true }, "CBC4:"],
+    [{ BossEventRounds: true, ChimpsRounds: "Earlier" as const }, "CBC4:"],
+    [{ ChimpsRounds: "Earlier" as const }, "CBC1:"],
+    // 2.11 can't read the boss's own rounds in CHIMPS at all, so they are version 5 even with the tick off
+    [{ BossEventRounds: true, ChimpsRounds: "Own" as const }, "CBC5:"],
+    [{ ChimpsRounds: "Own" as const }, "CBC5:"],
   ])("%j gives %s", (change, prefix) => {
     expect(prefixFor({ ...base, ...change })).toBe(prefix);
   });

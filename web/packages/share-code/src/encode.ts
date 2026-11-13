@@ -3,7 +3,7 @@
 // reads any raw deflate.
 
 import { DATA, type Json, type JsonObject } from "./data";
-import { PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFIX, filterChallenge } from "./decode";
+import { PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFIX, VERSION5_PREFIX, filterChallenge } from "./decode";
 import { defaultOptions, optionsJson, readOptions, sanitize, type BossOptions } from "./options";
 
 const ITEMS_KEY = "$items";
@@ -59,6 +59,7 @@ export const normalized = (options: BossOptions): BossOptions => sanitize(readOp
 
 /** SetupCode.PrefixFor: the oldest code version that holds everything in the options */
 export function prefixFor(options: BossOptions): string {
+  if (options.ChimpsRounds === "Own") return VERSION5_PREFIX;
   if (options.BossEventRounds) return VERSION4_PREFIX;
   if (options.TierBosses != null) return VERSION3_PREFIX;
   if (options.SpeedPerTier !== 0 || options.HealthPerTier !== 0) return VERSION2_PREFIX;

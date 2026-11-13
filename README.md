@@ -51,7 +51,8 @@ To build your own tools for share codes, see the [share-code package](web/packag
     set is simply harder (#157): the newest have no regrow but denser rounds with more raw RBE, a check of your damage
     most of all on rounds 41 to 120; the earlier ones have regrow, camo regrow and DDTs (rounds 85, 87 and 93) spread
     over longer rounds, a check of your detection. The rounds made for the bosses are nearly the same, wherever your Spawn Rounds put them. The **i** next to the dropdown
-    explains this in the game. The mod brings those round sets along, since the game only gets them during an event: from
+    explains this in the game. You can also pick the boss's own event rounds, like in the other modes. The mod brings
+    the CHIMPS round sets along, since the game only gets them during an event: from
     [Blooncyclopedia](https://www.bloonswiki.com/Stats:Bloons_TD_6/Roundsets/chimpsbloonarius) and
     [BTD6 API Explorer](https://github.com/HalfHydra/BTD6-API-Explorer).
   - **Skulls**: keep the vanilla skulls, space any number evenly across the health bar, or place them at exact health
@@ -193,7 +194,7 @@ player can't make in the Challenge Editor or the Boss Creator are ignored, and a
 (or `NaN` or `Infinity`) doesn't load at all.
 
 Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, `CBC3:` when they use Advanced Mode, or
-`CBC4:` when they use Boss Event Rounds; a setup that uses several of them gets the highest,
+`CBC4:` when they use Boss Event Rounds, or `CBC5:` when they play the boss's own event rounds in CHIMPS; a setup that uses several of them gets the highest,
 so that older versions of the mod ask for an update instead of loading them without those settings. They only contain what differs from a new
 setup, so they are usually a few hundred characters. A new, unchanged setup gives a code like this one:
 
@@ -230,7 +231,7 @@ CBC3:HY0xC8IwEEb_itx8g3RQyBgKLg4O4n5NDhpMcyWXgLXkv9u4fY8H79tBwOzwDJwVzBX_y4oqHwg
 | First Boss Round | 1–200 | 40 | Fills in Spawn Rounds together with Rounds Between Tiers. |
 | Rounds Between Tiers | 1–50 | 20 | Fills in Spawn Rounds; 1 sends a new tier every round. |
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
-| Boss Event Rounds | on / off | off | The official boss events' rounds for the boss, moved with the tiers when Spawn Rounds differ from 40, 60, 80, 100, 120. In Advanced Mode each tier's round comes from its own boss. In CHIMPS a dropdown: off, the newest CHIMPS boss event's rounds (default; no regrow, dense) or the earlier ones' (regrow, DDTs), for every boss. |
+| Boss Event Rounds | on / off | off | The official boss events' rounds for the boss, moved with the tiers when Spawn Rounds differ from 40, 60, 80, 100, 120. In Advanced Mode each tier's round comes from its own boss. In CHIMPS a dropdown: off, the newest CHIMPS boss event's rounds (default; no regrow, dense) or the earlier ones' (regrow, DDTs), for every boss, or the boss's own event rounds. |
 | Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | In Advanced, set per tier in its picker, with the count and the list below. |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
 | Skulls at Boss HP % | comma separated % (1–99) | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. Use a point for decimals (`33.5`). The field shows the list as it is used: sorted, duplicates merged, invalid values dropped. |
