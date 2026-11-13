@@ -79,6 +79,10 @@ const SETUPS: [string, StudioSetup][] = [
     "advanced with event rounds and spread rounds",
     make(toAdvanced, (s) => edit.stepTierBoss(s, 1, 1), (s) => edit.setBossEventRounds(s, true), (s) => edit.spreadSpawnRounds(s, 20, 10)),
   ],
+  // Boss Event Rounds in CHIMPS, with the Studio's CHIMPS dropdown (#139)
+  ["chimps: newest event rounds", make(rule("mode", "Clicks"), (s) => edit.setChimpsEventRounds(s, "Newest"))],
+  ["chimps: earlier event rounds", make(rule("mode", "Clicks"), (s) => edit.setChimpsEventRounds(s, "Earlier"))],
+  ["chimps: earlier, then off", make(rule("mode", "Clicks"), (s) => edit.setChimpsEventRounds(s, "Earlier"), (s) => edit.setChimpsEventRounds(s, "Off"))],
   // The Challenge Editor's rules, made with the Studio's own rule controls (#97)
   ["rules: game", make(rule("name", "  Hard Times "), rule("map", "Infernal"), rule("difficulty", "Hard"), rule("mode", "HalfCash"))],
   [

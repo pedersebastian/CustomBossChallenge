@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **CHIMPS boss event rounds on the website** (#139): the website and `@cbc/share-code` now know the CHIMPS
+  dropdown. A code with the earlier CHIMPS events' rounds kept them only until it was changed in the Studio, which made
+  it play the newest ones. In CHIMPS the Studio has the Boss Creator's dropdown (Off, Newest, Earlier) in place of the
+  Boss Event Rounds tick, the preview shows the Boss Creator's warning about these rounds, and Compare tells which
+  CHIMPS events' rounds each side plays.
+- A code with a CHIMPS rounds value the mod doesn't know now plays the newest CHIMPS events' rounds and is saved that
+  way, like an unknown boss or skull mode.
+
 ## [2.11.0] - 2026-11-12
 
 ### Added

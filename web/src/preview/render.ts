@@ -10,6 +10,7 @@ import { formatPercent } from "@cbc/share-code/skulls";
 import { clampTiers, endRound, formatHealth, maxModelHealth } from "@cbc/share-code/tiers";
 import { normalGame, skulls, tierCards } from "./compute";
 import { renderTimeline } from "./timeline";
+import { chimpsEventWarning, eventRoundsText } from "./eventRounds";
 import { renderCurves } from "../compare/chart";
 import { tierPairs } from "../compare/diff";
 import { tierGlow, tierGlowStyle } from "./tierLook";
@@ -60,6 +61,8 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
   );
 
   if (problem) root.append(h("p", { class: "warning" }, `In the game, Play refuses this setup: ${problem}`));
+  const chimpsWarning = chimpsEventWarning(options, challenge.mode);
+  if (chimpsWarning) root.append(h("p", { class: "warning" }, chimpsWarning));
 
   root.append(renderTiers(options, challenge));
   if (compact) return root;
@@ -250,6 +253,7 @@ function renderRules(options: BossOptions, challenge: Challenge, rounds: number[
 
   rows.push(["Spawn rounds", rounds.join(", ")]);
   rows.push(["Game ends", `Round ${endRound(rounds)}`]);
+  if (options.BossEventRounds) rows.push(["Boss Event Rounds", eventRoundsText(options, challenge.mode)]);
   rows.push(["Boss Speed", percent(challenge.bossSpeed)]);
   rows.push(["Boss Health", percent(challenge.bossHealth)]);
   if (options.SpeedPerTier !== 0) rows.push(["Speed per Tier", `${options.SpeedPerTier > 0 ? "+" : ""}${options.SpeedPerTier} %`]);

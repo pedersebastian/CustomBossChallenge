@@ -20,6 +20,16 @@ export const SKULL_MODE_NAMES: Record<SkullMode, string> = { Vanilla: "Vanilla",
 
 export const BOSSES = DATA.bosses;
 
+/**
+ * Which CHIMPS boss events' rounds Boss Event Rounds play in CHIMPS (#139): the newest event's ("chimpsboss",
+ * Diamondback, 2026) or the earlier ones' ("chimpsbloonarius", Bloonarius 2024 and Dreadbloon 2025)
+ */
+export const CHIMPS_ROUNDS = ["Newest", "Earlier"] as const;
+export type ChimpsRounds = (typeof CHIMPS_ROUNDS)[number];
+
+/** The game mode of CHIMPS in the challenge (BossOptions.ChimpsMode) */
+export const CHIMPS_MODE = "Clicks";
+
 export interface BossOptions {
   Boss: string;
   Elite: boolean;
@@ -34,6 +44,11 @@ export interface BossOptions {
   TierBosses?: string | null;
   /** The boss events' own rounds, in Standard and in Advanced Mode (codes from 2.10, CBC4) */
   BossEventRounds: boolean;
+  /**
+   * Which CHIMPS boss events' rounds Boss Event Rounds play in CHIMPS (codes from 2.11); left out of codes when it is
+   * Newest, the default
+   */
+  ChimpsRounds?: ChimpsRounds;
   /** Codes from before 2.3; sanitize turns it into HealthPerTier */
   ExtraTierHealth?: number | null;
 }
@@ -43,7 +58,7 @@ export class OptionTypeError extends Error {}
 
 const DEFAULTS = DATA.defaultOptions as unknown as BossOptions;
 
-export const defaultOptions = (): BossOptions => ({ ...DEFAULTS });
+export const defaultOptions = (): BossOptions => ({ ...DEFAULTS, ChimpsRounds: "Newest" });
 
 /** The options as JSON, the way the mod writes them (OptionsJson in Persistence/SetupCode.cs) */
 export function optionsJson(options: BossOptions): JsonObject {
@@ -62,6 +77,8 @@ export function optionsJson(options: BossOptions): JsonObject {
   json.SpawnRounds = options.SpawnRounds;
   if (options.TierBosses != null) json.TierBosses = options.TierBosses;
   json.BossEventRounds = options.BossEventRounds;
+  // DefaultValueHandling.Ignore in the mod: Newest is left out, so codes without it stay the same
+  if (options.ChimpsRounds !== undefined && options.ChimpsRounds !== "Newest") json.ChimpsRounds = options.ChimpsRounds;
   return json;
 }
 
@@ -94,7 +111,7 @@ function toEnum(value: Json, names: readonly string[], name: string): string | n
 const OPTION_TYPES: Record<string, string> = {
   Boss: "enum", Elite: "bool", SkullMode: "enum", SkullCount: "int", CustomSkulls: "text?", Tiers: "int",
   SpeedPerTier: "int", HealthPerTier: "int", ExtraTierHealth: "int?", SpawnRounds: "text?", TierBosses: "text?",
-  RandomTiers: "text?", BossEventRounds: "bool",
+  RandomTiers: "text?", BossEventRounds: "bool", ChimpsRounds: "enum",
 };
 
 /** A whole number in text, only ASCII digits and spaces, like CodeFormat.IntText */
@@ -132,7 +149,11 @@ export function typedOptions(diff: JsonObject): JsonObject {
 }
 
 /** Options as read, before sanitize: an enum can still be a number the game doesn't know */
-export type RawOptions = Omit<BossOptions, "Boss" | "SkullMode"> & { Boss: string | number; SkullMode: string | number };
+export type RawOptions = Omit<BossOptions, "Boss" | "SkullMode" | "ChimpsRounds"> & {
+  Boss: string | number;
+  SkullMode: string | number;
+  ChimpsRounds: string | number;
+};
 
 /** Reads the options JSON with the types BossOptions has; throws OptionTypeError like Json.NET would */
 export function readOptions(json: JsonObject): RawOptions {
@@ -156,8 +177,12 @@ export function readOptions(json: JsonObject): RawOptions {
     ExtraTierHealth: get("ExtraTierHealth") === null ? null : toInt(get("ExtraTierHealth"), "ExtraTierHealth"),
     TierBosses: toNullableString(get("TierBosses"), "TierBosses"),
     BossEventRounds: boolean(get("BossEventRounds"), "BossEventRounds"),
+    // Not in the defaults the website knows, as the mod leaves it out of them
+    ChimpsRounds: hasOwn(json, "ChimpsRounds") ? toEnum(json.ChimpsRounds, CHIMPS_ROUNDS, "ChimpsRounds") : "Newest",
   };
 }
+
+const hasOwn = (json: JsonObject, key: string): boolean => Object.prototype.hasOwnProperty.call(json, key);
 
 const enumName = (value: string | number, names: readonly string[], fallback: string): string =>
   typeof value === "string" ? value : Number.isInteger(value) && value >= 0 && value < names.length ? names[value] : fallback;
@@ -180,6 +205,7 @@ export function sanitize(raw: RawOptions): BossOptions {
     SpawnRounds: raw.SpawnRounds,
     TierBosses: normalizeTierBosses(raw.TierBosses),
     BossEventRounds: raw.BossEventRounds,
+    ChimpsRounds: enumName(raw.ChimpsRounds, CHIMPS_ROUNDS, "Newest") as ChimpsRounds,
     ExtraTierHealth: null,
   };
 }
@@ -212,6 +238,13 @@ export const isMixed = (options: BossOptions): boolean => options.TierBosses != 
 
 /** BossOptions.UsesBossEventRounds: the event rounds are played in Standard and in Advanced Mode (#84) */
 export const usesBossEventRounds = (options: BossOptions): boolean => options.BossEventRounds;
+
+/**
+ * The round set Boss Event Rounds play in <mode>: in CHIMPS the CHIMPS events' set ChimpsRounds picks, for every
+ * boss, otherwise null for each boss's own (BossOptions.EventRoundSet)
+ */
+export const chimpsEventRoundSet = (options: BossOptions, mode: string): string | null =>
+  mode !== CHIMPS_MODE ? null : options.ChimpsRounds === "Earlier" ? "chimpsbloonarius" : "chimpsboss";
 
 /** What a tier was set to: the setup's boss (boss null), a boss of its own, or Random (BossOptions.EntryOf) */
 export const entryOf = (options: BossOptions, tier: number): TierBoss =>
