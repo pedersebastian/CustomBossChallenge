@@ -33,6 +33,8 @@ import { setUpBossPicker } from "./bossPicker";
 import { icon } from "./icons";
 import { setUpRulesSection } from "./rulesSection";
 import { randomizeSetup } from "./random";
+import { addInfo } from "./info";
+import { MOD_TEXTS, type ModText } from "../modTexts";
 
 /** What Reset Boss Options asks first (Texts.ResetBossOptionsQuestion, without Undo, which the Studio doesn't have) */
 const RESET_BOSS_QUESTION =
@@ -42,9 +44,9 @@ const RESET_QUESTION = "Start over with a new setup? Every boss option and every
 
 /** The CHIMPS dropdown's entries as the Boss Creator names them (Texts.EventRoundsOff, ChimpsRoundsNewest, ...) */
 const CHIMPS_EVENT_NAMES: Record<edit.ChimpsEventChoice, string> = {
-  Off: "Off",
-  Newest: "Newest CHIMPS events (hard)",
-  Earlier: "Earlier CHIMPS events (harder)",
+  Off: MOD_TEXTS.EventRoundsOff,
+  Newest: MOD_TEXTS.ChimpsRoundsNewest,
+  Earlier: MOD_TEXTS.ChimpsRoundsEarlier,
 };
 
 /** How long to wait after the last change before making the code and the preview again */
@@ -227,6 +229,27 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     boss, bossSpeed, bossHealth, maxParagons, tiers, speedPerTier, healthPerTier,
     firstRound, roundsBetween, spawnRounds, eventRounds, chimpsEventRounds, skullMode, skullCount, customSkulls,
   ];
+  // An i on every row, with the Boss Creator's explanation, and one after the CHIMPS dropdown for its round sets (#157)
+  const infos: [Control, string, ModText][] = [
+    [boss, "Boss", "BossTypeInfo"],
+    [bossSpeed, "Boss Speed", "BossSpeedInfo"],
+    [bossHealth, "Boss Health", "BossHealthInfo"],
+    [maxParagons, "Max Paragons", "MaxParagonsInfo"],
+    [tiers, "Boss Tiers", "BossTiersInfo"],
+    [speedPerTier, "Speed per Tier", "SpeedPerTierInfo"],
+    [healthPerTier, "Health per Tier", "HealthPerTierInfo"],
+    [firstRound, "First Boss Round", "FirstBossRoundInfo"],
+    [roundsBetween, "Rounds Between Tiers", "RoundsBetweenTiersInfo"],
+    [spawnRounds, "Spawn Rounds", "SpawnRoundsInfo"],
+    [eventRounds, "Boss Event Rounds", "BossEventRoundsInfo"],
+    [chimpsEventRounds, "Boss Event Rounds", "BossEventRoundsInfo"],
+    [skullMode, "Skulls", "SkullsInfo"],
+    [skullCount, "Skull Count", "SkullCountInfo"],
+    [customSkulls, "Skulls at Boss HP %", "SkullHealthInfo"],
+  ];
+  for (const [control, title, text] of infos) addInfo(control.row, title, text);
+  addInfo(chimpsEventRounds.row, "the CHIMPS round sets", "ChimpsRoundsInfo", chimpsEventRounds.row.querySelector("select")!);
+
   // Where the Boss Creator has them (#133): the Tier Preview right after the tier rows, which in Advanced Mode is the
   // strip that opens each tier's picker, and the Skull Preview under the skull rows
   const tierPreview = h("div", { class: "studio-preview-block studio-tier-preview" });

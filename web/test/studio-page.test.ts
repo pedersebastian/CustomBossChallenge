@@ -117,7 +117,8 @@ describe("the Studio page", () => {
     expect(dropdown.hidden).toBe(false);
     const select = dropdown.querySelector("select")!;
     expect(select.value).toBe("Earlier");
-    expect(preview.textContent).toContain("CHIMPS boss events");
+    // The warning names what the earlier rounds test (#157)
+    expect(preview.textContent).toContain("regrow, camo regrow and DDTs");
 
     // Another change keeps the earlier rounds in the code
     const tiers = rowOf("Boss Tiers").querySelector("input")!;
@@ -134,6 +135,38 @@ describe("the Studio page", () => {
     read = await decode(studio.code());
     if (!read.ok) throw new Error(read.reason);
     expect(read.options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Newest" });
+  });
+
+  it("explains every row and the CHIMPS round sets behind an i (#157)", async () => {
+    await openCode(await encode({ c: { mode: "Clicks" }, o: { BossEventRounds: true } }, "CBC4:"));
+    for (const row of form.querySelectorAll<HTMLElement>(":scope > .studio-row")) {
+      if (row.querySelector(".studio-tabs")) continue;
+      expect(row.querySelector(".studio-row-name > .studio-info"), row.textContent ?? "").not.toBeNull();
+    }
+
+    const chimps = [...form.querySelectorAll<HTMLElement>(":scope > .studio-row")].find((r) => !r.hidden && r.querySelector("select option[value=Earlier]"))!;
+    const options = [...chimps.querySelectorAll("option")].map((o) => o.textContent);
+    expect(options).toEqual(["Off", "Newest CHIMPS events (no regrow, dense)", "Earlier CHIMPS events (regrow, DDTs)"]);
+    const choiceInfo = chimps.querySelector<HTMLButtonElement>(".studio-control > .studio-info")!;
+    expect(choiceInfo.previousElementSibling?.tagName).toBe("SELECT");
+    expect(choiceInfo.getAttribute("aria-label")).toBe("About the CHIMPS round sets");
+    const panel = document.getElementById(choiceInfo.getAttribute("aria-controls")!)!;
+    expect(panel.hidden).toBe(true);
+    choiceInfo.click();
+    expect(panel.hidden).toBe(false);
+    expect(choiceInfo.getAttribute("aria-expanded")).toBe("true");
+    expect(panel.querySelectorAll("p")).toHaveLength(4);
+    expect(panel.textContent).toContain("no regrow bloons at all");
+    choiceInfo.click();
+    expect(panel.hidden).toBe(true);
+    expect(choiceInfo.getAttribute("aria-expanded")).toBe("false");
+
+    // The row's own i explains the row, like the Boss Creator's
+    const rowInfo = rowOf("Boss Speed").querySelector<HTMLButtonElement>(".studio-info")!;
+    rowInfo.click();
+    expect(document.getElementById(rowInfo.getAttribute("aria-controls")!)!.textContent).toBe(
+      "How fast the boss moves, in percent of its normal speed. 100 % is the normal speed.",
+    );
   });
 
   const toolButton = (text: string): HTMLButtonElement =>

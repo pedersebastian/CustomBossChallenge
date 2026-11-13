@@ -398,6 +398,7 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         var chimpsRounds = section.ChimpsEventRounds;
         Assert(chimpsRounds.gameObject.activeInHierarchy && !section.BossEventRounds.gameObject.activeSelf,
             "CHIMPS shows the dropdown in place of the tick");
+        Assert(section.ChimpsRoundsInfo.gameObject.activeInHierarchy, "The dropdown's i explains the round sets (#157)");
         AssertEquals(chimpsRounds.Dropdown.options.Count, 3, "Off, newest and earlier");
         AssertEquals(chimpsRounds.Dropdown.captionText.text, Menus.Texts.ChimpsRoundsNewest.T(),
             $"The entry's text as it is, not taken for a key (option '{chimpsRounds.Dropdown.options[1].text}')");

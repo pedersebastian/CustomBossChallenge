@@ -213,6 +213,27 @@ public static class EditorRows
 
     public const string InfoName = "Info";
 
+    /// <summary>How big the i next to a choice is</summary>
+    public const float ChoiceInfoSize = 120;
+
+    /// <summary>
+    /// Adds an info button on <paramref name="row"/> at <paramref name="x"/> (from the row's right edge, like
+    /// <see cref="ControlInfo"/>) that explains a choice of the row's control in more detail than the row's own i,
+    /// like what each CHIMPS round set tests (#157)
+    /// </summary>
+    public static ModHelperButton AddChoiceInfo(GameObject row, string name, float x, string titleKey, string textKey)
+    {
+        var button = ModHelperButton.Create(new Info(name, x, 0, ChoiceInfoSize, ChoiceInfoSize)
+        {
+            Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
+        }, VanillaSprites.InfoBtn2, new Action(() => ShowInfo(titleKey, textKey)));
+        button.transform.SetParent(row.transform, false);
+        return button;
+    }
+
+    /// <summary>Where the right edge of a control made with <see cref="ControlInfo"/> and no offset is</summary>
+    public static float ControlRight(float width) => ControlX - (ControlWidth - width) / 2 + width / 2;
+
     public static void ShowInfo(string titleKey, string textKey) =>
         PopupScreen.instance.SafelyQueue(screen =>
             screen.ShowOkPopup($"<b>{titleKey.T()}</b>\n\n{textKey.T()}", null));

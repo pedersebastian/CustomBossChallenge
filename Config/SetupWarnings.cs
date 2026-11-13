@@ -71,7 +71,8 @@ public enum SetupWarning
     SameTiers,
 
     /// <summary>
-    /// Boss Event Rounds in CHIMPS play the CHIMPS boss events' rounds (#139), much harder than the normal ones. No args.
+    /// Boss Event Rounds in CHIMPS play the CHIMPS boss events' rounds (#139), much harder than the normal ones. Args: which
+    /// CHIMPS rounds, a <see cref="ChimpsRounds"/>, so the warning can name what that set tests (#157).
     /// </summary>
     ChimpsEventRounds,
 
@@ -126,7 +127,7 @@ public static class SetupWarnings
                 string.Join(", ", same.Select(run => $"{run.First}-{run.Last}"))));
 
         if (options.UsesBossEventRounds && facts.Mode == BossOptions.ChimpsMode)
-            warnings.Add(new Warning(SetupWarning.ChimpsEventRounds));
+            warnings.Add(new Warning(SetupWarning.ChimpsEventRounds, options.ChimpsRounds));
 
         if (Difficulty(facts) >= HardThreshold) warnings.Add(new Warning(SetupWarning.HardSetup));
         return warnings;
