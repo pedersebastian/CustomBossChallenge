@@ -87,6 +87,11 @@ public sealed class TierStrip
     /// </summary>
     public List<Warning> Warnings { get; private set; } = new();
 
+    /// <summary>
+    /// How often a strip was shown this session, for the tests (#184)
+    /// </summary>
+    internal static int Shows { get; private set; }
+
     private readonly ModHelperPanel strip;
 
     /// <summary>
@@ -292,10 +297,13 @@ public sealed class TierStrip
     /// </summary>
     public bool Show(BossOptions options, DailyChallengeModel? dcm)
     {
+        Shows++;
         var height = Row.GetComponent<RectTransform>().sizeDelta.y;
         var tiers = TierMath.ClampTiers(options.Tiers);
         var game = Game.instance?.model;
-        var values = Values(options, dcm, game);
+        // The cards and the warnings both look at the boss models, so they are looked up once (#184)
+        var facts = Facts(options, dcm, game);
+        var values = Values(options, dcm, game, facts);
 
         for (var i = 0; i < Cards.Count; i++)
         {
@@ -317,7 +325,7 @@ public sealed class TierStrip
             Paint(card.Health, value.Shown, value.HealthFactor);
         }
 
-        Warnings = SetupWarnings.Check(Facts(options, dcm, game));
+        Warnings = SetupWarnings.Check(facts);
         for (var i = 0; i < Warnings.Count && i < Notes.Count; i++) EditorRows.SetText(Notes[i].Text, Texts.Warning(Warnings[i]));
         LayOut(tiers, Math.Min(Warnings.Count, Notes.Count));
         return !Mathf.Approximately(height, Row.GetComponent<RectTransform>().sizeDelta.y);
@@ -335,13 +343,16 @@ public sealed class TierStrip
     /// The cards for <paramref name="options"/> with the boss multipliers from <paramref name="dcm"/>. The website
     /// shows the same numbers, see WebDataTest.
     /// </summary>
-    public static List<CardValues> Values(BossOptions options, DailyChallengeModel? dcm, GameModel? game)
+    public static List<CardValues> Values(BossOptions options, DailyChallengeModel? dcm, GameModel? game) =>
+        Values(options, dcm, game, Facts(options, dcm, game));
+
+    /// <param name="facts">What <see cref="Facts"/> gives for the same setup</param>
+    internal static List<CardValues> Values(BossOptions options, DailyChallengeModel? dcm, GameModel? game, SetupFacts facts)
     {
         var rounds = options.EffectiveSpawnRounds;
         var bossSpeed = dcm?.bloonModifiers?.bossSpeedMultiplier ?? 1;
         var bossHealth = dcm?.bloonModifiers?.healthMultipliers?.boss ?? 1;
         var cap = TierMath.MaxModelHealth(bossHealth);
-        var facts = Facts(options, dcm, game);
         var values = new List<CardValues>();
         for (var tier = 1; tier <= TierMath.ClampTiers(options.Tiers); tier++)
         {
