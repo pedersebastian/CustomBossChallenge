@@ -18,7 +18,10 @@ public static class ConfigApplier
     /// </summary>
     public const float MinMultiplier = 0.01f;
 
-    public static bool IsMarked(DailyChallengeModel? dcm) => dcm?.name?.EndsWith(Marker) == true;
+    /// <summary>
+    /// Ordinal: a culture's rules aren't needed for the marker, and this runs several times a frame (#183)
+    /// </summary>
+    public static bool IsMarked(DailyChallengeModel? dcm) => dcm?.name?.EndsWith(Marker, StringComparison.Ordinal) == true;
 
     /// <summary>
     /// Returns a prepared clone of <paramref name="editorDcm"/>; the editor's own model is left untouched

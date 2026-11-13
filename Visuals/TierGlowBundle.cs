@@ -26,6 +26,11 @@ public static class TierGlowBundle
     private static Shader? shader;
 
     /// <summary>
+    /// Whether the bundle was looked at yet, for the tests: the main menu does it, before any match (#183)
+    /// </summary>
+    internal static bool IsLoaded => loaded;
+
+    /// <summary>
     /// Kept loaded for as long as the game runs; unloading it would take the shader with it
     /// </summary>
     private static AssetBundle? bundle;

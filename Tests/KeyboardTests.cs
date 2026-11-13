@@ -249,6 +249,14 @@ public class KeyboardTest : CustomBossTest
         // The frame stays clear of the next row, whose value stands in the gap above it
         yield return null;
         var healthFrame = FocusFrame.Current!.GetComponent<RectTransform>();
+
+        // While the frame stays on one control, it is measured again only every FitInterval, not every frame (#183)
+        yield return new WaitForSecondsRealtime(0.2f);
+        var fits = FocusFrame.Fits;
+        var frames = Time.frameCount;
+        yield return new WaitForSecondsRealtime(0.5f);
+        var measured = FocusFrame.Fits - fits;
+        Assert(measured <= 0.5f / FocusFrame.FitInterval + 1, $"The frame was measured {measured} times in 0.5 s ({Time.frameCount - frames} frames)");
         foreach (var graphic in section.MaxParagons.Row.GetComponentsInChildren<UnityEngine.UI.Graphic>())
         {
             var rect = graphic.rectTransform;

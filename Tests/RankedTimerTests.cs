@@ -55,6 +55,20 @@ public class RankedTimerTest : ContinueTestBase
     }
 
     /// <summary>
+    /// With a boss alive the panel's time keeps counting from frame to frame, while the lives and cash it sits under
+    /// are found once for the match and not looked for in the scene again (#183)
+    /// </summary>
+    private IEnumerator TimeKeepsCounting()
+    {
+        var timeText = RankedHud.Panel!.GetComponentsInChildren<TMP_Text>().First(text => text.name == "Value0");
+        var before = timeText.text;
+        var lookups = RankedHud.HudLookups;
+        yield return new WaitForSecondsRealtime(1);
+        Assert(timeText.text != before, $"The panel's time stood still at {before} with a boss alive");
+        AssertEquals(RankedHud.HudLookups - lookups, 0, "Looks for the lives and cash in a second of the same match");
+    }
+
+    /// <summary>
     /// The game rounds its total to whole milliseconds, the tiers' times are exact frames
     /// </summary>
     private void AssertClose(TimeSpan actual, TimeSpan expected, string what)
@@ -141,6 +155,7 @@ public class RankedTimerTest : ContinueTestBase
         InGame.instance.bridge.StartRound();
         yield return WaitFor(() => Total > afterTier1, "Tier 2's time", 60);
         AssertPanel(true, "with a boss alive");
+        yield return TimeKeepsCounting();
         if (ScreenshotTour.Folder is { Length: > 0 } aliveFolder) yield return ScreenshotTour.Capture(aliveFolder, "ranked-hud-boss");
         CustomBossRetries.RetryFrom(retryRound, true);
         yield return WaitForLoadedGame();

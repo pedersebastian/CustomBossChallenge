@@ -260,6 +260,19 @@ public class MixedBossGameTest : CustomBossTest
         Assert(lineup.gameObject.activeInHierarchy, "The line-up is shown");
         AssertEquals(Visuals.BossHud.Cells.Count, options.Tiers, "A line-up cell per tier");
 
+        // The line-up is only drawn again when what it shows changes (#183); folding it does
+        var refreshes = Visuals.BossHud.Refreshes;
+        Visuals.BossHud.Update(now: true);
+        AssertEquals(Visuals.BossHud.Refreshes - refreshes, 0, $"Line-up drawn again without a change during tier {tier}");
+        if (tier == 1)
+        {
+            Visuals.BossHud.Fold!.Button.onClick.Invoke();
+            Visuals.BossHud.Update(now: true);
+            Visuals.BossHud.Fold!.Button.onClick.Invoke();
+            Visuals.BossHud.Update(now: true);
+            AssertEquals(Visuals.BossHud.Refreshes - refreshes, 2, "Folding and unfolding the line-up draws it again each time");
+        }
+
         var banner = AssertNotNull(Visuals.BossHud.Banner, $"No banner for tier {tier}")!;
         Assert(banner.gameObject.activeSelf, $"The banner shows when tier {tier} arrives");
         AssertEquals(Visuals.BossHud.BannerText!.Text.text, Texts.TierArrives.T(tier, Visuals.BossHud.Name(boss, elite)),

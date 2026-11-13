@@ -312,10 +312,14 @@ public class TierLookLifecycleTest : CustomBossTest
 {
     protected override IEnumerator Run()
     {
+        // The glow shader is looked up on the main menu, not when the first tier above 5 arrives (#183)
+        Assert(TierGlowBundle.IsLoaded, "The glow shader bundle wasn't looked at on the main menu");
+
         var options = new BossOptions {Boss = BossType.Vortex, Tiers = 10};
         yield return TierLookScene.Start(options, data => LoadIntoGame(data));
         yield return SpawnTier7(options);
         var graphics = TierLookScene.Graphics();
+        Assert(TierLookApplier.HeldMaterials > 0, "Tier 7's look has no materials");
 
         var simulation = InGame.instance.bridge.Simulation.Pointer;
         InGame.instance.RunRestart();
@@ -330,6 +334,10 @@ public class TierLookLifecycleTest : CustomBossTest
 
         yield return SpawnTier7(options);
         yield return ToMainMenu();
+
+        // Leaving the match lets go of the glow and aura materials, and the boss textures they hold (#183)
+        yield return null;
+        AssertEquals(TierLookApplier.HeldMaterials, 0, "Glow and aura materials kept after leaving the match");
 
         // A normal Boss Challenge, set up like the Boss Challenge screen does, uses the same panel
         yield return LoadIntoGame(SetupBossChallenge(BaseDcm(), BossType.Vortex));

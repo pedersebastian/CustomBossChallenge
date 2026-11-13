@@ -139,7 +139,15 @@ public static class TierLookApplier
         }
 
         keepShader = new Material(GlowShader) {name = "CustomBossTierLook", hideFlags = HideFlags.DontUnloadUnusedAsset};
+
+        // The mod's own glow shader is looked up here too, not when the first tier above 5 arrives mid-match (#183)
+        _ = TierGlowBundle.Shader;
     }
+
+    /// <summary>
+    /// The glow and aura materials kept for the bosses, for the tests: none once the match is left (#183)
+    /// </summary>
+    internal static int HeldMaterials => Glows.Count + Auras.Count;
 
     /// <summary>
     /// The bosses that have the look right now, for tests
@@ -157,11 +165,14 @@ public static class TierLookApplier
     /// </summary>
     public static void Update()
     {
-        if (Bosses.Count == 0 && !CustomBossState.IsActive) return;
+        if (Bosses.Count == 0 && HeldMaterials == 0 && !CustomBossState.IsActive) return;
 
         if (!CustomBossState.IsActive || InGame.instance?.bridge?.Simulation == null)
         {
             Clear();
+
+            // A restart keeps the match and its materials; leaving it lets them and the boss textures they hold go
+            if (!CustomBossState.IsActive) ReleaseMaterials();
             return;
         }
 
@@ -183,6 +194,25 @@ public static class TierLookApplier
         Bosses.Clear();
         lastBoss = IntPtr.Zero;
         segmentSearchUntil = 0;
+    }
+
+    /// <summary>
+    /// Destroys the glow and aura materials. They are kept loaded on purpose while a match uses them, and each holds
+    /// a boss texture, so without this they would stay for the whole session (#183). Only once no boss has the look,
+    /// so no renderer still uses one.
+    /// </summary>
+    private static void ReleaseMaterials()
+    {
+        if (Bosses.Count > 0) return;
+        foreach (var material in Glows.Values.Concat(Auras.Values))
+        {
+            if (material != null) Object.Destroy(material);
+        }
+
+        Glows.Clear();
+        GlowPointers.Clear();
+        Auras.Clear();
+        Pulses.Clear();
     }
 
     private static void Check()

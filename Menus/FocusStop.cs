@@ -93,8 +93,28 @@ public static class FocusFrame
         frame.transform.SetParent(target.transform, false);
         frame.transform.SetAsLastSibling();
         frame.SetActive(true);
-        Fit();
+        Fit(now: true);
     }
+
+    /// <summary>
+    /// How often the frame is fitted to a control that stays the same, in seconds. Its value and texts can change width
+    /// while it is shown, but measuring every graphic of the row and its neighbours each frame is slow (#183).
+    /// </summary>
+    public const float FitInterval = 0.1f;
+
+    /// <summary>
+    /// A new control is fitted every frame for this many frames, until its texts have their size
+    /// </summary>
+    private const int SettleFrames = 3;
+
+    private static IntPtr fittedTarget;
+    private static float nextFit;
+    private static int settleUntilFrame;
+
+    /// <summary>
+    /// How often the frame was fitted this session, for the tests (#183)
+    /// </summary>
+    internal static int Fits { get; private set; }
 
     public static void Hide()
     {
@@ -102,12 +122,24 @@ public static class FocusFrame
     }
 
     /// <summary>
-    /// Sizes the frame to what its control shows now; values and texts change width while it is shown
+    /// Sizes the frame to what its control shows now; values and texts change width while it is shown. Called every
+    /// frame: a control that stays the same is only measured again every <see cref="FitInterval"/>.
     /// </summary>
-    public static void Fit()
+    /// <param name="now">Measure now, e.g. when the frame moved to another control</param>
+    public static void Fit(bool now = false)
     {
         var target = Current?.transform.parent?.GetComponent<RectTransform>();
         if (target == null) return;
+
+        if (target.Pointer != fittedTarget)
+        {
+            fittedTarget = target.Pointer;
+            settleUntilFrame = Time.frameCount + SettleFrames;
+            now = true;
+        }
+        if (!now && Time.frameCount > settleUntilFrame && Time.unscaledTime < nextFit) return;
+        nextFit = Time.unscaledTime + FitInterval;
+        Fits++;
 
         var (min, max) = Bounds(target, target) ?? (target.rect.min, target.rect.max);
         var top = max.y + Margin;
