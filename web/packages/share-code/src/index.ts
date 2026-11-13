@@ -38,7 +38,9 @@ export * as tiers from "./math/tiers";
 export * as skulls from "./math/skulls";
 export * as tierBosses from "./math/tierBosses";
 export * as limits from "./math/limits";
+export * as warnings from "./math/warnings";
 export type { TierBoss } from "./math/tierBosses";
+export type { SetupFacts, SetupWarning, TierBase, Warning } from "./math/warnings";
 
 /** Every code prefix this version reads, oldest first */
 export const PREFIXES = ["CBC1:", "CBC2:", "CBC3:", "CBC4:", "CBC5:"] as const;

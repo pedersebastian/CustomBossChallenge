@@ -1,5 +1,5 @@
 {
-  "about": "Setups and the warnings the Boss Creator shows for them before Play (issue #70). Read by UnitTests/SetupWarningsTests.cs; meant for the website's port of Config/SetupWarnings.cs too. Facts are SetupFacts, with BossOptions under Options; missing values are the editor's defaults. Warnings are in the order the Boss Creator shows them.",
+  "about": "Setups and the warnings the Boss Creator shows for them before Play (issue #70). Read by UnitTests/SetupWarningsTests.cs and by web/test/setup-warnings.test.ts, the website's port of Config/SetupWarnings.cs (#186). Facts are SetupFacts, with BossOptions under Options; missing values are the editor's defaults. Warnings are in the order the Boss Creator shows them.",
   "cases": [
     {
       "name": "The editor's default setup",

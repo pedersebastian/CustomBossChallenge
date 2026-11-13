@@ -118,6 +118,39 @@ describe("the Konami party", () => {
   });
 });
 
+describe("the warnings under the Tier Preview (#186)", () => {
+  const tierPreview = (root: HTMLElement): HTMLElement =>
+    [...root.querySelectorAll<HTMLElement>(".block")].find((block) => block.querySelector("h4")?.textContent === "Tier Preview")!;
+
+  it("say what the Boss Creator says, in its order", async () => {
+    const { renderSetup } = await import("../src/preview/render");
+    const { MOD_TEXTS } = await import("../src/modTexts");
+    const { defaultChallenge, defaultOptions, encode: make } = await import("@cbc/share-code");
+    const json = defaultChallenge();
+    (json.startRules as Record<string, number>).round = 36;
+    const read = await decode(await make({ ...defaultOptions(), SpawnRounds: "40, 60, 80, 81, 100" }, json));
+    if (!read.ok) throw new Error(read.reason);
+
+    const notes = [...tierPreview(renderSetup(read.options, read.challenge)).querySelectorAll(".note")].map((note) => note.textContent);
+    expect(notes).toEqual([
+      MOD_TEXTS.StartRoundClose.replace("{0}", "36").replace("{1}", "4").replace("{2}", "40"),
+      MOD_TEXTS.TiersClose.replace("{0}", "80-81"),
+    ]);
+  });
+
+  it("keep the game's health limit at a Boss Health below 100 %, like the mod", async () => {
+    const { renderTiers } = await import("../src/preview/render");
+    const { defaultOptions } = await import("@cbc/share-code");
+    const { formatHealth } = await import("@cbc/share-code/tiers");
+    const options = { ...defaultOptions(), Elite: true, Tiers: 10, HealthPerTier: 200 };
+    const challenge = { bossSpeed: 1, bossHealth: 0.5 } as Parameters<typeof renderTiers>[1];
+
+    const notes = [...renderTiers(options, challenge).querySelectorAll(".note")].map((note) => note.textContent ?? "");
+    expect(notes).toHaveLength(1);
+    expect(notes[0]).toContain(`Health stops at ${formatHealth(2e9)} per tier`);
+  });
+});
+
 describe("the speed axis", () => {
   it.each([1, 3, 10, 45, 100, 1000, 10000])("has at most 7 ticks up to ×%d", (max) => {
     const ticks = linearAxis([max]).ticks;

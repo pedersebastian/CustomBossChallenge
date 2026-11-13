@@ -101,7 +101,7 @@ export function tierSkulls(options: BossOptions, tier: number): number[] | null 
 }
 
 /** The game's model of tier `modelTier` (1-5) of the boss `tier` has, like BossOptions.SourceId */
-function modelOf(options: BossOptions, modelTier: number, tier: number) {
+export function modelOf(options: BossOptions, modelTier: number, tier: number) {
   const { boss, elite } = bossOf(options, tier);
   return GAME.bosses[boss]?.[elite ? "elite" : "normal"]?.[modelTier - 1];
 }

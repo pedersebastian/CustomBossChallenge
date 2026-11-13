@@ -8,7 +8,7 @@ import * as sdk from "../src/index";
 import { PREFIXES, decode, defaultChallenge, defaultOptions, encode, extractCode, tierBosses, tiers } from "../src/index";
 
 const README = readFileSync(fileURLToPath(new URL("../README.md", import.meta.url)), "utf8");
-const SOURCES = ["index", "decode", "encode", "options", "data", "math/tiers", "math/skulls", "math/tierBosses", "math/limits", "math/dotnet"].map(
+const SOURCES = ["index", "decode", "encode", "options", "data", "math/tiers", "math/skulls", "math/tierBosses", "math/limits", "math/dotnet", "math/warnings"].map(
   (name) => readFileSync(fileURLToPath(new URL(`../src/${name}.ts`, import.meta.url)), "utf8"),
 );
 
@@ -50,6 +50,7 @@ describe("the public API", () => {
     expect(tiers.endRound(tiers.spawnRounds(5, null))).toBe(140);
     expect(sdk.skulls.evenlySpaced(4)).toHaveLength(4);
     expect(sdk.limits.orDefault(-5, 0, 10)).toBe(-1);
+    expect(sdk.warnings.setupWarnings(sdk.warnings.setupFacts({ startRound: 38 })).map((w) => w.kind)).toEqual(["StartRoundClose"]);
   });
 });
 

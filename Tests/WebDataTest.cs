@@ -270,7 +270,16 @@ public class WebDataTest : CustomBossTest
                                "\"towers\":{\"$items\":{\"1\":{\"tower\":\"SuperMonkey\",\"max\":3},\"01\":{\"max\":7}," +
                                "\"9999\":{\"max\":1}}},\"startRules\":{\"cash\":99999999999,\"lives\":12.0,\"round\":\"5\"}}}"),
                 SetupCode.Pack("{\"o\":{},\"c\":{\"maxParagons\":40000,\"towers\":[{\"tower\":\"DartMonkey\",\"max\":4}," +
-                               "{\"tower\":\"NoSuchTower\",\"max\":2},{\"max\":9},7]}}")
+                               "{\"tower\":\"NoSuchTower\",\"max\":2},{\"max\":9},7]}}"),
+                // The warnings before Play (#186), from the game's own boss models: a start round and tiers close
+                // together; ten Elite tiers held to the health limit, some the same, in a very hard challenge; and
+                // Boss Event Rounds in CHIMPS
+                SetupCode.Pack("{\"o\":{\"SpawnRounds\":\"40, 60, 80, 81, 100\"},\"c\":{\"startRules\":{\"round\":37}}}"),
+                SetupCode.Pack("{\"o\":{\"Boss\":\"Lych\",\"Elite\":true,\"Tiers\":10,\"HealthPerTier\":200,\"SpeedPerTier\":50}," +
+                               "\"c\":{\"bloonModifiers\":{\"healthMultipliers\":{\"boss\":20}},\"disableSelling\":true," +
+                               "\"startRules\":{\"lives\":1}}}", SetupCode.Version2Prefix),
+                SetupCode.Pack("{\"o\":{\"BossEventRounds\":true,\"ChimpsRounds\":\"Earlier\"},\"c\":{\"mode\":\"Clicks\"}}",
+                    SetupCode.Version4Prefix)
             })
             .Distinct()
             .ToList();
@@ -297,7 +306,14 @@ public class WebDataTest : CustomBossTest
                     ["skulls"] = card.Skulls
                 })),
                 ["skulls"] = new JArray((SkullStrip.Skulls(options).Percents ?? Array.Empty<float>()).Select(SkullStrip.Format).Cast<object>()),
-                ["playProblem"] = BossEditorSection.PlayProblem(dcm!, options) is null ? null : "yes"
+                ["playProblem"] = BossEditorSection.PlayProblem(dcm!, options) is null ? null : "yes",
+                // The warnings the Tier Preview shows, with what they name (#186)
+                ["warnings"] = new JArray(SetupWarnings.Check(TierStrip.Facts(options, dcm, Game.instance.model)).Select(warning =>
+                    new JObject
+                    {
+                        ["kind"] = warning.Kind.ToString(),
+                        ["args"] = new JArray(warning.Args.Select(arg => arg is Enum value ? JToken.FromObject(value.ToString()) : JToken.FromObject(arg)))
+                    }))
             });
         }
 

@@ -34,6 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and the rounds made for the bosses are nearly the same. Every row of the website's Studio has an **i** too, showing the Boss
   Creator's explanation of the option, and the CHIMPS dropdown has its own. Shared tests keep the Studio's texts the
   same as the mod's.
+- **The Boss Creator's warnings on the website** (#186): the preview, the Studio and Compare show the warnings the
+  Tier Preview has before Play, in the same words and order: a start round just before the first boss, tiers a few
+  rounds apart, tiers held to the game's health limit, tiers that end up the same, Boss Event Rounds in CHIMPS and a
+  very hard challenge. Before, the website only showed the health limit and the CHIMPS warning. `@cbc/share-code` has
+  the checks as `warnings`, tested with the mod's own cases and with what the mod warns about for codes made in the
+  game. With a Boss Health below 100 %, the website's health limit is now the mod's too: it said half as much at 50 %.
 
 ### Changed
 
