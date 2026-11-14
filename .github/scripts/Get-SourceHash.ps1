@@ -17,12 +17,26 @@ $Root = (Resolve-Path $Root).Path.TrimEnd('\', '/')
 $skipAnywhere = @("bin", "obj", ".git", ".vs", ".idea", "node_modules")
 $skipAtTop = @("UnitTests", "PropertyTests", "web", "UnityProject", "docs", "tools", ".github", ".claude")
 
+# Every file the csproj builds into the DLL by name, like the CHIMPS round sets in Config/RoundSets (#169), so a new
+# embedded file counts without a rule of its own. Wildcards (the website's data, only in Debug builds) are left to the
+# rules below.
+$embedded = @{}
+[xml] $project = Get-Content -Raw (Join-Path $Root "CustomBossChallenge.csproj")
+foreach ($item in $project.SelectNodes("//*[local-name()='EmbeddedResource'][@Include]")) {
+    foreach ($include in $item.Include.Split(';')) {
+        $path = $include.Trim().Replace('\', '/')
+        if ($path -and -not $path.Contains('*')) { $embedded[$path] = $true }
+    }
+}
+
 function Test-Counts([string] $relative) {
+    if ($embedded.ContainsKey($relative)) { return $true }
     $extension = [System.IO.Path]::GetExtension($relative).ToLowerInvariant()
     switch ($extension) {
         ".cs" { return $true }
         ".csproj" { return $true }
-        ".json" { return $relative.StartsWith("Localization/") -or $relative -eq "global.json" }
+        # Config/ holds data built into the DLL too, such as the CHIMPS round sets (#169)
+        ".json" { return $relative.StartsWith("Localization/") -or $relative.StartsWith("Config/") -or $relative -eq "global.json" }
         ".bundle" { return $relative.StartsWith("Bundles/") }
         # Built in by btd6.targets (Icon.png among them) or packed by thunderstore.toml
         ".png" { return -not [System.IO.Path]::GetFileName($relative).StartsWith("Screenshot") }

@@ -135,8 +135,9 @@ On a Debug build, a run of every test also writes `TestResults/ingame.json` in t
 (`TestRunReport`): the mod and game version, the commit, which tests failed or were skipped, and `sourceHash`, a
 fingerprint of the mod's own code from `.github/scripts/Get-SourceHash.ps1`. It covers every file that ends up in the
 DLL or the Thunderstore package: the `.cs` and `.csproj` files (`Tests/` included, since the tests are built into the
-DLL), `Localization/*.json`, `Bundles/*.bundle`, the `.png` files, `README.md` and `thunderstore.toml`, plus
-`global.json`. It leaves out `CHANGELOG.md` and `LICENSE` (the release rotates the CHANGELOG after the tests ran), and
+DLL), `Localization/*.json`, the `.json` files in `Config/` (the CHIMPS round sets), every other file the `.csproj`
+builds in as an `EmbeddedResource` by name, `Bundles/*.bundle`, the `.png` files, `README.md` and `thunderstore.toml`,
+plus `global.json`. It leaves out `CHANGELOG.md` and `LICENSE` (the release rotates the CHANGELOG after the tests ran), and
 `UnitTests/`, `PropertyTests/`, `web/`, `docs/`, `tools/` and `.github/`, so changing only those doesn't need a new
 run. A test is skipped when it passes without
 checking what it normally checks (`Skip`), e.g. tests left out by `CBC_TESTS`, or `WebDataTest` writing its files.
