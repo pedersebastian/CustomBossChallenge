@@ -62,6 +62,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   CHIMPS events' rounds each side plays.
 - A code with a CHIMPS rounds value the mod doesn't know now plays the newest CHIMPS events' rounds and is saved that
   way, like an unknown boss or skull mode.
+- **Hand-made and damaged codes read the same in the mod and on the website** (#174): the mod no longer reads codes
+  whose JSON isn't strict JSON (single quotes, comments, trailing commas, `010`, `0x3`, `undefined`), that have spaces
+  or line breaks inside, or bytes after or a piece missing at the end, which the website couldn't read. The website no
+  longer reads codes nested deeper than the mod can. Text in options, like Spawn Rounds, Custom Skulls and the tiers'
+  bosses, is trimmed and compared like in the mod, so a no-break space, byte order mark or Kelvin sign means the same
+  on both. Codes the mod or the website made are not affected. Shared test cases keep the two the same.
 
 ## [2.11.0] - 2026-11-12
 

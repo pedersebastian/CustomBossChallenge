@@ -2,6 +2,7 @@
 // Like the mod, a code is only data: it is never run, never throws and is held to what the game can play.
 
 import { DATA, type Json, type JsonObject } from "./data";
+import { netTrim, netTrimEnd } from "./math/dotnet";
 import { clampMultiplier, orDefault } from "./math/limits";
 import { MAX_ROUND } from "./math/tiers";
 import { OptionTypeError, defaultName, defaultOptions, optionsJson, readOptions, sanitize, typedOptions, type BossOptions } from "./options";
@@ -182,6 +183,26 @@ function fromBase64Url(text: string): Uint8Array {
   return Uint8Array.from(binary, (c) => c.charCodeAt(0));
 }
 
+/** CodeFormat.MaxJsonDepth: the deepest nesting of objects and arrays Json.NET reads (#174) */
+export const MAX_JSON_DEPTH = 64;
+
+/** How deeply objects and arrays nest in the JSON text, counting only brackets outside of strings */
+export function jsonDepth(json: string): number {
+  let depth = 0;
+  let deepest = 0;
+  let inString = false;
+  for (let i = 0; i < json.length; i++) {
+    const c = json[i];
+    if (inString) {
+      if (c === "\\") i++;
+      else if (c === '"') inString = false;
+    } else if (c === '"') inString = true;
+    else if (c === "{" || c === "[") deepest = Math.max(deepest, ++depth);
+    else if (c === "}" || c === "]") depth--;
+  }
+  return deepest;
+}
+
 /** Unpacks raw deflate, stopping once the text gets longer than the mod allows */
 async function inflate(data: Uint8Array): Promise<string> {
   const stream = new Blob([data as BlobPart]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
@@ -242,14 +263,14 @@ export function unescapeDataString(text: string): string {
 }
 
 export function extractCode(text: string | null | undefined): string {
-  let trimmed = (text ?? "").trim();
-  if (trimmed.startsWith("<") && trimmed.endsWith(">")) trimmed = trimmed.slice(1, -1).trim();
+  let trimmed = netTrim(text ?? "");
+  if (trimmed.startsWith("<") && trimmed.endsWith(">")) trimmed = netTrim(trimmed.slice(1, -1));
   const hash = trimmed.lastIndexOf("#");
   if (hash < 0) return trimmed;
 
   let fragment = trimmed.slice(hash + 1);
   if (fragment.startsWith(LINK_KEY)) fragment = fragment.slice(LINK_KEY.length);
-  fragment = unescapeDataString(fragment).trim();
+  fragment = netTrim(unescapeDataString(fragment));
   return fragment.startsWith("CBC") ? fragment : trimmed;
 }
 
@@ -266,7 +287,9 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
   }
 
   try {
-    const payload: Json = JSON.parse(await inflate(fromBase64Url(trimmed.slice(PREFIX_LENGTH))));
+    const text = await inflate(fromBase64Url(trimmed.slice(PREFIX_LENGTH)));
+    if (jsonDepth(text) > MAX_JSON_DEPTH) return fail("Invalid", "The code is damaged or cut short.");
+    const payload: Json = JSON.parse(text);
     if (!isObject(payload)) return fail("Invalid", "The code is damaged.");
 
     const optionsJsonValue = optionsJson(defaultOptions());
@@ -286,8 +309,8 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
 /** A name without control characters, at most 60 characters long (ChallengeLimits.CleanName) */
 export function cleanName(name: string, fallback: string): string {
   // eslint-disable-next-line no-control-regex
-  let clean = name.replace(/[\u0000-\u001f\u007f-\u009f]/g, "").trim();
-  if (clean.length > DATA.limits.maxNameLength) clean = clean.slice(0, DATA.limits.maxNameLength).trimEnd();
+  let clean = netTrim(name.replace(/[\u0000-\u001f\u007f-\u009f]/g, ""));
+  if (clean.length > DATA.limits.maxNameLength) clean = netTrimEnd(clean.slice(0, DATA.limits.maxNameLength));
   return clean.length > 0 ? clean : fallback;
 }
 

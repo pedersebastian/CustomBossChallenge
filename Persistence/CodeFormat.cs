@@ -136,12 +136,7 @@ public static class CodeFormat
         try
         {
             var json = Inflate(FromBase64Url(code[PrefixLength..]));
-            if (HasNonFiniteLiteral(json))
-            {
-                error = "NaN or Infinity is not a number a code may hold";
-                return false;
-            }
-
+            CheckStrictJson(json);
             payload = JObject.Parse(json);
             problem = CodeProblem.None;
             return true;
@@ -154,26 +149,19 @@ public static class CodeFormat
     }
 
     /// <summary>
-    /// Whether the JSON has NaN, Infinity or -Infinity as a value. Json.NET reads them, but the website's JSON.parse
-    /// can't, so a code with one is refused on both (#113). The mod never writes them. Outside of strings, valid JSON
-    /// has no N or I, so finding one there is enough; inside strings they are text.
+    /// The deepest nesting of objects and arrays a code may have: Json.NET's own limit, which the website keeps too
     /// </summary>
-    internal static bool HasNonFiniteLiteral(string json)
-    {
-        var inString = false;
-        for (var i = 0; i < json.Length; i++)
-        {
-            var c = json[i];
-            if (inString)
-            {
-                if (c == '\\') i++;
-                else if (c == '"') inString = false;
-            }
-            else if (c == '"') inString = true;
-            else if (c is 'N' or 'I') return true;
-        }
+    public const int MaxJsonDepth = 64;
 
-        return false;
+    /// <summary>
+    /// Throws unless the text is strict JSON, as the website's JSON.parse reads it. Json.NET also reads single quotes,
+    /// comments, names without quotes, trailing commas, 010 as octal, 0x3, undefined, NaN and Infinity, so a code with
+    /// one of them would work only in the mod (#113, #174). The mod never writes them. System.Text.Json is strict and
+    /// comes with .NET, so the game has it too.
+    /// </summary>
+    internal static void CheckStrictJson(string json)
+    {
+        using var _ = System.Text.Json.JsonDocument.Parse(json, new System.Text.Json.JsonDocumentOptions {MaxDepth = MaxJsonDepth});
     }
 
     /// <summary>
@@ -467,9 +455,23 @@ public static class CodeFormat
         return output.ToArray();
     }
 
+    /// <summary>
+    /// Unpacks raw deflate that must end exactly where the data does. DeflateStream silently ignores bytes after the
+    /// end and stops early on data that's cut short, where the website's DecompressionStream refuses both (#174). It
+    /// gets the data one byte at a time, plus one extra byte: then it reads exactly the bytes the deflate data has, so
+    /// an unread byte before the extra one means bytes after the end, and reading the extra one means data cut short.
+    /// </summary>
     private static string Inflate(byte[] data)
     {
-        using var deflate = new DeflateStream(new MemoryStream(data), CompressionMode.Decompress);
+        var source = new ByteAtATimeStream(data);
+        var text = Inflate(source);
+        if (source.BytesRead != data.Length) throw new InvalidDataException("Setup code is damaged or cut short");
+        return text;
+    }
+
+    private static string Inflate(Stream source)
+    {
+        using var deflate = new DeflateStream(source, CompressionMode.Decompress);
         using var reader = new StreamReader(deflate, Encoding.UTF8);
 
         // Read in small pieces, so a normal code of a few KB doesn't need a buffer for the largest allowed one
@@ -491,9 +493,53 @@ public static class CodeFormat
     private static string ToBase64Url(byte[] data) =>
         Convert.ToBase64String(data).TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
+    /// <summary>
+    /// Base64 as the website reads it: only Base64 characters, with = only at the end. Convert.FromBase64String also
+    /// skips spaces and line breaks anywhere, which atob on the website doesn't (#174).
+    /// </summary>
     private static byte[] FromBase64Url(string text)
     {
         var base64 = text.Replace('-', '+').Replace('_', '/');
-        return Convert.FromBase64String(base64.PadRight(base64.Length + (4 - base64.Length % 4) % 4, '='));
+        var padded = base64.PadRight(base64.Length + (4 - base64.Length % 4) % 4, '=');
+        if (!Base64Text.IsMatch(padded) || padded.Length % 4 != 0) throw new FormatException("Not base64");
+        return Convert.FromBase64String(padded);
+    }
+
+    /// <summary>Same as the website's check in fromBase64Url; \z, as $ would also allow a line break at the end</summary>
+    private static readonly System.Text.RegularExpressions.Regex Base64Text = new(@"^[A-Za-z0-9+/]*={0,2}\z");
+
+    /// <summary>
+    /// The data one byte per read, then one extra zero byte, counting how many of the data's own bytes were read
+    /// </summary>
+    private sealed class ByteAtATimeStream(byte[] data) : Stream
+    {
+        private int position;
+
+        /// <summary>Bytes handed out, the extra one included</summary>
+        public int BytesRead => position;
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            if (count == 0 || position > data.Length) return 0;
+            buffer[offset] = position < data.Length ? data[position] : (byte) 0;
+            position++;
+            return 1;
+        }
+
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush() { }
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 }

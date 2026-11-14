@@ -3,6 +3,7 @@
 // gives the tier its own speed and health in percent, and "#" its own skulls: a count of evenly spaced skulls ("#4") or
 // their health percentages ("#75%;50%;25%").
 
+import { isNullOrWhiteSpace, netTrim, toLowerAscii } from "./dotnet";
 import { DEFAULT_COUNT, DEFAULT_CUSTOM, MAX_SKULLS, evenlySpaced, formatCustom, formatPercent, parseCustom } from "./skulls";
 
 export const RANDOM = "Random";
@@ -56,7 +57,7 @@ export function tierPercents(tier: TierBoss): number[] | null {
 
 /** A whole number that fits a .NET int, or null, like int.TryParse */
 function parseInt32(text: string): number | null {
-  const trimmed = text.trim();
+  const trimmed = netTrim(text);
   if (!/^[+-]?\d+$/.test(trimmed)) return null;
   const value = Number(trimmed);
   return Math.abs(value) > 2147483647 ? null : value;
@@ -64,7 +65,7 @@ function parseInt32(text: string): number | null {
 
 /** A tier's own skulls after "#": a whole number is that many evenly spaced skulls, a list with "%" their percentages */
 function parseSkulls(text: string): Pick<TierBoss, "skulls" | "skullCount" | "customSkulls"> {
-  const trimmed = text.trim();
+  const trimmed = netTrim(text);
   if (trimmed.includes("%")) {
     const percents = parseCustom(trimmed);
     return percents ? { ...FOLLOWS, skulls: "Custom", customSkulls: formatCustom(percents) } : FOLLOWS;
@@ -91,12 +92,12 @@ function parseValue(text: string, min: number, max: number): number {
 }
 
 function parseToken(token: string): TierBoss {
-  let trimmed = token.trim();
+  let trimmed = netTrim(token);
   let skulls: Pick<TierBoss, "skulls" | "skullCount" | "customSkulls"> = FOLLOWS;
   const skullsMark = trimmed.indexOf(SKULLS_MARK);
   if (skullsMark >= 0) {
     skulls = parseSkulls(trimmed.slice(skullsMark + 1));
-    trimmed = trimmed.slice(0, skullsMark).trim();
+    trimmed = netTrim(trimmed.slice(0, skullsMark));
   }
   let speed = NORMAL;
   let health = NORMAL;
@@ -105,17 +106,18 @@ function parseToken(token: string): TierBoss {
     const values = trimmed.slice(mark + 1).split("/");
     speed = parseValue(values[0], MIN_SPEED, MAX_SPEED);
     health = parseValue(values.length > 1 ? values[1] : "", MIN_HEALTH, MAX_HEALTH);
-    trimmed = trimmed.slice(0, mark).trim();
+    trimmed = netTrim(trimmed.slice(0, mark));
   }
-  const elite = trimmed.toLowerCase().endsWith(ELITE.toLowerCase());
-  const name = (elite ? trimmed.slice(0, -ELITE.length) : trimmed).toLowerCase();
-  const known = CHOICES.find((choice) => choice.toLowerCase() === name);
+  // OrdinalIgnoreCase against ASCII names, so only A-Z fold (#174)
+  const elite = toLowerAscii(trimmed).endsWith(toLowerAscii(ELITE));
+  const name = toLowerAscii(elite ? trimmed.slice(0, -ELITE.length) : trimmed);
+  const known = CHOICES.find((choice) => toLowerAscii(choice) === name);
   return { ...FOLLOWS, ...skulls, boss: known ?? null, elite: known !== undefined && elite, speed, health };
 }
 
 /** The tiers' bosses in the list, at most 10; unknown tokens follow the setup's boss */
 export function parseTierBosses(list: string | null | undefined): TierBoss[] {
-  if (list == null || list.trim() === "") return [];
+  if (list == null || isNullOrWhiteSpace(list)) return [];
   return list.split(",").slice(0, MAX_TIERS).map(parseToken);
 }
 

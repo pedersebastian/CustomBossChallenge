@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CustomBossChallenge.Persistence;
 using CustomBossChallenge.Config;
 using Newtonsoft.Json;
@@ -52,12 +53,67 @@ public class CodeFormatTests
     });
 
     /// <summary>The options as SetupCode.TryDecode reads them, without RandomTiers, which only the game fills in</summary>
-    private static JObject Read(JObject diff)
+    private static JObject Read(JObject diff) =>
+        JObject.FromObject(ReadOptions(diff) with {RandomTiers = null}, OptionsSerializer);
+
+    private static BossOptions ReadOptions(JObject diff)
     {
         var json = JObject.FromObject(new BossOptions(), OptionsSerializer);
         CodeFormat.Apply(json, CodeFormat.TypedOptions(diff));
-        var options = json.ToObject<BossOptions>(OptionsSerializer)!.Sanitized();
-        return JObject.FromObject(options with {RandomTiers = null}, OptionsSerializer);
+        return json.ToObject<BossOptions>(OptionsSerializer)!.Sanitized();
+    }
+
+    /// <summary>
+    /// Codes that only one of the mod and the website used to read (#174), from web/test/code-strictness.json, which
+    /// web/test/code-strictness.test.ts reads too
+    /// </summary>
+    public static IEnumerable<object[]> StrictnessCases()
+    {
+        var file = JObject.Parse(WebFile("test", "code-strictness.json"));
+        foreach (var entry in (JArray) file["cases"]!) yield return [(string) entry["name"]!, entry.ToString(Formatting.None)];
+    }
+
+    [Theory]
+    [MemberData(nameof(StrictnessCases))]
+    public void Codes_are_read_as_strictly_as_on_the_website(string name, string vector)
+    {
+        var entry = JObject.Parse(vector);
+        var code = CodeFormat.Pack((string) entry["json"]!, CodeFormat.Version5Prefix);
+        if (entry["codeCut"] is { } cut) code = code[..^(int) cut];
+        if (entry["codeInsert"] is { } insert) code = code.Insert(CodeFormat.PrefixLength + 8, (string) insert!);
+        code = (string?) entry["codePrefix"] + code + (string?) entry["codeSuffix"];
+
+        BossOptions? options = null;
+        string? why = null;
+        if (CodeFormat.TryUnpack(code, out var payload, out var problem, out var error))
+        {
+            try
+            {
+                options = ReadOptions((JObject?) payload["o"] ?? new JObject());
+            }
+            catch (Exception e)
+            {
+                why = e.Message;
+            }
+        }
+        else why = $"{problem} {error}";
+
+        Assert.True((bool) entry["ok"]! == (options != null), $"{name}: expected ok = {entry["ok"]}, got {why ?? "ok"}");
+        if (options == null) return;
+
+        if (entry["tiers"] is { } tiers) Assert.Equal((int) tiers, options.Tiers);
+        if (entry["spawnRounds"] is JArray rounds) Assert.Equal(rounds.Select(round => (int) round), options.EffectiveSpawnRounds);
+        if (entry["customSkulls"] is JArray skulls)
+        {
+            Assert.Equal(skulls.Select(skull => Math.Round((double) skull, 4)),
+                SkullMath.ParseCustom(options.CustomSkulls)!.Select(skull => Math.Round((double) skull, 4)));
+        }
+
+        if (entry["tierBosses"] is JArray bosses)
+        {
+            Assert.Equal(bosses.Select(boss => ((string?) boss[0], (bool) boss[1])),
+                TierBossMath.Parse(options.TierBosses).Select(tier => (tier.Boss, tier.Elite)));
+        }
     }
 
     [Theory]

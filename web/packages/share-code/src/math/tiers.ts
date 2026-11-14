@@ -1,6 +1,6 @@
 // Port of Config/TierMath.cs: boss tiers, the rounds they spawn on and how much stronger they get
 
-import { clamp, roundHalfEven, toFixedNet } from "./dotnet";
+import { clamp, isNullOrWhiteSpace, netTrim, roundHalfEven, toFixedNet } from "./dotnet";
 
 export const VANILLA_TIERS = 5;
 export const MIN_TIERS = 1;
@@ -33,11 +33,12 @@ export const maxModelHealth = (bossHealth: number): number => Math.floor(MAX_GAM
 
 /** Positive whole numbers from a list like "40, 60;80", in the given order */
 export function parseRounds(text: string | null | undefined): number[] {
-  if (text == null || text.trim() === "") return [];
+  if (text == null || isNullOrWhiteSpace(text)) return [];
   return text
     .split(/[,; ]/)
     .filter((part) => part !== "")
-    .map((part) => (/^\s*[+-]?\d+\s*$/.test(part) ? Number(part) : 0))
+    .map((part) => netTrim(part))
+    .map((part) => (/^[+-]?\d+$/.test(part) ? Number(part) : 0))
     .map((round) => (Number.isSafeInteger(round) && Math.abs(round) <= 2_147_483_647 ? round : 0))
     .filter((round) => round > 0);
 }
