@@ -15,6 +15,7 @@ import { warningText, warningTexts } from "./warnings";
 import { renderCurves } from "../compare/chart";
 import { tierPairs } from "../compare/diff";
 import { tierGlow, tierGlowStyle } from "./tierLook";
+import { towerRuleText, towersWithRules } from "./towerRules";
 
 /** Orange where a tier is harder than the normal game, blue where it is easier, like the in-game preview */
 const tone = (factor: number): string => (factor > 1.0001 ? "harder" : factor < 0.9999 ? "easier" : "same");
@@ -265,11 +266,16 @@ function renderRules(options: BossOptions, challenge: Challenge, rounds: number[
   if (challenge.maxLives >= 0) rows.push(["Max lives", startValue(challenge.maxLives)]);
   if (challenge.round >= 0) rows.push(["Start round", String(challenge.round)]);
   if (challenge.maxTowers >= 0) rows.push(["Max towers", String(challenge.maxTowers)]);
+  if (challenge.leastCash >= 0) rows.push(["Least cash", startValue(challenge.leastCash)]);
+  if (challenge.leastTiers >= 0) rows.push(["Least tiers", startValue(challenge.leastTiers)]);
   for (const [label, value] of [
     ["Bloon speed", challenge.bloonSpeed],
     ["MOAB speed", challenge.moabSpeed],
+    ["Regrow rate", challenge.regrowRate],
     ["Bloon health", challenge.bloonHealth],
     ["MOAB health", challenge.moabHealth],
+    ["Ability cooldown", challenge.abilityCooldown],
+    ["Removable cost", challenge.removableCost],
   ] as const) {
     if (Math.abs(value - 1) > 0.0001) rows.push([label, percent(value)]);
   }
@@ -281,12 +287,15 @@ function renderRules(options: BossOptions, challenge: Challenge, rounds: number[
     challenge.disableMK && "No Monkey Knowledge",
     challenge.disableSelling && "No Selling",
     challenge.disablePowers && "No Powers",
+    challenge.noContinues && "No Continues",
+    challenge.disableDoubleCash && "No Double Cash",
+    challenge.disableFastTrack && "No Fast Track",
+    // A new challenge gives no Insta Monkey for winning, so only the other way round is worth a chip
+    challenge.noInstaReward !== GAME.defaultChallenge.noInstaReward && (challenge.noInstaReward ? "No Insta Monkey reward" : "Insta Monkey reward"),
   ].filter((x): x is string => Boolean(x));
 
-  const towers = Object.entries(challenge.towers).map(([id, max]) => {
-    const name = towerName(id);
-    return max === 0 ? `${name}: not allowed` : max < 0 ? `${name}: no limit` : `${name}: max ${max}`;
-  });
+  // Each tower's limit, blocked upgrades and Paragon lock (#167)
+  const towers = towersWithRules(challenge).map((id) => `${towerName(id)}: ${towerRuleText(challenge, id)}`);
 
   const list = h("dl", { class: "rules" });
   for (const [label, value] of rows) list.append(h("div", { class: "rule" }, h("dt", {}, label), h("dd", {}, value)));
@@ -297,6 +306,6 @@ function renderRules(options: BossOptions, challenge: Challenge, rounds: number[
     h("h4", {}, "Rules"),
     list,
     modifiers.length ? h("div", { class: "chips" }, ...modifiers.map((m) => h("span", { class: "chip" }, m))) : null,
-    towers.length ? h("details", { class: "towers" }, h("summary", {}, `Tower limits (${towers.length})`), h("ul", {}, ...towers.map((t) => h("li", {}, t)))) : null,
+    towers.length ? h("details", { class: "towers" }, h("summary", {}, `Tower rules (${towers.length})`), h("ul", {}, ...towers.map((t) => h("li", {}, t)))) : null,
   );
 }

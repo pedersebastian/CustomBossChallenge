@@ -279,7 +279,16 @@ public class WebDataTest : CustomBossTest
                                "\"c\":{\"bloonModifiers\":{\"healthMultipliers\":{\"boss\":20}},\"disableSelling\":true," +
                                "\"startRules\":{\"lives\":1}}}", SetupCode.Version2Prefix),
                 SetupCode.Pack("{\"o\":{\"BossEventRounds\":true,\"ChimpsRounds\":\"Earlier\"},\"c\":{\"mode\":\"Clicks\"}}",
-                    SetupCode.Version4Prefix)
+                    SetupCode.Version4Prefix),
+                // Every rule the website didn't show before (#167): blocked upgrades and a locked Paragon (Dart Monkey),
+                // held to their range, a tower that isn't allowed at all (Bomb Shooter), the other multipliers, the
+                // least rules and the on/off rules
+                SetupCode.Pack("{\"o\":{},\"c\":{\"bloonModifiers\":{\"regrowRateMultiplier\":2.5}," +
+                               "\"abilityCooldownReductionMultiplier\":0.5,\"removeableCostMultiplier\":250," +
+                               "\"leastCashUsed\":5000,\"leastTiersUsed\":12,\"noContinues\":true,\"disableDoubleCash\":true," +
+                               "\"disableFastTrack\":true,\"noInstaReward\":false,\"towers\":{\"$items\":{" +
+                               "\"19\":{\"path1NumBlockedTiers\":2,\"path3NumBlockedTiers\":9,\"restrictParagon\":true}," +
+                               "\"21\":{\"max\":0,\"path2NumBlockedTiers\":5}}}}}")
             })
             .Distinct()
             .ToList();
@@ -358,6 +367,7 @@ public class WebDataTest : CustomBossTest
             ["moabSpeed"] = Math.Round(modifiers.moabSpeedMultiplier, 6),
             ["bloonHealth"] = Math.Round(health.bloons, 6),
             ["moabHealth"] = Math.Round(health.moabs, 6),
+            ["regrowRate"] = Math.Round(modifiers.regrowRateMultiplier, 6),
             ["allCamo"] = modifiers.allCamo,
             ["allRegen"] = modifiers.allRegen,
             ["allFortified"] = modifiers.allFortified,
@@ -366,9 +376,24 @@ public class WebDataTest : CustomBossTest
             ["disableMK"] = dcm.disableMK,
             ["disableSelling"] = dcm.disableSelling,
             ["disablePowers"] = dcm.disablePowers,
+            // The rest of the rules the mod plays, which the website shows too (#167)
+            ["noContinues"] = dcm.noContinues,
+            ["disableDoubleCash"] = dcm.disableDoubleCash,
+            ["disableFastTrack"] = dcm.disableFastTrack,
+            ["noInstaReward"] = dcm.noInstaReward,
+            ["abilityCooldown"] = Math.Round(dcm.abilityCooldownReductionMultiplier, 6),
+            ["removableCost"] = Math.Round(dcm.removeableCostMultiplier, 6),
+            ["leastCash"] = dcm.leastCashUsed,
+            ["leastTiers"] = dcm.leastTiersUsed,
             ["towers"] = new JObject(dcm.towers.ToArray()
                 .Where(tower => !defaults.TryGetValue(tower.tower, out var max) || max != tower.max)
-                .Select(tower => new JProperty(tower.tower, tower.max)))
+                .Select(tower => new JProperty(tower.tower, tower.max))),
+            // A new challenge blocks no upgrades and locks no Paragon
+            ["blockedTiers"] = new JObject(dcm.towers.ToArray()
+                .Where(tower => tower.path1NumBlockedTiers + tower.path2NumBlockedTiers + tower.path3NumBlockedTiers > 0)
+                .Select(tower => new JProperty(tower.tower,
+                    new JArray(tower.path1NumBlockedTiers, tower.path2NumBlockedTiers, tower.path3NumBlockedTiers)))),
+            ["paragonLocked"] = new JArray(dcm.towers.ToArray().Where(tower => tower.restrictParagon).Select(tower => (object) tower.tower))
         };
     }
 }

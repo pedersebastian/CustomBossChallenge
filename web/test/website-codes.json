@@ -717,6 +717,28 @@
       }
     },
     {
+      "name": "rules: costs and least",
+      "code": "CBC1:VcoxCgIxEEbhu_x1kFVZhLSpbUQPkN0MODDuSGZWkZC7W6yNr_1egyK2HjAjNghl85TtfjMqiPvhV9jkylRto8MYUOmhL8qTUFLz8yrOT2GqiENAnljYP0lVir6XC5V1dtblb9sdT2PvXw",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "leastCashUsed": 100000000,
+        "leastTiersUsed": 25,
+        "removeableCostMultiplier": 0,
+        "abilityCooldownReductionMultiplier": 0.375
+      }
+    },
+    {
       "name": "towers: limits, paths and a paragon",
       "code": "CBC1:q1bKV7KqrtVRSlayqlYqyS9PLSoGsVQyS1JzwSxDSxCZm1ihZGWso1SUWlxSlJlcEpBYlJien6dkVVJUmlqro2RsAldlAOKagrgFiSUZhn6luU45-cnZqSkhmWDDDXXAEkYYEqYQCWMMCeNaHSUTA7gFhgYGBrUgAAA",
       "options": {

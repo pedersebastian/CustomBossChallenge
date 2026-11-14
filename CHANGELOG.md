@@ -89,6 +89,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   longer leaves the picker on top of the editor. Enter or Space opens the Skulls and Saved Setups lists like the other
   dropdowns, and while a list is open, the arrows and Esc work in the list instead of moving the keyboard frame,
   changing the value behind it or closing the Boss Creator.
+- **Every rule on the website** (#167): the setup view and Compare now show the regrow rate, ability cooldown,
+  removable cost, least cash and least tiers, No Continues, No Double Cash, No Fast Track, the Insta Monkey reward,
+  and each tower's blocked upgrades and Paragon lock. A code that only changed one of them used to compare as the
+  same as the default setup. The Studio can change ability cooldown, removable cost, least cash and least tiers.
 
 ## [2.11.0] - 2026-11-12
 

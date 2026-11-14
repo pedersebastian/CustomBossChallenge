@@ -18,6 +18,7 @@ import { paragonsText } from "../math/paragons";
 import { formatPercent } from "@cbc/share-code/skulls";
 import { clampTiers, endRound } from "@cbc/share-code/tiers";
 import { skulls, tierCards, tierSkulls, type TierCard } from "../preview/compute";
+import { towerRuleText, towersWithRules } from "../preview/towerRules";
 
 export interface Setup {
   options: BossOptions;
@@ -40,8 +41,8 @@ const percent = (multiplier: number): string => `${formatDecimals(multiplier * 1
 const perTier = (value: number): string => (value === 0 ? "Off" : `${value > 0 ? "+" : ""}${value} %`);
 const startValue = (value: number): string => (value < 0 ? "Default" : value.toLocaleString("en"));
 const yesNo = (value: boolean): string => (value ? "Yes" : "No");
-const towerLimit = (value: number | undefined): string =>
-  value === undefined ? "Default" : value === 0 ? "Not allowed" : value < 0 ? "No limit" : `Max ${value}`;
+/** Least cash and least tiers: -1 is no such rule */
+const leastValue = (value: number): string => (value < 0 ? "Off" : value.toLocaleString("en"));
 
 const skullModeText = (mode: SkullMode): string => SKULL_MODE_NAMES[mode];
 
@@ -108,6 +109,7 @@ export function compareRows(a: Setup, b: Setup): Row[] {
 
   add("Bloons", "Bloon speed", (s) => percent(s.challenge.bloonSpeed));
   add("Bloons", "MOAB speed", (s) => percent(s.challenge.moabSpeed));
+  add("Bloons", "Regrow rate", (s) => percent(s.challenge.regrowRate));
   add("Bloons", "Bloon health", (s) => percent(s.challenge.bloonHealth));
   add("Bloons", "MOAB health", (s) => percent(s.challenge.moabHealth));
   add("Bloons", "All Camo", (s) => yesNo(s.challenge.allCamo));
@@ -119,12 +121,18 @@ export function compareRows(a: Setup, b: Setup): Row[] {
   add("Rules", "No Monkey Knowledge", (s) => yesNo(s.challenge.disableMK));
   add("Rules", "No Selling", (s) => yesNo(s.challenge.disableSelling));
   add("Rules", "No Powers", (s) => yesNo(s.challenge.disablePowers));
+  // The rest of the Challenge Editor's rules, which the mod plays too (#167)
+  add("Rules", "No Continues", (s) => yesNo(s.challenge.noContinues));
+  add("Rules", "No Double Cash", (s) => yesNo(s.challenge.disableDoubleCash));
+  add("Rules", "No Fast Track", (s) => yesNo(s.challenge.disableFastTrack));
+  add("Rules", "Insta Monkey reward", (s) => yesNo(!s.challenge.noInstaReward));
+  add("Rules", "Ability cooldown", (s) => percent(s.challenge.abilityCooldown));
+  add("Rules", "Removable cost", (s) => percent(s.challenge.removableCost));
+  add("Rules", "Least cash", (s) => leastValue(s.challenge.leastCash));
+  add("Rules", "Least tiers", (s) => leastValue(s.challenge.leastTiers));
 
-  // Only towers that one of the two changes; in the order of the game's tower list
-  const changed = new Set([...Object.keys(a.challenge.towers), ...Object.keys(b.challenge.towers)]);
-  const order = Object.keys(GAME.towers);
-  const towers = [...changed].sort((x, y) => (order.indexOf(x) + 1 || Infinity) - (order.indexOf(y) + 1 || Infinity));
-  for (const id of towers) add("Towers", towerName(id), (s) => towerLimit(s.challenge.towers[id]));
+  // Only towers with a rule of their own on one of the two sides; in the order of the game's tower list
+  for (const id of towersWithRules(a.challenge, b.challenge)) add("Towers", towerName(id), (s) => towerRuleText(s.challenge, id));
 
   return rows;
 }
