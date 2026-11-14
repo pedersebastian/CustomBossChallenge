@@ -59,7 +59,8 @@ public static class BossCreatorKeys
             if (FocusedField() != null) fieldFocusedFrame = Time.frameCount;
             var key = ReadKeys();
             var typing = Time.frameCount - fieldFocusedFrame <= 1;
-            if (key.Key != ShortcutKey.Other && !key.Ctrl && !typing) picker.Handle(key.Key, key.Shift);
+            // An open skull list has the arrows to itself (#175)
+            if (key.Key != ShortcutKey.Other && !key.Ctrl && !typing && !picker.ListOpen) picker.Handle(key.Key, key.Shift);
             FocusFrame.Fit();
             return;
         }
@@ -197,6 +198,13 @@ public static class BossCreatorKeys
     /// </summary>
     public static bool EscapeEndsFocus()
     {
+        // Esc closes an open dropdown list, not the Boss Creator (#175)
+        if (EscapePressed() && (TierBossPicker.Current is {ListOpen: true} ? TierBossPicker.Current.SkullMode.Dropdown : OpenSection()?.OpenList) is { } list)
+        {
+            list.Hide();
+            return true;
+        }
+
         if (TierBossPicker.Current is { } picker && EscapePressed())
         {
             // Esc while typing the skull list only ends the edit
@@ -258,7 +266,7 @@ public static class BossCreatorKeys
     }
 
     private static bool BlockingUiOpen(BossEditorSection section) =>
-        TierBossPicker.Current != null ||
+        TierBossPicker.Current != null || section.OpenList != null ||
         PopupScreen.instance != null && PopupScreen.instance.GetFirstActivePopup() != null ||
         ChallengeEditor_OverrideClose.OpenPanel(section.Editor);
 

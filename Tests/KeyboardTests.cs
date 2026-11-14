@@ -44,6 +44,7 @@ public class KeyboardTest : CustomBossTest
             yield return TabAndEnter();
             yield return Controls();
             yield return EscapeCancelsTheEdit();
+            yield return DropdownsAndPicker();
             yield return NormalEditorIgnoresKeys();
         }
         finally
@@ -306,6 +307,55 @@ public class KeyboardTest : CustomBossTest
     /// <summary>
     /// Presses Tab until <paramref name="name"/> has the keyboard
     /// </summary>
+    /// <summary>
+    /// Enter opens every dropdown stop, an open list keeps the arrows and Esc to itself, and Back with the tier picker
+    /// open leaves no picker behind (#175)
+    /// </summary>
+    private IEnumerator DropdownsAndPicker()
+    {
+        BossMode.Enter();
+        yield return WaitForEditor();
+        var section = BossEditorSection.Current!;
+        var editor = section.Editor;
+        yield return Unfocus();
+
+        foreach (var (name, dropdown) in new[] {("SkullMode", section.SkullMode.Dropdown), ("SavedList", section.SavedList.Dropdown)})
+        {
+            yield return TabTo(name);
+            var value = dropdown.value;
+            AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Enter)), KeyAction.Activate, $"Enter on {name}");
+            yield return null;
+            Assert(dropdown.IsExpanded, $"Enter must open the {name} list");
+
+            // The list has the arrows: the frame stays and the value behind the list doesn't change
+            AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Down)), KeyAction.None, $"Down with the {name} list open");
+            AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Right)), KeyAction.None, $"Right with the {name} list open");
+            AssertEquals(BossCreatorKeys.Current?.Name, name, $"The frame stays on {name} while its list is open");
+            AssertEquals(dropdown.value, value, $"{name} keeps its value while its list is open");
+
+            // Esc closes the list, not the Boss Creator
+            BossCreatorKeys.EscapePressed = () => true;
+            Assert(BossCreatorKeys.EscapeEndsFocus(), $"Esc with the {name} list open");
+            BossCreatorKeys.EscapePressed = () => Input.GetKeyDown(KeyCode.Escape);
+            yield return WaitFor(() => !dropdown.IsExpanded, $"Esc closing the {name} list");
+            Assert(BossMode.Active, $"Esc on the {name} list must not leave the Boss Creator");
+            yield return Unfocus();
+        }
+
+        // Back with a tier's picker open
+        section.SetAdvanced(true);
+        yield return null;
+        AssertNotNull(section.OpenPicker(1), "The tier picker didn't open");
+        yield return null;
+        Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
+        yield return WaitFor(() => !BossMode.Active, "Leaving the Boss Creator with the picker open");
+        yield return null;
+        AssertEquals(TierBossPicker.Current, null, "No picker after Back");
+        Assert(editor == null || editor.transform.Find(TierBossPicker.Name) == null, "The picker's shade and panel must be gone after Back");
+        yield return ToMainMenu();
+        BossMode.Options = BossMode.Options with {TierBosses = null};
+    }
+
     private IEnumerator TabTo(string name)
     {
         for (var i = 0; i < 40 && BossCreatorKeys.Current?.Name != name; i++)
