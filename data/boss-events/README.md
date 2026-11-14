@@ -90,13 +90,18 @@ reads Ninja Kiwi's list of events (`https://data.ninjakiwi.com/btd6/bosses`) and
 have yet, the `standard` and `elite` metadata. A file has the list entry's fields that don't change while the event
 runs (not the scores or the links) and the metadata's `body` as the API gave it, with `source: "api"`.
 
-- A file is never changed or deleted, by the archiver or the backfill.
+- An event is saved the first time it is listed, which is often a day or two before its `start`. Ninja Kiwi sometimes
+  changes an event before it starts (the two `Blastapopoulos20` files differ in starting cash and blocked tiers), so
+  until the event's `end` has passed, every run fetches its metadata again and writes the file again if anything
+  but the play counts (`plays`, `wins`, `losses`, ...) changed; the commit says "(updated)". The play counts in a
+  file are from the day it was last written, so usually from before the event started.
+- After its `end` a file is never changed or deleted, by the archiver or the backfill. The backfill never changes a
+  file with `source: "api"`.
 - Only answers with `success: true` are saved. An event whose metadata fails is tried again on the next run, not
-  saved half. An id that never gets metadata is tried every day: Ninja Kiwi sometimes puts an event up again under a
-  new id, and then the other id has the rules.
+  saved half; if an open event's metadata fails, its file is kept. An id that never gets metadata is tried every
+  day: Ninja Kiwi sometimes puts an event up again under a new id, and then the other id has the rules.
 - The API only lists the last ~7 events, so a run that fails is caught up by the next ones. A failing run sends the
   normal Actions e-mail.
-- An event is saved as soon as it is listed, while it runs, so the play counts in its metadata are from that day.
 
 `tools/boss-events/backfill.mjs` made the files from before the archiver; see
 [CONTRIBUTING.md](../../CONTRIBUTING.md#boss-events-archive).

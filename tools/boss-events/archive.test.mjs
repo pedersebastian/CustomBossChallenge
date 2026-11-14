@@ -5,7 +5,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildBundle, bundleLicense, metadataUrl, newEntries, newRecords, parseApi, readArchive } from './archive.mjs';
+import { buildBundle, bundleLicense, changedRecords, metadataUrl, newEntries, newRecords, openEntries, parseApi,
+    readArchive, sameEvent } from './archive.mjs';
 import { formatRecord } from './format.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -91,6 +92,65 @@ test('a second run with nothing new adds nothing', () => {
     assert.equal(first.length, 2);
     const after = new Map([...existing, ...first.map(record => [record.id, record])]);
     assert.deepEqual(run(after, metadata), { records: [], skipped: [] });
+});
+
+// Two snapshots of the API: Vortex48 saved from the first, then fetched again from the second
+function recheck(saved, metadata, now) {
+    const archive = new Map([...existing, [saved.id, saved]]);
+    const open = openEntries(list, archive, now);
+    return { open: open.map(entry => entry.id), ...changedRecords(open, metadata, archive) };
+}
+const [saved] = run(existing, new Map([['Vortex48_mw4au3ui', vortex48]])).records;
+const beforeEnd = saved.end - 1;
+
+test('an event Ninja Kiwi changes before it ends is updated', () => {
+    const second = structuredClone(vortex48);
+    second.standard.startingCash += 250;
+    second.elite._towers[1].path3NumBlockedTiers = 3;
+    const { open, records, skipped } = recheck(saved, new Map([[saved.id, second]]), beforeEnd);
+    assert.deepEqual(open, [saved.id]);
+    assert.deepEqual(skipped, []);
+    assert.equal(records.length, 1);
+    assert.equal(records[0].standard.startingCash, vortex48.standard.startingCash + 250);
+    assert.equal(records[0].elite._towers[1].path3NumBlockedTiers, 3);
+
+    // A new end in the list is a change too
+    const later = { ...saved, end: saved.end - 60 * 60 * 1000 };
+    assert.equal(recheck(later, new Map([[saved.id, vortex48]]), beforeEnd).records.length, 1);
+});
+
+test('only the play counts changing is not an update', () => {
+    const second = structuredClone(vortex48);
+    for (const rules of [second.standard, second.elite]) {
+        rules.plays += 1000;
+        rules.wins += 10;
+        rules.playsUnique += 500;
+    }
+    assert.deepEqual(recheck(saved, new Map([[saved.id, second]]), beforeEnd).records, []);
+});
+
+test('an event is not checked again after its end, nor a backfilled one', () => {
+    const second = structuredClone(vortex48);
+    second.standard.startingCash += 250;
+    const metadata = new Map([[saved.id, second]]);
+    assert.deepEqual(recheck(saved, metadata, Math.max(saved.end, list[1].end)).open, []);
+    assert.deepEqual(recheck({ ...saved, source: 'jxu-api' }, metadata, beforeEnd).open, []);
+    assert.deepEqual(openEntries(list, existing, 0), [], 'Lych62 is backfilled');
+});
+
+test('an open event whose metadata fails keeps its file', () => {
+    const half = { standard: vortex48.standard, elite: null };
+    const { records, skipped } = recheck(saved, new Map([[saved.id, half]]), beforeEnd);
+    assert.deepEqual(records, []);
+    assert.deepEqual(skipped, ['Vortex48 (Vortex48_mw4au3ui): no elite metadata yet, kept the saved file, checked again '
+        + 'next run']);
+});
+
+test('sameEvent ignores only the play counts', () => {
+    assert.ok(sameEvent(saved, structuredClone(saved)));
+    assert.ok(!sameEvent(saved, { ...saved, name: 'Vortex48b' }));
+    assert.ok(!sameEvent(saved, { ...saved, standard: { ...saved.standard, lives: 1 } }));
+    assert.ok(sameEvent(saved, { ...saved, elite: { ...saved.elite, upvotes: 99 } }));
 });
 
 test('boss-events.json has every file, oldest first, with its licence and sources', async () => {

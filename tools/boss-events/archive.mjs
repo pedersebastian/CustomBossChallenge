@@ -2,12 +2,14 @@
 // data/boss-events/<id>.json, and builds boss-events.json from all files for GitHub Pages. Runs every day in
 // .github/workflows/boss-events.yml, and locally too:
 //
-//   node tools/boss-events/archive.mjs [--dry-run]     save the new events
+//   node tools/boss-events/archive.mjs [--dry-run]     save the new events, update the changed ones
 //   node tools/boss-events/archive.mjs --bundle <path>  write boss-events.json from the files (offline)
 //
-// The API only keeps the last few events, so whatever it doesn't save in time is lost. A file is never changed or
-// deleted, and only written from responses with success: true: an event whose metadata fails is tried again on the
-// next run, not saved half.
+// The API only keeps the last few events, so whatever it doesn't save in time is lost. An event is listed (and saved)
+// days before it starts, and Ninja Kiwi sometimes changes its rules or dates before it ends (#178), so the metadata of
+// a saved event is fetched again every run until its end has passed, and the file is written again when anything but
+// the play counts changed. After that a file is never changed or deleted. Files are only written from responses with
+// success: true: an event whose metadata fails is tried again on the next run, not saved half.
 import { appendFile, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -40,22 +42,36 @@ export function parseApi(text) {
     }
 }
 
+const validEntry = entry => !!entry && typeof entry.id === 'string' && safeId.test(entry.id)
+    && typeof entry.name === 'string' && Number.isFinite(entry.start) && Number.isFinite(entry.end);
+
 /** The list entries that aren't in the archive yet, and why any others were skipped. */
 export function newEntries(list, existing) {
     const entries = [];
     const skipped = [];
     for (const entry of list) {
-        if (!entry || typeof entry.id !== 'string' || !safeId.test(entry.id) || typeof entry.name !== 'string'
-            || !Number.isFinite(entry.start) || !Number.isFinite(entry.end)) {
+        if (!validEntry(entry)) {
             skipped.push(`${JSON.stringify(entry?.id ?? entry)}: not a valid event in the list`);
             continue;
         }
         const old = existing.get(entry.id);
-        // A file the archive has is never changed: replaces() is false for every source against an existing file
+        // A file the archive has is only changed through openEntries(): replaces() is false for every source against
+        // an existing file
         if (old && !replaces({ source: 'api' }, old)) continue;
         entries.push(entry);
     }
     return { entries, skipped };
+}
+
+/**
+ * The list entries of events the archiver saved (source "api") that haven't ended yet, by the file's end or the
+ * list's: their metadata is fetched again, as Ninja Kiwi may still change them.
+ */
+export function openEntries(list, existing, now) {
+    return list.filter(entry => {
+        const old = validEntry(entry) && existing.get(entry.id);
+        return old?.source === 'api' && now < Math.max(old.end, entry.end);
+    });
 }
 
 /**
@@ -76,6 +92,32 @@ export function newRecords(entries, metadata) {
         records.push(record(entry, rules));
     }
     return { records, skipped };
+}
+
+/**
+ * The records of the open events that changed since they were saved, and why any were left as they are.
+ * @param entries   the list entries from openEntries()
+ * @param metadata  as for newRecords()
+ * @param existing  Map(id -> record): the archive
+ */
+export function changedRecords(entries, metadata, existing) {
+    const { records, skipped } = newRecords(entries, metadata);
+    return {
+        records: records.filter(record => !sameEvent(record, existing.get(record.id))),
+        skipped: skipped.map(line => line.replace(/tried again next run$/, 'kept the saved file, checked again next run')),
+    };
+}
+
+// The metadata's play counts go up every day while the event runs: that isn't a change of the event
+const statFields = ['plays', 'wins', 'restarts', 'losses', 'upvotes', 'playsUnique', 'winsUnique', 'lossesUnique'];
+const withoutStats = rules =>
+    Object.fromEntries(Object.entries(rules ?? {}).filter(([key]) => !statFields.includes(key)));
+
+/** Whether two records of an event have the same fields and rules, apart from the play counts. */
+export function sameEvent(a, b) {
+    const normal = record =>
+        JSON.stringify({ ...record, standard: withoutStats(record.standard), elite: withoutStats(record.elite) });
+    return normal(a) === normal(b);
 }
 
 // The list entry's fields that stay the same while the event runs: not the scores, nor the links
@@ -142,22 +184,33 @@ async function main(args) {
 
     const archive = await readArchive(dir);
     const { entries, skipped } = newEntries(list, archive);
+    const open = openEntries(list, archive, Date.now());
     const metadata = new Map();
-    for (const entry of entries) {
+    for (const entry of [...entries, ...open]) {
         const [standard, elite] = await Promise.all(levels.map(level => fetchApi(metadataUrl(entry.id, level))));
         metadata.set(entry.id, { standard, elite });
     }
     const result = newRecords(entries, metadata);
     skipped.push(...result.skipped);
 
-    for (const record of result.records)
-        // 'wx': never overwrite a file, also not one written since the archive was read
-        if (!dryRun) await writeFile(join(dir, `${record.id}.json`), formatRecord(record), { flag: 'wx' });
+    const changed = changedRecords(open, metadata, archive);
+    skipped.push(...changed.skipped);
+
+    if (!dryRun) {
+        for (const record of result.records)
+            // 'wx': never overwrite a file, also not one written since the archive was read
+            await writeFile(join(dir, `${record.id}.json`), formatRecord(record), { flag: 'wx' });
+        for (const record of changed.records) await writeFile(join(dir, `${record.id}.json`), formatRecord(record));
+    }
 
     for (const line of skipped) console.log(line);
-    const names = result.records.map(record => record.name).join(', ');
-    console.log(`${list.length} events in the API: ${result.records.length} new${names ? ` (${names})` : ''}`
+    const nameList = records => records.length ? ` (${records.map(record => record.name).join(', ')})` : '';
+    console.log(`${list.length} events in the API: ${result.records.length} new${nameList(result.records)}, `
+        + `${open.length} checked again, ${changed.records.length} changed${nameList(changed.records)}`
         + `${dryRun ? ', not written (dry run)' : ''}`);
+    // The workflow commits when names isn't empty, and puts it in the commit message
+    const names = [...result.records.map(record => record.name),
+        ...changed.records.map(record => `${record.name} (updated)`)].join(', ');
     if (process.env.GITHUB_OUTPUT && !dryRun) await appendFile(process.env.GITHUB_OUTPUT, `names=${names}\n`);
 }
 

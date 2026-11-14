@@ -156,7 +156,8 @@ export const knownEvents = {
     },
 };
 
-// The archiver's API files (source "api") are never replaced; a backfill source only replaces itself or a worse one
+// The archiver's API files (source "api") are never replaced by a backfill (only the archiver updates them, until the
+// event ends); a backfill source only replaces itself or a worse one
 const sourceRank = { 'jxu-api': 1, 'nk-dcm': 2, bloonswiki: 3 };
 export function replaces(record, old) {
     const oldRank = sourceRank[old.source] ?? 0;
