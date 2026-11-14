@@ -32,6 +32,12 @@ public sealed class SavedSetupsStore
     /// </summary>
     private bool toldTooNew;
 
+    /// <summary>
+    /// An unreadable file is read again each time the list is shown or a name checked; it's logged and copied once for
+    /// each version of it (#182)
+    /// </summary>
+    private readonly FileChange broken = new();
+
     public SavedSetupsStore(string filePath) => FilePath = filePath;
 
     public enum SaveResult
@@ -141,6 +147,7 @@ public sealed class SavedSetupsStore
     /// </summary>
     private void KeepBroken(string error)
     {
+        if (!broken.IsNew(FilePath)) return;
         ModHelper.Warning<CustomBossChallenge>($"Ignoring unreadable saved setups {FilePath}: {error}");
         try
         {

@@ -110,6 +110,15 @@ public static class TierMath
     public static string FormatRounds(IEnumerable<int> rounds) => string.Join(", ", rounds);
 
     /// <summary>
+    /// Spawn Rounds as they are kept: the first <see cref="MaxTiers"/> rounds of the text, the only ones any number of
+    /// tiers uses, or null when it has none, which plays the defaults. A hand-made code could otherwise keep almost
+    /// 1 MB of text here, in every file and code the setup goes into (#182). Gives the same rounds for every number of
+    /// tiers as the text itself, and is still the text format older versions read.
+    /// </summary>
+    public static string? NormalizeRounds(string? text) =>
+        ParseRounds(text) is {Count: > 0} rounds ? FormatRounds(rounds.Take(MaxTiers)) : null;
+
+    /// <summary>
     /// Spawn rounds for every possible tier that start at <paramref name="first"/> and come every
     /// <paramref name="gap"/> rounds, so changing the tier count later keeps the spacing
     /// </summary>

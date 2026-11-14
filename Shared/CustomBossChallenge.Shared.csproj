@@ -29,6 +29,7 @@
         <Compile Include="..\Config\UndoHistory.cs" Link="Mod\UndoHistory.cs" />
         <Compile Include="..\Persistence\CodeFormat.cs" Link="Mod\CodeFormat.cs" />
         <Compile Include="..\Persistence\ContinueFormat.cs" Link="Mod\ContinueFormat.cs" />
+        <Compile Include="..\Persistence\FileChange.cs" Link="Mod\FileChange.cs" />
         <Compile Include="..\Persistence\FormatRead.cs" Link="Mod\FormatRead.cs" />
         <Compile Include="..\Persistence\LastSetupFormat.cs" Link="Mod\LastSetupFormat.cs" />
         <Compile Include="..\Persistence\SafeFile.cs" Link="Mod\SafeFile.cs" />

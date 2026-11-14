@@ -78,6 +78,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Room for more bosses** (#170): the Boss Type row works out the size of its boss buttons from how many bosses the
   game has, so a game update with an eighth boss doesn't put the Elite label on the reset button. A boss the mod has
   no portrait or HUD icon for is logged once.
+- **Saved files** (#182): an unreadable saved setups file is logged and copied aside once, not again every time the
+  list is shown or a name is checked. Spawn Rounds are kept as the first 10 rounds in them ("40, 60, 80"), so a
+  hand-made code with a huge Spawn Rounds text no longer carries it into the last setup, the unfinished game and saved
+  setups. The rounds played stay the same, and the text is still the format older versions read.
 
 ## [2.11.0] - 2026-11-12
 

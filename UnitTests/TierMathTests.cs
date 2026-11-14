@@ -12,6 +12,25 @@ namespace CustomBossChallenge.UnitTests;
 public class TierMathTests
 {
     [Theory]
+    [InlineData(null, null)]
+    [InlineData("", null)]
+    [InlineData("x, 0, -5", null)]
+    [InlineData(" 30,31; 90  400 ", "30, 31, 90, 400")]
+    [InlineData("1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12", "1, 2, 3, 4, 5, 6, 7, 8, 9, 10")]
+    public void NormalizeRounds_keeps_the_rounds_a_setup_can_use(string? text, string? expected) =>
+        Assert.Equal(expected, TierMath.NormalizeRounds(text));
+
+    [Fact]
+    public void NormalizeRounds_gives_the_same_spawn_rounds_for_every_number_of_tiers()
+    {
+        foreach (var text in new[] {"80, 40, 41", "x 50;;55 2000 -3 60 61 62 63 64 65 66 67 68", "999, 999, 1"})
+        {
+            for (var tiers = TierMath.MinTiers; tiers <= TierMath.MaxTiers; tiers++)
+                Assert.Equal(TierMath.SpawnRounds(tiers, text), TierMath.SpawnRounds(tiers, TierMath.NormalizeRounds(text)));
+        }
+    }
+
+    [Theory]
     [InlineData(5, "40, 60, 80, 100, 120")]
     [InlineData(7, "40, 60, 80, 100, 120, 140, 160")]
     [InlineData(1, "40")]

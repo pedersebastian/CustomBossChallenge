@@ -225,7 +225,7 @@
     },
     {
       "name": "typed spawn rounds",
-      "code": "CBC1:q1bKV7KqVgouSCzPC8ovzUspVrJSMjbQUTA2tFawNFAwMTBQqtVRSlayqq6tBQA",
+      "code": "CBC1:q1bKV7KqVgouSCzPC8ovzUspVrJSMjbQUTA21FGwNNBRMDEwUKrVUUpWsqqurQUA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -235,14 +235,14 @@
         "Tiers": 5,
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
-        "SpawnRounds": "30, 31; 90 400",
+        "SpawnRounds": "30, 31, 90, 400",
         "BossEventRounds": false
       },
       "challenge": {}
     },
     {
       "name": "broken spawn rounds",
-      "code": "CBC1:q1bKV7KqVgouSCzPC8ovzUspVrJSqtBRMNBR0DXVUTAzUKrVUUpWsqqurQUA",
+      "code": "CBC1:q1bKV7KqVgouSCzPC8ovzUspVrJSMjNQqtVRSlayqq6tBQA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -252,7 +252,7 @@
         "Tiers": 5,
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
-        "SpawnRounds": "x, 0, -5, 60",
+        "SpawnRounds": "60",
         "BossEventRounds": false
       },
       "challenge": {}
