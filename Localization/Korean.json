@@ -17,7 +17,7 @@
   "CustomBossChallenge-MaxParagonsInfo": "동시에 보유할 수 있는 파라곤 수입니다. 0이면 파라곤을 사용할 수 없습니다. 슬라이더를 오른쪽 끝까지 밀면 제한이 없습니다.",
   "CustomBossChallenge-Unlimited": "무제한",
   "CustomBossChallenge-BossTiers": "보스 단계",
-  "CustomBossChallenge-BossTiersInfo": "처치해야 하는 보스의 단계 수로, 1에서 10까지입니다. 각 단계는 이전 단계보다 강합니다. 마지막 단계를 처치하면 승리합니다. 5단계를 넘는 단계는 체력이 늘어난 5단계의 복사본입니다.",
+  "CustomBossChallenge-BossTiersInfo": "처치해야 하는 보스의 단계 수로, 1에서 10까지입니다. 각 단계는 보통 이전 단계보다 강하지만, 단계별 속도나 단계별 체력이 0보다 낮으면 그렇지 않을 수 있습니다. 마지막 단계를 처치하면 승리합니다. 5단계를 넘는 단계는 체력이 늘어난 5단계의 복사본입니다.",
   "CustomBossChallenge-SpeedPerTier": "단계별 속도",
   "CustomBossChallenge-SpeedPerTierInfo": "첫 단계 이후 단계마다 기본 속도의 이 비율을 더합니다. 게임 자체의 증가에 더해집니다. +20 %면 2단계는 ×1.2, 3단계는 ×1.4가 되는 식입니다. 0 미만이면 이후 단계가 느려집니다.",
   "CustomBossChallenge-HealthPerTier": "단계별 체력",

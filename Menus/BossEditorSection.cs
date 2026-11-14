@@ -294,11 +294,11 @@ public sealed class BossEditorSection
         // The last position means no limit
         var paragons = ParagonMath.Available;
         MaxParagons = SliderRow.Clone(template, rows, "MaxParagonsRow", Texts.MaxParagons.T(), VanillaSprites.ParagonLimitIcon,
-            0, paragons, 1, paragons, value => value >= paragons ? Texts.Unlimited.T() : $"{value:0}",
+            0, paragons, 1, paragons, value => value >= paragons ? Texts.Unlimited.T() : ShownNumber.Whole(value),
             value => UpdateDcm("MaxParagons", dcm => dcm.maxParagons = ParagonMath.FromSlider((int) value, paragons)));
 
         Tiers = SliderRow.Clone(template, rows, "TiersRow", Texts.BossTiers.T(), VanillaSprites.BossTiersIconSmall,
-            TierMath.MinTiers, TierMath.MaxTiers, 1, TierMath.VanillaTiers, value => $"{value:0}",
+            TierMath.MinTiers, TierMath.MaxTiers, 1, TierMath.VanillaTiers, value => ShownNumber.Whole(value),
             value => UpdateOptions("Tiers", o => o with {Tiers = (int) value}));
         SpeedPerTier = SliderRow.Clone(template, rows, "SpeedPerTierRow", Texts.SpeedPerTier.T(), VanillaSprites.FasterBossIcon,
             TierMath.MinSpeedPerTier, TierMath.MaxSpeedPerTier, TierMath.PerTierStep, 0, PerTier,
@@ -310,11 +310,11 @@ public sealed class BossEditorSection
         Strip = new TierStrip(stripRow) {CardClicked = tier => OpenPicker(tier)};
 
         FirstSpawnRound = SliderRow.Clone(template, rows, "FirstSpawnRoundRow", Texts.FirstBossRound.T(),
-            VanillaSprites.BossT1Icon, 1, TierMath.MaxFirstSpawnRound, 1, TierMath.FirstSpawnRound, value => $"{value:0}",
+            VanillaSprites.BossT1Icon, 1, TierMath.MaxFirstSpawnRound, 1, TierMath.FirstSpawnRound, value => ShownNumber.Whole(value),
             _ => SpreadSpawnRounds("FirstSpawnRound"));
         RoundsBetween = SliderRow.Clone(template, rows, "RoundsBetweenRow", Texts.RoundsBetweenTiers.T(),
             VanillaSprites.BossTiersIconSmall, 1, TierMath.MaxRoundsBetweenTiers, 1, TierMath.RoundsBetweenTiers,
-            value => $"{value:0}", _ => SpreadSpawnRounds("RoundsBetween"));
+            value => ShownNumber.Whole(value), _ => SpreadSpawnRounds("RoundsBetween"));
 
         var roundsRow = EditorRows.LabelRow(template, rows, "SpawnRoundsRow", Texts.SpawnRounds.T(), VanillaSprites.BossT1Icon);
         SpawnRounds = ModHelperInputField.Create(EditorRows.ControlInfo("SpawnRounds", 1700, 150),
@@ -403,7 +403,7 @@ public sealed class BossEditorSection
         ResetSkullsButton = EditorRows.ResetButton(skullModeRow, "ResetSkulls", ResetSkulls);
 
         SkullCount = SliderRow.Clone(template, rows, "SkullCountRow", Texts.SkullCount.T(), VanillaSprites.CrossboneSkull,
-            0, SkullMath.MaxSkulls, 1, 3, value => $"{value:0}", value => UpdateOptions("SkullCount", o => o with {SkullCount = (int) value}));
+            0, SkullMath.MaxSkulls, 1, 3, value => ShownNumber.Whole(value), value => UpdateOptions("SkullCount", o => o with {SkullCount = (int) value}));
 
         customSkullsRow = EditorRows.LabelRow(template, rows, "CustomSkullsRow", Texts.SkullHealth.T(), VanillaSprites.CrossboneSkull);
         CustomSkulls = ModHelperInputField.Create(EditorRows.ControlInfo("CustomSkulls", 1700, 150), "75, 50, 25",
@@ -1655,9 +1655,9 @@ public sealed class BossEditorSection
         return Texts.BossUnavailable.T(missing);
     }
 
-    private static string Percent(float value) => $"{value:0} %";
+    private static string Percent(float value) => ShownNumber.Whole(value) + " %";
 
-    private static string PerTier(float value) => Texts.PerTier.T(value > 0 ? $"+{value:0}" : $"{value:0}");
+    private static string PerTier(float value) => Texts.PerTier.T(ShownNumber.Signed(value));
 
     /// <summary>
     /// Behind a Random tier's die when the tier is Elite, since the die has no Elite look of its own like the bosses'

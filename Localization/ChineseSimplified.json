@@ -17,7 +17,7 @@
   "CustomBossChallenge-MaxParagonsInfo": "你同时最多可以拥有的典范数量。0 表示不能使用典范。将滑块拖到最右边即为无限制。",
   "CustomBossChallenge-Unlimited": "无限制",
   "CustomBossChallenge-BossTiers": "Boss阶数",
-  "CustomBossChallenge-BossTiersInfo": "你需要击败多少阶Boss，从1到10。每一阶都比前一阶更强。击败最后一阶即获胜。超过5阶的部分是生命值更高的第5阶副本。",
+  "CustomBossChallenge-BossTiersInfo": "你需要击败多少阶Boss，从1到10。每一阶通常都比前一阶更强，除非“每阶速度”或“每阶生命值”低于0。击败最后一阶即获胜。超过5阶的部分是生命值更高的第5阶副本。",
   "CustomBossChallenge-SpeedPerTier": "每阶速度",
   "CustomBossChallenge-SpeedPerTierInfo": "在第一阶之后，每一阶都增加这个比例的正常速度，叠加在游戏本身的提升之上：+20 % 使第 2 阶 ×1.2、第 3 阶 ×1.4，依此类推。低于 0 会让后面的阶段更慢。",
   "CustomBossChallenge-HealthPerTier": "每阶生命值",

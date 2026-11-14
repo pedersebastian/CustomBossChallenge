@@ -17,7 +17,7 @@
   "CustomBossChallenge-MaxParagonsInfo": "同時に所持できるパラゴンの数です。0 にするとパラゴンは使えません。スライダーを右端まで動かすと無制限になります。",
   "CustomBossChallenge-Unlimited": "無制限",
   "CustomBossChallenge-BossTiers": "ボスのティア",
-  "CustomBossChallenge-BossTiersInfo": "倒す必要があるボスのティア数を1～10で指定します。各ティアは前のティアより強くなります。最後のティアを倒すと勝利です。ティア5より上は、体力を増やしたティア5のコピーです。",
+  "CustomBossChallenge-BossTiersInfo": "倒す必要があるボスのティア数を1～10で指定します。各ティアは通常、前のティアより強くなります（「ティアごとの速度」か「ティアごとの体力」が0未満の場合を除く）。最後のティアを倒すと勝利です。ティア5より上は、体力を増やしたティア5のコピーです。",
   "CustomBossChallenge-SpeedPerTier": "ティアごとの速度",
   "CustomBossChallenge-SpeedPerTierInfo": "最初のティア以降、ティアごとに通常の速度のこの割合を加えます。ゲーム本来の上昇に上乗せされます。+20 % ならティア 2 は ×1.2、ティア 3 は ×1.4 となります。0 未満で後のティアが遅くなります。",
   "CustomBossChallenge-HealthPerTier": "ティアごとの体力",

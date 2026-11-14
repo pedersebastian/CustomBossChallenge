@@ -158,10 +158,10 @@ public sealed class TierBossPicker
         // The editor's own rows, shrunk to fit the window; a run of changes is one step for Undo
         var template = section.SliderTemplate;
         Speed = Fit(SliderRow.Clone(template, Panel.transform, "Speed", Texts.BossSpeed.T(), VanillaSprites.FasterBossIcon,
-            TierBossMath.MinSpeed, TierBossMath.MaxSpeed, TierBossMath.ValueStep, TierBossMath.Normal, value => $"{value:0} %",
+            TierBossMath.MinSpeed, TierBossMath.MaxSpeed, TierBossMath.ValueStep, TierBossMath.Normal, value => ShownNumber.Whole(value) + " %",
             value => SetValues(Shown() with {Speed = (int) value}, "Speed")));
         Health = Fit(SliderRow.Clone(template, Panel.transform, "Health", Texts.BossHealth.T(), VanillaSprites.BossBoostIcon,
-            TierBossMath.MinHealth, TierBossMath.MaxHealth, TierBossMath.ValueStep, TierBossMath.Normal, value => $"{value:0} %",
+            TierBossMath.MinHealth, TierBossMath.MaxHealth, TierBossMath.ValueStep, TierBossMath.Normal, value => ShownNumber.Whole(value) + " %",
             value => SetValues(Shown() with {Health = (int) value}, "Health")));
 
         skullModeRow = Fit(EditorRows.LabelRow(template, Panel.transform, "SkullModeRow", Texts.Skulls.T(), VanillaSprites.CrossboneSkull));
@@ -180,7 +180,7 @@ public sealed class TierBossPicker
         }, "ResetSkulls"));
 
         SkullCount = Fit(SliderRow.Clone(template, Panel.transform, "SkullCountRow", Texts.SkullCount.T(),
-            VanillaSprites.CrossboneSkull, 0, SkullMath.MaxSkulls, 1, SkullMath.DefaultCount, value => $"{value:0}",
+            VanillaSprites.CrossboneSkull, 0, SkullMath.MaxSkulls, 1, SkullMath.DefaultCount, value => ShownNumber.Whole(value),
             value => SetValues(Shown() with {SkullCount = (int) value}, "SkullCount")));
 
         customSkullsRow = Fit(EditorRows.LabelRow(template, Panel.transform, "CustomSkullsRow", Texts.SkullHealth.T(),

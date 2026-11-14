@@ -17,7 +17,7 @@
   "CustomBossChallenge-MaxParagonsInfo": "Hoeveel paragons je tegelijk mag hebben. 0 betekent geen paragons. Sleep de schuifregelaar helemaal naar rechts voor geen limiet.",
   "CustomBossChallenge-Unlimited": "Onbeperkt",
   "CustomBossChallenge-BossTiers": "Boss-tiers",
-  "CustomBossChallenge-BossTiersInfo": "Hoeveel tiers van de boss je moet verslaan, van 1 tot 10. Elke tier is sterker dan de vorige. Je wint zodra de laatste tier is verslagen. Tiers boven 5 zijn kopieën van tier 5 met meer gezondheid.",
+  "CustomBossChallenge-BossTiersInfo": "Hoeveel tiers van de boss je moet verslaan, van 1 tot 10. Elke tier is meestal sterker dan de vorige, tenzij Snelheid of Gezondheid per niveau onder 0 is. Je wint zodra de laatste tier is verslagen. Tiers boven 5 zijn kopieën van tier 5 met meer gezondheid.",
   "CustomBossChallenge-SpeedPerTier": "Snelheid per niveau",
   "CustomBossChallenge-SpeedPerTierInfo": "Telt dit deel van de normale snelheid op voor elk niveau na het eerste, bovenop de eigen stappen van het spel: +20 % maakt niveau 2 ×1,2, niveau 3 ×1,4 enzovoort. Onder 0 maakt latere niveaus trager.",
   "CustomBossChallenge-HealthPerTier": "Gezondheid per niveau",

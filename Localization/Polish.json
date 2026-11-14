@@ -17,7 +17,7 @@
   "CustomBossChallenge-MaxParagonsInfo": "Ile paragonów możesz mieć jednocześnie. 0 oznacza brak paragonów. Przesuń suwak maksymalnie w prawo, aby nie było limitu.",
   "CustomBossChallenge-Unlimited": "Bez limitu",
   "CustomBossChallenge-BossTiers": "Poziomy Bossa",
-  "CustomBossChallenge-BossTiersInfo": "Ile poziomów bossa musisz pokonać, od 1 do 10. Każdy poziom jest silniejszy od poprzedniego. Wygrywasz, gdy ostatni poziom zostanie pokonany. Poziomy powyżej 5 to kopie poziomu 5 z większym zdrowiem.",
+  "CustomBossChallenge-BossTiersInfo": "Ile poziomów bossa musisz pokonać, od 1 do 10. Każdy poziom jest zwykle silniejszy od poprzedniego, chyba że Prędkość lub Zdrowie na poziom jest poniżej 0. Wygrywasz, gdy ostatni poziom zostanie pokonany. Poziomy powyżej 5 to kopie poziomu 5 z większym zdrowiem.",
   "CustomBossChallenge-SpeedPerTier": "Prędkość na poziom",
   "CustomBossChallenge-SpeedPerTierInfo": "Dodaje taką część normalnej prędkości za każdy poziom po pierwszym, ponad własne wzrosty gry: +20 % daje poziomowi 2 ×1,2, poziomowi 3 ×1,4 i tak dalej. Poniżej 0 spowalnia późniejsze poziomy.",
   "CustomBossChallenge-HealthPerTier": "Zdrowie na poziom",
