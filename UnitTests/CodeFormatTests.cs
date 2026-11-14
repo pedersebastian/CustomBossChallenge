@@ -126,7 +126,7 @@ public class CodeFormatTests
 
         if (entry["tierBosses"] is JArray bosses)
         {
-            Assert.Equal(bosses.Select(boss => ((string?) boss[0], (bool) boss[1])),
+            Assert.Equal(bosses.Select(boss => ((string?) boss[0], (bool) boss[1]!)),
                 TierBossMath.Parse(options.TierBosses).Select(tier => (tier.Boss, tier.Elite)));
         }
     }
