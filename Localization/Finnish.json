@@ -17,7 +17,7 @@
   "CustomBossChallenge-MaxParagonsInfo": "Kuinka monta paragonia sinulla voi olla yhtä aikaa. 0 tarkoittaa, ettei paragoneja sallita. Vedä liukusäädin täysin oikealle, niin rajaa ei ole.",
   "CustomBossChallenge-Unlimited": "Rajaton",
   "CustomBossChallenge-BossTiers": "Pomon tasot",
-  "CustomBossChallenge-BossTiersInfo": "Kuinka monta pomon tasoa sinun on voitettava, 1–10. Jokainen taso on edellistä vahvempi. Voitat, kun viimeinen taso on voitettu. Tasot 5:n yläpuolella ovat kopioita tasosta 5 suuremmalla terveydellä.",
+  "CustomBossChallenge-BossTiersInfo": "Kuinka monta pomon tasoa sinun on voitettava, 1–10. Jokainen taso on yleensä edellistä vahvempi, ellei Nopeus tai Kestävyys per taso ole alle 0. Voitat, kun viimeinen taso on voitettu. Tasot 5:n yläpuolella ovat kopioita tasosta 5 suuremmalla terveydellä.",
   "CustomBossChallenge-SpeedPerTier": "Nopeus per taso",
   "CustomBossChallenge-SpeedPerTierInfo": "Lisää tämän osuuden normaalista nopeudesta jokaista ensimmäisen jälkeistä tasoa kohden, pelin omien askelten lisäksi: +20 % tekee tasosta 2 ×1,2, tasosta 3 ×1,4 ja niin edelleen. Alle 0 tekee myöhemmistä tasoista hitaampia.",
   "CustomBossChallenge-HealthPerTier": "Kestävyys per taso",

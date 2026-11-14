@@ -141,8 +141,8 @@ public static class RankedHud
     {
         (Texts.RankedTime.T(), RankedTime.Format(BossTime ?? TimeSpan.Zero)),
         (Texts.PenaltyTime.T(), "+" + RankedTime.Format(PenaltyTime)),
-        (Texts.TiersUsed.T(), TiersUsed.ToString("N0")),
-        (Texts.CashUsed.T(), "$" + CashUsed.ToString("N0"))
+        (Texts.TiersUsed.T(), ShownNumber.Grouped(TiersUsed)),
+        (Texts.CashUsed.T(), "$" + ShownNumber.Grouped(CashUsed))
     };
 
     /// <summary>
@@ -205,8 +205,8 @@ public static class RankedHud
     private static void ShowUsed()
     {
         if (Values.Count < 4) return;
-        Values[2].Text.text = TiersUsed.ToString("N0");
-        Values[3].Text.text = "$" + CashUsed.ToString("N0");
+        Values[2].Text.text = ShownNumber.Grouped(TiersUsed);
+        Values[3].Text.text = "$" + ShownNumber.Grouped(CashUsed);
     }
 
     /// <summary>
@@ -426,8 +426,8 @@ public static class RankedHud
             .ToList();
         if (PenaltyTime > TimeSpan.Zero) lines.Add((Texts.PenaltyTime.T(), "+" + RankedTime.Format(PenaltyTime)));
         lines.Add((Texts.TotalTime.T(), RankedTime.Format(total)));
-        lines.Add((Texts.TiersUsed.T(), TiersUsed.ToString("N0")));
-        lines.Add((Texts.CashUsed.T(), "$" + CashUsed.ToString("N0")));
+        lines.Add((Texts.TiersUsed.T(), ShownNumber.Grouped(TiersUsed)));
+        lines.Add((Texts.CashUsed.T(), "$" + ShownNumber.Grouped(CashUsed)));
         return lines;
     }
 }

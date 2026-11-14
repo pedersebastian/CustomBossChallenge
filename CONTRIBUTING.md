@@ -201,7 +201,8 @@ guards (`[GuardPatch]`), so a bug report's `Latest.log` shows it.
 
 - **Translations**: every `Localization/*.json` must be valid JSON without duplicate keys, have exactly the keys of
   `English.json` in the same order, keep its `{0}` placeholders and leave no text empty, and every text in
-  `Menus/Texts.cs` must exist in English.
+  `Menus/Texts.cs` must exist in English. Every translation must be made from the English text as it is now, as
+  recorded in `Localization/english-sources.txt` (see Translations below).
 - **Release version** (releases only): the tag must match `Version` in `ModHelperData.cs`, which Mod Helper uses to tell
   players about updates, and `CHANGELOG.md` must have notes for it. `TestResults/ingame.json` must show a run of
   every in-game test on that version, with none failed or skipped, and its `sourceHash` must match the tagged code,
@@ -431,6 +432,16 @@ form; to change a file yourself:
 New texts are added to `Menus/Texts.cs` (with the English text) and to every file in `Localization/`, at the same
 place. `LocalizationTest` and `Check-Localization.ps1` check that all files have them. The translations are built
 into the DLL, so build the mod to see a change in the game.
+
+`Localization/english-sources.txt` records, for every key and language, a short hash of the English text the
+translation was made from, so changing an English text without the others fails the **Translations** check. After
+translating new or changed English texts, record them with
+
+```
+powershell -ExecutionPolicy Bypass -File .github/scripts/Check-Localization.ps1 -UpdateSources -Language German,French
+```
+
+(all languages without `-Language`). A fix to a translation alone, with English unchanged, needs nothing here.
 
 ## AI-assisted development
 

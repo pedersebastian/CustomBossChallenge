@@ -1,7 +1,12 @@
 # Checks the translations without the game: every Localization/*.json must be valid JSON without duplicate keys, have
 # exactly the English keys in the same order, keep every {0} placeholder and leave no text empty. Every text in
 # Menus/Texts.cs must have an English entry. Works in Windows PowerShell 5.1 and PowerShell 7.
-param([string] $Root)
+#
+# Localization/english-sources.txt has, for every key and language, a short hash of the English text the translation
+# was made from (#172), so a changed English text without the other languages fails here. After translating, run
+#   .github/scripts/Check-Localization.ps1 -UpdateSources [-Language German,French]
+# to record the English texts the given languages (all of them without -Language) are now translated from.
+param([string] $Root, [switch] $UpdateSources, [string[]] $Language)
 
 if (-not $Root) { $Root = Join-Path $PSScriptRoot "../.." }
 $ErrorActionPreference = "Stop"
@@ -59,6 +64,65 @@ foreach ($file in $files) {
         $expected = Placeholders $english[$key]
         $actual = Placeholders $table[$key]
         if ($actual -ne $expected) { Report $relative "$key has placeholders '$actual', English has '$expected'" }
+    }
+}
+
+# Every translation must be made from the English text as it is now
+$sourcesPath = Join-Path $folder "english-sources.txt"
+$sourcesFile = "Localization/english-sources.txt"
+$sha = [System.Security.Cryptography.SHA256]::Create()
+function Hash([string] $text) {
+    $bytes = $sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($text))
+    (($bytes[0..3] | ForEach-Object { $_.ToString("x2") }) -join "")
+}
+$languages = @($files | ForEach-Object { $_.BaseName } | Where-Object { $_ -ne "English" })
+$current = @{}
+foreach ($key in $keys) { $current[$key] = Hash $english[$key] }
+
+# Map "language|key" -> hash, from the file
+$sources = @{}
+if (Test-Path $sourcesPath) {
+    $lines = @([System.IO.File]::ReadAllLines($sourcesPath) | Where-Object { $_ -and -not $_.StartsWith("#") })
+    $header = @($lines[0] -split "`t")
+    foreach ($line in ($lines | Select-Object -Skip 1)) {
+        $cells = @($line -split "`t")
+        for ($i = 1; $i -lt [Math]::Min($cells.Count, $header.Count); $i++) {
+            $sources["$($header[$i])|$($cells[0])"] = $cells[$i]
+        }
+    }
+}
+
+if ($UpdateSources) {
+    $update = if ($Language) { $Language } else { $languages }
+    foreach ($name in $update) {
+        if ($languages -notcontains $name) { throw "No Localization/$name.json" }
+        foreach ($key in $keys) { $sources["$name|$($key -replace '^CustomBossChallenge-', '')"] = $current[$key] }
+    }
+    $out = New-Object System.Collections.Generic.List[string]
+    $out.Add("# The English text each translation was made from, as the first 8 hex digits of the SHA-256 of its UTF-8, tab-separated.")
+    $out.Add("# Written by .github/scripts/Check-Localization.ps1 -UpdateSources after translating; see CONTRIBUTING.md.")
+    $out.Add((@("Key") + $languages) -join "`t")
+    foreach ($key in $keys) {
+        $short = $key -replace '^CustomBossChallenge-', ''
+        $row = @($short) + @($languages | ForEach-Object {
+            $value = $sources["$_|$short"]
+            if ($value) { $value } else { "-" }
+        })
+        $out.Add($row -join "`t")
+    }
+    [System.IO.File]::WriteAllText($sourcesPath, (($out -join "`n") + "`n"), (New-Object System.Text.UTF8Encoding $false))
+    Write-Host "$sourcesFile updated for $($update -join ', ')"
+}
+
+if (-not (Test-Path $sourcesPath)) {
+    Report $sourcesFile "missing, run .github/scripts/Check-Localization.ps1 -UpdateSources"
+} else {
+    foreach ($name in $languages) {
+        $stale = @($keys | Where-Object { $sources["$name|$($_ -replace '^CustomBossChallenge-', '')"] -ne $current[$_] })
+        foreach ($key in $stale) {
+            Report "Localization/$name.json" ("$key was translated from another English text; translate it again, then " +
+                "run .github/scripts/Check-Localization.ps1 -UpdateSources -Language $name")
+        }
     }
 }
 

@@ -50,6 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Boss Tiers help in 17 languages** (#172): it said every tier is stronger than the one before, which isn't true
+  when Speed or Health per Tier is below 0. It now says so in every language, like in English.
+- **Numbers on every system culture** (#172): the ranked stats panel's tiers and cash and the Boss Creator's sliders
+  and per-tier labels are written the same everywhere ("12,345", "-10"), not with the system's own spaces, apostrophes
+  or minus sign, which the game's font may not have.
 - **CHIMPS boss event rounds on the website** (#139): the website and `@cbc/share-code` now know the CHIMPS
   dropdown. A code with the earlier CHIMPS events' rounds kept them only until it was changed in the Studio, which made
   it play the newest ones. In CHIMPS the Studio has the Boss Creator's dropdown (Off, Newest, Earlier) in place of the

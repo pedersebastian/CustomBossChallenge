@@ -20,6 +20,7 @@
         <Compile Include="..\Config\RankedTime.cs" Link="Mod\RankedTime.cs" />
         <Compile Include="..\Config\RulesSummary.cs" Link="Mod\RulesSummary.cs" />
         <Compile Include="..\Config\SetupWarnings.cs" Link="Mod\SetupWarnings.cs" />
+        <Compile Include="..\Config\ShownNumber.cs" Link="Mod\ShownNumber.cs" />
         <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />
         <Compile Include="..\Config\TierLook.cs" Link="Mod\TierLook.cs" />
         <Compile Include="..\Config\TierMath.cs" Link="Mod\TierMath.cs" />

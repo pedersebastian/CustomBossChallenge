@@ -17,7 +17,7 @@
   "CustomBossChallenge-MaxParagonsInfo": "Quantos paragons você pode ter ao mesmo tempo. 0 significa nenhum paragon. Arraste o controle deslizante totalmente para a direita para não ter limite.",
   "CustomBossChallenge-Unlimited": "Ilimitado",
   "CustomBossChallenge-BossTiers": "Níveis do Chefe",
-  "CustomBossChallenge-BossTiersInfo": "Quantos níveis do chefe você precisa derrotar, de 1 a 10. Cada nível é mais forte que o anterior. Você vence quando o último nível é derrotado. Os níveis acima de 5 são cópias do nível 5 com mais vida.",
+  "CustomBossChallenge-BossTiersInfo": "Quantos níveis do chefe você precisa derrotar, de 1 a 10. Cada nível costuma ser mais forte que o anterior, a menos que Velocidade ou Vida por nível esteja abaixo de 0. Você vence quando o último nível é derrotado. Os níveis acima de 5 são cópias do nível 5 com mais vida.",
   "CustomBossChallenge-SpeedPerTier": "Velocidade por nível",
   "CustomBossChallenge-SpeedPerTierInfo": "Adiciona essa parte da velocidade normal para cada nível depois do primeiro, além dos aumentos do próprio jogo: +20 % deixa o nível 2 ×1,2, o nível 3 ×1,4 e assim por diante. Abaixo de 0 deixa os níveis seguintes mais lentos.",
   "CustomBossChallenge-HealthPerTier": "Vida por nível",

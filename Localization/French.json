@@ -17,7 +17,7 @@
   "CustomBossChallenge-MaxParagonsInfo": "Le nombre de parangons que vous pouvez avoir en même temps. 0 signifie aucun parangon. Faites glisser le curseur tout à droite pour ne pas avoir de limite.",
   "CustomBossChallenge-Unlimited": "Illimité",
   "CustomBossChallenge-BossTiers": "Paliers du boss",
-  "CustomBossChallenge-BossTiersInfo": "Le nombre de paliers du boss à vaincre, de 1 à 10. Chaque palier est plus fort que le précédent. Vous gagnez lorsque le dernier palier est vaincu. Les paliers au-delà de 5 sont des copies du palier 5 avec plus de santé.",
+  "CustomBossChallenge-BossTiersInfo": "Le nombre de paliers du boss à vaincre, de 1 à 10. Chaque palier est généralement plus fort que le précédent, sauf si Vitesse ou Santé par palier est inférieure à 0. Vous gagnez lorsque le dernier palier est vaincu. Les paliers au-delà de 5 sont des copies du palier 5 avec plus de santé.",
   "CustomBossChallenge-SpeedPerTier": "Vitesse par palier",
   "CustomBossChallenge-SpeedPerTierInfo": "Ajoute cette part de la vitesse normale pour chaque palier après le premier, en plus des paliers du jeu : +20 % donne ×1,2 au palier 2, ×1,4 au palier 3, et ainsi de suite. En dessous de 0, les paliers suivants sont plus lents.",
   "CustomBossChallenge-HealthPerTier": "Santé par palier",
