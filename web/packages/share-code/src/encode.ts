@@ -5,6 +5,7 @@
 import { DATA, type Json, type JsonObject } from "./data";
 import { PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFIX, VERSION5_PREFIX, filterChallenge } from "./decode";
 import { defaultOptions, optionsJson, readOptions, sanitize, type BossOptions } from "./options";
+import { UnsupportedBrowserError, canUseCodes } from "./support";
 
 const ITEMS_KEY = "$items";
 
@@ -86,8 +87,9 @@ function toBase64Url(bytes: Uint8Array): string {
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-/** CodeFormat.Pack: JSON to a code, without any checks */
+/** CodeFormat.Pack: JSON to a code, without any checks. Throws UnsupportedBrowserError without CompressionStream (#181). */
 export async function pack(json: string, prefix = PREFIX): Promise<string> {
+  if (!canUseCodes()) throw new UnsupportedBrowserError();
   const stream = new Blob([json]).stream().pipeThrough(new CompressionStream("deflate-raw"));
   const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
   return prefix + toBase64Url(bytes);

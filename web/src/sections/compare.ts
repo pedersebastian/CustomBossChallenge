@@ -113,6 +113,13 @@ export function setUpCompare(inputA: HTMLTextAreaElement, inputB: HTMLTextAreaEl
   }
 
   function render(a: DecodeResult | null, b: DecodeResult | null, codes: { a: string; b: string }): void {
+    // A browser that can't read codes is said once, not for A and B (#181)
+    const unsupported = [a, b].find((decoded) => decoded?.ok === false && decoded.problem === "Unsupported");
+    if (unsupported && !unsupported.ok) {
+      status.textContent = unsupported.reason;
+      return replace(h("p", { class: "error" }, unsupported.reason));
+    }
+
     const problems = ([["A", a], ["B", b]] as const).flatMap(([label, decoded]) =>
       decoded && !decoded.ok ? [h("p", { class: decoded.problem === "TooNew" ? "warning" : "error" }, `${label}: ${decoded.reason}`)] : [],
     );

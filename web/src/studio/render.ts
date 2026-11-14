@@ -1,8 +1,8 @@
 // The Studio page's editor (#12): the Boss Creator's controls, the code they make and the Tier Preview of that code.
 // The preview shows the code read back the way the mod reads it, so what you see is what the mod loads.
 
-import { decode } from "@cbc/share-code";
-import { encode } from "@cbc/share-code";
+import { decode, type DecodeResult } from "@cbc/share-code";
+import { encode, UnsupportedBrowserError } from "@cbc/share-code";
 import { compareLinkTo, hashFor, linkTo, replaceAddress } from "../code/link";
 import { CHIMPS_MODE, SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, isMixed, type SkullMode } from "@cbc/share-code";
 import { copyWithFeedback, h } from "../dom";
@@ -308,17 +308,41 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
   const compare = h("a", { class: "button small orange" }, "Compare with the original");
   actions.replaceChildren(copyCode, copyLink, compare);
 
+  /** Shows that no code could be made, in the code box's place: a browser without the streams codes need (#181) */
+  function showNoCode(error: unknown): void {
+    const reason = error instanceof UnsupportedBrowserError ? error.message : "The code couldn't be made in this browser.";
+    code = "";
+    codeBox.value = "";
+    releaseSetup(preview);
+    preview.replaceChildren(h("p", { class: "error" }, reason));
+    status.textContent = reason;
+    compare.hidden = true;
+    // Nothing to copy
+    copyCode.disabled = true;
+    copyLink.disabled = true;
+  }
+
+  /** Makes the code of the setup as it is now and shows it. Never rejects: it's called with void after every change. */
   async function refresh(): Promise<void> {
     clearTimeout(pending);
     pending = undefined;
     const request = ++latest;
-    const made = await encode(setup.options, setup.challenge);
-    const read = await decode(made);
+    let made: string;
+    let read: DecodeResult;
+    try {
+      made = await encode(setup.options, setup.challenge);
+      read = await decode(made);
+    } catch (error) {
+      if (request === latest) showNoCode(error);
+      return;
+    }
     // An older change finishing late must not replace a newer one
     if (request !== latest) return;
 
     code = made;
     codeBox.value = made;
+    copyCode.disabled = false;
+    copyLink.disabled = false;
     releaseSetup(preview);
     if (read.ok) {
       preview.replaceChildren(renderSetup(read.options, read.challenge));
@@ -339,7 +363,8 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
       original = from;
       memory = edit.NO_MEMORY;
       sync();
-      unchanged = from === null ? null : await encode(next.options, next.challenge);
+      // What the code was before any change; without it, Compare with the original simply stays hidden
+      unchanged = from === null ? null : await encode(next.options, next.challenge).catch(() => null);
       await refresh();
     },
     setup: () => setup,
