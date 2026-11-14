@@ -43,3 +43,53 @@ export function formatDecimals(value: number, digits: number): string {
   const text = toFixedNet(value, digits);
   return text.includes(".") ? text.replace(/\.?0+$/, "") : text;
 }
+
+/**
+ * C# char.IsWhiteSpace. JavaScript's trim and \s use another set: they also strip U+FEFF and leave U+0085, so a code
+ * or option with one of those read differently in the mod and on the website (#174).
+ */
+export function isWhiteSpace(c: string): boolean {
+  const code = c.charCodeAt(0);
+  return (
+    (code >= 0x09 && code <= 0x0d) ||
+    code === 0x20 ||
+    code === 0x85 ||
+    code === 0xa0 ||
+    code === 0x1680 ||
+    (code >= 0x2000 && code <= 0x200a) ||
+    code === 0x2028 ||
+    code === 0x2029 ||
+    code === 0x202f ||
+    code === 0x205f ||
+    code === 0x3000
+  );
+}
+
+/** C# string.Trim() */
+export function netTrim(text: string): string {
+  let start = 0;
+  let end = text.length;
+  while (start < end && isWhiteSpace(text[start])) start++;
+  while (end > start && isWhiteSpace(text[end - 1])) end--;
+  return text.slice(start, end);
+}
+
+/** C# string.TrimEnd() */
+export function netTrimEnd(text: string): string {
+  let end = text.length;
+  while (end > 0 && isWhiteSpace(text[end - 1])) end--;
+  return text.slice(0, end);
+}
+
+/** C# string.IsNullOrWhiteSpace */
+export const isNullOrWhiteSpace = (text: string | null | undefined): boolean => text == null || netTrim(text) === "";
+
+/**
+ * The text with only A-Z made lower case. Every name the mod compares with StringComparison.OrdinalIgnoreCase is
+ * ASCII, and against ASCII that only matches ASCII letters: toLowerCase would also turn the Kelvin sign K into k.
+ */
+export const toLowerAscii = (text: string): string => text.replace(/[A-Z]/g, (c) => String.fromCharCode(c.charCodeAt(0) + 32));
+
+/** string.Equals(a, b, StringComparison.OrdinalIgnoreCase) where one of them is ASCII */
+export const equalsIgnoreCase = (a: string, b: string): boolean => toLowerAscii(a) === toLowerAscii(b);
+

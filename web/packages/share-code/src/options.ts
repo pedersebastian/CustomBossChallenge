@@ -9,7 +9,7 @@ import {
   healthPerTierFromExtraTierHealth,
   spawnRounds,
 } from "./math/tiers";
-import { clamp } from "./math/dotnet";
+import { clamp, toLowerAscii } from "./math/dotnet";
 import { FOLLOWS, normalizeTierBosses, tierEntry, tierPercents, type TierBoss } from "./math/tierBosses";
 
 export const SKULL_MODES = ["Vanilla", "EvenlySpaced", "Custom"] as const;
@@ -84,7 +84,8 @@ export function optionsJson(options: BossOptions): JsonObject {
 }
 
 function toInt(value: Json, name: string): number {
-  const number = typeof value === "string" && /^\s*[+-]?\d+\s*$/.test(value) ? Number(value) : value;
+  // CodeFormat.IntText: only these four white space characters, which Number also skips
+  const number = typeof value === "string" && /^[ \t\r\n]*[+-]?[0-9]+[ \t\r\n]*$/.test(value) ? Number(value) : value;
   if (typeof number !== "number" || !Number.isInteger(number) || number < -2_147_483_648 || number > 2_147_483_647) {
     throw new OptionTypeError(`${name} is not a whole number`);
   }
@@ -100,7 +101,9 @@ function toNullableString(value: Json, name: string): string | null {
 
 function toEnum(value: Json, names: readonly string[], name: string): string | number {
   if (typeof value === "string") {
-    const found = names.find((candidate) => candidate.toLowerCase() === value.trim().toLowerCase());
+    // CodeFormat.EnumText: letters only, with the same white space around them as IntText
+    const text = /^[ \t\r\n]*[A-Za-z]+[ \t\r\n]*$/.test(value) ? toLowerAscii(value.replace(/[ \t\r\n]/g, "")) : null;
+    const found = names.find((candidate) => toLowerAscii(candidate) === text);
     if (found === undefined) throw new OptionTypeError(`${name} '${value}' is unknown`);
     return found;
   }

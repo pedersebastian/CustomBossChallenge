@@ -346,9 +346,10 @@ that many or more shows as Unlimited.
 
 Some cases are shared by the website's tests and the unit tests, in `web/test/`, so both sides read them alike:
 `link-cases.json` (the code in a pasted link, %-escapes included), `skull-cases.json` (custom skulls, rounded like
-.NET), `tier-boss-cases.json` (`TierBossMath.With`, `Step` and `Resolve`, which the Studio's Advanced Mode uses, #95)
-and `option-cases.json` (a code's boss options of every JSON type, made with the mod's own `CodeFormat` and
-Json.NET). When the mod reads one of them differently, change both sides and the file. `website-codes.json` goes the
+.NET), `tier-boss-cases.json` (`TierBossMath.With`, `Step` and `Resolve`, which the Studio's Advanced Mode uses, #95),
+`option-cases.json` (a code's boss options of every JSON type, made with the mod's own `CodeFormat` and
+Json.NET) and `code-strictness.json` (hand-made and damaged codes: strict JSON, Base64 and deflate, and text in
+options trimmed and compared like C#'s `Trim` and `OrdinalIgnoreCase`, #174). When the mod reads one of them differently, change both sides and the file. `website-codes.json` goes the
 other way: codes the Studio made with its own controls, which `UnitTests/CodeFormatTests.cs` reads with the mod's
 `CodeFormat`, so codes made on the website load in the mod unchanged. After changing the Studio or the encoder, write
 it again with `$env:CBC_WEBSITE_CODES = "1"; npm test; Remove-Item env:CBC_WEBSITE_CODES` in `web/`. `web/test/dom.test.ts` runs

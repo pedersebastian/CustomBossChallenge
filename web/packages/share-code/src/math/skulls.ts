@@ -1,6 +1,6 @@
 // Port of Config/SkullMath.cs and SkullStrip.Format (Menus/SkullStrip.cs)
 
-import { clamp, float, formatDecimals, roundHalfEven } from "./dotnet";
+import { clamp, float, formatDecimals, isNullOrWhiteSpace, netTrim, roundHalfEven } from "./dotnet";
 
 export const MAX_SKULLS = 10;
 
@@ -14,9 +14,9 @@ export function evenlySpaced(count: number): number[] {
   return Array.from({ length: count }, (_, i) => float(roundHalfEven(1 - (i + 1) / (count + 1), 4)));
 }
 
-/** A float as float.TryParse with NumberStyles.Float reads it, or NaN */
+/** A float as float.TryParse with NumberStyles.Float reads it, or NaN; it allows ASCII white space around the number */
 function parseFloat32(text: string): number {
-  return /^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$/.test(text) ? float(Number(text)) : NaN;
+  return /^[\t\n\v\f\r ]*[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?[\t\n\v\f\r ]*$/.test(text) ? float(Number(text)) : NaN;
 }
 
 /** text without its trailing '%' signs, like C#'s TrimEnd('%'); a loop, as /%+$/ is quadratic on "%%%…x" */
@@ -31,12 +31,12 @@ function trimPercent(text: string): string {
  * are ignored. Returns null when nothing valid remains.
  */
 export function parseCustom(text: string | null | undefined): number[] | null {
-  if (text == null || text.trim() === "") return null;
+  if (text == null || isNullOrWhiteSpace(text)) return null;
 
   const values: number[] = [];
   for (const part of text.split(/[,; ]/)) {
     if (part === "") continue;
-    const value = parseFloat32(trimPercent(part.trim()));
+    const value = parseFloat32(trimPercent(netTrim(part)));
     if (Number.isNaN(value) || value < 1 || value > 99) continue;
     const threshold = float(roundHalfEven(value / 100, 4));
     if (!values.includes(threshold)) values.push(threshold);

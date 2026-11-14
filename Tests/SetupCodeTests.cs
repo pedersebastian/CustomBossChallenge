@@ -158,7 +158,7 @@ public class MaliciousCodeTest : CustomBossTest
             "\"startRules\":{\"cash\":2147483647,\"lives\":0,\"round\":-77,\"endRound\":2000000000,\"revives\":5000}," +
             "\"maxTowers\":999999,\"abilityCooldownReductionMultiplier\":-1," +
             "\"map\":\"NoSuchMap\",\"difficulty\":\"Nightmare\",\"mode\":\"Hacked\"," +
-            "\"name\":\"  Line\nbreak\u0000 and a very long name that keeps going and going and going on\"}}");
+            "\"name\":\"  Line\\nbreak\\u0000 and a very long name that keeps going and going and going on\"}}");
         Assert(SetupCode.TryDecode(extreme, out var options, out var dcm, out var problem),
             $"A code with extreme values must still load: {problem}");
         AssertEquals(options.Tiers, TierMath.MaxTiers, "Tiers");
@@ -175,6 +175,24 @@ public class MaliciousCodeTest : CustomBossTest
                     out _, out _, out var literalProblem) && literalProblem == CodeProblem.Invalid,
                 $"A code with {literal} must not load");
         }
+
+        // Only strict JSON, Base64 and deflate, like on the website (#174). In the game too, as its .NET runs these
+        // checks: System.Text.Json and how DeflateStream reads its data.
+        var empty = SetupCode.Pack("{\"o\":{},\"c\":{}}");
+        Assert(SetupCode.TryDecode(empty, out _, out _, out _), "A plain code must load");
+        foreach (var (what, bad) in new[]
+                 {
+                     ("bytes after its end", empty + "AAAA"),
+                     ("a line break inside", empty[..10] + "\r\n\r\n" + empty[10..]),
+                     ("a missing end", empty[..^4]),
+                     ("a comment", SetupCode.Pack("{\"o\":{}/* hi */,\"c\":{}}")),
+                     ("single quotes", SetupCode.Pack("{'o':{},'c':{}}"))
+                 })
+        {
+            Assert(!SetupCode.TryDecode(bad, out _, out _, out var badProblem) && badProblem == CodeProblem.Invalid,
+                $"A code with {what} must not load");
+        }
+
         AssertEquals(modifiers.moabSpeedMultiplier, ChallengeLimits.MinMultiplier, "Negative MOAB speed");
         AssertEquals(modifiers.healthMultipliers.boss, ChallengeLimits.MinBossHealth, "Boss health");
         AssertEquals(modifiers.healthMultipliers.moabs, ChallengeLimits.MaxMultiplier, "MOAB health");
