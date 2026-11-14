@@ -28,6 +28,19 @@ export function keepsSetup(hash = location.hash): boolean {
   return a !== "" || b !== "";
 }
 
+/**
+ * Puts a new # (or a whole path) in the address bar without a new history entry. Safari throws a SecurityError after
+ * 100 of these in 30 seconds, which a long slider drag in the Studio can reach; the address then simply stays behind
+ * for a moment, and what the page was doing goes on (#173).
+ */
+export function replaceAddress(url: string): void {
+  try {
+    history.replaceState(null, "", url);
+  } catch {
+    // The address isn't worth stopping the page for
+  }
+}
+
 /** The page that compares two setups (issue #35), next to the main page */
 export const COMPARE_PAGE = "compare.html";
 

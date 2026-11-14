@@ -48,6 +48,20 @@ export async function copyText(text: string): Promise<boolean> {
   }
 }
 
+/** Whether the visitor asked for less motion: then scrolling jumps, as style.css does for links (#173) */
+export const prefersReducedMotion = (): boolean => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+
+/** Scrolls an element into view, smoothly unless the visitor asked for less motion */
+export function scrollToElement(element: Element): void {
+  element.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth" });
+}
+
+/** Moves the keyboard to an element, also one that isn't focusable by itself, without scrolling again */
+export function focusWithoutScroll(element: HTMLElement): void {
+  if (!element.hasAttribute("tabindex")) element.setAttribute("tabindex", "-1");
+  element.focus({ preventScroll: true });
+}
+
 /** The page's one live region: what it says, screen readers read out without moving the focus */
 let liveRegion: HTMLElement | null = null;
 

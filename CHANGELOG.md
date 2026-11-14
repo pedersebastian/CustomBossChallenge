@@ -68,6 +68,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   longer reads codes nested deeper than the mod can. Text in options, like Spawn Rounds, Custom Skulls and the tiers'
   bosses, is trimmed and compared like in the mod, so a no-break space, byte order mark or Kelvin sign means the same
   on both. Codes the mod or the website made are not affected. Shared test cases keep the two the same.
+- **Website pages** (#173): the skip link on Compare no longer empties both boxes while they hold text that isn't a
+  code yet. See details on an example no longer scrolls smoothly when you asked for less motion, and moves the
+  keyboard to the setup it opened. A browser that refuses to change the address bar (Safari, after many changes in a
+  short time, e.g. a long slider drag in the Studio) no longer keeps a result from showing.
 
 ## [2.11.0] - 2026-11-12
 

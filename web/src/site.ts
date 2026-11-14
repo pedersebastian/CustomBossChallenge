@@ -8,6 +8,7 @@ import "@fontsource/nunito/latin-800.css";
 import { GAME } from "./data/types";
 import { setUpKonami } from "./fun/konami";
 import { keepsSetup } from "./code/link";
+import { focusWithoutScroll, scrollToElement } from "./dom";
 
 setUpKonami();
 
@@ -20,10 +21,9 @@ document.addEventListener("click", (event) => {
   const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
   if (!target) return;
   event.preventDefault();
-  target.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  scrollToElement(target);
   // Where the keyboard goes next, as following the link would have done
-  if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
-  target.focus({ preventScroll: true });
+  focusWithoutScroll(target);
 });
 
 const version = document.getElementById("game-version");

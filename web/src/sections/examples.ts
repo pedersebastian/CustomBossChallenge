@@ -2,10 +2,14 @@
 
 import { decode } from "@cbc/share-code";
 import { EXAMPLES } from "../data/types";
-import { copyWithFeedback, h } from "../dom";
+import { copyWithFeedback, focusWithoutScroll, h, scrollToElement } from "../dom";
 import { renderSetup } from "../preview/render";
 
-export async function setUpExamples(list: HTMLElement, open: (code: string) => void): Promise<void> {
+/**
+ * Fills the list. See details opens the example in the code viewer above (open, done once it shows), scrolls to it and
+ * moves the keyboard to the setup's name there, so the result isn't far above the focus (#173).
+ */
+export async function setUpExamples(list: HTMLElement, open: (code: string) => Promise<void>): Promise<void> {
   for (const example of EXAMPLES) {
     const decoded = await decode(example.code);
     if (!decoded.ok) continue;
@@ -13,9 +17,12 @@ export async function setUpExamples(list: HTMLElement, open: (code: string) => v
     const copy = h("button", { class: "button small", type: "button" }, "Copy code");
     copy.addEventListener("click", () => copyWithFeedback(copy, example.code));
     const view = h("button", { class: "button small blue", type: "button" }, "See details");
-    view.addEventListener("click", () => {
-      open(example.code);
-      document.getElementById("codes")?.scrollIntoView({ behavior: "smooth" });
+    view.addEventListener("click", async () => {
+      const section = document.getElementById("codes");
+      if (section) scrollToElement(section);
+      await open(example.code);
+      const name = section?.querySelector<HTMLElement>(".result .setup-name");
+      if (name) focusWithoutScroll(name);
     });
 
     // The description goes right under the setup's name, inside the card

@@ -3,7 +3,7 @@
 
 import { decode } from "@cbc/share-code";
 import { encode } from "@cbc/share-code";
-import { compareLinkTo, hashFor, linkTo } from "../code/link";
+import { compareLinkTo, hashFor, linkTo, replaceAddress } from "../code/link";
 import { CHIMPS_MODE, SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, isMixed, type SkullMode } from "@cbc/share-code";
 import { copyWithFeedback, h } from "../dom";
 import { GAME } from "../data/types";
@@ -330,7 +330,7 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     }
     compare.hidden = original === null || made === unchanged;
     if (original !== null) compare.setAttribute("href", compareLinkTo(original, made));
-    history.replaceState(null, "", hashFor(made));
+    replaceAddress(hashFor(made));
   }
 
   return {
