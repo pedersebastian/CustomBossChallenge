@@ -85,6 +85,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Older browsers on the website** (#181): a browser without `CompressionStream` (Safari before 16.4, Firefox before
   113, some in-app browsers) now says it can't read setup codes, on the main page, Compare and the Studio, instead of
   calling every code damaged. The Studio no longer fails silently there with an empty code box.
+- **Tier picker and dropdowns in the Boss Creator** (#175): leaving the Boss Creator with a tier's picker open no
+  longer leaves the picker on top of the editor. Enter or Space opens the Skulls and Saved Setups lists like the other
+  dropdowns, and while a list is open, the arrows and Esc work in the list instead of moving the keyboard frame,
+  changing the value behind it or closing the Boss Creator.
 
 ## [2.11.0] - 2026-11-12
 

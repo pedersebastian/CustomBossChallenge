@@ -111,6 +111,14 @@ public sealed class BossEditorSection
 
     public ModHelperInputField SpawnRounds { get; private set; } = null!;
     public ModHelperDropdown SavedList { get; private set; } = null!;
+
+    /// <summary>
+    /// The dropdown whose list is open, if any: then the list has the arrows, Enter and Esc to itself, and the Boss
+    /// Creator's keys wait (#175)
+    /// </summary>
+    public TMP_Dropdown? OpenList =>
+        new[] {ChimpsEventRounds, SkullMode, SavedList}.Select(dropdown => dropdown?.Dropdown)
+            .FirstOrDefault(dropdown => dropdown != null && dropdown.IsExpanded);
     public ModHelperButton SaveSetup { get; private set; } = null!;
     public ModHelperButton LoadSetup { get; private set; } = null!;
     public ModHelperButton DeleteSetup { get; private set; } = null!;
@@ -1004,6 +1012,7 @@ public sealed class BossEditorSection
     /// </summary>
     public static void Hide(ChallengeEditor editor)
     {
+        TierBossPicker.CloseOn(editor);
         if (Current != null && Current.BelongsTo(editor))
         {
             Current.SetVisible(false);
@@ -1030,6 +1039,7 @@ public sealed class BossEditorSection
 
     private void SetVisible(bool show)
     {
+        if (!show) TierBossPicker.CloseOn(Editor);
         Section.SetActive(show);
         Play.SetActive(show);
         ShowEndRound(Editor, !show);

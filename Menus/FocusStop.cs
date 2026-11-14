@@ -61,11 +61,12 @@ public sealed class FocusStop
         new(name, () => field.gameObject) {Field = field};
 
     /// <summary>
-    /// Left and right pick the previous or next option, without opening the list
+    /// Left and right pick the previous or next option, without opening the list; Enter or Space opens it (#175)
     /// </summary>
     public static FocusStop ForDropdown(string name, TMP_Dropdown dropdown) =>
         new(name, () => dropdown.gameObject)
         {
+            Activate = () => dropdown.Show(),
             Step = direction => dropdown.value = Math.Clamp(dropdown.value + direction, 0, Math.Max(dropdown.options.Count - 1, 0)),
             Enabled = () => dropdown.interactable
         };

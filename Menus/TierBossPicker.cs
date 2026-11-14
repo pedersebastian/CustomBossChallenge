@@ -5,6 +5,7 @@ using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
 using CustomBossChallenge.Config;
 using Il2CppAssets.Scripts.Data.Boss;
+using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
 using Il2CppTMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -343,6 +344,26 @@ public sealed class TierBossPicker
         section.SetTierBoss(Tier, shown with {Elite = elite});
         Show();
     }
+
+    /// <summary>
+    /// Closes the picker on this editor, without handing the keyboard back: the Boss Creator is going away (Back, or the
+    /// editor turning into the normal Challenge Editor), and the picker must not stay on top of the editor (#175)
+    /// </summary>
+    public static void CloseOn(ChallengeEditor editor)
+    {
+        if (Current is { } picker && picker.section.Editor != null && picker.section.Editor.Pointer == editor.Pointer)
+        {
+            picker.ReturnFocus = false;
+            picker.Hide();
+        }
+
+        // One left from an editor whose section was rebuilt
+        var leftover = editor.transform.Find(Name);
+        if (leftover != null) Object.Destroy(leftover.gameObject);
+    }
+
+    /// <summary>Whether the picker's skull list is open, which then has the arrows to itself (#175)</summary>
+    public bool ListOpen => SkullMode.Dropdown.IsExpanded;
 
     public void Hide()
     {
