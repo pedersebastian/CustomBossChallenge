@@ -287,15 +287,18 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(modeRow, Texts.DifferentBosses, Texts.DifferentBossesInfo);
 
         BossSpeed = SliderRow.Clone(template, rows, "BossSpeedRow", Texts.BossSpeed.T(), VanillaSprites.FasterBossIcon,
-            10, 1000, 10, 100, Percent, value => UpdateDcm("BossSpeed", dcm => dcm.bloonModifiers.bossSpeedMultiplier = value / 100f));
+            10, 1000, 10, 100, Percent, value => UpdateDcm("BossSpeed", dcm => dcm.bloonModifiers.bossSpeedMultiplier, value / 100f,
+                (dcm, speed) => dcm.bloonModifiers.bossSpeedMultiplier = speed));
         BossHealth = SliderRow.Clone(template, rows, "BossHealthRow", Texts.BossHealth.T(), VanillaSprites.BossBoostIcon,
-            10, 2000, 10, 100, Percent, value => UpdateDcm("BossHealth", dcm => dcm.bloonModifiers.healthMultipliers.boss = value / 100f));
+            10, 2000, 10, 100, Percent, value => UpdateDcm("BossHealth", dcm => dcm.bloonModifiers.healthMultipliers.boss, value / 100f,
+                (dcm, health) => dcm.bloonModifiers.healthMultipliers.boss = health));
 
         // The last position means no limit
         var paragons = ParagonMath.Available;
         MaxParagons = SliderRow.Clone(template, rows, "MaxParagonsRow", Texts.MaxParagons.T(), VanillaSprites.ParagonLimitIcon,
             0, paragons, 1, paragons, value => value >= paragons ? Texts.Unlimited.T() : ShownNumber.Whole(value),
-            value => UpdateDcm("MaxParagons", dcm => dcm.maxParagons = ParagonMath.FromSlider((int) value, paragons)));
+            value => UpdateDcm("MaxParagons", dcm => dcm.maxParagons, ParagonMath.FromSlider((int) value, paragons),
+                (dcm, max) => dcm.maxParagons = max));
 
         Tiers = SliderRow.Clone(template, rows, "TiersRow", Texts.BossTiers.T(), VanillaSprites.BossTiersIconSmall,
             TierMath.MinTiers, TierMath.MaxTiers, 1, TierMath.VanillaTiers, value => ShownNumber.Whole(value),
@@ -324,9 +327,12 @@ public sealed class BossEditorSection
         FollowKeyboard(SpawnRounds);
         SpawnRounds.InputField.onEndEdit.AddListener(new Action<string>(text =>
         {
-            // Leaving the field unchanged keeps the rounds as they are, following the defaults if they did
-            if (text == TierMath.FormatRounds(BossMode.Options.EffectiveSpawnRounds)) return;
-            UpdateOptions("SpawnRounds", o => o with {SpawnRounds = text});
+            // Rounds that come out the same, however they are typed, keep the rounds as they are, following the
+            // defaults if they did, so retyping them adds no step for Undo (#171)
+            var shown = TierMath.FormatRounds(BossMode.Options.EffectiveSpawnRounds);
+            var same = text == shown ||
+                       TierMath.ParseRounds(text).SequenceEqual(TierMath.ParseRounds(BossMode.Options.SpawnRounds ?? shown));
+            if (!same) UpdateOptions("SpawnRounds", o => o with {SpawnRounds = text});
             ShowSpawnRounds();
         }));
         resetRounds = EditorRows.ResetButton(roundsRow, "ResetRounds", () =>
@@ -1095,13 +1101,15 @@ public sealed class BossEditorSection
     }
 
     /// <param name="control">The control that changes, for Undo (<see cref="BossHistory.RecordChange"/>)</param>
-    private void UpdateDcm(string control, Action<DailyChallengeModel> change)
+    /// <param name="get">The model's value now; a value that stays the same is no step for Undo (#171)</param>
+    private void UpdateDcm<T>(string control, Func<DailyChallengeModel, T> get, T value, Action<DailyChallengeModel, T> set)
     {
         if (refreshing || Editor.dcm == null) return;
-        BossHistory.RecordChange(Editor, control);
         Editor.dcm.bloonModifiers ??= new BloonModifiers();
         Editor.dcm.bloonModifiers.healthMultipliers ??= new BloonHealthMultipliers();
-        change(Editor.dcm);
+        if (EqualityComparer<T>.Default.Equals(get(Editor.dcm), value)) return;
+        BossHistory.RecordChange(Editor, control);
+        set(Editor.dcm, value);
         ShowStrip();
     }
 

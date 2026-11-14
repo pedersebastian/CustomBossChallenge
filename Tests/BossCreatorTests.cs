@@ -977,6 +977,30 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(BossMode.Options.SpeedPerTier, 20, "Ctrl+Shift+Z redoes too");
         Assert(BossHistory.RedoCount == 0 && !BossHistory.Redo(editor), "Nothing left to redo");
 
+        // A dragged slider lands on its step, and a reset, an arrow or a retyped value that changes nothing keeps
+        // Redo (#171)
+        section.BossSpeed.Reset();
+        section.BossHealth.Reset();
+        section.MaxParagons.Reset();
+        yield return new WaitForSecondsRealtime((float) UndoHistory<BossStep>.MergeWindow.TotalSeconds + 0.2f);
+        section.BossHealth.Slider.value = 1337;
+        AssertEquals(section.BossHealth.Value, 1340f, "A dragged slider lands on its step");
+        Assert(Approximately(editor.dcm.bloonModifiers.healthMultipliers.boss, 13.4f), "The challenge gets the snapped value");
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+        AssertEquals(section.BossHealth.Value, 100f, "Ctrl+Z undoes the drag");
+        var history = (BossHistory.UndoCount, BossHistory.RedoCount);
+        section.BossSpeed.Reset();
+        section.BossHealth.Reset();
+        section.MaxParagons.Reset();
+        section.MaxParagons.Step(1);
+        section.SpawnRounds.InputField.onEndEdit.Invoke(
+            TierMath.FormatRounds(BossMode.Options.EffectiveSpawnRounds).Replace(" ", ""));
+        AssertEquals((BossHistory.UndoCount, BossHistory.RedoCount), history, "Changes that change nothing keep Undo and Redo");
+        AssertEquals(BossMode.Options.SpawnRounds, before.SpawnRounds, "Retyped spawn rounds keep following the defaults");
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Y));
+        AssertEquals(section.BossHealth.Value, 1340f, "Ctrl+Y redoes the drag");
+        BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+
         // A change to one of the editor's own rules is a step of its own, and undoing it leaves the boss options alone
         yield return new WaitForSecondsRealtime(0.2f);
         var speed = section.BossSpeed.Value;
