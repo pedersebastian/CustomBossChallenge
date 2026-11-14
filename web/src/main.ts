@@ -10,7 +10,7 @@ const open = setUpCodeViewer(input, result);
 
 const fromLink = codeFromHash();
 if (fromLink) {
-  open(fromLink);
+  void open(fromLink);
   document.getElementById("codes")?.scrollIntoView();
 }
 
@@ -19,7 +19,7 @@ if (fromLink) {
 window.addEventListener("hashchange", () => {
   const code = codeFromHash();
   if (code && code !== extractCode(input.value)) {
-    open(code);
+    void open(code);
     document.getElementById("codes")?.scrollIntoView();
   }
 });

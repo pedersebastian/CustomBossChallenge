@@ -1,7 +1,7 @@
 // The compare page (issue #35): paste two codes, see what differs. A link with #a=…&b=… opens both straight away.
 
 import { decode, extractCode, type DecodeResult } from "@cbc/share-code";
-import { compareHashFor, compareLinkTo } from "../code/link";
+import { compareCodesFromHash, compareHashFor, compareLinkTo, replaceAddress } from "../code/link";
 import { compareRows, GROUPS, tierPairs, verdict, type Setup } from "../compare/diff";
 import { renderCurves } from "../compare/chart";
 import { copyWithFeedback, h } from "../dom";
@@ -86,7 +86,7 @@ function renderComparison(a: Setup, b: Setup, codes: { a: string; b: string }): 
   ];
 }
 
-export function setUpCompare(inputA: HTMLTextAreaElement, inputB: HTMLTextAreaElement, result: HTMLElement, swap: HTMLButtonElement): (a: string, b: string) => void {
+export function setUpCompare(inputA: HTMLTextAreaElement, inputB: HTMLTextAreaElement, result: HTMLElement, swap: HTMLButtonElement): (a: string, b: string) => Promise<void> {
   let latest = 0;
   let typing: number | undefined;
   // What screen readers hear when the result changes: one line, not the whole comparison
@@ -106,9 +106,13 @@ export function setUpCompare(inputA: HTMLTextAreaElement, inputB: HTMLTextAreaEl
     // Slower, older codes must not replace the newest ones
     if (request !== latest) return;
 
-    // The address bar only links to codes that can be read
-    history.replaceState(null, "", location.pathname + location.search + compareHashFor(a?.ok ? codes.a : "", b?.ok ? codes.b : ""));
+    render(a, b, codes);
+    // The address bar only links to codes that can be read. After the render, so a browser that refuses to change the
+    // address can't keep the result from showing (#173).
+    replaceAddress(location.pathname + location.search + compareHashFor(a?.ok ? codes.a : "", b?.ok ? codes.b : ""));
+  }
 
+  function render(a: DecodeResult | null, b: DecodeResult | null, codes: { a: string; b: string }): void {
     const problems = ([["A", a], ["B", b]] as const).flatMap(([label, decoded]) =>
       decoded && !decoded.ok ? [h("p", { class: decoded.problem === "TooNew" ? "warning" : "error" }, `${label}: ${decoded.reason}`)] : [],
     );
@@ -141,10 +145,28 @@ export function setUpCompare(inputA: HTMLTextAreaElement, inputB: HTMLTextAreaEl
     void show();
   });
 
+  // Done once the codes are shown, or once newer ones took their place
   return (a: string, b: string) => {
     clearTimeout(typing);
     inputA.value = a;
     inputB.value = b;
-    void show();
+    return show();
   };
+}
+
+/**
+ * Opens the comparison in a link pasted into the address bar of an open tab, or Back to an earlier one. The page's own
+ * changes to the address (replaceAddress) don't come here. Only a # that is or was a comparison counts: the skip link's
+ * #top must not empty the boxes while they hold text that isn't a code yet (#173). Gives back what stops it.
+ */
+export function followCompareLinks(inputA: HTMLTextAreaElement, inputB: HTMLTextAreaElement, open: (a: string, b: string) => unknown): () => void {
+  const follow = (event: HashChangeEvent): void => {
+    const codes = compareCodesFromHash();
+    const before = compareCodesFromHash(new URL(event.oldURL || location.href).hash);
+    const isComparison = (link: { a: string; b: string }) => link.a !== "" || link.b !== "";
+    if (!isComparison(codes) && !isComparison(before)) return;
+    if (codes.a !== extractCode(inputA.value) || codes.b !== extractCode(inputB.value)) void open(codes.a, codes.b);
+  };
+  window.addEventListener("hashchange", follow);
+  return () => window.removeEventListener("hashchange", follow);
 }

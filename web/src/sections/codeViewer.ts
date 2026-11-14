@@ -1,7 +1,7 @@
 // The "Read a share code" section: paste a code, see the setup. A link with #code=… opens a code straight away.
 
 import { decode, extractCode } from "@cbc/share-code";
-import { codeFromHash, compareLinkTo, hashFor, linkTo, studioLinkTo } from "../code/link";
+import { codeFromHash, compareLinkTo, hashFor, linkTo, replaceAddress, studioLinkTo } from "../code/link";
 import { copyWithFeedback, h } from "../dom";
 import { jokeFor, type Joke } from "../fun/jokes";
 import { bossTitle, releaseSetup, renderSetup } from "../preview/render";
@@ -24,13 +24,13 @@ function renderJoke(joke: Joke): HTMLElement {
 
 /** Takes the code out of the address bar, keeping the page where it is */
 function clearHash(): void {
-  if (codeFromHash() !== null) history.replaceState(null, "", location.pathname + location.search);
+  if (codeFromHash() !== null) replaceAddress(location.pathname + location.search);
 }
 
 /** How long to wait after the last key press before reading the code */
 const TYPING_DELAY = 150;
 
-export function setUpCodeViewer(input: HTMLTextAreaElement, result: HTMLElement): (code: string) => void {
+export function setUpCodeViewer(input: HTMLTextAreaElement, result: HTMLElement): (code: string) => Promise<void> {
   let latest = 0;
   let typing: number | undefined;
   // What screen readers hear when the result changes: one line, not the whole setup
@@ -85,7 +85,7 @@ export function setUpCodeViewer(input: HTMLTextAreaElement, result: HTMLElement)
     const { options, challenge } = decoded;
     status.textContent = `Showing ${challenge.name || bossTitle(options)}: ${bossTitle(options)}, ${options.Tiers} ${options.Tiers === 1 ? "tier" : "tiers"}.`;
     replace(renderSetup(decoded.options, decoded.challenge), h("div", { class: "actions" }, copyCode, copyLink, compare, edit));
-    history.replaceState(null, "", hashFor(trimmed));
+    replaceAddress(hashFor(trimmed));
   }
 
   input.addEventListener("input", () => {
@@ -93,9 +93,10 @@ export function setUpCodeViewer(input: HTMLTextAreaElement, result: HTMLElement)
     typing = window.setTimeout(() => void show(input.value), TYPING_DELAY);
   });
 
+  // Done once the code is shown, or once a newer one took its place
   return (code: string) => {
     clearTimeout(typing);
     input.value = code;
-    void show(code);
+    return show(code);
   };
 }

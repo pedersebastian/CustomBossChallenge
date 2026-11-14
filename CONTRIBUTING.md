@@ -354,7 +354,8 @@ other way: codes the Studio made with its own controls, which `UnitTests/CodeFor
 `CodeFormat`, so codes made on the website load in the mod unchanged. After changing the Studio or the encoder, write
 it again with `$env:CBC_WEBSITE_CODES = "1"; npm test; Remove-Item env:CBC_WEBSITE_CODES` in `web/`. `web/test/dom.test.ts` runs
 in [happy-dom](https://github.com/capricorn86/happy-dom) and covers what needs a page: the copy buttons, what screen
-readers are told and links within the page.
+readers are told and links within the page. `web/test/pages.test.ts` does the same for the code viewer, Compare and the
+examples: links in the address bar, Back, the skip link and an address bar that can't be changed (#173).
 
 `WebDataTest` checks that these files still match the game and the mod. Only Debug builds carry them, so a Release
 build skips the check. After a game update or a change to the code
