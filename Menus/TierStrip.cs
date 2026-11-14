@@ -46,9 +46,9 @@ public sealed class TierStrip
     public const int MaxNoteRows = 2;
 
     /// <summary>
-    /// One line for each kind of <see cref="SetupWarning"/>
+    /// One line for each kind of <see cref="SetupWarning"/>, so a new kind gets its own line too (#170)
     /// </summary>
-    public const int MaxNotes = 5;
+    public static readonly int MaxNotes = Enum.GetValues<SetupWarning>().Length;
 
     public const string NoteName = "Warning";
     public const float MaxCardWidth = 330;

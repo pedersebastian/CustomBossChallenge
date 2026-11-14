@@ -246,33 +246,37 @@ public sealed class BossEditorSection
         // Boss picker and elite toggle
         var bossRow = EditorRows.LabelRow(template, rows, "BossRow", Texts.BossType.T(), VanillaSprites.BossChallenge);
         BossTypeRow = bossRow;
-        var x = EditorRows.ControlX - EditorRows.ControlWidth / 2 + 100;
-        foreach (var boss in Enum.GetValues<BossType>())
+        // Measured from the control area's left edge; a game update with more bosses gets smaller buttons (#170)
+        var left = EditorRows.ControlX - EditorRows.ControlWidth / 2;
+        var bosses = Enum.GetValues<BossType>();
+        var size = BossRowMath.ButtonSize(bosses.Length, EditorRows.ControlWidth);
+        for (var i = 0; i < bosses.Length; i++)
         {
-            var type = boss;
-            var button = ModHelperButton.Create(new Info($"Boss{boss}", x, 0, 190, 190)
+            var type = bosses[i];
+            var button = ModHelperButton.Create(new Info($"Boss{type}", left + BossRowMath.ButtonX(i, bosses.Length, EditorRows.ControlWidth), 0, size, size)
             {
                 Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
-            }, Portrait(boss, false), new Action(() => SelectBoss(type)));
+            }, Portrait(type, false), new Action(() => SelectBoss(type)));
             button.transform.SetParent(bossRow.transform, false);
-            BossButtons[boss] = button;
+            BossButtons[type] = button;
 
             // The button animates its own color and scale, so the selection is shown with a tick instead
-            var marker = ModHelperImage.Create(new Info(SelectedMarker, 0, 0, 110, 110)
+            var markerSize = size * 110 / 190;
+            var marker = ModHelperImage.Create(new Info(SelectedMarker, 0, 0, markerSize, markerSize)
             {
                 Anchor = new Vector2(1, 0), Pivot = new Vector2(0.75f, 0.25f)
             }, VanillaSprites.TickGreenIcon);
             marker.transform.SetParent(button.transform, false);
             marker.Image.raycastTarget = false;
-            x += 215;
         }
 
-        Elite = ModHelperCheckbox.Create(new Info("Elite", x + 30, 0, 150, 150)
+        Elite = ModHelperCheckbox.Create(new Info("Elite", left + BossRowMath.EliteTickX(bosses.Length, EditorRows.ControlWidth), 0, 150, 150)
         {
             Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
         }, false, VanillaSprites.BlueInsertPanelRound, new Action<bool>(SetElite), VanillaSprites.TickGreenIcon, 20);
         Elite.transform.SetParent(bossRow.transform, false);
-        var eliteLabel = ModHelperText.Create(new Info("EliteLabel", x + 230, 0, 260, 150)
+        var eliteLabel = ModHelperText.Create(new Info("EliteLabel", left + BossRowMath.EliteLabelX(bosses.Length, EditorRows.ControlWidth), 0,
+            BossRowMath.LabelWidth, 150)
         {
             Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
         }, Texts.Elite.T(), 80, TextAlignmentOptions.Left);
@@ -1722,6 +1726,19 @@ public sealed class BossEditorSection
         (BossType.Blastapopoulos, true) => VanillaSprites.BlastapopoulosPortraitElite,
         (BossType.Diamondback, false) => VanillaSprites.DiamondbackPortrait,
         (BossType.Diamondback, true) => VanillaSprites.DiamondbackPortraitElite,
-        _ => VanillaSprites.BossChallenge
+        _ => MissingSprite(boss, "portrait")
     };
+
+    private static readonly HashSet<string> MissingSprites = new();
+
+    /// <summary>
+    /// The generic boss icon for a boss the mod has no sprite for yet, e.g. one a game update added (#170). Logs it once,
+    /// so the missing sprite is noticed.
+    /// </summary>
+    internal static string MissingSprite(BossType boss, string what)
+    {
+        if (MissingSprites.Add($"{boss} {what}"))
+            ModHelper.Warning<CustomBossChallenge>($"No {what} for the boss {boss}, showing the generic boss icon");
+        return VanillaSprites.BossChallenge;
+    }
 }
