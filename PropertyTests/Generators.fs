@@ -49,8 +49,13 @@ let spawnRounds: Gen<JToken> =
               let! rounds = Gen.listOfLength count (Gen.choose (1, TierMath.MaxRound))
               return JValue(TierMath.FormatRounds(rounds |> List.distinct |> List.sort)) :> JToken
           }
-          // What players type: spaces, semicolons, junk; the mod reads the text as it is
-          text [ "0"; "5"; "40"; "999"; "1500"; ", "; ","; ";"; " "; "-"; "x" ] 12 |> Gen.map (fun t -> JValue t :> JToken) ]
+          // What players type: spaces, semicolons, junk. The Boss Creator keeps the rounds in it as
+          // TierMath.NormalizeRounds does (#182), and so does reading a code.
+          text [ "0"; "5"; "40"; "999"; "1500"; ", "; ","; ";"; " "; "-"; "x" ] 12
+          |> Gen.map (fun t ->
+              match TierMath.NormalizeRounds t with
+              | null -> JValue.CreateNull() :> JToken
+              | rounds -> JValue rounds :> JToken) ]
 
 let customSkulls: Gen<string> =
     gen {

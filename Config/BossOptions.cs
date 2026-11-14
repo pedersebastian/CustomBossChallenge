@@ -167,6 +167,7 @@ public sealed record BossOptions
                 ? TierMath.HealthPerTierFromExtraTierHealth(legacy)
                 : HealthPerTier),
             ExtraTierHealth = null,
+            SpawnRounds = TierMath.NormalizeRounds(SpawnRounds),
             TierBosses = TierBossMath.Normalize(TierBosses),
             RandomTiers = TierBossMath.ParseTierList(RandomTiers) is {Length: > 0} random ? string.Join(",", random) : null
         };

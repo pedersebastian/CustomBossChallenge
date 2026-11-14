@@ -71,6 +71,15 @@ export const EVENT_ROUNDS = [40, 60, 80, 100, 120] as const;
 export const formatRounds = (rounds: number[]): string => rounds.join(", ");
 
 /**
+ * TierMath.NormalizeRounds: the first MAX_TIERS rounds of the text, the only ones any number of tiers uses, or null
+ * when it has none. A hand-made code could otherwise keep almost 1 MB of text in Spawn Rounds (#182).
+ */
+export function normalizeRounds(text: string | null | undefined): string | null {
+  const rounds = parseRounds(text);
+  return rounds.length > 0 ? formatRounds(rounds.slice(0, MAX_TIERS)) : null;
+}
+
+/**
  * TierMath.EvenRounds: spawn rounds for every possible tier that start at first and come every gap rounds, so changing
  * the tier count later keeps the spacing
  */

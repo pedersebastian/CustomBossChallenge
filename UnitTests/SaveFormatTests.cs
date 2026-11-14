@@ -171,7 +171,7 @@ public class SaveFormatTests
 
     public static IEnumerable<object[]> GameKinds() =>
     [
-        [new BossOptions {Boss = BossType.Dreadbloon, Tiers = 8, SpawnRounds = "40,60,80,90,100,110,120,130"}, ContinueFormat.SingleBossVersion],
+        [new BossOptions {Boss = BossType.Dreadbloon, Tiers = 8, SpawnRounds = "40, 60, 80, 90, 100, 110, 120, 130"}, ContinueFormat.SingleBossVersion],
         [new BossOptions {TierBosses = "Lych,VortexElite", Tiers = 2}, ContinueFormat.MixedVersion],
         [new BossOptions {Boss = BossType.Bloonarius, BossEventRounds = true}, ContinueFormat.Version],
         [new BossOptions {TierBosses = ",Phayze", Tiers = 2, RandomTiers = "2", BossEventRounds = true}, ContinueFormat.Version]

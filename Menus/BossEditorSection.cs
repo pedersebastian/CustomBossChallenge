@@ -336,7 +336,8 @@ public sealed class BossEditorSection
             var shown = TierMath.FormatRounds(BossMode.Options.EffectiveSpawnRounds);
             var same = text == shown ||
                        TierMath.ParseRounds(text).SequenceEqual(TierMath.ParseRounds(BossMode.Options.SpawnRounds ?? shown));
-            if (!same) UpdateOptions("SpawnRounds", o => o with {SpawnRounds = text});
+            // Kept as Sanitized keeps them, so reading the setup back changes nothing (#182)
+            if (!same) UpdateOptions("SpawnRounds", o => o with {SpawnRounds = TierMath.NormalizeRounds(text)});
             ShowSpawnRounds();
         }));
         resetRounds = EditorRows.ResetButton(roundsRow, "ResetRounds", () =>

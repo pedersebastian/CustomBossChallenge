@@ -119,6 +119,12 @@ public class SavedSetupsStoreTest : CustomBossTest
             AssertEquals(store.All.Count, 0, "Reading it again");
             AssertEquals(Backups().Length, 1, "One copy of the unreadable file");
             AssertEquals(File.ReadAllText(Backups()[0]), unreadable, "The unreadable file is kept");
+            // Copied (and logged) once, not every time the list is read (#182)
+            var copy = Backups()[0];
+            File.Delete(copy);
+            Assert(!store.Contains("Many 01") && store.All.Count == 0 && !store.IsTooNew, "Reading the unreadable file again");
+            AssertEquals(Backups().Length, 0, "The same unreadable file must not be copied again");
+            File.WriteAllText(copy, unreadable);
             AssertEquals(store.Save(lych, lychDcm), SavedSetupsStore.SaveResult.Saved, "Saving over an unreadable file");
             AssertEquals(store.All.Count, 1, "A new file after an unreadable one");
 

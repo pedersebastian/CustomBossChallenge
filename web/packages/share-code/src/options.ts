@@ -7,6 +7,7 @@ import {
   clampSpeedPerTier,
   clampTiers,
   healthPerTierFromExtraTierHealth,
+  normalizeRounds,
   spawnRounds,
 } from "./math/tiers";
 import { clamp, toLowerAscii } from "./math/dotnet";
@@ -206,7 +207,7 @@ export function sanitize(raw: RawOptions): BossOptions {
         ? healthPerTierFromExtraTierHealth(raw.ExtraTierHealth)
         : raw.HealthPerTier,
     ),
-    SpawnRounds: raw.SpawnRounds,
+    SpawnRounds: normalizeRounds(raw.SpawnRounds),
     TierBosses: normalizeTierBosses(raw.TierBosses),
     BossEventRounds: raw.BossEventRounds,
     ChimpsRounds: enumName(raw.ChimpsRounds, CHIMPS_ROUNDS, "Newest") as ChimpsRounds,

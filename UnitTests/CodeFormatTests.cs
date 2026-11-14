@@ -73,6 +73,21 @@ public class CodeFormatTests
         foreach (var entry in (JArray) file["cases"]!) yield return [(string) entry["name"]!, entry.ToString(Formatting.None)];
     }
 
+    [Fact]
+    public void A_code_with_huge_Spawn_Rounds_keeps_at_most_ten_rounds()
+    {
+        // Close to the most a code may unpack to (#182)
+        var rounds = string.Join(", ", Enumerable.Range(1, 120_000).Select(i => 40 + i % 900));
+        var json = new JObject {["o"] = new JObject {["Tiers"] = 10, ["SpawnRounds"] = rounds}, ["c"] = new JObject()}.ToString(Formatting.None);
+        Assert.True(json.Length is > 500_000 and < CodeFormat.MaxJsonLength, $"The test code unpacks to {json.Length} characters");
+
+        Assert.True(CodeFormat.TryUnpack(CodeFormat.Pack(json, CodeFormat.Version2Prefix), out var payload, out var problem, out var error),
+            $"{problem} {error}");
+        var options = ReadOptions((JObject) payload["o"]!);
+        Assert.Equal("41, 42, 43, 44, 45, 46, 47, 48, 49, 50", options.SpawnRounds);
+        Assert.Equal(TierMath.SpawnRounds(10, rounds), options.EffectiveSpawnRounds);
+    }
+
     [Theory]
     [MemberData(nameof(StrictnessCases))]
     public void Codes_are_read_as_strictly_as_on_the_website(string name, string vector)
