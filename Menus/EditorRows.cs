@@ -86,8 +86,11 @@ public sealed class SliderRow
         var result = new SliderRow(row, slider, valueText, step, defaultValue, format, changed);
         slider.onValueChanged.AddListener(new Action<float>(value =>
         {
-            valueText.text = format(value);
-            changed(value);
+            // Dragging lands on the step too, like the arrows, Random and the share codes (#171)
+            var snapped = Mathf.Clamp(min + Mathf.Round((value - min) / step) * step, min, max);
+            if (!Mathf.Approximately(snapped, value)) slider.SetValueWithoutNotify(snapped);
+            valueText.text = format(snapped);
+            changed(snapped);
         }));
 
         left.onClick = new Button.ButtonClickedEvent();
