@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
 using CustomBossChallenge.Menus;
 using CustomBossChallenge.Persistence;
@@ -216,13 +217,17 @@ public class LayoutTest : CustomBossTest
         var round = editor.dcm.startRules.round;
         var lives = editor.dcm.startRules.lives;
         var spawnRounds = BossMode.Options.SpawnRounds;
+        var eventRounds = BossMode.Options.BossEventRounds;
+        var mode = editor.dcm.mode;
         var (tiers, bossHealth, healthPerTier, speedPerTier) =
             (section.Tiers.Slider.value, section.BossHealth.Slider.value, section.HealthPerTier.Slider.value, section.SpeedPerTier.Slider.value);
         try
         {
-            // Health limit, tiers at the limits, close tiers, a close start round and a very hard setup all at once
+            // Every kind of warning at once (#170): health limit, tiers at the limits, close tiers, a close start round,
+            // the CHIMPS boss events' rounds and a very hard setup
             section.Tiers.Slider.value = 10;
-            BossMode.Options = BossMode.Options with {SpawnRounds = "40, 41"};
+            BossMode.Options = BossMode.Options with {SpawnRounds = "40, 41", BossEventRounds = true};
+            editor.dcm.mode = BossOptions.ChimpsMode;
             section.BossHealth.Slider.value = section.BossHealth.Slider.maxValue;
             section.HealthPerTier.Slider.value = section.HealthPerTier.Slider.maxValue;
             section.SpeedPerTier.Slider.value = section.SpeedPerTier.Slider.maxValue;
@@ -232,7 +237,7 @@ public class LayoutTest : CustomBossTest
             Canvas.ForceUpdateCanvases();
 
             var lines = section.Strip.Notes.Where(note => note.gameObject.activeSelf).ToList();
-            AssertEquals(lines.Count, TierStrip.MaxNotes, $"{format}: warning lines shown");
+            AssertEquals(lines.Count, Enum.GetValues<SetupWarning>().Length, $"{format}: warning lines shown");
             var row = ScreenRect(section.Strip.Row.GetComponent<RectTransform>());
             var cards = section.Strip.Cards.Where(card => card.Panel.gameObject.activeSelf).Select(card => ScreenRect(card.Panel.RectTransform)).ToList();
             var shown = new List<Rect>();
@@ -254,7 +259,8 @@ public class LayoutTest : CustomBossTest
         {
             editor.dcm.startRules.round = round;
             editor.dcm.startRules.lives = lives;
-            BossMode.Options = BossMode.Options with {SpawnRounds = spawnRounds};
+            BossMode.Options = BossMode.Options with {SpawnRounds = spawnRounds, BossEventRounds = eventRounds};
+            editor.dcm.mode = mode;
             section.Tiers.Slider.value = tiers;
             section.BossHealth.Slider.value = bossHealth;
             section.HealthPerTier.Slider.value = healthPerTier;

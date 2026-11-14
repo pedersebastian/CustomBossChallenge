@@ -72,6 +72,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   code yet. See details on an example no longer scrolls smoothly when you asked for less motion, and moves the
   keyboard to the setup it opened. A browser that refuses to change the address bar (Safari, after many changes in a
   short time, e.g. a long slider drag in the Studio) no longer keeps a result from showing.
+- **All six warnings under the Tier Preview** (#170): the Boss Creator had room for five warning lines, so "very hard
+  setup", which comes last, was left out when all six kinds of warning applied at once (e.g. CHIMPS with Boss Event
+  Rounds). It now has a line for every kind.
+- **Room for more bosses** (#170): the Boss Type row works out the size of its boss buttons from how many bosses the
+  game has, so a game update with an eighth boss doesn't put the Elite label on the reset button. A boss the mod has
+  no portrait or HUD icon for is logged once.
 
 ## [2.11.0] - 2026-11-12
 
