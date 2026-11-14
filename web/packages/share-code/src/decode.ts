@@ -3,6 +3,7 @@
 
 import { DATA, type Json, type JsonObject } from "./data";
 import { netTrim, netTrimEnd } from "./math/dotnet";
+import { UNSUPPORTED_REASON, canUseCodes } from "./support";
 import { clampMultiplier, orDefault } from "./math/limits";
 import { MAX_ROUND } from "./math/tiers";
 import { OptionTypeError, defaultName, defaultOptions, optionsJson, readOptions, sanitize, typedOptions, type BossOptions } from "./options";
@@ -16,7 +17,8 @@ const KNOWN_PREFIXES = [PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFI
 const PREFIX_LENGTH = 5;
 const ITEMS_KEY = "$items";
 
-export type CodeProblem = "None" | "Invalid" | "TooNew";
+/** Why a code can't be read, like the mod's CodeProblem; Unsupported is the website's own: a browser without the streams codes need (#181) */
+export type CodeProblem = "None" | "Invalid" | "TooNew" | "Unsupported";
 
 /** The challenge values the website shows, named like WebDataTest's fixtures */
 export interface Challenge {
@@ -285,6 +287,8 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
     }
     return fail("Invalid", "This isn't a Boss Creator code. Codes start with CBC1:, CBC2:, CBC3:, CBC4: or CBC5:.");
   }
+  // Not "damaged": the code may be fine, the browser can't unpack it
+  if (!canUseCodes()) return fail("Unsupported", UNSUPPORTED_REASON);
 
   try {
     const text = await inflate(fromBase64Url(trimmed.slice(PREFIX_LENGTH)));

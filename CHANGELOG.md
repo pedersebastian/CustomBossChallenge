@@ -82,6 +82,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   list is shown or a name is checked. Spawn Rounds are kept as the first 10 rounds in them ("40, 60, 80"), so a
   hand-made code with a huge Spawn Rounds text no longer carries it into the last setup, the unfinished game and saved
   setups. The rounds played stay the same, and the text is still the format older versions read.
+- **Older browsers on the website** (#181): a browser without `CompressionStream` (Safari before 16.4, Firefox before
+  113, some in-app browsers) now says it can't read setup codes, on the main page, Compare and the Studio, instead of
+  calling every code damaged. The Studio no longer fails silently there with an empty code box.
 
 ## [2.11.0] - 2026-11-12
 

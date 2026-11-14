@@ -13,7 +13,9 @@ an npm workspace: `"@cbc/share-code": "*"` in `web/package.json`. It is TypeScri
 bundler like Vite, or Vitest, reads it as it is.
 
 It needs only standard web APIs: `CompressionStream` and `DecompressionStream`, `atob` and `btoa`, and `TextDecoder`.
-Every current browser has them, and so does Node 18 and later.
+Every current browser has them, and so does Node 18 and later. Safari before 16.4 and Firefox before 113 don't have
+the streams: there `canUseCodes()` is false, `decode` gives the problem `"Unsupported"` with `UNSUPPORTED_REASON`, and
+`encode` and `pack` throw an `UnsupportedBrowserError`.
 
 ## Read a code
 

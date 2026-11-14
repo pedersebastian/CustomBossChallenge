@@ -25,6 +25,9 @@ export {
   type DecodeResult,
 } from "./decode";
 
+// What a browser needs for codes (#181)
+export { canUseCodes, UNSUPPORTED_REASON, UnsupportedBrowserError } from "./support";
+
 // Make: a setup to a code the mod loads unchanged
 export { encode, payload, prefixFor, normalized, pack, diff, deepEqual } from "./encode";
 
