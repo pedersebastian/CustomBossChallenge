@@ -16,6 +16,8 @@
         <Compile Include="..\Config\BossRowMath.cs" Link="Mod\BossRowMath.cs" />
         <Compile Include="..\Config\ChimpsRoundSet.cs" Link="Mod\ChimpsRoundSet.cs" />
         <Compile Include="..\Config\ChallengeLimits.Options.cs" Link="Mod\ChallengeLimits.Options.cs" />
+        <Compile Include="..\Config\BossRandomizer.Weights.cs" Link="Mod\BossRandomizer.Weights.cs" />
+        <Compile Include="..\Config\ParagonMath.Slider.cs" Link="Mod\ParagonMath.Slider.cs" />
         <Compile Include="..\Config\KeyboardShortcuts.cs" Link="Mod\KeyboardShortcuts.cs" />
         <Compile Include="..\Config\RandomNames.cs" Link="Mod\RandomNames.cs" />
         <Compile Include="..\Config\RankedTime.cs" Link="Mod\RankedTime.cs" />

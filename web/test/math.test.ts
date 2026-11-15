@@ -7,8 +7,20 @@ import { roundHalfEven } from "@cbc/share-code/dotnet";
 import { FOLLOWS, normalizeTierBosses, parseTierBosses, resolveTiers, stepTier, tierEntry, tierPercents, withTier } from "@cbc/share-code/tier-bosses";
 import tierBossCases from "./tier-boss-cases.json";
 import skullCases from "./skull-cases.json";
-import { isUnlimited, paragonsText } from "../src/math/paragons";
+import { fromSlider, isUnlimited, paragonsText, toSlider } from "../src/math/paragons";
 import { GAME } from "../src/data/types";
+import paragonCases from "./paragon-cases.json";
+
+// The same cases as UnitTests/ParagonMathTests.cs
+describe("the Max Paragons slider, like ParagonMath", () => {
+  it.each(paragonCases.toSlider)("$maxParagons of $available paragons shows at $slider", ({ available, maxParagons, unlimited, slider }) => {
+    expect(isUnlimited(maxParagons, available)).toBe(unlimited);
+    expect(toSlider(maxParagons, available)).toBe(slider);
+  });
+  it.each(paragonCases.fromSlider)("position $position of $available sets $maxParagons", ({ available, position, maxParagons }) =>
+    expect(fromSlider(position, available)).toBe(maxParagons),
+  );
+});
 
 const f = (values: number[]) => values.map(Math.fround);
 const show = (rounds: number[]) => rounds.join(", ");

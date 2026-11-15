@@ -42,15 +42,18 @@ picks bosses).
 
 ### Unit tests
 
-The logic that doesn't need the game (tier, spawn round and skull math, the keyboard shortcut rules, the names Random gives a
-setup, the share code format, and the formats of the mod's files) has xUnit tests in `UnitTests/`. Those source files are built on their own in
+The logic that doesn't need the game (tier, spawn round and skull math, the Max Paragons slider, Random's chances and
+weights and the names it gives a setup, the keyboard shortcut rules, the share code format, and the formats of the
+mod's files) has xUnit tests in `UnitTests/`. Those source files are built on their own in
 `Shared/`, so the tests build and run in seconds without BTD6:
 
 ```
 dotnet test --project UnitTests
 ```
 
-Keep the files in `Shared/` free of the game's types (`Il2Cpp...`, `BTD_Mod_Helper`), or the project won't build.
+Keep the files in `Shared/` free of the game's types (`Il2Cpp...`, `BTD_Mod_Helper`), or the project won't build. A
+class with only a little that needs the game is split in two `partial` files, the part without the game in `Shared/`:
+`ChallengeLimits.Options.cs`, `ParagonMath.Slider.cs` and `BossRandomizer.Weights.cs`.
 The one exception is `Shared/BossType.cs`, a stand-in for the game's `BossType` so that `BossOptions` builds there.
 `BossTypeTests` checks it against `web/src/data/game.json`, so when the game adds a boss, update `game.json` first and
 then the stand-in.
@@ -72,6 +75,10 @@ Share codes are also tested with random data, in F# with [FsCheck](https://fsche
 - broken codes (cut short, changed, junk, too big once unpacked) are refused as `Invalid` or `TooNew` and never throw;
 - a hand made challenge only keeps the fields `CodeFormat.ChallengeFields` allows, with their types, and nothing the
   Boss Creator makes is ever left out.
+
+`TextProperties.fs` does the same for what players type and paste: a tier's own speed and health stay in range for any
+int, near its limits too (#168); bosses per tier and custom skulls read back the same once shown; custom skulls are at
+most ten, falling, from 1 to 99 %; and a code is found inside the text around it, while finding it never throws (#187).
 
 **What a code may set.** `CodeFormat.ChallengeFields` lists the challenge fields a code may set: the settings of the
 game's Challenge Editor and the Boss Creator, each with its JSON type. Everything else in a code is ignored and named in
@@ -349,7 +356,9 @@ Some cases are shared by the website's tests and the unit tests, in `web/test/`,
 `link-cases.json` (the code in a pasted link, %-escapes included), `skull-cases.json` (custom skulls, rounded like
 .NET), `tier-boss-cases.json` (`TierBossMath.With`, `Step` and `Resolve`, which the Studio's Advanced Mode uses, #95),
 `option-cases.json` (a code's boss options of every JSON type, made with the mod's own `CodeFormat` and
-Json.NET) and `code-strictness.json` (hand-made and damaged codes: strict JSON, Base64 and deflate, and text in
+Json.NET), `paragon-cases.json` (the Max Paragons slider), `random-cases.json` (Random's weights, and the bosses per
+tier it makes from listed random numbers, so the Studio's Random and the Boss Creator's give the same values) and
+`code-strictness.json` (hand-made and damaged codes: strict JSON, Base64 and deflate, and text in
 options trimmed and compared like C#'s `Trim` and `OrdinalIgnoreCase`, #174). When the mod reads one of them differently, change both sides and the file. `website-codes.json` goes the
 other way: codes the Studio made with its own controls, which `UnitTests/CodeFormatTests.cs` reads with the mod's
 `CodeFormat`, so codes made on the website load in the mod unchanged. After changing the Studio or the encoder, write
