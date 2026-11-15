@@ -39,6 +39,14 @@ public class TierBossMathTests
             (string) c["standard"]!, (string) c["expected"]!
         });
 
+    public static IEnumerable<object[]> NormalizeCases() => ((JArray) SharedCases()["normalize"]!).Select(c =>
+        new object[] {(string) c["list"]!, (string) c["expected"]!});
+
+    [Theory]
+    [MemberData(nameof(NormalizeCases))]
+    public void Normalize_reads_a_list_like_the_website(string list, string expected) =>
+        Assert.Equal(expected, TierBossMath.Normalize(list));
+
     [Theory]
     [MemberData(nameof(WithCases))]
     public void With_changes_a_tier_like_the_website(string? list, int tier, string boss, string expected) =>
