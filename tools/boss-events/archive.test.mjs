@@ -5,9 +5,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildBundle, bundleLicense, changedRecords, metadataUrl, newEntries, newRecords, openEntries, parseApi,
-    readArchive, sameEvent } from './archive.mjs';
+import { buildBundle, bundleLicense, changedRecords, metadataUrl, newEntries, newRecords, openEntries, outputNames,
+    parseApi, readArchive, sameEvent, validMetadata } from './archive.mjs';
 import { formatRecord } from './format.mjs';
+import { fetchText } from './sources.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixture = name => readFileSync(join(here, 'fixtures', name), 'utf8');
@@ -163,4 +164,73 @@ test('boss-events.json has every file, oldest first, with its licence and source
     for (let i = 1; i < bundle.events.length; i++) assert.ok(bundle.events[i - 1].start <= bundle.events[i].start);
     assert.ok(bundle.events.some(event => event.license === 'CC BY-NC-SA 4.0'));
     assert.ok(bundle.events.every(event => Array.isArray(event.sourceUrls) && 'license' in event));
+});
+
+// A fetch that answers from a list, one answer per call: a status, an error to throw, or 'hang' until the signal ends
+function fakeFetch(answers) {
+    const calls = [];
+    const fetch = async (url, options) => {
+        calls.push(url);
+        const answer = answers[calls.length - 1];
+        if (answer === 'hang') {
+            return new Promise((_, reject) => options.signal.addEventListener('abort', () => reject(options.signal.reason)));
+        }
+        if (answer instanceof Error) throw answer;
+        return new Response(answer === 200 ? 'ok' : 'error', { status: answer });
+    };
+    return { fetch, calls };
+}
+const noDelay = async () => {};
+
+test('a request that hangs is given up after the timeout and tried again (#179)', async () => {
+    const { fetch, calls } = fakeFetch(['hang', 200]);
+    assert.equal(await fetchText('https://example.test/a', 'text/plain', { fetch, timeout: 20, delay: noDelay }), 'ok');
+    assert.equal(calls.length, 2);
+    const always = fakeFetch(['hang', 'hang', 'hang']);
+    await assert.rejects(fetchText('https://example.test/b', 'text/plain', { fetch: always.fetch, timeout: 20, delay: noDelay }),
+        /no answer within 20 ms for https:\/\/example\.test\/b/);
+    assert.equal(always.calls.length, 3);
+});
+
+test('a fetch that throws (DNS, reset) is tried again (#179)', async () => {
+    const { fetch, calls } = fakeFetch([new TypeError('fetch failed'), new TypeError('fetch failed'), 200]);
+    assert.equal(await fetchText('https://example.test/', 'text/plain', { fetch, delay: noDelay }), 'ok');
+    assert.equal(calls.length, 3);
+    const always = fakeFetch([new TypeError('fetch failed'), new TypeError('fetch failed'), new TypeError('fetch failed')]);
+    await assert.rejects(fetchText('https://example.test/', 'text/plain', { fetch: always.fetch, delay: noDelay }), /fetch failed/);
+});
+
+test('429 and server errors are tried again, other errors are not (#179)', async () => {
+    const tooMany = fakeFetch([429, 503, 200]);
+    assert.equal(await fetchText('https://example.test/', 'text/plain', { fetch: tooMany.fetch, delay: noDelay }), 'ok');
+    assert.equal(tooMany.calls.length, 3);
+    const notFound = fakeFetch([404, 200]);
+    await assert.rejects(fetchText('https://example.test/', 'text/plain', { fetch: notFound.fetch, delay: noDelay }), /^Error: 404/);
+    assert.equal(notFound.calls.length, 1);
+});
+
+test('metadata without what every event has is skipped and tried again (#179)', () => {
+    const vortexEntry = list.find(entry => entry.name === 'Vortex48');
+    assert.ok(validMetadata(vortex48.standard) && validMetadata(vortex48.elite));
+    const without = key => Object.fromEntries(Object.entries(vortex48.standard).filter(([k]) => k !== key));
+    for (const bad of [{}, [], null, 'Vortex48', without('map'), without('mode'), without('roundSets'), without('_towers'),
+        without('_bloonModifiers'), { ...vortex48.standard, _towers: [] }, { ...vortex48.standard, map: '' },
+        { ...vortex48.standard, _bloonModifiers: { ...vortex48.standard._bloonModifiers, healthMultipliers: null } }]) {
+        assert.ok(!validMetadata(bad), JSON.stringify(bad).slice(0, 80));
+        const { records, skipped } = newRecords([vortexEntry], new Map([[vortexEntry.id, { standard: bad, elite: vortex48.elite }]]));
+        assert.deepEqual(records, []);
+        assert.match(skipped[0], /no standard metadata yet, tried again next run$/);
+    }
+});
+
+test('every event in the archive has metadata that passes the check', async () => {
+    for (const [id, record] of await readArchive(archiveDir))
+        for (const level of ['standard', 'elite']) assert.ok(validMetadata(record[level]), `${id} ${level}`);
+});
+
+test('a name with a line break stays on one output line (#179)', () => {
+    const line = outputNames(['Vortex48\nevil=1', 'Lych\r56', 'Tab\there x', 'Plain']);
+    assert.equal(line, 'Vortex48 evil=1, Lych 56, Tab here x, Plain');
+    assert.ok(!/[\n\r]/.test(line));
+    assert.equal(outputNames([]), '');
 });
