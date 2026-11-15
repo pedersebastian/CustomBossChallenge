@@ -158,14 +158,82 @@ function record(entry, rules) {
     return result;
 }
 
-/** boss-events.json: every event, oldest first. */
+/**
+ * boss-events.json: every event, oldest first, with what the bundle adds to each file (#180): `displayName` and
+ * `number` from the name, and `replaces`/`replacedBy`, the ids of events it took the place of or was replaced by.
+ */
 export function buildBundle(records, generatedAt) {
+    const events = [...records].sort((a, b) => a.start - b.start || a.id.localeCompare(b.id));
+    const links = replacements(events);
     return {
         formatVersion: bundleFormatVersion,
         generated: new Date(generatedAt).toISOString(),
         license: bundleLicense,
-        events: [...records].sort((a, b) => a.start - b.start || a.id.localeCompare(b.id)),
+        events: events.map(event => ({
+            ...event,
+            ...displayNameOf(event),
+            replaces: links.get(event.id)?.replaces ?? [],
+            replacedBy: links.get(event.id)?.replacedBy ?? [],
+        })),
     };
+}
+
+export const bossNames = {
+    bloonarius: 'Bloonarius', lych: 'Lych', vortex: 'Vortex', dreadbloon: 'Dreadbloon', phayze: 'Phayze',
+    blastapopoulos: 'Blastapopoulos', diamondback: 'Diamondback',
+};
+
+/**
+ * The event's name as the Past Events list shows it, and its number. Ninja Kiwi's names have typos and odd spellings
+ * ("Blastapopolous18", "Bloonsarius16", "Vortex_28"): a name with a number gets the boss's own name, a space and the
+ * number, then what followed it ("Vortex 33 New"). A name without one ("Got you") is kept, with no number.
+ */
+export function displayNameOf(event) {
+    const match = /^[A-Za-z]+?_?(\d+)([A-Za-z][A-Za-z0-9]*)?$/.exec(event.name);
+    const boss = bossNames[event.bossType];
+    if (!match || !boss) return { displayName: event.name, number: null };
+    const number = Number(match[1]);
+    return { displayName: `${boss} ${number}${match[2] ? ` ${match[2]}` : ''}`, number };
+}
+
+/**
+ * When Ninja Kiwi made the event, from the end of its id (base 36 milliseconds), or null for an id without it (an
+ * event the archive had to name itself)
+ */
+export function madeAt(id) {
+    const match = /(?:^|_)([0-9a-z]{8})$/.exec(id);
+    if (!match) return null;
+    const time = parseInt(match[1], 36);
+    return time >= Date.UTC(2018, 0, 1) && time <= Date.UTC(2100, 0, 1) ? time : null;
+}
+
+/**
+ * Which events replaced which: Ninja Kiwi sometimes pulls an event and puts up another one for the same boss in its
+ * place, during the week (Vortex17EX, Vortex33New) or before it starts (the two Blastapopoulos20). Two events of one
+ * boss whose dates overlap are such a pair, and the one made later replaced the other. The dates of the one replaced
+ * before it started are the ones the API listed then, so they can run past the replacement's.
+ * @returns Map(id -> { replaces: [ids], replacedBy: [ids] })
+ */
+export function replacements(events) {
+    const links = new Map();
+    const link = (id, field, other) => {
+        if (!links.has(id)) links.set(id, { replaces: [], replacedBy: [] });
+        links.get(id)[field].push(other);
+    };
+    const sorted = [...events].sort((a, b) => a.start - b.start || a.id.localeCompare(b.id));
+    for (let i = 0; i < sorted.length; i++) {
+        for (let j = i + 1; j < sorted.length && sorted[j].start < sorted[i].end; j++) {
+            const [a, b] = [sorted[i], sorted[j]];
+            if (a.bossType !== b.bossType) continue;
+            // Made later; without both times, the one that started later or, from the same start, ran longer
+            const [madeA, madeB] = [madeAt(a.id), madeAt(b.id)];
+            const bIsNewer = madeA !== null && madeB !== null ? madeB > madeA : b.start > a.start || b.end > a.end;
+            const [older, newer] = bIsNewer ? [a, b] : [b, a];
+            link(newer.id, 'replaces', older.id);
+            link(older.id, 'replacedBy', newer.id);
+        }
+    }
+    return links;
 }
 
 /** Every file in the archive, as Map(id -> record). */

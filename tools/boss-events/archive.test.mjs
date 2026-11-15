@@ -5,8 +5,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildBundle, bundleLicense, changedRecords, metadataUrl, newEntries, newRecords, openEntries, outputNames,
-    parseApi, readArchive, sameEvent, validMetadata } from './archive.mjs';
+import { buildBundle, bundleLicense, changedRecords, displayNameOf, madeAt, metadataUrl, newEntries, newRecords,
+    openEntries, outputNames, parseApi, readArchive, replacements, sameEvent, validMetadata } from './archive.mjs';
 import { formatRecord } from './format.mjs';
 import { fetchText } from './sources.mjs';
 
@@ -164,6 +164,62 @@ test('boss-events.json has every file, oldest first, with its licence and source
     for (let i = 1; i < bundle.events.length; i++) assert.ok(bundle.events[i - 1].start <= bundle.events[i].start);
     assert.ok(bundle.events.some(event => event.license === 'CC BY-NC-SA 4.0'));
     assert.ok(bundle.events.every(event => Array.isArray(event.sourceUrls) && 'license' in event));
+});
+
+test('the bundle says which events replaced which (#180)', async () => {
+    const bundle = buildBundle((await readArchive(archiveDir)).values(), 0);
+    const pairs = bundle.events.flatMap(event => event.replaces.map(old => `${event.id} replaces ${old}`));
+    assert.deepEqual(pairs.sort(), [
+        // Made on 9 Oct 2026 in place of the one listed on 8 Oct, before the event started
+        'Blastapopoulos20_mv08g41v replaces Blastapopoulos20_mux48qjr',
+        // Pulled after a few hours (Fandom weeks 87a/b and 168a/b)
+        'Vortex17EX_lfg12s34 replaces Vortex17_lfbrv7rb',
+        'Vortex33New_m1w0dd1c replaces Vortex33_m1tpa2fs',
+    ]);
+    const byId = new Map(bundle.events.map(event => [event.id, event]));
+    assert.deepEqual(byId.get('Vortex33_m1tpa2fs').replacedBy, ['Vortex33New_m1w0dd1c']);
+    assert.deepEqual(byId.get('Vortex45_mqa0rl1r').replaces, []);
+    assert.deepEqual(byId.get('Vortex45_mqa0rl1r').replacedBy, []);
+    // The files themselves stay as they are
+    const file = (await readArchive(archiveDir)).get('Vortex33_m1tpa2fs');
+    assert.ok(!('replacedBy' in file) && !('displayName' in file));
+});
+
+test('without both ids made at known times, the event that started later replaced the other', () => {
+    const event = (id, start, end) => ({ id, bossType: 'lych', start, end });
+    const links = replacements([event('Lych23', 0, 100), event('Lych23New', 50, 100),
+        { ...event('Vortex1', 0, 100), bossType: 'vortex' }]);
+    assert.deepEqual(links.get('Lych23New'), { replaces: ['Lych23'], replacedBy: [] });
+    assert.deepEqual(links.get('Lych23'), { replaces: [], replacedBy: ['Lych23New'] });
+    assert.equal(links.get('Vortex1'), undefined);
+    // Different bosses at once are not a replacement
+    assert.equal(replacements([event('Lych1', 0, 100), { ...event('Vortex1', 0, 100), bossType: 'vortex' }]).size, 0);
+});
+
+test("an id's end is when Ninja Kiwi made it", () => {
+    assert.equal(new Date(madeAt('Vortex33_m1tpa2fs')).toISOString(), '2024-10-03T19:39:31.672Z');
+    assert.equal(new Date(madeAt('m2dppzns')).toISOString().slice(0, 10), '2024-10-17');
+    assert.equal(madeAt('Lych23'), null);
+    assert.equal(madeAt('Bloonarius40'), null);
+});
+
+test('every event gets a display name and number (#180)', async () => {
+    const shown = name => displayNameOf({ name, bossType: name.startsWith('Bl') && name.includes('pop') ? 'blastapopoulos'
+        : name.startsWith('Bloon') ? 'bloonarius' : 'vortex' });
+    assert.deepEqual(shown('Vortex45'), { displayName: 'Vortex 45', number: 45 });
+    assert.deepEqual(shown('Blastapopolous18'), { displayName: 'Blastapopoulos 18', number: 18 });
+    assert.deepEqual(shown('Bloonsarius16'), { displayName: 'Bloonarius 16', number: 16 });
+    assert.deepEqual(shown('Vortex_28'), { displayName: 'Vortex 28', number: 28 });
+    assert.deepEqual(shown('Vortex33New'), { displayName: 'Vortex 33 New', number: 33 });
+    assert.deepEqual(shown('Blastapopoulos15New2'), { displayName: 'Blastapopoulos 15 New2', number: 15 });
+    assert.deepEqual(shown('Bloonarius52ABR'), { displayName: 'Bloonarius 52 ABR', number: 52 });
+    assert.deepEqual(displayNameOf({ name: 'Got you', bossType: 'bloonarius' }), { displayName: 'Got you', number: null });
+
+    const bundle = buildBundle((await readArchive(archiveDir)).values(), 0);
+    assert.ok(bundle.events.every(event => typeof event.displayName === 'string' && event.displayName !== ''));
+    // Only the April Fools' events and the first Bloonarius have no number
+    assert.deepEqual(bundle.events.filter(event => event.number === null).map(event => event.name).sort(),
+        ['Bloonarius', 'Got you', 'Lol']);
 });
 
 // A fetch that answers from a list, one answer per call: a status, an error to throw, or 'hang' until the signal ends

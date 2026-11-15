@@ -80,8 +80,30 @@ The table is `knownEvents` in `tools/boss-events/records.mjs`.
 
 `BossDataDecrypted/Phayze_2.json` has the same rules as `Phayze2`: a copy, not another event.
 
-An event's id ends with the time Ninja Kiwi made it, in base 36 milliseconds (`lfbrv7rb` is 16 Mar 2023). An id made
-after the event's start (Vortex17EX, Dreadbloon32New) belongs to an event that replaced another one.
+One event on Blooncyclopedia has the wrong dates (#180). Fandom has the same rules in another week, so the file has
+Fandom's dates; the table is `wikiDateFixes` in `tools/boss-events/records.mjs`.
+
+| File | What is known |
+|---|---|
+| `Vortex33_m1tpa2fs.json` | Week 168a, 5 Oct 2024 from 08:00 until about 10:22 UTC, when it was pulled and replaced by Vortex33New (week 168b). Blooncyclopedia has 22–26 Oct, inside Blastapopoulos2's week. The end is approximate, so it has `lossy: ["dates"]`. |
+
+### Events that replaced others
+
+An event's id ends with the time Ninja Kiwi made it, in base 36 milliseconds (`lfbrv7rb` is 16 Mar 2023). Sometimes
+Ninja Kiwi pulls an event and puts up another one for the same boss in its place, and both are in the archive:
+
+| Replaced | By | What happened |
+|---|---|---|
+| `Vortex17_lfbrv7rb` | `Vortex17EX_lfg12s34` | Pulled after about four hours (Fandom week 87a/b) |
+| `Vortex33_m1tpa2fs` | `Vortex33New_m1w0dd1c` | Pulled after about two hours (Fandom week 168a/b) |
+| `Blastapopoulos20_mux48qjr` | `Blastapopoulos20_mv08g41v` | Replaced on 9 Oct 2026, before it started, with other starting cash and blocked tiers. The API listed the old one until then, so its `end` is the one it was planned with. |
+
+Files are named by id only, so nothing in them links the two. `boss-events.json` does (`replaces`/`replacedBy`): two
+events of one boss whose dates overlap are such a pair, and the one made later replaced the other. Other ids made
+after the event's start, like Dreadbloon32New, replaced an event the archive doesn't have.
+
+Names are kept as Ninja Kiwi wrote them, typos included ("Blastapopolous18", "Bloonsarius16", "Vortex_28", "Got
+you"). `boss-events.json` adds a `displayName` and `number` for showing and grouping them.
 
 ## Making the files
 
@@ -106,6 +128,10 @@ runs (not the scores or the links) and the metadata's `body` as the API gave it,
   three times in all, and a job that hangs anyway is stopped after 15 minutes. The API only lists the last ~7
   events, so a run that fails is caught up by the next ones. A failing run sends the normal Actions e-mail.
 
+Before every deploy, `pages.yml` runs the tests in `tools/boss-events/`, which check every file: named by its id,
+the fields above with known values, `start` before `end`, complete metadata, the archive's formatting, no event twice
+and no two bosses at the same time (unless one has `lossy: ["dates"]`). A broken file stops the deploy.
+
 `tools/boss-events/backfill.mjs` made the files from before the archiver; see
 [CONTRIBUTING.md](../../CONTRIBUTING.md#boss-events-archive).
 
@@ -120,9 +146,17 @@ committed). The Boss Creator's Past Events list (#146) reads it.
   "formatVersion": 1,                     // of this file; a reader skips a newer version it doesn't know
   "generated": "2026-11-12T06:17:42.000Z", // when it was built
   "license": "...",                       // which events are under CC BY-NC-SA 4.0, see below
-  "events": [ ... ]                       // every file above, as it is, oldest first (by start, then id)
+  "events": [ ... ]                       // every file above, oldest first (by start, then id), see below
 }
 ```
+
+Each event is the file as it is, plus fields worked out when the bundle is made (#180):
+
+| Field | What it is |
+|---|---|
+| `displayName` | The name to show: the boss's own name, a space and the number, then what followed the number in the name (`"Blastapopolous18"` is `"Blastapopoulos 18"`, `"Vortex33New"` is `"Vortex 33 New"`). A name without a number is kept (`"Got you"`). |
+| `number` | The number in the name, or `null` |
+| `replaces`, `replacedBy` | The ids of the events this one replaced or was replaced by, see above; usually `[]` |
 
 Each event keeps its own `formatVersion`, `source`, `sourceUrls`, `license` and `lossy`. Events with
 `"license": "CC BY-NC-SA 4.0"` use Blooncyclopedia's content and events with `"license": "CC BY-SA 3.0"` use the

@@ -97,6 +97,13 @@ export function buildRecords({ wiki, jxu, game, urls }) {
             record.standard = standard;
             record.elite = elite;
         }
+        const fix = wikiDateFixes[record.id];
+        if (fix) {
+            record.start = fix.start;
+            record.end = fix.end;
+            record.sourceUrls.push(fix.sourceUrl);
+            if (fix.approximate) record.lossy.push('dates');
+        }
         if (record.standard?.maxParagons === undefined) record.lossy.push('maxParagons');
         if (records.has(record.id)) report.push(`${record.name}: id ${record.id} twice on the wiki, kept the first`);
         else records.set(record.id, record);
@@ -153,6 +160,19 @@ export const knownEvents = {
     Bloonarius40: {
         start: Date.UTC(2023, 5, 8, 22), end: Date.UTC(2023, 5, 10, 19, 30), approximate: true, scoringType: 'LeastCash',
         sourceUrl: fandomPage(37, 458745),
+    },
+};
+
+// Wiki events whose dates on Blooncyclopedia are wrong, dated from Fandom instead (#180). Dates are facts, so the
+// file keeps the wiki's licence for its rules.
+export const wikiDateFixes = {
+    // Week 168a: Blooncyclopedia has 22-26 Oct 2024, inside Blastapopoulos2's week, but Fandom has the same rules
+    // (Hedge, Least Tiers, $870, 180 % boss speed, 80 % boss health) on 5 Oct, 8:00pm until about 10:22pm NZST, when
+    // it was pulled and replaced by Vortex33New (week 168b), whose id was made at 10:25 UTC that day. The end is
+    // approximate.
+    Vortex33_m1tpa2fs: {
+        start: Date.UTC(2024, 9, 5, 8), end: Date.UTC(2024, 9, 5, 10, 22), approximate: true,
+        sourceUrl: fandomPage(44, 458754),
     },
 };
 
