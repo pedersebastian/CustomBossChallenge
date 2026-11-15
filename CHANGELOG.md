@@ -53,6 +53,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Advanced Mode after Load, Paste, Random or Undo** (#166): the tabs remembered the bosses per tier and Standard's
+  Boss Speed, Boss Health and skulls across a new setup. Advanced could then get the old setup's lineup, and
+  Standard could write the old 200 % into a pasted code. A loaded, pasted or random setup now starts over, and
+  Ctrl+Z brings back what the tabs remembered at that step.
 - **Huge tier speeds and health in hand-made codes** (#168): a tier's own speed or health near int's limits, like
   `Lych@2147483647/2147483647`, overflowed and flipped to the other end of its range, so the mod played 10 % where
   the website showed 1000 %. Both now clamp it alike, and the website also reads -2147483648 like the mod.

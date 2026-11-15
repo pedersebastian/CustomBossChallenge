@@ -1,6 +1,7 @@
 using System.Linq;
 using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
+using CustomBossChallenge.Menus;
 using CustomBossChallenge.Persistence;
 using Il2CppAssets.Scripts;
 using Il2CppAssets.Scripts.Models.ServerEvents;
@@ -135,8 +136,10 @@ public static class BossMode
     {
         if (!Active) return;
 
-        // Paste, Load and Undo replace the whole setup in one step
+        // Paste, Load and Undo replace the whole setup in one step. What the tabs remembered belongs to the old setup
+        // (#166); Undo puts back what the new one had.
         BossHistory.RecordSetup(editor);
+        BossEditorSection.Current?.ForgetAdvanced();
         Options = options;
         Dcm = dcm;
         editor.dcm = dcm;
