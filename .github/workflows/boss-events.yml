@@ -20,6 +20,9 @@ jobs:
   fetch:
     name: Fetch new events
     runs-on: ubuntu-latest
+    # A run takes seconds. Each request gives up after 30 s and is tried three times, so a few events that hang stay
+    # well inside this; without it a hung connection would hold the boss-events group for six hours (#179).
+    timeout-minutes: 15
     permissions:
       contents: read
     outputs:
@@ -57,6 +60,7 @@ jobs:
     needs: fetch
     if: needs.fetch.outputs.names != ''
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
     steps:

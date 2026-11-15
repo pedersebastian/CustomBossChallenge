@@ -45,6 +45,30 @@ export function parseApi(text) {
 const validEntry = entry => !!entry && typeof entry.id === 'string' && safeId.test(entry.id)
     && typeof entry.name === 'string' && Number.isFinite(entry.start) && Number.isFinite(entry.end);
 
+const plainObject = value => typeof value === 'object' && value !== null && !Array.isArray(value);
+
+/**
+ * Whether a level's metadata has what every event has: a map, a mode, round sets, the bloons' health and some towers.
+ * The API has answered success: true with empty metadata (Lych56), and a file is never fixed once its event has
+ * ended, so anything less is tried again on the next run instead of being saved (#179).
+ */
+export function validMetadata(rules) {
+    return plainObject(rules)
+        && typeof rules.map === 'string' && rules.map !== ''
+        && typeof rules.mode === 'string' && rules.mode !== ''
+        && Array.isArray(rules.roundSets)
+        && plainObject(rules._bloonModifiers) && plainObject(rules._bloonModifiers.healthMultipliers)
+        && Array.isArray(rules._towers) && rules._towers.length > 0;
+}
+
+/**
+ * The names as one line for GITHUB_OUTPUT: a line break or other control character in a name would end the value
+ * and could add outputs of its own (#179), so each becomes a space
+ */
+export function outputNames(names) {
+    return names.join(', ').replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/g, ' ');
+}
+
 /** The list entries that aren't in the archive yet, and why any others were skipped. */
 export function newEntries(list, existing) {
     const entries = [];
@@ -84,7 +108,7 @@ export function newRecords(entries, metadata) {
     const skipped = [];
     for (const entry of entries) {
         const rules = metadata.get(entry.id);
-        const bad = levels.filter(level => !rules?.[level] || typeof rules[level] !== 'object');
+        const bad = levels.filter(level => !validMetadata(rules?.[level]));
         if (bad.length) {
             skipped.push(`${entry.name} (${entry.id}): no ${bad.join(' or ')} metadata yet, tried again next run`);
             continue;
@@ -209,8 +233,8 @@ async function main(args) {
         + `${open.length} checked again, ${changed.records.length} changed${nameList(changed.records)}`
         + `${dryRun ? ', not written (dry run)' : ''}`);
     // The workflow commits when names isn't empty, and puts it in the commit message
-    const names = [...result.records.map(record => record.name),
-        ...changed.records.map(record => `${record.name} (updated)`)].join(', ');
+    const names = outputNames([...result.records.map(record => record.name),
+        ...changed.records.map(record => `${record.name} (updated)`)]);
     if (process.env.GITHUB_OUTPUT && !dryRun) await appendFile(process.env.GITHUB_OUTPUT, `names=${names}\n`);
 }
 

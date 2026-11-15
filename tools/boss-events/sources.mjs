@@ -28,13 +28,34 @@ async function exists(path) {
     }
 }
 
-/** The text at the URL; retries server errors twice, throws on any other error. */
-export async function fetchText(url, accept) {
+/** How long one request may take before it is given up, in milliseconds */
+export const requestTimeout = 30_000;
+const attempts = 3;
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
+ * The text at the URL. A request that takes longer than `timeout`, fails to connect (DNS, reset), or is answered with
+ * 429 Too Many Requests or a server error is tried again, three times in all (#179); any other error status throws
+ * at once. `fetch` and `delay` are for the tests.
+ */
+export async function fetchText(url, accept, { timeout = requestTimeout, fetch = globalThis.fetch, delay = sleep } = {}) {
     for (let attempt = 1; ; attempt++) {
-        const response = await fetch(url, { headers: { 'User-Agent': userAgent, Accept: accept } });
-        if (response.ok) return response.text();
-        if (attempt >= 3 || response.status < 500) throw new Error(`${response.status} ${response.statusText} for ${url}`);
-        await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+        let failure;
+        try {
+            const response = await fetch(url, {
+                headers: { 'User-Agent': userAgent, Accept: accept },
+                signal: AbortSignal.timeout(timeout),
+            });
+            if (response.ok) return await response.text();
+            failure = new Error(`${response.status} ${response.statusText} for ${url}`);
+            if (response.status !== 429 && response.status < 500) throw failure;
+        } catch (error) {
+            if (error === failure) throw error;
+            failure = new Error(`${error.name === 'TimeoutError' ? `no answer within ${timeout} ms` : error.message} for ${url}`,
+                { cause: error });
+        }
+        if (attempt >= attempts) throw failure;
+        await delay(2000 * attempt);
     }
 }
 

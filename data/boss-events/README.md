@@ -97,11 +97,14 @@ runs (not the scores or the links) and the metadata's `body` as the API gave it,
   file are from the day it was last written, so usually from before the event started.
 - After its `end` a file is never changed or deleted, by the archiver or the backfill. The backfill never changes a
   file with `source: "api"`.
-- Only answers with `success: true` are saved. An event whose metadata fails is tried again on the next run, not
-  saved half; if an open event's metadata fails, its file is kept. An id that never gets metadata is tried every
+- Only answers with `success: true` are saved, and only metadata with what every event has: a `map`, a `mode`,
+  `roundSets`, `_bloonModifiers.healthMultipliers` and at least one tower in `_towers` (the API has answered
+  `success: true` with empty metadata). An event whose metadata fails is tried again on the next run, not saved half;
+  if an open event's metadata fails, its file is kept. An id that never gets metadata is tried every
   day: Ninja Kiwi sometimes puts an event up again under a new id, and then the other id has the rules.
-- The API only lists the last ~7 events, so a run that fails is caught up by the next ones. A failing run sends the
-  normal Actions e-mail.
+- Each request gives up after 30 seconds. One that times out, can't connect, or gets 429 or a server error is tried
+  three times in all, and a job that hangs anyway is stopped after 15 minutes. The API only lists the last ~7
+  events, so a run that fails is caught up by the next ones. A failing run sends the normal Actions e-mail.
 
 `tools/boss-events/backfill.mjs` made the files from before the archiver; see
 [CONTRIBUTING.md](../../CONTRIBUTING.md#boss-events-archive).
