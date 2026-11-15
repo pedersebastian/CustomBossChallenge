@@ -156,6 +156,17 @@ public sealed class BossEditorSection
     /// On the section's title line: every boss option back to its default, after asking
     /// </summary>
     public ModHelperButton ResetAllButton { get; private set; } = null!;
+
+    /// <summary>
+    /// Next to Reset Boss Options: one step back or forward, like Ctrl+Z and Ctrl+Y, greyed out without one (#185)
+    /// </summary>
+    public ModHelperButton UndoButton { get; private set; } = null!;
+    public ModHelperButton RedoButton { get; private set; } = null!;
+
+    public const float HistoryWidth = 500;
+    public const float HistoryGap = 30;
+    private const float HistoryIconSize = 70;
+    private const float DisabledAlpha = 0.4f;
     private readonly List<FocusStop> focusStops = new();
     private GameObject skullModeRow = null!;
     private GameObject customSkullsRow = null!;
@@ -220,6 +231,13 @@ public sealed class BossEditorSection
         }, VanillaSprites.BlueBtnLong, new Action(OnResetAll));
         ResetAllButton.transform.SetParent(Section.transform, false);
         ResetAllButton.AddText(new Info("Label", InfoPreset.FillParent), Texts.ResetBossOptions.T(), 52);
+
+        // Left of it, Undo and Redo for the mouse and touch screens, one step like Ctrl+Z and Ctrl+Y (#185)
+        RedoButton = HistoryButton("Redo", -60 - 740 - HistoryGap, VanillaSprites.NextArrowSmall, Texts.RedoButton.T(),
+            () => BossHistory.Redo(Editor));
+        UndoButton = HistoryButton("Undo", -60 - 740 - 2 * HistoryGap - HistoryWidth, VanillaSprites.PrevArrowSmall,
+            Texts.UndoButton.T(), () => BossHistory.Undo(Editor));
+        ShowHistory();
 
         var rowsObject = new GameObject(RowsName, Il2CppInterop.Runtime.Il2CppType.Of<RectTransform>());
         rowsObject.transform.SetParent(Section.transform, false);
@@ -512,6 +530,60 @@ public sealed class BossEditorSection
     public const float SetupButtonWidth = 380;
     public const float SetupButtonGap = 30;
 
+    /// <summary>
+    /// Undo or Redo on the section's title line, an arrow and a label with its shortcut
+    /// </summary>
+    private ModHelperButton HistoryButton(string name, float x, string arrow, string label, Func<bool> step)
+    {
+        var button = ModHelperButton.Create(new Info(name, x, -50, HistoryWidth, 104)
+        {
+            Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 0.5f)
+        }, VanillaSprites.BlueBtnLong, new Action(() =>
+        {
+            step();
+            ShowHistory();
+        }));
+        button.transform.SetParent(Section.transform, false);
+        var icon = button.AddImage(new Info("Arrow", 30 + HistoryIconSize / 2, 0, HistoryIconSize, HistoryIconSize)
+        {
+            Anchor = new Vector2(0, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
+        }, arrow);
+        icon.Image.raycastTarget = false;
+        var text = button.AddText(new Info("Label", HistoryIconSize / 2 + 15, 0, HistoryWidth - HistoryIconSize - 90, 104),
+            label, 52);
+        // Some languages' words are long: they shrink to fit instead of running out of the button
+        text.Text.enableAutoSizing = true;
+        text.Text.fontSizeMax = 52;
+        text.Text.fontSizeMin = 30;
+        text.Text.textWrappingMode = TextWrappingModes.NoWrap;
+        text.Text.raycastTarget = false;
+        return button;
+    }
+
+    /// <summary>
+    /// Greys out Undo and Redo when there is nothing to undo or redo. Called every frame, as the editor's own rules
+    /// become steps without the section knowing.
+    /// </summary>
+    public void ShowHistory()
+    {
+        ShowEnabled(UndoButton, BossHistory.UndoCount > 0);
+        ShowEnabled(RedoButton, BossHistory.RedoCount > 0);
+    }
+
+    private static void ShowEnabled(ModHelperButton button, bool enabled)
+    {
+        if (button.Button.interactable == enabled) return;
+        button.Button.interactable = enabled;
+        // The button tints only its own image; the arrow and the label fade with it
+        foreach (var graphic in button.GetComponentsInChildren<Graphic>(true))
+        {
+            if (graphic.gameObject == button.gameObject) continue;
+            var color = graphic.color;
+            color.a = enabled ? 1 : DisabledAlpha;
+            graphic.color = color;
+        }
+    }
+
     private static ModHelperButton ShareButton(GameObject row, string name, float x, string label, Action action,
         float width = 560)
     {
@@ -554,6 +626,15 @@ public sealed class BossEditorSection
 
     private void BuildFocusStops()
     {
+        // Left to right on the title line; Undo and Redo are skipped while there is nothing to undo or redo
+        focusStops.Add(new FocusStop("Undo", () => UndoButton.gameObject)
+        {
+            Activate = () => UndoButton.Button.onClick.Invoke(), Enabled = () => BossHistory.UndoCount > 0
+        });
+        focusStops.Add(new FocusStop("Redo", () => RedoButton.gameObject)
+        {
+            Activate = () => RedoButton.Button.onClick.Invoke(), Enabled = () => BossHistory.RedoCount > 0
+        });
         focusStops.Add(FocusStop.ForButton("ResetBossOptions", ResetAllButton.Button));
 
         // Left and right pick a tab, Enter or Space switch to the other one, Delete goes back to Standard

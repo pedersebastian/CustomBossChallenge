@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "Nulstil bossindstillinger",
   "CustomBossChallenge-ResetBossOptionsQuestion": "Sæt alle bossindstillinger tilbage til standard? Challenge Editor-reglerne, som banen og startpengene, forbliver som de er. Ctrl+Z fortryder det.",
   "CustomBossChallenge-Reset": "Nulstil",
+  "CustomBossChallenge-UndoButton": "Fortryd (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "Gentag (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} niveauer",
   "CustomBossChallenge-HealthCap": "Liv stopper ved {0} pr. niveau, spillets grænse: nogle niveauer får mindre end indstillingerne beder om.",
   "CustomBossChallenge-StartRoundClose": "Spillet starter på runde {0}, kun {1} runder før den første boss på runde {2}.",

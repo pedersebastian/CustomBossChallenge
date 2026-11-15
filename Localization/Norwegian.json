@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "Tilbakestill boss-valg",
   "CustomBossChallenge-ResetBossOptionsQuestion": "Sette alle boss-valgene tilbake til standard? Challenge Editor-reglene, som kartet og startpengene, blir som de er. Ctrl+Z angrer det.",
   "CustomBossChallenge-Reset": "Tilbakestill",
+  "CustomBossChallenge-UndoButton": "Angre (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "Gjør om (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} nivåer",
   "CustomBossChallenge-HealthCap": "Livet stopper på {0} per nivå, spillets grense: noen nivåer får mindre enn innstillingene ber om.",
   "CustomBossChallenge-StartRoundClose": "Spillet starter på runde {0}, bare {1} runder før den første bossen på runde {2}.",

@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "Ripristina boss",
   "CustomBossChallenge-ResetBossOptionsQuestion": "Riportare tutte le opzioni del boss ai valori predefiniti? Le regole dell'editor delle sfide, come la mappa e il denaro iniziale, restano come sono. Ctrl+Z lo annulla.",
   "CustomBossChallenge-Reset": "Ripristina",
+  "CustomBossChallenge-UndoButton": "Annulla (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "Ripeti (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} livelli",
   "CustomBossChallenge-HealthCap": "La salute si ferma a {0} per livello, il limite del gioco: alcuni livelli ne hanno meno di quanto chiedono le impostazioni.",
   "CustomBossChallenge-StartRoundClose": "La partita inizia al round {0}, solo {1} round prima del primo boss al round {2}.",

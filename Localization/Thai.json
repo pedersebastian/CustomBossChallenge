@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "รีเซ็ตบอส",
   "CustomBossChallenge-ResetBossOptionsQuestion": "คืนค่าตัวเลือกบอสทั้งหมดเป็นค่าเริ่มต้นหรือไม่? กฎของ Challenge Editor เช่น แผนที่และเงินเริ่มต้น จะยังคงเหมือนเดิม กด Ctrl+Z เพื่อย้อนกลับ",
   "CustomBossChallenge-Reset": "รีเซ็ต",
+  "CustomBossChallenge-UndoButton": "เลิกทำ (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "ทำซ้ำ (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} ระดับ",
   "CustomBossChallenge-HealthCap": "พลังชีวิตหยุดที่ {0} ต่อระดับ ซึ่งเป็นขีดจำกัดของเกม: บางระดับจะได้น้อยกว่าที่ตั้งค่าไว้",
   "CustomBossChallenge-StartRoundClose": "เกมเริ่มที่รอบ {0} ก่อนบอสตัวแรกในรอบ {2} เพียง {1} รอบ",

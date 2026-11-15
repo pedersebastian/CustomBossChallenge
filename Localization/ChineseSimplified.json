@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "重置首领",
   "CustomBossChallenge-ResetBossOptionsQuestion": "将所有首领选项恢复为默认值？挑战编辑器规则（如地图和初始金钱）保持不变。按 Ctrl+Z 可撤销。",
   "CustomBossChallenge-Reset": "重置",
+  "CustomBossChallenge-UndoButton": "撤销 (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "重做 (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} 个阶段",
   "CustomBossChallenge-HealthCap": "每阶生命值最高为 {0}，这是游戏的上限：部分阶段的生命值会低于设置的数值。",
   "CustomBossChallenge-StartRoundClose": "游戏从第 {0} 回合开始，距离第 {2} 回合的第一个首领只有 {1} 回合。",

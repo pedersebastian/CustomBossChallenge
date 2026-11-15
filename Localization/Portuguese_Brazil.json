@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "Redefinir chefe",
   "CustomBossChallenge-ResetBossOptionsQuestion": "Voltar todas as opções do chefe ao padrão? As regras do Editor de Desafios, como o mapa e o dinheiro inicial, ficam como estão. Ctrl+Z desfaz.",
   "CustomBossChallenge-Reset": "Redefinir",
+  "CustomBossChallenge-UndoButton": "Desfazer (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "Refazer (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} níveis",
   "CustomBossChallenge-HealthCap": "A vida para em {0} por nível, o limite do jogo: alguns níveis recebem menos do que as configurações pedem.",
   "CustomBossChallenge-StartRoundClose": "O jogo começa na rodada {0}, só {1} rodadas antes do primeiro chefe na rodada {2}.",

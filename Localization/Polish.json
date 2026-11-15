@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "Resetuj bossa",
   "CustomBossChallenge-ResetBossOptionsQuestion": "Przywrócić wszystkie opcje bossa do domyślnych? Zasady edytora wyzwań, takie jak mapa i pieniądze startowe, zostaną bez zmian. Ctrl+Z to cofa.",
   "CustomBossChallenge-Reset": "Resetuj",
+  "CustomBossChallenge-UndoButton": "Cofnij (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "Ponów (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "Poziomy: {0}",
   "CustomBossChallenge-HealthCap": "Zdrowie kończy się na {0} na poziom, limicie gry: niektóre poziomy dostają mniej, niż wynika z ustawień.",
   "CustomBossChallenge-StartRoundClose": "Gra zaczyna się w rundzie {0}, tylko {1} rundy przed pierwszym bossem w rundzie {2}.",

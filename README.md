@@ -78,8 +78,9 @@ To build your own tools for share codes, see the [share-code package](web/packag
 - Every boss option has an **info button** (the "i" on its icon) that explains what it does.
 - **Reset and undo**: every boss option has a reset button that puts it back to its default, and **Reset Boss
   Options** at the top of the Boss section puts all of them back (after asking) without touching the Challenge
-  Editor rules. Ctrl+Z undoes the last change, to the boss options or to the Challenge Editor rules (map,
-  difficulty, cash, lives, towers, modifiers, ...), up to 20 steps, and Ctrl+Y or Ctrl+Shift+Z redoes it; a pasted,
+  Editor rules. Ctrl+Z, or the **Undo** button next to it, undoes the last change, to the boss options or to the
+  Challenge Editor rules (map, difficulty, cash, lives, towers, modifiers, ...), up to 20 steps, and Ctrl+Y,
+  Ctrl+Shift+Z or the **Redo** button redoes it; a pasted,
   loaded or random setup is one step, so an accidental Paste can be undone. The challenge name isn't undone. The
   editor's own Undo button still goes back to how the setup was when you opened it, and Ctrl+Z brings your changes
   back.

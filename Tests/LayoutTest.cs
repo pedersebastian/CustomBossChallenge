@@ -187,21 +187,34 @@ public class LayoutTest : CustomBossTest
             }
         }
 
-        var resetAll = ScreenRect(section.ResetAllButton.Button);
-        Expect(InsideHorizontally(resetAll, sectionRect), $"{format}: Reset Boss Options ({Describe(resetAll)}) sticks out of the section");
+        // Reset Boss Options and, left of it, Undo and Redo (#185) on the section's title line
+        var titleButtons = new[] {section.UndoButton, section.RedoButton, section.ResetAllButton};
         var heading = section.Section.transform.Find("Heading")?.GetComponent<Il2CppTMPro.TMP_Text>();
-        if (heading != null)
+        for (var i = 0; i < titleButtons.Length; i++)
         {
-            var letters = LettersRect(heading);
-            Expect(!Overlap(resetAll, letters), $"{format}: Reset Boss Options ({Describe(resetAll)}) covers the title ({Describe(letters)})");
+            var name = titleButtons[i].name;
+            var rect = ScreenRect(titleButtons[i].Button);
+            Expect(InsideHorizontally(rect, sectionRect), $"{format}: {name} ({Describe(rect)}) sticks out of the section");
+            if (heading != null)
+            {
+                var letters = LettersRect(heading);
+                Expect(!Overlap(rect, letters), $"{format}: {name} ({Describe(rect)}) covers the title ({Describe(letters)})");
+            }
+
+            for (var j = i + 1; j < titleButtons.Length; j++)
+            {
+                var other = ScreenRect(titleButtons[j].Button);
+                Expect(!Overlap(rect, other), $"{format}: {name} ({Describe(rect)}) overlaps {titleButtons[j].name} ({Describe(other)})");
+            }
+
+            foreach (var row in section.Section.transform.Find(BossEditorSection.RowsName).GetComponentsInChildren<Selectable>())
+            {
+                var rowRect = ScreenRect(row);
+                Expect(rowRect.width < 1 || !Overlap(rect, rowRect),
+                    $"{format}: {name} ({Describe(rect)}) overlaps {NamePath(row.transform, section.Section.transform)}");
+            }
         }
 
-        foreach (var row in section.Section.transform.Find(BossEditorSection.RowsName).GetComponentsInChildren<Selectable>())
-        {
-            var rowRect = ScreenRect(row);
-            Expect(rowRect.width < 1 || !Overlap(resetAll, rowRect),
-                $"{format}: Reset Boss Options ({Describe(resetAll)}) overlaps {NamePath(row.transform, section.Section.transform)}");
-        }
         CheckPicker(format, section);
         section.SetAdvanced(false);
         CheckWarningLines(format, editor, section);
