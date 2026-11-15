@@ -13,6 +13,7 @@
         <Compile Include="Game.fs" />
         <Compile Include="Generators.fs" />
         <Compile Include="CodeProperties.fs" />
+        <Compile Include="TextProperties.fs" />
         <Compile Include="GeneratedFixtures.fs" />
     </ItemGroup>
     <ItemGroup>

@@ -19,12 +19,41 @@ import {
   isGivenName,
   nameTraits,
   percentWeight,
+  randomTierBosses,
   randomizeSetup,
   tierWeight,
+  weightedPercent,
+  weightedTiers,
   type Rng,
 } from "../src/studio/random";
 import { ALL_NAMES, NORMAL_TRAITS, namesFor, randomName, type NameTraits } from "../src/studio/randomNames";
 import cases from "./random-name-cases.json";
+import randomCases from "./random-cases.json";
+
+// The same cases as UnitTests/BossRandomizerTests.cs: given the same random numbers, the Studio's Random and the Boss
+// Creator's make the same values
+describe("the same random numbers give the same values as BossRandomizer", () => {
+  const listed = (rolls: number[]) => {
+    let used = 0;
+    const rng: Rng = () => {
+      if (used >= rolls.length) throw new Error(`used more than the ${rolls.length} rolls`);
+      return rolls[used++];
+    };
+    return { rng, used: () => used };
+  };
+
+  it.each(randomCases.percentWeights)("%d %% is as likely as in the mod", (percent, weight) =>
+    expect(percentWeight(percent)).toBeCloseTo(weight, 12),
+  );
+  it.each(randomCases.tierWeights)("%d tiers are as likely as in the mod", (tiers, weight) => expect(tierWeight(tiers)).toBeCloseTo(weight, 12));
+  it.each(randomCases.weightedPercent)("a roll of $roll picks $value %", ({ roll, value }) => expect(weightedPercent(() => roll)).toBe(value));
+  it.each(randomCases.weightedTiers)("a roll of $roll picks $value tiers", ({ roll, value }) => expect(weightedTiers(() => roll)).toBe(value));
+  it.each(randomCases.tierBosses)("listed rolls give $expected", ({ rolls, expected }) => {
+    const random = listed(rolls);
+    expect(randomTierBosses(random.rng)).toBe(expected);
+    expect(random.used()).toBe(rolls.length);
+  });
+});
 
 /** A seeded random source (mulberry32), so a failing run can be repeated */
 function seeded(seed: number): Rng {

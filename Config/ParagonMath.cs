@@ -1,20 +1,13 @@
-using System;
 using System.Linq;
 using Il2CppAssets.Scripts.Unity;
 
 namespace CustomBossChallenge.Config;
 
 /// <summary>
-/// Pure helpers for the Max Paragons slider. The slider goes from 0 to the number of paragons in the game; the last
-/// position means no limit, since a limit of every paragon there is never stops anyone.
+/// How many paragons the game has. The slider's math is in ParagonMath.Slider.cs, which is built without the game.
 /// </summary>
-public static class ParagonMath
+public static partial class ParagonMath
 {
-    /// <summary>
-    /// The value of DailyChallengeModel.maxParagons the game reads as no limit
-    /// </summary>
-    public const int NoLimit = -1;
-
     /// <summary>
     /// Used when the game model isn't loaded yet
     /// </summary>
@@ -39,20 +32,4 @@ public static class ParagonMath
             return available;
         }
     }
-
-    public static bool IsUnlimited(int maxParagons, int availableParagons) =>
-        maxParagons < 0 || maxParagons >= availableParagons;
-
-    /// <summary>
-    /// The slider position for a model's maxParagons; no limit, a limit of every paragon and broken values are all
-    /// shown as the last position
-    /// </summary>
-    public static int ToSlider(int maxParagons, int availableParagons) =>
-        IsUnlimited(maxParagons, availableParagons) ? availableParagons : maxParagons;
-
-    /// <summary>
-    /// The maxParagons value for a slider position
-    /// </summary>
-    public static int FromSlider(int position, int availableParagons) =>
-        position >= availableParagons ? NoLimit : Math.Max(position, 0);
 }
