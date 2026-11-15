@@ -53,6 +53,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Huge tier speeds and health in hand-made codes** (#168): a tier's own speed or health near int's limits, like
+  `Lych@2147483647/2147483647`, overflowed and flipped to the other end of its range, so the mod played 10 % where
+  the website showed 1000 %. Both now clamp it alike, and the website also reads -2147483648 like the mod.
 - **Boss Tiers help in 17 languages** (#172): it said every tier is stronger than the one before, which isn't true
   when Speed or Health per Tier is below 0. It now says so in every language, like in English.
 - **Numbers on every system culture** (#172): the ranked stats panel's tiers and cash and the Boss Creator's sliders

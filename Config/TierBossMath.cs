@@ -172,10 +172,11 @@ public static class TierBossMath
             : Normal;
 
     /// <summary>
-    /// A speed or health held to its range, on a multiple of <see cref="ValueStep"/>
+    /// A speed or health held to its range, on a multiple of <see cref="ValueStep"/>. Clamped before it becomes an int
+    /// again, so values near int's limits don't overflow and flip their sign (#168).
     /// </summary>
     public static int ClampValue(int value, int min, int max) =>
-        Math.Clamp((int) Math.Round(value / (double) ValueStep, MidpointRounding.AwayFromZero) * ValueStep, min, max);
+        (int) Math.Clamp(Math.Round(value / (double) ValueStep, MidpointRounding.AwayFromZero) * ValueStep, min, max);
 
     /// <summary>
     /// The list for <paramref name="tiers"/>, without the tiers at the end that follow the setup's boss

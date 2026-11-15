@@ -1,5 +1,5 @@
 {
-  "comment": "How the Boss Creator changes the boss of a tier in Advanced Mode: TierBossMath.With, Step and Resolve. Tiers are tokens like in BossOptions.TierBosses (\"\" follows the setup's boss). Read by web/test/math.test.ts and UnitTests/TierBossMathTests.cs, so the website's Studio and the mod change tiers alike (#95).",
+  "comment": "How the Boss Creator changes the boss of a tier in Advanced Mode: TierBossMath.With, Step and Resolve. Tiers are tokens like in BossOptions.TierBosses (\"\" follows the setup's boss). Read by web/test/math.test.ts and UnitTests/TierBossMathTests.cs, so the website's Studio and the mod change tiers alike (#95). \"normalize\" reads a hand-made list, values at int's limits included (#168).",
   "with": [
     { "list": null, "tier": 3, "boss": "Lych", "expected": ",,Lych" },
     { "list": "", "tier": 1, "boss": "VortexElite@120/80#4", "expected": "VortexElite@120/80#4" },
@@ -30,5 +30,14 @@
     { "list": "Lych,Vortex,Phayze", "boss": "Bloonarius", "elite": false, "tiers": 2, "pick": 0, "standard": "", "expected": "Lych,Vortex" },
     { "list": null, "boss": "Bloonarius", "elite": false, "tiers": 0, "pick": 0, "standard": "", "expected": "Bloonarius" },
     { "list": null, "boss": "Bloonarius", "elite": false, "tiers": 12, "pick": 0, "standard": "#60%;20%", "expected": "Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%" }
+  ],
+  "normalize": [
+    { "list": "Lych@2147483647/2147483647", "expected": "Lych@1000/2000" },
+    { "list": "Lych@-2147483647/-2147483647", "expected": "Lych@10/10" },
+    { "list": "Lych@-2147483648/100", "expected": "Lych@10/100" },
+    { "list": "Lych@2147483648/-2147483649", "expected": "Lych" },
+    { "list": "Lych@2147483645/15", "expected": "Lych@1000/20" },
+    { "list": "Lych#-2147483648", "expected": "Lych#0" },
+    { "list": "Lych#2147483647", "expected": "Lych#10" }
   ]
 }

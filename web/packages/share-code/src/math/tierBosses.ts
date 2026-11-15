@@ -60,7 +60,8 @@ function parseInt32(text: string): number | null {
   const trimmed = netTrim(text);
   if (!/^[+-]?\d+$/.test(trimmed)) return null;
   const value = Number(trimmed);
-  return Math.abs(value) > 2147483647 ? null : value;
+  // int's whole range, -2147483648 included (#168)
+  return value < -2147483648 || value > 2147483647 ? null : value;
 }
 
 /** A tier's own skulls after "#": a whole number is that many evenly spaced skulls, a list with "%" their percentages */

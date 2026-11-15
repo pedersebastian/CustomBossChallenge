@@ -163,6 +163,10 @@ describe("changing a tier's boss like the Boss Creator", () => {
   const tierOf = (token: string) => parseTierBosses(token)[0] ?? FOLLOWS;
   const tokenOf = (token: string) => (token === "" ? "" : withTier(null, 1, tierOf(token)));
 
+  it.each(tierBossCases.normalize.map((c) => [c.list, c.expected] as const))("Normalize(%j) = %j", (list, expected) =>
+    expect(normalizeTierBosses(list)).toBe(expected),
+  );
+
   it.each(tierBossCases.with.map((c) => [c.list, c.tier, c.boss, c.expected] as const))("With(%j, %i, %j) = %j", (list, tier, boss, expected) =>
     expect(withTier(list, tier, tierOf(boss))).toBe(expected),
   );
