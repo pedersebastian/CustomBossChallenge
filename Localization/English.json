@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "Reset Boss Options",
   "CustomBossChallenge-ResetBossOptionsQuestion": "Put every boss option back to its default? The Challenge Editor rules, like the map and starting cash, stay as they are. Ctrl+Z undoes it.",
   "CustomBossChallenge-Reset": "Reset",
+  "CustomBossChallenge-UndoButton": "Undo (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "Redo (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} tiers",
   "CustomBossChallenge-HealthCap": "Health stops at {0} per tier, the game's limit: some tiers get less than the settings ask for.",
   "CustomBossChallenge-StartRoundClose": "The game starts on round {0}, only {1} rounds before the first boss on round {2}.",

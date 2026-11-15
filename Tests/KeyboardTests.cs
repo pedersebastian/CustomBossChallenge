@@ -178,8 +178,10 @@ public class KeyboardTest : CustomBossTest
         var section = BossEditorSection.Current!;
         yield return Unfocus();
 
-        // Tab starts at Reset Boss Options on the section's title line, then the first boss; Shift+Tab starts at Play
+        // Tab starts at Reset Boss Options on the section's title line, then the first boss; Shift+Tab starts at Play.
+        // Undo and Redo before it are skipped while there is nothing to undo or redo (#185)
         var bosses = Enum.GetValues<BossType>();
+        BossHistory.Clear();
         const string first = "ResetBossOptions";
         AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab)), KeyAction.NextField, "Tab without a control");
         AssertEquals(BossCreatorKeys.Current?.Name, first, "First control");
@@ -195,6 +197,24 @@ public class KeyboardTest : CustomBossTest
         AssertEquals(BossCreatorKeys.Current?.Name, "Play", "Shift+Tab without a control");
         BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
         AssertEquals(BossCreatorKeys.Current?.Name, first, "Tab after Play wraps to the start");
+
+        // With a step to undo, the keyboard reaches Undo first, and Enter on it undoes one step (#185)
+        yield return Unfocus();
+        var tiers = section.Tiers.Value;
+        section.Tiers.Slider.value = tiers == 3 ? 4 : 3;
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
+        AssertEquals(BossCreatorKeys.Current?.Name, "Undo", "Tab reaches Undo when there is a step to undo");
+        AssertEquals(BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Enter)), KeyAction.Activate, "Enter on Undo");
+        AssertEquals(section.Tiers.Value, tiers, "Enter on Undo undoes the change");
+        AssertEquals(section.RedoButton.Button.interactable, true, "Redo is enabled after Undo");
+        yield return Unfocus();
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Tab));
+        AssertEquals(BossCreatorKeys.Current?.Name, "Redo", "Tab reaches Redo when there is a step to redo");
+        BossCreatorKeys.Handle(new KeyPress(ShortcutKey.Enter));
+        AssertEquals(section.Tiers.Value, tiers == 3 ? 4f : 3f, "Enter on Redo redoes the change");
+        yield return Unfocus();
+        section.Tiers.Slider.value = tiers;
+        BossHistory.Clear();
 
         // Every boss is a control of its own, picked with Enter or Space
         var boss = BossMode.Options.Boss;

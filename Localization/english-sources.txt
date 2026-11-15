@@ -1,6 +1,6 @@
 # The English text each translation was made from, as the first 8 hex digits of the SHA-256 of its UTF-8, tab-separated.
 # Written by .github/scripts/Check-Localization.ps1 -UpdateSources after translating; see CONTRIBUTING.md.
-Key	Arabic	ChineseSimplified	ChineseTraditional	Danish	Dutch	Finnish	French	German	Italian	Japanese	Korean	Norwegian	Polish	Portuguese_Brazil	Russian	Spanish	Spanish_LATAM	Swedish	Thai	Turkish
+Key	Arabic	ChineseSimplified	ChineseTraditional	Danish	Dutch	Finnish	French	German	Italian	Japanese	Korean	Norwegian	Polish	Portuguese_Brazil	Russian	Spanish_LATAM	Spanish	Swedish	Thai	Turkish
 CustomBossChallenge DisplayName	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5	c6dc81d5
 CustomBossChallenge DisplayDescription	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217	320ee217
 BossCreator	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32	4cd45f32
@@ -88,6 +88,8 @@ Cancel	19766ed6	19766ed6	19766ed6	19766ed6	19766ed6	19766ed6	19766ed6	19766ed6	1
 ResetBossOptions	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60	6096dc60
 ResetBossOptionsQuestion	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39	3c63ba39
 Reset	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606	daee7606
+UndoButton	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224	a6723224
+RedoButton	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904	32310904
 TierCount	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7	9820eab7
 HealthCap	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1	e36764b1
 StartRoundClose	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb	3ad982eb

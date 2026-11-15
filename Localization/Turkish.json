@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "Boss'u sıfırla",
   "CustomBossChallenge-ResetBossOptionsQuestion": "Tüm boss seçenekleri varsayılana döndürülsün mü? Harita ve başlangıç parası gibi Challenge Editor kuralları olduğu gibi kalır. Ctrl+Z bunu geri alır.",
   "CustomBossChallenge-Reset": "Sıfırla",
+  "CustomBossChallenge-UndoButton": "Geri al (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "Yinele (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} kademe",
   "CustomBossChallenge-HealthCap": "Can, kademe başına {0} değerinde durur, oyunun sınırı: bazı kademeler ayarların istediğinden az alır.",
   "CustomBossChallenge-StartRoundClose": "Oyun {0}. turda başlıyor, {2}. turdaki ilk bossdan yalnızca {1} tur önce.",

@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "Palauta pomovalinnat",
   "CustomBossChallenge-ResetBossOptionsQuestion": "Palautetaanko kaikki pomovalinnat oletuksiin? Challenge Editorin säännöt, kuten kartta ja aloitusraha, pysyvät ennallaan. Ctrl+Z peruu sen.",
   "CustomBossChallenge-Reset": "Palauta",
+  "CustomBossChallenge-UndoButton": "Kumoa (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "Tee uudelleen (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} tasoa",
   "CustomBossChallenge-HealthCap": "Kestävyys pysähtyy {0}:aan tasoa kohden, pelin rajaan: jotkin tasot saavat vähemmän kuin asetukset pyytävät.",
   "CustomBossChallenge-StartRoundClose": "Peli alkaa kierroksella {0}, vain {1} kierrosta ennen ensimmäistä pomoa kierroksella {2}.",

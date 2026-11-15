@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "Boss-Optionen zurücksetzen",
   "CustomBossChallenge-ResetBossOptionsQuestion": "Alle Boss-Optionen auf den Standard zurücksetzen? Die Challenge-Editor-Regeln, wie Karte und Startgeld, bleiben, wie sie sind. Strg+Z macht es rückgängig.",
   "CustomBossChallenge-Reset": "Zurücksetzen",
+  "CustomBossChallenge-UndoButton": "Rückgängig (Strg+Z)",
+  "CustomBossChallenge-RedoButton": "Wiederholen (Strg+Y)",
   "CustomBossChallenge-TierCount": "{0} Stufen",
   "CustomBossChallenge-HealthCap": "Die Gesundheit endet bei {0} pro Stufe, der Grenze des Spiels: Manche Stufen bekommen weniger als eingestellt.",
   "CustomBossChallenge-StartRoundClose": "Das Spiel beginnt in Runde {0}, nur {1} Runden vor dem ersten Boss in Runde {2}.",

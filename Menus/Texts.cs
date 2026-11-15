@@ -215,6 +215,8 @@ public static class Texts
         "Put every boss option back to its default? The Challenge Editor rules, like the map and starting cash, stay " +
         "as they are. Ctrl+Z undoes it.");
     public static readonly string Reset = Key(nameof(Reset), "Reset");
+    public static readonly string UndoButton = Key(nameof(UndoButton), "Undo (Ctrl+Z)");
+    public static readonly string RedoButton = Key(nameof(RedoButton), "Redo (Ctrl+Y)");
     public static readonly string TierCount = Key(nameof(TierCount), "{0} tiers");
     public static readonly string HealthCap = Key(nameof(HealthCap),
         "Health stops at {0} per tier, the game's limit: some tiers get less than the settings ask for.");

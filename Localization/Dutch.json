@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "Bossopties herstellen",
   "CustomBossChallenge-ResetBossOptionsQuestion": "Alle bossopties terugzetten naar de standaard? De Challenge Editor-regels, zoals de kaart en het startgeld, blijven zoals ze zijn. Ctrl+Z maakt het ongedaan.",
   "CustomBossChallenge-Reset": "Herstellen",
+  "CustomBossChallenge-UndoButton": "Ongedaan maken (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "Opnieuw (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} niveaus",
   "CustomBossChallenge-HealthCap": "Gezondheid stopt bij {0} per niveau, de grens van het spel: sommige niveaus krijgen minder dan de instellingen vragen.",
   "CustomBossChallenge-StartRoundClose": "Het spel begint in ronde {0}, maar {1} rondes voor de eerste baas in ronde {2}.",

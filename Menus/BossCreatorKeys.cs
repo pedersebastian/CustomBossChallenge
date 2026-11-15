@@ -91,6 +91,7 @@ public static class BossCreatorKeys
 
         // A change to the editor's own rules becomes an Undo step once nothing has the keyboard any more
         if (focused == null && !BlockingUiOpen(section)) BossHistory.WatchRules(section.Editor);
+        section.ShowHistory();
 
         var press = ReadKeys();
 
@@ -144,9 +145,11 @@ public static class BossCreatorKeys
                 break;
             case KeyAction.Undo:
                 BossHistory.Undo(section!.Editor);
+                section.ShowHistory();
                 break;
             case KeyAction.Redo:
                 BossHistory.Redo(section!.Editor);
+                section.ShowHistory();
                 break;
             case KeyAction.ResetOption:
                 stop!.Reset?.Invoke();

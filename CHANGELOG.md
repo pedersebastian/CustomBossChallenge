@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Undo and Redo buttons** (#185): next to Reset Boss Options, two buttons undo and redo one step like Ctrl+Z and
+  Ctrl+Y, so the mouse and touch screens can too. They name their shortcut, are greyed out when there is nothing to
+  undo or redo, and the keyboard reaches them with Tab.
 - **CHIMPS Throwback example** (#162): a new example setup plays Bloonarius in CHIMPS on Hard with Boss Event Rounds
   and the earlier CHIMPS boss events' rounds (regrow, camo regrow and DDTs), in the Boss Creator and on the website.
 - **A map for every example**: the examples no longer all play Monkey Meadow. Marathon Lych plays Haunted, Speed

@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "보스 초기화",
   "CustomBossChallenge-ResetBossOptionsQuestion": "모든 보스 옵션을 기본값으로 되돌릴까요? 맵과 시작 자금 같은 챌린지 에디터 규칙은 그대로 유지됩니다. Ctrl+Z로 되돌릴 수 있습니다.",
   "CustomBossChallenge-Reset": "초기화",
+  "CustomBossChallenge-UndoButton": "실행 취소 (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "다시 실행 (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0}단계",
   "CustomBossChallenge-HealthCap": "체력은 단계당 {0}에서 멈춥니다(게임의 한계). 일부 단계는 설정보다 적은 체력을 받습니다.",
   "CustomBossChallenge-StartRoundClose": "게임이 {0} 라운드에서 시작되어, {2} 라운드의 첫 보스까지 {1} 라운드밖에 없습니다.",

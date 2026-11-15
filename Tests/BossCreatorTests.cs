@@ -977,6 +977,26 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(BossMode.Options.SpeedPerTier, 20, "Ctrl+Shift+Z redoes too");
         Assert(BossHistory.RedoCount == 0 && !BossHistory.Redo(editor), "Nothing left to redo");
 
+        // The Undo and Redo buttons do one step like the shortcuts, and are greyed out without one (#185)
+        section.ShowHistory();
+        Assert(section.UndoButton.Button.interactable, "Undo is enabled with something to undo");
+        Assert(!section.RedoButton.Button.interactable, "Redo is greyed out with nothing to redo");
+        section.UndoButton.Button.onClick.Invoke();
+        AssertEquals(BossMode.Options.SpeedPerTier, 0, "The Undo button undoes the last change");
+        AssertEquals(BossMode.Options.Tiers, 9, "The Undo button undoes only one step");
+        Assert(section.RedoButton.Button.interactable, "Redo is enabled after Undo");
+        section.RedoButton.Button.onClick.Invoke();
+        AssertEquals(BossMode.Options.SpeedPerTier, 20, "The Redo button redoes the change");
+        Assert(!section.RedoButton.Button.interactable, "Redo is greyed out again");
+        BossHistory.Clear();
+        section.ShowHistory();
+        Assert(!section.UndoButton.Button.interactable, "Undo is greyed out with nothing to undo");
+        Assert(section.FocusStops.All(stop => stop.Name is not ("Undo" or "Redo")), "The keyboard skips greyed out Undo and Redo");
+        foreach (var label in new[] {section.UndoButton, section.RedoButton}.Select(b => b.GetComponentInChildren<Il2CppTMPro.TMP_Text>()))
+        {
+            foreach (var c in label.text) Assert(label.font.HasCharacter(c, true, false), $"The font has '{c}' of {label.text}");
+        }
+
         // A dragged slider lands on its step, and a reset, an arrow or a retyped value that changes nothing keeps
         // Redo (#171)
         section.BossSpeed.Reset();

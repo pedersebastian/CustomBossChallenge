@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "إعادة ضبط الزعيم",
   "CustomBossChallenge-ResetBossOptionsQuestion": "هل تريد إعادة كل خيارات الزعيم إلى قيمها الافتراضية؟ تبقى قواعد محرر التحديات، مثل الخريطة والمال الابتدائي، كما هي. يمكنك التراجع عن ذلك بـ Ctrl+Z.",
   "CustomBossChallenge-Reset": "إعادة ضبط",
+  "CustomBossChallenge-UndoButton": "تراجع (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "إعادة (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} مستويات",
   "CustomBossChallenge-HealthCap": "تتوقف الصحة عند {0} لكل مستوى، وهو حد اللعبة: بعض المستويات تحصل على أقل مما تطلبه الإعدادات.",
   "CustomBossChallenge-StartRoundClose": "تبدأ اللعبة في الجولة {0}، أي قبل الزعيم الأول في الجولة {2} بـ {1} جولات فقط.",

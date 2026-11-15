@@ -86,6 +86,8 @@
   "CustomBossChallenge-ResetBossOptions": "Återställ bossinställningar",
   "CustomBossChallenge-ResetBossOptionsQuestion": "Återställa alla bossinställningar till standard? Challenge Editor-reglerna, som banan och startpengarna, förblir som de är. Ctrl+Z ångrar det.",
   "CustomBossChallenge-Reset": "Återställ",
+  "CustomBossChallenge-UndoButton": "Ångra (Ctrl+Z)",
+  "CustomBossChallenge-RedoButton": "Gör om (Ctrl+Y)",
   "CustomBossChallenge-TierCount": "{0} nivåer",
   "CustomBossChallenge-HealthCap": "Hälsan stannar vid {0} per nivå, spelets gräns: vissa nivåer får mindre än inställningarna ber om.",
   "CustomBossChallenge-StartRoundClose": "Spelet börjar på runda {0}, bara {1} rundor före den första bossen på runda {2}.",
