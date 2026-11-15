@@ -14,7 +14,16 @@ namespace CustomBossChallenge.Creator;
 /// <see cref="RulesOnly"/>, for a change to the Challenge Editor's own rules, which puts back only the rules.
 /// </summary>
 public sealed record BossStep(BossOptions Options, float BossSpeed, float BossHealth, int MaxParagons, string? Name,
-    DailyChallengeModel? Setup = null, bool RulesOnly = false);
+    DailyChallengeModel? Setup = null, bool RulesOnly = false, TabMemory? Tabs = null);
+
+/// <summary>
+/// What the Boss section's tabs remember while switching between Advanced and Standard: the bosses per tier from before
+/// Standard, and Boss Speed, Boss Health and the skulls from before Advanced (#166)
+/// </summary>
+public sealed record TabMemory(string? TierBosses, TierBoss? Standard)
+{
+    public static readonly TabMemory None = new(null, null);
+}
 
 /// <summary>
 /// Undo and Redo for the Boss Creator (issue #36): changes to the boss options, changes to the Challenge Editor's own
@@ -150,6 +159,8 @@ public static class BossHistory
         restoring = true;
         try
         {
+            // Putting back only the rules keeps the boss options, and with them what the tabs remember
+            var tabs = restore.RulesOnly ? BossEditorSection.Current?.Remembered : restore.Tabs;
             if (restore.RulesOnly)
             {
                 // Only the rules go back: the boss options and the name stay as they are now
@@ -170,6 +181,8 @@ public static class BossHistory
             {
                 PutBack(editor, restore);
             }
+
+            if (BossEditorSection.Current is { } section) section.Remembered = tabs ?? TabMemory.None;
         }
         finally
         {
@@ -184,7 +197,7 @@ public static class BossHistory
 
     private static BossStep BossOnly(DailyChallengeModel dcm) => new(BossMode.Options,
         dcm.bloonModifiers?.bossSpeedMultiplier ?? 1, dcm.bloonModifiers?.healthMultipliers?.boss ?? 1, dcm.maxParagons,
-        dcm.name);
+        dcm.name, Tabs: BossEditorSection.Current?.Remembered);
 
     private static BossStep Whole(ChallengeEditor editor)
     {

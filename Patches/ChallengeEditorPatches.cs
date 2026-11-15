@@ -42,6 +42,8 @@ internal static class ChallengeEditor_Undo
         if (!BossMode.Active || __instance.dcm == null) return;
 
         BossMode.Options = BossMode.OpenedOptions;
+        // The setup it was opened with has nothing remembered for the tabs (#166)
+        BossEditorSection.Current?.ForgetAdvanced();
         BossEditorSection.Current?.Load(__instance.dcm, BossMode.Options);
     }
 }
@@ -86,6 +88,8 @@ internal static class ChallengeEditor_Randomize
         if (!BossMode.Active || __instance.dcm == null) return;
 
         __instance.ApplyUiSettingsToDCM();
+        // The random setup is a new one: what the tabs remembered was the old one's (#166)
+        BossEditorSection.Current?.ForgetAdvanced();
         // Random keeps the mode: Advanced gets a boss per tier, Standard one boss
         BossMode.Options = BossRandomizer.Randomize(__instance.dcm, BossEditorSection.UnsupportedModes, BossMode.Options.Mixed);
 

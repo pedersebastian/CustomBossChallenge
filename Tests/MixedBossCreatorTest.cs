@@ -309,8 +309,82 @@ public class MixedBossCreatorTest : CustomBossTest
         AssertEquals(TierBossMath.Parse(BossMode.Options.TierBosses).All(t => t.Boss == nameof(BossType.Bloonarius)), true,
             "Advanced after Reset Boss Options starts with Bloonarius on every tier");
         section.ResetBoss();
+        yield return NewSetupForgetsTabs(section);
 
         Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
         yield return new WaitForSecondsRealtime(1);
+    }
+
+    /// <summary>
+    /// What the tabs remember belongs to one setup: a loaded, pasted or random setup starts over, and Undo brings back
+    /// what the setup had then (#166)
+    /// </summary>
+    private IEnumerator NewSetupForgetsTabs(BossEditorSection section)
+    {
+        var editor = section.Editor;
+        float Speed() => editor.dcm.bloonModifiers.bossSpeedMultiplier;
+        bool AllTiers(BossType boss) => TierBossMath.Parse(BossMode.Options.TierBosses).All(t => t.Boss == boss.ToString());
+        var lych = new BossOptions {Boss = BossType.Lych};
+
+        // A: an edited lineup, Standard, another setup loaded, Advanced: the tiers are the loaded setup's
+        section.ResetAll();
+        section.SetAdvanced(true);
+        section.SetTierBoss(2, new TierBoss(nameof(BossType.Vortex), false));
+        var edited = BossMode.Options.TierBosses;
+        section.SetAdvanced(false);
+        BossMode.Replace(editor, lych, BossMode.DefaultDcm(lych));
+        section.SetAdvanced(true);
+        Assert(AllTiers(BossType.Lych), $"A: Advanced after loading a setup has its boss on every tier: {BossMode.Options.TierBosses}");
+
+        // Undo puts back the setup from before the load, and with it the lineup it remembered
+        BossHistory.Undo(editor);
+        BossHistory.Undo(editor);
+        Assert(!BossMode.Options.Mixed, "A: Undo goes back to Standard from before the load");
+        section.SetAdvanced(true);
+        AssertEquals(BossMode.Options.TierBosses, edited, "A: after Undo, Advanced brings back the edited lineup");
+
+        // B: Boss Speed 200 % in Standard, Advanced, an Advanced code pasted, Standard: the pasted setup's own speed
+        section.ResetAll();
+        section.BossSpeed.Slider.value = 200;
+        section.SetAdvanced(true);
+        var advanced = new BossOptions {Boss = BossType.Phayze, TierBosses = "Phayze,Lych"};
+        var code = SetupCode.Encode(advanced, BossMode.DefaultDcm(advanced));
+        Assert(SetupCode.TryDecode(code, out var pasted, out var pastedDcm, out _) && pastedDcm != null, "B: the code reads");
+        BossMode.Replace(editor, pasted, pastedDcm!);
+        section.SetAdvanced(false);
+        Assert(Approximately(Speed(), 1), $"B: Standard after pasting keeps the pasted setup's Boss Speed, not 200 %: {Speed()}");
+        AssertEquals(section.BossSpeed.Value, 100f, "B: the slider shows the pasted setup's Boss Speed");
+
+        // C: Random starts over too
+        section.ResetAll();
+        section.SetAdvanced(true);
+        section.SetTierBoss(2, new TierBoss(nameof(BossType.Vortex), false));
+        section.SetAdvanced(false);
+        editor.randomBtn.onClick.Invoke();
+        yield return new WaitForSecondsRealtime(0.5f);
+        var randomBoss = BossMode.Options.Boss;
+        section.SetAdvanced(true);
+        Assert(AllTiers(randomBoss), $"C: Advanced after Random has the random boss on every tier: {BossMode.Options.TierBosses}");
+
+        // C: Ctrl+Z across a tab switch brings back what the tabs remembered then, here Standard's 200 %
+        section.ResetAll();
+        section.BossSpeed.Slider.value = 200;
+        section.SetAdvanced(true);
+        section.SetTierBoss(2, new TierBoss(nameof(BossType.Vortex), false));
+        section.SetAdvanced(false);
+        Assert(Approximately(Speed(), 2), $"C: Standard brings back its 200 %: {Speed()}");
+        BossHistory.Undo(editor);
+        Assert(BossMode.Options.Mixed, "C: Undo goes back to Advanced");
+        section.SetAdvanced(false);
+        Assert(Approximately(Speed(), 2), $"C: Standard after Undo still brings back its 200 %: {Speed()}");
+
+        // One setup still keeps its lineup while the tabs switch back and forth
+        section.SetAdvanced(true);
+        var lineup = BossMode.Options.TierBosses;
+        Assert(TierBossMath.Parse(lineup)[1].Boss == nameof(BossType.Vortex), $"Tier 2 keeps Vortex: {lineup}");
+        section.SetAdvanced(false);
+        section.SetAdvanced(true);
+        AssertEquals(BossMode.Options.TierBosses, lineup, "Switching tabs on one setup keeps the lineup");
+        section.ResetAll();
     }
 }

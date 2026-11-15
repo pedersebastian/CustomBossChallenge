@@ -1439,12 +1439,27 @@ public sealed class BossEditorSection
 
     /// <summary>
     /// Forgets the bosses per tier and the Boss Speed and Boss Health remembered for switching between Advanced and
-    /// Standard, so after a reset Advanced starts over from what Standard has
+    /// Standard, so after a reset, or once another setup is loaded, pasted or randomized, Advanced starts over from what
+    /// Standard has (#166)
     /// </summary>
     public void ForgetAdvanced()
     {
         lastTierBosses = null;
         standardValues = null;
+    }
+
+    /// <summary>
+    /// What the tabs remember for switching between Advanced and Standard, kept with each Undo step so going back
+    /// brings back what the setup had then (#166)
+    /// </summary>
+    public TabMemory Remembered
+    {
+        get => new(lastTierBosses, standardValues);
+        set
+        {
+            lastTierBosses = value.TierBosses;
+            standardValues = value.Standard;
+        }
     }
 
     /// <summary>
