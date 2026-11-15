@@ -65,10 +65,19 @@ public static class CodeFormat
 
     /// <summary>
     /// The code in pasted text: the text itself, or the part after # in a link to the website ("#code=CBC2:…" or
-    /// "#CBC2:…", also %-encoded or wrapped in &lt;…&gt; as Discord does). Text without a code in a link comes back
-    /// trimmed. Same rules as extractCode on the website (web/packages/share-code/src/decode.ts).
+    /// "#CBC2:…", also %-encoded or wrapped in &lt;…&gt; as Discord does). When that isn't a code on its own, the first
+    /// code standing on its own in the text, so a code in quotes or backticks, after "Try this:", before a full stop or
+    /// with words after a link is found too (#187). Text without a code comes back trimmed. Same rules as extractCode on
+    /// the website (web/packages/share-code/src/decode.ts).
     /// </summary>
     public static string ExtractCode(string? text)
+    {
+        var found = LinkedCode(text);
+        if (IsWholeCode(found)) return found;
+        return CodeIn(found) ?? CodeIn((text ?? "").Trim()) ?? found;
+    }
+
+    private static string LinkedCode(string? text)
     {
         var trimmed = (text ?? "").Trim();
         if (trimmed.StartsWith('<') && trimmed.EndsWith('>')) trimmed = trimmed[1..^1].Trim();
@@ -80,6 +89,43 @@ public static class CodeFormat
         // Ordinal: compared by culture, a code after a %00 would count as one (#113)
         fragment = Uri.UnescapeDataString(fragment).Trim();
         return fragment.StartsWith(AnyVersionPrefix, StringComparison.Ordinal) ? fragment : trimmed;
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex CodePattern =
+        new("CBC[0-9]+:[A-Za-z0-9_-]+", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    private static bool IsWholeCode(string text) =>
+        CodePattern.Match(text) is {Success: true} match && match.Index == 0 && match.Length == text.Length;
+
+    /// <summary>
+    /// The first code in <paramref name="text"/> that stands on its own: no letter, mark or digit right before it, and
+    /// after it only the end, a space, punctuation, an invisible character (U+200B, a byte order mark) or another ASCII
+    /// sign. Not a %, a letter or a symbol like an emoji, so a code with a broken %-escape stays as it is for decoding
+    /// to explain (#113).
+    /// </summary>
+    private static string? CodeIn(string text)
+    {
+        for (var match = CodePattern.Match(text); match.Success; match = match.NextMatch())
+        {
+            var start = match.Index;
+            var end = start + match.Length;
+            var before = start > 0 && CharUnicodeInfo.GetUnicodeCategory(text,
+                start > 1 && char.IsLowSurrogate(text[start - 1]) && char.IsHighSurrogate(text[start - 2]) ? start - 2 : start - 1)
+                <= UnicodeCategory.OtherNumber;
+            if (!before && (end == text.Length || EndsCode(text, end))) return match.Value;
+        }
+
+        return null;
+    }
+
+    /// <summary>Whether the character at <paramref name="index"/> can follow a code, see <see cref="CodeIn"/></summary>
+    private static bool EndsCode(string text, int index)
+    {
+        var c = text[index];
+        if (c < 0x80) return c != '%' && c is not (>= 'A' and <= 'Z' or >= 'a' and <= 'z' or >= '0' and <= '9');
+        var category = CharUnicodeInfo.GetUnicodeCategory(text, index);
+        return category is >= UnicodeCategory.SpaceSeparator and <= UnicodeCategory.Format
+            or >= UnicodeCategory.ConnectorPunctuation and <= UnicodeCategory.OtherPunctuation;
     }
 
     /// <summary>

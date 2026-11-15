@@ -62,6 +62,9 @@ public static class SkullMath
     {
         if (string.IsNullOrWhiteSpace(text)) return null;
 
+        // A list split by ; may use decimal commas, as typed in Norwegian or German: "33,3; 66,6" is 33.3 and 66.6 (#187)
+        if (text.Contains(';')) text = DecimalComma.Replace(text, ".");
+
         var values = text
             .Split(new[] {',', ';', ' '}, StringSplitOptions.RemoveEmptyEntries)
             .Select(s => s.Trim().TrimEnd('%'))
@@ -75,6 +78,10 @@ public static class SkullMath
 
         return values.Length == 0 ? null : values;
     }
+
+    /// <summary>A comma with a digit on both sides</summary>
+    private static readonly System.Text.RegularExpressions.Regex DecimalComma =
+        new("(?<=[0-9]),(?=[0-9])", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 
     /// <summary>
     /// Thresholds as the player writes them, e.g. [0.5, 0.335] -> "50, 33.5"

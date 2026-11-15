@@ -26,6 +26,24 @@
     { "text": "#code=CBC2:q1bKV7Kq%F0%9F%98%80", "code": "CBC2:q1bKV7Kq\ud83d\ude00" },
     { "text": "#code=CBC2:q1bKV7Kq%e2%82%ac", "code": "CBC2:q1bKV7Kq\u20ac" },
     { "text": "", "code": "" },
-    { "text": "   ", "code": "" }
+    { "text": "   ", "code": "" },
+    { "text": "\"CBC2:q1bKV7Kq\"", "code": "CBC2:q1bKV7Kq" },
+    { "text": "`CBC2:q1bKV7Kq`", "code": "CBC2:q1bKV7Kq" },
+    { "text": "```\nCBC2:q1bKV7Kq\n```", "code": "CBC2:q1bKV7Kq" },
+    { "text": "\u201cCBC2:q1bKV7Kq\u201d", "code": "CBC2:q1bKV7Kq" },
+    { "text": "Try this: CBC1:abc-_123", "code": "CBC1:abc-_123" },
+    { "text": "Try this:CBC1:abc-_123!", "code": "CBC1:abc-_123" },
+    { "text": "CBC2:q1bKV7Kq.", "code": "CBC2:q1bKV7Kq" },
+    { "text": "CBC2:q1bKV7Kq\u200b", "code": "CBC2:q1bKV7Kq" },
+    { "text": "check https://pedersebastian.github.io/CustomBossChallenge/#code=CBC2:q1bKV7Kq out", "code": "CBC2:q1bKV7Kq" },
+    { "text": "check https://pedersebastian.github.io/CustomBossChallenge/#code=CBC2%3Aq1bKV7Kq out", "code": "CBC2:q1bKV7Kq" },
+    { "text": "(https://pedersebastian.github.io/CustomBossChallenge/#code=CBC2:q1bKV7Kq)", "code": "CBC2:q1bKV7Kq" },
+    { "text": "first CBC1:aaa then CBC2:bbb", "code": "CBC1:aaa" },
+    { "text": "xCBC2:q1bKV7Kq yCBC1:abc", "code": "xCBC2:q1bKV7Kq yCBC1:abc" },
+    { "text": "CBC2:q1bKV7Kq\u00e6 and more", "code": "CBC2:q1bKV7Kq\u00e6 and more" },
+    { "text": "\ud835\udc00CBC2:q1bKV7Kq", "code": "\ud835\udc00CBC2:q1bKV7Kq" },
+    { "text": "CBC2:q1bKV7Kq \ud83d\ude00", "code": "CBC2:q1bKV7Kq" },
+    { "text": "no code here", "code": "no code here" },
+    { "text": "CBC2: q1bKV7Kq", "code": "CBC2: q1bKV7Kq" }
   ]
 }

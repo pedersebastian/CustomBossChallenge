@@ -33,6 +33,9 @@ function trimPercent(text: string): string {
 export function parseCustom(text: string | null | undefined): number[] | null {
   if (text == null || isNullOrWhiteSpace(text)) return null;
 
+  // A list split by ; may use decimal commas, as typed in Norwegian or German: "33,3; 66,6" is 33.3 and 66.6 (#187)
+  if (text.includes(";")) text = text.replace(/(?<=[0-9]),(?=[0-9])/g, ".");
+
   const values: number[] = [];
   for (const part of text.split(/[,; ]/)) {
     if (part === "") continue;
