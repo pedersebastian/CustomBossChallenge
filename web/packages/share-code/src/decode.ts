@@ -245,11 +245,6 @@ async function inflate(data: Uint8Array): Promise<string> {
 export const LINK_KEY = "code=";
 
 /**
- * The code in pasted text: the text itself, or the part after # in a link to the website (#code=CBC2:… or #CBC2:…,
- * also %-encoded or wrapped in &lt;…&gt; as Discord does). Text without a code in a link comes back trimmed, so decode
- * still says what's wrong with it. Same rules as CodeFormat.ExtractCode in the mod.
- */
-/**
  * Uri.UnescapeDataString, which the mod uses: every %XX that makes a valid UTF-8 character is decoded, and every other
  * % is left as it is. decodeURIComponent instead gives up on the whole text at the first bad one (#113).
  */
@@ -282,7 +277,52 @@ export function unescapeDataString(text: string): string {
   });
 }
 
+/**
+ * The code in pasted text: the text itself, or the part after # in a link to the website (#code=CBC2:… or #CBC2:…,
+ * also %-encoded or wrapped in &lt;…&gt; as Discord does). When that isn't a code on its own, the first code standing
+ * on its own in the text, so a code in quotes or backticks, after "Try this:", before a full stop or with words after
+ * a link is found too (#187). Text without a code comes back trimmed, so decode still says what's wrong with it. Same
+ * rules as CodeFormat.ExtractCode in the mod.
+ */
 export function extractCode(text: string | null | undefined): string {
+  const found = linkedCode(text);
+  if (/^CBC[0-9]+:[A-Za-z0-9_-]+$/.test(found)) return found;
+  return codeIn(found) ?? codeIn(netTrim(text ?? "")) ?? found;
+}
+
+/** A letter, mark or digit (Unicode categories L, M and N), like the mod's UnicodeCategory check */
+const WORD_PART = /^[\p{L}\p{M}\p{N}]$/u;
+
+/** What can follow a code beyond ASCII: a space, a line or paragraph break, a control or invisible character, punctuation */
+const ENDS_CODE = /^[\p{Z}\p{Cc}\p{Cf}\p{P}]$/u;
+
+/**
+ * The first code in the text that stands on its own: no letter, mark or digit right before it, and after it only the
+ * end, a space, punctuation, an invisible character (U+200B, a byte order mark) or another ASCII sign. Not a %, a
+ * letter or a symbol like an emoji, so a code with a broken %-escape stays as it is for decode to explain (#113). Same
+ * rules as CodeFormat.CodeIn in the mod.
+ */
+function codeIn(text: string): string | null {
+  for (const match of text.matchAll(/CBC[0-9]+:[A-Za-z0-9_-]+/g)) {
+    const start = match.index;
+    const end = start + match[0].length;
+    if (start > 0 && WORD_PART.test(characterBefore(text, start))) continue;
+    if (end === text.length) return match[0];
+    const next = text.charCodeAt(end);
+    const ends = next < 0x80 ? next !== 0x25 && !/[A-Za-z0-9]/.test(text[end]) : ENDS_CODE.test(String.fromCodePoint(text.codePointAt(end)!));
+    if (ends) return match[0];
+  }
+  return null;
+}
+
+/** The character that ends at index, a whole surrogate pair when there is one */
+function characterBefore(text: string, index: number): string {
+  const low = text.charCodeAt(index - 1);
+  const high = index > 1 ? text.charCodeAt(index - 2) : 0;
+  return low >= 0xdc00 && low <= 0xdfff && high >= 0xd800 && high <= 0xdbff ? text.slice(index - 2, index) : text[index - 1];
+}
+
+function linkedCode(text: string | null | undefined): string {
   let trimmed = netTrim(text ?? "");
   if (trimmed.startsWith("<") && trimmed.endsWith(">")) trimmed = netTrim(trimmed.slice(1, -1));
   const hash = trimmed.lastIndexOf("#");

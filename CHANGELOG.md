@@ -50,6 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   dense)" and "Earlier CHIMPS events (regrow, DDTs)" instead of "hard" and "harder", which was only partly true. The
   Boss Event Rounds explanation has a sentence per set, and the Tier Preview's CHIMPS warning names what the picked set
   tests. In every language.
+- **Codes pasted with other text** (#187): Paste and the website find a code in quotes or backticks, after "Try this:",
+  before a full stop or an invisible character, and in a link with words after it. A code with a broken %-escape is
+  still reported as damaged.
+- **Decimal commas in Skull Health** (#187): a list split by `;` reads `,` between digits as a decimal point, so
+  `33,3; 66,6` gives skulls at 66.6 % and 33.3 %, in the mod and on the website.
 
 ### Fixed
 
