@@ -22,7 +22,7 @@ describe("codes the mod reads", () => {
       expect(optionsJson(result.options)).toEqual(fixture.options);
 
       const challenge = { ...result.challenge };
-      for (const key of ["bossSpeed", "bossHealth", "bloonSpeed", "moabSpeed", "bloonHealth", "moabHealth"] as const) {
+      for (const key of ["bossSpeed", "bossHealth", "bloonSpeed", "moabSpeed", "bloonHealth", "moabHealth", "regrowRate", "abilityCooldown", "removableCost"] as const) {
         challenge[key] = round6(challenge[key]);
       }
       expect(challenge).toEqual(fixture.challenge);

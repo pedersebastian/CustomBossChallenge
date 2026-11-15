@@ -59,12 +59,12 @@ const named = (names: Record<string, string>, disabled: string[] = [], note = ""
     disabled: disabled.includes(value),
   }));
 
-const percent = (path: string[], label: string): Rule => ({
+const percent = (path: string[], label: string, group: RuleGroup = "Bloons", min = limits.minMultiplier): Rule => ({
   path,
   label,
-  group: "Bloons",
+  group,
   kind: "percent",
-  min: limits.minMultiplier,
+  min,
   max: limits.maxMultiplier,
 });
 
@@ -95,6 +95,12 @@ export const RULES: Rule[] = [
   toggle(["bloonModifiers", "allRegen"], "All Regrow", "Bloons"),
   toggle(["bloonModifiers", "allFortified"], "All Fortified", "Bloons"),
   { path: ["maxTowers"], label: "Max towers", group: "Rules", kind: "count", min: 0, max: limits.maxTowerCount },
+  // The Challenge Editor's other numbers, which a code could hold but the Studio didn't show (#167): from 0 % like
+  // ChallengeLimits.Sanitize, and empty for the least ones is no such rule
+  percent(["abilityCooldownReductionMultiplier"], "Ability cooldown", "Rules", 0),
+  percent(["removeableCostMultiplier"], "Removable cost", "Rules", 0),
+  { path: ["leastCashUsed"], label: "Least cash", group: "Rules", kind: "count", min: 0, max: limits.maxCash },
+  { path: ["leastTiersUsed"], label: "Least tiers", group: "Rules", kind: "count", min: 0, max: limits.maxTiersUsed },
   toggle(["disableMK"], "No Monkey Knowledge", "Rules"),
   toggle(["disableSelling"], "No selling", "Rules"),
   toggle(["disablePowers"], "No powers", "Rules"),

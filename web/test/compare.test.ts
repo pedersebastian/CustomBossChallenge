@@ -49,6 +49,34 @@ describe("differences", () => {
     expect([towers[0].a, towers[0].b]).toEqual(["Default", "Max 3"]);
   });
 
+  // Every rule a code can hold that the website didn't show before counts as a difference (#167)
+  it.each([
+    ["Regrow rate", { bloonModifiers: { regrowRateMultiplier: 2 } }, "200 %"],
+    ["Ability cooldown", { abilityCooldownReductionMultiplier: 0.5 }, "50 %"],
+    ["Removable cost", { removeableCostMultiplier: 0 }, "0 %"],
+    ["Least cash", { leastCashUsed: 1000 }, "1,000"],
+    ["Least tiers", { leastTiersUsed: 10 }, "10"],
+    ["No Continues", { noContinues: true }, "Yes"],
+    ["No Double Cash", { disableDoubleCash: true }, "Yes"],
+    ["No Fast Track", { disableFastTrack: true }, "Yes"],
+    ["Insta Monkey reward", { noInstaReward: false }, "Yes"],
+    ["Dart Monkey", { towers: { $items: { 19: { path1NumBlockedTiers: 2 } } } }, "Upgrades up to 3-5-5"],
+    ["Dart Monkey", { towers: { $items: { 19: { restrictParagon: true } } } }, "No Paragon"],
+    ["Dart Monkey", { towers: { $items: { 19: { max: 4, path3NumBlockedTiers: 9, restrictParagon: true } } } }, "Max 4, upgrades up to 5-5-0, no Paragon"],
+  ] as const)("finds a changed %s", async (label, rule, shown) => {
+    const a = await setup(await encode({}));
+    const b = await setup(await encode({ c: rule }));
+    const rows = differences(a, b);
+    expect(rows.map((row) => row.label)).toEqual([label]);
+    expect(rows[0].b).toBe(shown);
+  });
+
+  it("tells a code that blocks a path and turns off continues from the default setup", async () => {
+    const a = await setup(await encode({}));
+    const b = await setup(await encode({ c: { noContinues: true, towers: { $items: { 19: { path1NumBlockedTiers: 5 } } } } }));
+    expect(labels(a, b)).toEqual(["No Continues", "Dart Monkey"]);
+  });
+
   it("compares different bosses", async () => {
     const a = await setup(await encode({ o: { Boss: "Bloonarius" } }));
     const b = await setup(await encode({ o: { Boss: "Lych", Elite: true } }));

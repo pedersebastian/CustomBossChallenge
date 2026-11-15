@@ -29,6 +29,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -37,7 +38,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -126,6 +137,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -134,7 +146,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -246,6 +268,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -254,7 +277,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -361,6 +394,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -369,7 +403,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -505,6 +549,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -513,7 +558,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -602,6 +657,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -610,7 +666,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40
@@ -663,6 +729,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": true,
@@ -671,7 +738,17 @@
         "disableMK": false,
         "disableSelling": true,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -756,6 +833,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -764,7 +842,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         20,
@@ -853,6 +941,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -861,7 +950,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -955,6 +1054,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -963,7 +1063,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -1059,6 +1169,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -1067,7 +1178,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -1199,6 +1320,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -1207,7 +1329,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -1314,6 +1446,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -1322,7 +1455,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         995,
@@ -1428,6 +1571,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -1436,7 +1580,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -1555,6 +1709,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -1563,7 +1718,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -1671,6 +1836,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -1679,7 +1845,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -1787,6 +1963,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -1795,7 +1972,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         30,
@@ -1885,6 +2072,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -1893,7 +2081,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -1984,6 +2182,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": true,
         "allFortified": false,
@@ -1992,7 +2191,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -2081,6 +2290,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -2089,9 +2299,19 @@
         "disableMK": false,
         "disableSelling": true,
         "disablePowers": false,
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
         "towers": {
           "Quincy": 3
-        }
+        },
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -2180,6 +2400,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -2188,9 +2409,19 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
         "towers": {
           "DartMonkey": 4
-        }
+        },
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -2279,6 +2510,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -2287,7 +2519,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -2391,6 +2633,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -2399,7 +2642,17 @@
         "disableMK": false,
         "disableSelling": true,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -2553,6 +2806,7 @@
         "moabSpeed": 1.0,
         "bloonHealth": 1.0,
         "moabHealth": 1.0,
+        "regrowRate": 1.0,
         "allCamo": false,
         "allRegen": false,
         "allFortified": false,
@@ -2561,7 +2815,17 @@
         "disableMK": false,
         "disableSelling": false,
         "disablePowers": false,
-        "towers": {}
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
       },
       "spawnRounds": [
         40,
@@ -2627,6 +2891,129 @@
           ]
         }
       ]
+    },
+    {
+      "code": "CBC1:ZZDBasMwDIbfxexoSpKRQ3NcxmCHjhG6B1BitTV1rGLLzUbpu09OVthWH2zz_9bnX7ooUs3lqtUgh-odkd-QsTuLIWYl4D7Q1AHjJjm2JyeGaqpVLSXQW2f5qyVyhibfoUkDWwH8elmsai2Qkc4IvcOWIv8B1YVWDiFyC_HwEdGopi6Km7jNMRa1rLTy1JJn6xNKNg4JtTI2Zu4zpUwXxj_jJVMCDMeb7unVR4YOJwiC3YGLojJNPw0_WMZxvpXrvJ-AD-VbGp8cDUc0cyLJrWfj8c5Y524jBzvwOwTYk18-lnFVZeaN8ClTWcqru_L6mtc3",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {
+        "name": "",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "regrowRate": 2.5,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "noContinues": true,
+        "disableDoubleCash": true,
+        "disableFastTrack": true,
+        "noInstaReward": false,
+        "abilityCooldown": 0.5,
+        "removableCost": 100.0,
+        "leastCash": 5000,
+        "leastTiers": 12,
+        "towers": {
+          "BombShooter": 0
+        },
+        "blockedTiers": {
+          "DartMonkey": [
+            2,
+            0,
+            5
+          ],
+          "BombShooter": [
+            0,
+            5,
+            0
+          ]
+        },
+        "paragonLocked": [
+          "DartMonkey"
+        ]
+      },
+      "spawnRounds": [
+        40,
+        60,
+        80,
+        100,
+        120
+      ],
+      "endRound": 140,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "20k",
+          "capped": false,
+          "skulls": 3
+        },
+        {
+          "round": 60,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "75k",
+          "capped": false,
+          "skulls": 3
+        },
+        {
+          "round": 80,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "350k",
+          "capped": false,
+          "skulls": 3
+        },
+        {
+          "round": 100,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "750k",
+          "capped": false,
+          "skulls": 3
+        },
+        {
+          "round": 120,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "3M",
+          "capped": false,
+          "skulls": 3
+        }
+      ],
+      "skulls": [
+        "75%",
+        "50%",
+        "25%"
+      ],
+      "playProblem": null,
+      "warnings": []
     }
   ],
   "invalid": [

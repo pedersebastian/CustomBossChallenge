@@ -2,7 +2,7 @@
 // Like the mod, a code is only data: it is never run, never throws and is held to what the game can play.
 
 import { DATA, type Json, type JsonObject } from "./data";
-import { netTrim, netTrimEnd } from "./math/dotnet";
+import { clamp, netTrim, netTrimEnd } from "./math/dotnet";
 import { UNSUPPORTED_REASON, canUseCodes } from "./support";
 import { clampMultiplier, orDefault } from "./math/limits";
 import { MAX_ROUND } from "./math/tiers";
@@ -37,6 +37,8 @@ export interface Challenge {
   moabSpeed: number;
   bloonHealth: number;
   moabHealth: number;
+  /** The bloon modifiers' regrow rate, a multiplier like the speeds (#167) */
+  regrowRate: number;
   allCamo: boolean;
   allRegen: boolean;
   allFortified: boolean;
@@ -45,8 +47,24 @@ export interface Challenge {
   disableMK: boolean;
   disableSelling: boolean;
   disablePowers: boolean;
+  /** The rules the Challenge Editor has besides the ones above, which the mod plays too (#167) */
+  noContinues: boolean;
+  disableDoubleCash: boolean;
+  disableFastTrack: boolean;
+  /** True in a new challenge: no Insta Monkey for winning */
+  noInstaReward: boolean;
+  /** Multipliers from 0: abilities' cooldown and what removing an obstacle costs */
+  abilityCooldown: number;
+  removableCost: number;
+  /** The least cash and the least upgrade tiers to win with, or -1 for none */
+  leastCash: number;
+  leastTiers: number;
   /** Towers whose limit differs from the default, by id: 0 is not allowed, -1 no limit */
   towers: Record<string, number>;
+  /** Towers with blocked upgrade tiers, by id: how many of each path's top tiers are blocked, e.g. [2, 0, 0] is 3-5-5 */
+  blockedTiers: Record<string, [number, number, number]>;
+  /** Towers whose Paragon is locked, in the game's tower order */
+  paragonLocked: string[];
 }
 
 export type DecodeResult =
@@ -357,12 +375,19 @@ function readChallenge(json: JsonObject, options: BossOptions): Challenge {
     (Array.isArray(defaults.towers) ? defaults.towers : []).filter(isObject).map((t) => [t.tower as string, t.max as number]),
   );
   const towers: Record<string, number> = {};
+  const blockedTiers: Record<string, [number, number, number]> = {};
+  const paragonLocked: string[] = [];
+  // ChallengeLimits.Range; a new challenge blocks nothing and locks no Paragon, so any is the code's own
+  const blocked = (value: Json | undefined): number => clamp(int(value, 0), 0, limits.maxBlockedTiers);
   for (const tower of Array.isArray(json.towers) ? json.towers : []) {
     if (!isObject(tower)) continue;
     const id = text(tower.tower);
     if (id === null) continue;
     const max = orDefault(int(tower.max, 0), 0, limits.maxTowerCount);
     if (!defaultTowers.has(id) || defaultTowers.get(id) !== max) towers[id] = max;
+    const paths: [number, number, number] = [blocked(tower.path1NumBlockedTiers), blocked(tower.path2NumBlockedTiers), blocked(tower.path3NumBlockedTiers)];
+    if (paths.some((tiers) => tiers > 0)) blockedTiers[id] = paths;
+    if (bool(tower.restrictParagon)) paragonLocked.push(id);
   }
 
   return {
@@ -381,6 +406,7 @@ function readChallenge(json: JsonObject, options: BossOptions): Challenge {
     moabSpeed: multiplier(modifiers.moabSpeedMultiplier, limits.minMultiplier, limits.maxMultiplier),
     bloonHealth: multiplier(health.bloons, limits.minMultiplier, limits.maxMultiplier),
     moabHealth: multiplier(health.moabs, limits.minMultiplier, limits.maxMultiplier),
+    regrowRate: multiplier(modifiers.regrowRateMultiplier, limits.minMultiplier, limits.maxMultiplier),
     allCamo: bool(modifiers.allCamo),
     allRegen: bool(modifiers.allRegen),
     allFortified: bool(modifiers.allFortified),
@@ -389,7 +415,17 @@ function readChallenge(json: JsonObject, options: BossOptions): Challenge {
     disableMK: bool(json.disableMK),
     disableSelling: bool(json.disableSelling),
     disablePowers: bool(json.disablePowers),
+    noContinues: bool(json.noContinues),
+    disableDoubleCash: bool(json.disableDoubleCash),
+    disableFastTrack: bool(json.disableFastTrack),
+    noInstaReward: bool(json.noInstaReward),
+    abilityCooldown: multiplier(json.abilityCooldownReductionMultiplier, 0, limits.maxMultiplier),
+    removableCost: multiplier(json.removeableCostMultiplier, 0, limits.maxMultiplier),
+    leastCash: orDefault(int(json.leastCashUsed, -1), 0, limits.maxCash),
+    leastTiers: orDefault(int(json.leastTiersUsed, -1), 0, limits.maxTiersUsed),
     towers,
+    blockedTiers,
+    paragonLocked,
   };
 }
 

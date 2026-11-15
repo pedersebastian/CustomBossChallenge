@@ -121,6 +121,14 @@ const SETUPS: [string, StudioSetup][] = [
       rule("noContinues", true), rule("disableDoubleCash", true), rule("disableFastTrack", true), rule("noInstaReward", false),
     ),
   ],
+  // The four numbers the Studio didn't have (#167), past their limits too
+  [
+    "rules: costs and least",
+    make(
+      rule("abilityCooldownReductionMultiplier", "37.5"), rule("removeableCostMultiplier", "-20"),
+      rule("leastCashUsed", "999999999999"), rule("leastTiersUsed", "25"),
+    ),
+  ],
   // Tower restrictions, made with the Studio's own tower controls (#128)
   [
     "towers: limits, paths and a paragon",
