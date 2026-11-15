@@ -57,6 +57,11 @@ jobs:
           git fetch --depth=1 origin master
           git checkout FETCH_HEAD -- :/data/boss-events
 
+      # The archiver's commits don't start checks.yml, so the archive is checked here, before it is published: a broken
+      # or duplicate file stops the deploy (#180)
+      - name: Test the boss events archive
+        run: node --test "../tools/boss-events/*.test.mjs"
+
       - name: Build boss-events.json from the boss events archive
         run: node ../tools/boss-events/archive.mjs --bundle public/boss-events.json
 

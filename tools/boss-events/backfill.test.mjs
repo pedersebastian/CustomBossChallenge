@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { templates, templatesNamed } from './wikitext.mjs';
 import { dcmToApi, makeNames, roundSets, wikiEvent, wikiRulesToApi } from './convert.mjs';
-import { buildRecords, knownEvents, replaces } from './records.mjs';
+import { buildRecords, knownEvents, replaces, wikiDateFixes } from './records.mjs';
 import { formatRecord } from './format.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -182,6 +182,25 @@ test('records: NK models the wiki lacks are dated by knownEvents first (#152)', 
     assert.equal(bloonarius40.eliteScoringType, 'LeastCash');
     assert.ok(bloonarius40.start < bloonarius40.end);
     for (const record of records) assert.deepEqual(JSON.parse(formatRecord(record)), record);
+});
+
+test("wiki events with wrong dates get Fandom's (#180)", () => {
+    // Blooncyclopedia's dates for Vortex33: 22-26 Oct 2024
+    const text = '{{BTD6 boss event rules|id=Vortex33_m1tpa2fs|name=Vortex33|start=1729594800|end=1729904400|'
+        + 'bossType=vortex|normalScoringType=LeastTiers|eliteScoringType=LeastTiers|'
+        + 'normal rules={{BTD6 challenge rules|map=Hedge|mode=Standard|maxParagons=0}}|'
+        + 'elite rules={{BTD6 challenge rules|map=Hedge|mode=Standard|maxParagons=4}}}}';
+    const { records } = buildRecords({ wiki: [{ year: 2024, text }], jxu: { commit: 'head', files: new Map() }, game, urls });
+    const [vortex33] = records;
+    assert.equal(new Date(vortex33.start).toISOString(), '2024-10-05T08:00:00.000Z');
+    assert.equal(new Date(vortex33.end).toISOString(), '2024-10-05T10:22:00.000Z');
+    assert.deepEqual(vortex33.lossy, ['dates']);
+    assert.deepEqual(vortex33.sourceUrls, ['wiki/2024', wikiDateFixes.Vortex33_m1tpa2fs.sourceUrl]);
+    assert.equal(vortex33.license, 'CC BY-NC-SA 4.0');
+    // The backfill would write the file the archive has
+    const file = JSON.parse(readFileSync(join(here, '..', '..', 'data', 'boss-events', 'Vortex33_m1tpa2fs.json'), 'utf8'));
+    assert.deepEqual([vortex33.start, vortex33.end, vortex33.lossy, vortex33.sourceUrls[1]],
+        [file.start, file.end, file.lossy, file.sourceUrls[1]]);
 });
 
 test("the archiver's API files are never replaced", () => {
