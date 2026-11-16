@@ -190,6 +190,8 @@ The setup keeps the event's name and date, and like Load it asks first and is on
   on **Show Ranked Stats** in the mod's settings to see the cash and tiers you used.
 - The events come from the mod's own archive (`data/boss-events/`, see its
   [README](data/boss-events/README.md) for the sources and their licences).
+- The [website](https://pedersebastian.github.io/CustomBossChallenge/past-events.html) has the same list: open an
+  event in the Studio, or copy its code and press **Paste** in the Boss Creator.
 
 **What is downloaded:** every release carries the events up to its build, so the list works offline. When the game
 starts, the mod also downloads the newest list from

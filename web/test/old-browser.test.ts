@@ -10,6 +10,8 @@ import { setUpCodeViewer } from "../src/sections/codeViewer";
 import { setUpCompare } from "../src/sections/compare";
 import { setUpStudio } from "../src/studio/render";
 import { newSetup } from "../src/studio/state";
+import { setUpPastEvents } from "../src/pastEvents/list";
+import pastEventCases from "./past-event-cases.json";
 
 const [first, second] = EXAMPLES.map((example) => example.code);
 const rejections: unknown[] = [];
@@ -81,6 +83,21 @@ describe("the pages without the streams", () => {
     expect(preview.textContent).toBe(UNSUPPORTED_REASON);
     expect(codeBox.value).toBe("");
     expect([...actions.querySelectorAll("button")].every((button) => button.disabled)).toBe(true);
+    expect(rejections).toEqual([]);
+  });
+
+  it("Past Events lists the events, says why no code can be made, and turns its buttons off", async () => {
+    const root = h("div");
+    document.body.append(root);
+    const file = JSON.stringify({ formatVersion: 1, generated: "2026-11-16T00:00:00Z", events: pastEventCases.events });
+    await setUpPastEvents(root, async () => file);
+    await settle();
+
+    expect(root.querySelectorAll(".past-event").length).toBe(pastEventCases.events.length);
+    expect(root.querySelector(".warning")!.textContent).toBe(UNSUPPORTED_REASON);
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>(".past-event button")];
+    expect(buttons.length).toBeGreaterThan(0);
+    expect(buttons.every((button) => button.disabled)).toBe(true);
     expect(rejections).toEqual([]);
   });
 });

@@ -10,7 +10,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "sync-data": "node scripts/sync-share-code-data.mjs"
+    "sync-data": "node scripts/sync-share-code-data.mjs",
+    "boss-events": "node ../tools/boss-events/archive.mjs --bundle public/boss-events.json"
   },
   "devDependencies": {
     "happy-dom": "^21.0.4",

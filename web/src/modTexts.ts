@@ -43,6 +43,30 @@ export const MOD_TEXTS = {
     "Boss Event Rounds in CHIMPS: much harder than the normal rounds, with no regrow but dense floods that test your damage.",
   ChimpsEventRoundsEarlier:
     "Boss Event Rounds in CHIMPS: much harder than the normal rounds, with regrow, camo regrow and DDTs that test your detection.",
+  // The Past Events list (#146, #213)
+  PastEventsLoading: "Loading the events…",
+  PastEventsNone: "No events could be loaded.",
+  PastEventsSearch: "Search: name, map, mode…",
+  AnyBoss: "Every Boss",
+  AnyYear: "Every Year",
+  AnyMode: "Every Mode",
+  PastEventsCount: "{0} of {1}",
+  PastEventsNoMatch: "No events match the search.",
+  PastEventNormal: "Normal",
+  PastEventRanked: "Ranked: {0}, Elite: {1}",
+  ScoringTime: "Time",
+  ScoringLeastCash: "Least Cash",
+  ScoringLeastTiers: "Least Tiers",
+  PastEventNoRules: "No rules saved",
+  PastEventReplacedBy: "Replaced by {0}",
+  PastEventScoring:
+    "The event was ranked on {0}. The Boss Creator plays it with the same rules, timed like a Game Time event.",
+  PastEventUnsupported: "The Boss Creator can't play these rules of the event, so they are left out: {0}",
+  PastEventMissingMap: "This event's map, {0}, isn't in this version of the game, so the event can't be opened.",
 } as const;
+
+/** A mod text with its {0}, {1}… filled in, like Texts.T(args) */
+export const fillText = (text: string, ...args: (string | number)[]): string =>
+  text.replace(/\{(\d+)\}/g, (match, index: string) => (args[Number(index)] !== undefined ? String(args[Number(index)]) : match));
 
 export type ModText = keyof typeof MOD_TEXTS;
