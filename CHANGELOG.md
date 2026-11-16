@@ -123,6 +123,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   removable cost, least cash and least tiers, No Continues, No Double Cash, No Fast Track, the Insta Monkey reward,
   and each tower's blocked upgrades and Paragon lock. A code that only changed one of them used to compare as the
   same as the default setup. The Studio can change ability cooldown, removable cost, least cash and least tiers.
+- **Sliders and Undo** (#171): Reset on an option that is already at its default, or an arrow at a slider's minimum
+  or maximum, no longer adds an empty Undo step or clears Redo, and typing the same Spawn Rounds again keeps Undo and
+  Redo. A dragged slider snaps to its step, like its arrows.
+- **Smoother games and Boss Creator** (#183, #184): the HUDs, the keyboard frame and the tiers' look do less work every
+  frame, the Boss Creator lays out its section only when its rows change instead of twice per slider tick and no longer
+  reads the rules every half second, and the tiers' glow materials are freed after a game.
 
 ## [2.11.0] - 2026-11-12
 
