@@ -24,7 +24,26 @@ export function h<K extends keyof HTMLElementTagNameMap>(
  * Copies text to the clipboard. The Clipboard API only works on https and localhost, so on a plain http address (a
  * phone on the same Wi-Fi) the text is copied the old way, through a hidden text box.
  */
-export async function copyText(text: string): Promise<boolean> {
+export async function copyText(text: string | Promise<string>): Promise<boolean> {
+  if (typeof text !== "string") {
+    // Text still being made: Safari only copies in the click itself, so the clipboard gets a ClipboardItem that waits
+    // for it. Where that doesn't work, the text is copied once it is made.
+    if (window.isSecureContext && navigator.clipboard?.write && typeof ClipboardItem !== "undefined") {
+      try {
+        const blob = text.then((made) => new Blob([made], { type: "text/plain" }));
+        await navigator.clipboard.write([new ClipboardItem({ "text/plain": blob })]);
+        return true;
+      } catch {
+        // Falls back below
+      }
+    }
+    try {
+      text = await text;
+    } catch {
+      return false;
+    }
+  }
+
   if (window.isSecureContext && navigator.clipboard) {
     try {
       await navigator.clipboard.writeText(text);
@@ -77,14 +96,30 @@ export function announce(message: string): void {
   setTimeout(() => (region.textContent = message), 50);
 }
 
+/**
+ * Keeps password managers out of the website's fields: the Studio's "Challenge name" looks like a name to them, and
+ * they offered to fill in the player's own (Dashlane reads data-form-type, 1Password, LastPass and Bitwarden their own
+ * markers)
+ */
+export const NO_AUTOFILL = {
+  autocomplete: "off",
+  "data-form-type": "other",
+  "data-1p-ignore": "true",
+  "data-lpignore": "true",
+  "data-bwignore": "true",
+} as const;
+
 /** How long a button says whether copying worked */
 export const FEEDBACK_TIME = 1500;
 
 /** Each button's own label and the timer that puts it back, so clicks close together can't leave it on "Copied!" */
 const feedback = new WeakMap<HTMLButtonElement, { label: string; timer?: ReturnType<typeof setTimeout> }>();
 
-/** Copies text, briefly says on the button whether it worked, and tells screen readers too */
-export async function copyWithFeedback(button: HTMLButtonElement, text: string, done = "Copied!"): Promise<void> {
+/**
+ * Copies text, briefly says on the button whether it worked, and tells screen readers too. Text that is still being
+ * made can be a promise: the copy still starts in the click.
+ */
+export async function copyWithFeedback(button: HTMLButtonElement, text: string | Promise<string>, done = "Copied!"): Promise<void> {
   let state = feedback.get(button);
   if (!state) {
     state = { label: button.textContent ?? "" };

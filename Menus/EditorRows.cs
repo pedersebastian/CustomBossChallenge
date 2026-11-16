@@ -173,18 +173,24 @@ public static class EditorRows
     }
 
     /// <summary>
+    /// Turns the game's localizer off for a text that is already translated: it would take the text for a key, change
+    /// it back or space out its letters ("CHIMPS", a colour like #C8D8FF)
+    /// </summary>
+    public static void KeepAsIs(TMP_Text text)
+    {
+        var nkText = text.TryCast<NK_TextMeshProUGUI>();
+        if (nkText == null) return;
+        nkText.AutoLocalize = false;
+        nkText.localizeKey = "";
+    }
+
+    /// <summary>
     /// Sets the text of a (possibly localized) game text without the localizer changing it back
     /// </summary>
     public static void SetText(TMP_Text? text, string value)
     {
         if (text == null) return;
-        var nkText = text.TryCast<NK_TextMeshProUGUI>();
-        if (nkText != null)
-        {
-            nkText.AutoLocalize = false;
-            nkText.localizeKey = "";
-        }
-
+        KeepAsIs(text);
         text.text = value;
     }
 

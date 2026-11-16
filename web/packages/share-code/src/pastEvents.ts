@@ -148,7 +148,7 @@ export interface PastEventGame {
   unsupportedModes: readonly string[];
 }
 
-export const WEBSITE_GAME: PastEventGame = {
+const WEBSITE_GAME: PastEventGame = {
   defaults: DATA.defaultChallenge,
   mapExists: (map) => Object.prototype.hasOwnProperty.call(DATA.maps, map),
   unsupportedModes: DATA.unsupportedModes as readonly string[],
@@ -170,7 +170,7 @@ const NOT_RULES = new Set([
 ]);
 
 /** The round set the first Bloonarius events played (2021), the boss's own event rounds under their old name */
-export const OLD_BOSS_ROUND_SET = "bossRounds";
+const OLD_BOSS_ROUND_SET = "bossRounds";
 
 const clone = <T extends Json>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
@@ -299,7 +299,7 @@ function isDefault(value: Json): boolean {
   return Object.keys(value).length === 0;
 }
 
-export const ENGLISH_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const ENGLISH_MONTHS: readonly string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /** "17 Oct 2026", in UTC like the mod (PastEventDates.English) */
 export function englishDate(time: number): string {
@@ -323,22 +323,31 @@ export const setupName = (event: PastEvent, elite: boolean): string =>
   `${nameText(`${event.displayName}${elite ? " Elite" : ""}`, "")}, ${nameText(englishDate(event.start), ".")}`;
 
 /**
- * The share code of the normal or the Elite event, made the way the mod reads an event: only what a code may hold,
- * from the game's new challenge. What the code can't hold is added to the unsupported rules. Null when the event can't
- * be opened.
+ * The setup of the normal or the Elite event and the game's JSON its code holds, made the way the mod reads an event:
+ * only what a code may hold, from the game's new challenge. What the code can't hold is added to the unsupported
+ * rules. The JSON is null when the event can't be opened.
  */
+export function pastEventSetup(
+  event: PastEvent,
+  elite: boolean,
+  game: PastEventGame = WEBSITE_GAME,
+): { setup: PastEventSetup; json: JsonObject | null } {
+  const setup = mapPastEvent(event, elite, game);
+  if (setup.problem !== "None") return { setup, json: null };
+  const dropped: string[] = [];
+  const json = clone(DATA.defaultChallenge);
+  apply(json, filterChallenge(setup.challenge, DATA.defaultChallenge, dropped));
+  return { setup: { ...setup, unsupported: [...setup.unsupported, ...dropped] }, json };
+}
+
+/** The share code of the normal or the Elite event (pastEventSetup), or null when the event can't be opened */
 export async function pastEventCode(
   event: PastEvent,
   elite: boolean,
   game: PastEventGame = WEBSITE_GAME,
 ): Promise<{ setup: PastEventSetup; code: string | null }> {
-  const setup = mapPastEvent(event, elite, game);
-  if (setup.problem !== "None") return { setup, code: null };
-  const dropped: string[] = [];
-  const json = clone(DATA.defaultChallenge);
-  apply(json, filterChallenge(setup.challenge, DATA.defaultChallenge, dropped));
-  const withDropped = { ...setup, unsupported: [...setup.unsupported, ...dropped] };
-  return { setup: withDropped, code: await encode(setup.options, json) };
+  const { setup, json } = pastEventSetup(event, elite, game);
+  return { setup, code: json ? await encode(setup.options, json) : null };
 }
 
 /** What the list shows: the text searched for, and a boss, year and mode, each null for any (PastEventQuery) */

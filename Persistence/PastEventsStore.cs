@@ -39,6 +39,9 @@ public sealed class PastEventsStore
     private readonly Action<string> warn;
     private readonly object gate = new();
 
+    /// <summary>Whether the cache could be read or was just written: only then does its ETag describe it</summary>
+    private bool cacheReadable;
+
     /// <param name="builtIn">Opens the gzipped copy built into the mod, or gives null when there is none</param>
     /// <param name="warn">Says in the log what couldn't be read</param>
     public PastEventsStore(string cachePath, Func<Stream?> builtIn, Action<string> warn)
@@ -76,8 +79,9 @@ public sealed class PastEventsStore
         {
             try
             {
-                // Without the file it describes, an ETag would make the website answer "nothing new" for nothing
-                return File.Exists(CachePath) && File.Exists(ETagPath) && File.ReadAllText(ETagPath).Trim() is {Length: > 0} tag
+                // Without the file it describes, or with one that can't be read, an ETag would make the website answer
+                // "nothing new" and the broken cache would never be replaced
+                return cacheReadable && File.Exists(CachePath) && File.Exists(ETagPath) && File.ReadAllText(ETagPath).Trim() is {Length: > 0} tag
                     ? tag
                     : null;
             }
@@ -112,6 +116,7 @@ public sealed class PastEventsStore
                 try
                 {
                     SafeFile.WriteAllText(CachePath, text);
+                    cacheReadable = true;
                     if (etag != null) SafeFile.WriteAllText(ETagPath, etag);
                     else if (File.Exists(ETagPath)) File.Delete(ETagPath);
                 }
@@ -159,8 +164,10 @@ public sealed class PastEventsStore
     {
         try
         {
+            cacheReadable = false;
             if (!File.Exists(CachePath)) return null;
             var read = PastEventsFormat.Read(File.ReadAllText(CachePath));
+            cacheReadable = read.Value != null;
             if (read.Value == null)
             {
                 warn(read.Problem == FormatProblem.TooNew

@@ -6,7 +6,8 @@ Technical notes for building and testing Custom Boss Challenge. For what the mod
 ## Building from source
 
 1. Install the .NET SDK, MelonLoader and BTD6 Mod Helper (with the game run at least once so Mod Helper can set up
-   its references).
+   its references), and [Node.js](https://nodejs.org/) 24: the build makes the copy of the past boss events the mod
+   carries with it, and a Release build fails without Node (see [Boss events archive](#boss-events-archive)).
 2. Clone this repository into your BTD6 mod sources folder.
 3. Build `CustomBossChallenge.sln` (for example `dotnet build -c Release`). The built DLL is copied to the game's
    `Mods` folder automatically.
@@ -301,8 +302,8 @@ MelonLoader's assemblies.
 ## Website
 
 `web/` is a small website (Vite + TypeScript, no framework) that reads share codes without the game, shows the setup
-like the Boss Creator does (Tier Preview, skulls, rules) and lists example codes. It has three pages: `index.html`,
-`compare.html` (two setups side by side) and `studio.html`, the Studio (#12, #79), which makes and changes setups with
+like the Boss Creator does (Tier Preview, skulls, rules) and lists example codes. It has four pages: `index.html`,
+`compare.html` (two setups side by side), `past-events.html` (the past boss events, #213) and `studio.html`, the Studio (#12, #79), which makes and changes setups with
 the Boss Creator's controls (`web/src/studio/`), Advanced Mode's bosses per tier included (`tiers.ts`, #95), the
 Challenge Editor's rules (`rules.ts`, #97) and its tower restrictions (`towers.ts`, #128), held to `ChallengeLimits`
 with the same clamping the code reader uses. It is laid out like the Boss Creator (#133): rows with our own icons

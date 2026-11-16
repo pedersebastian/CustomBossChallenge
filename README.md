@@ -84,6 +84,10 @@ To build your own tools for share codes, see the [share-code package](web/packag
   loaded or random setup is one step, so an accidental Paste can be undone. The challenge name isn't undone. The
   editor's own Undo button still goes back to how the setup was when you opened it, and Ctrl+Z brings your changes
   back.
+- **Past Events** (#146): every official Boss Bloon Event since July 2021 in a list of its own, with a search and
+  filters for the boss, the year and the mode. Open one, normal or Elite, to play it with its own rules (see
+  [Past events](#past-events)). New events show up without an update of the mod, and the
+  [website](https://pedersebastian.github.io/CustomBossChallenge/past-events.html) has the same list.
 - **Play** starts the custom boss game straight from the editor.
 - **Share Code**: copy a whole setup as a short text code and paste codes others share.
 - Your **last setup is remembered** between sessions.
@@ -196,7 +200,7 @@ The setup keeps the event's name and date, and like Load it asks first and is on
 **What is downloaded:** every release carries the events up to its build, so the list works offline. When the game
 starts, the mod also downloads the newest list from
 <https://pedersebastian.github.io/CustomBossChallenge/boss-events.json> in the background (under 100 KB, or
-nothing when it hasn't changed), so new events show up without an update of the mod. Nothing about you is sent, and
+nothing when it hasn't changed), so new events show up without an update of the mod. No personal data is sent, and
 the menus never wait for it. The list is kept in `BloonsTD6/UserData/CustomBossChallenge/boss-events.json`; offline,
 the mod uses that copy or its own. To never download it, turn off **Download New Boss Events** under Past Events in
 the mod's settings (Mod Helper's Mod Settings).
@@ -297,7 +301,7 @@ next to them. Tiers 1-5 and games outside the Boss Creator keep the game's look.
   update Boss Challenge records, boss tier progress, badges or achievements. XP and Monkey Money are still earned.
 - Your own Challenge Editor draft is never replaced by the boss setup.
 - The only thing the mod downloads is the list of past boss events from its own website (see
-  [Past events](#past-events)); it can be turned off, and nothing about you is sent.
+  [Past events](#past-events)); it can be turned off, and no personal data is sent.
 - If a BTD6 update renames or removes a game method these guards hook into, the Boss Creator stays closed and says
   which ones, instead of starting games without them. It can't notice an update that keeps a method but changes what
   it does, so after a big BTD6 update it's safest to wait for a mod update.
@@ -368,8 +372,10 @@ pull request (see [Translations](https://github.com/pedersebastian/CustomBossCha
 
 The archive of past boss events in `data/boss-events/` is Ninja Kiwi's data, from
 [Ninja Kiwi's Open Data](https://data.ninjakiwi.com/), [jxu/btd6-events](https://github.com/jxu/btd6-events) and
-[Blooncyclopedia](https://www.bloonswiki.com/) (the files that use Blooncyclopedia's content are under
-[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)); see
+[Blooncyclopedia](https://www.bloonswiki.com/) and the [Bloons wiki on Fandom](https://bloons.fandom.com/). The files
+that use Blooncyclopedia's content are under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/),
+and those that use the Fandom wiki's under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The mod
+carries a copy of all of them (`boss-events.json`) and downloads newer ones, each under its own licence; see
 [its README](https://github.com/pedersebastian/CustomBossChallenge/blob/master/data/boss-events/README.md).
 
 [![Requires BTD6 Mod Helper](https://raw.githubusercontent.com/gurrenm3/BTD-Mod-Helper/master/banner.png)](https://github.com/gurrenm3/BTD-Mod-Helper#readme)

@@ -57,7 +57,7 @@ public class Settings : ModSettings
         displayName = "Download New Boss Events",
         description = "When the game starts, the Boss Creator's Past Events list downloads the newest list of " +
                       "official boss events from the mod's website (pedersebastian.github.io/CustomBossChallenge), " +
-                      "so new events show up without an update of the mod. Nothing about you is sent. Off, the list " +
+                      "so new events show up without an update of the mod. No personal data is sent. Off, the list " +
                       "has the events the mod came with, and the ones it downloaded before.",
         icon = VanillaSprites.BossChallenge
     };

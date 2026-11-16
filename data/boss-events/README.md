@@ -1,8 +1,9 @@
 # Boss events archive
 
 Every official Boss Bloon Event of Bloons TD 6 since July 2021, one file per event: `<id>.json`, named by Ninja
-Kiwi's event id. Used for the Past Events list in the Boss Creator (#143). Files are only ever added, never changed by
-the archiver.
+Kiwi's event id. Used for the Past Events list in the Boss Creator (#143) and on the website. Files are added by the archiver and
+never changed after the event's `end` (an open event's file is written again when Ninja Kiwi changes it, see below).
+Every release of the mod also carries a copy of all of them, as `boss-events.json`.
 
 ## Format (`formatVersion` 1)
 
@@ -139,7 +140,9 @@ and no two bosses at the same time (unless one has `lossy: ["dates"]`). A broken
 
 All files in one, published with the website at
 <https://pedersebastian.github.io/CustomBossChallenge/boss-events.json> and built again on every deploy (it isn't
-committed). The Boss Creator's Past Events list (#146) reads it.
+committed). The Boss Creator's Past Events list (#146) reads it, and the website's Past Events page (#213). Every
+build of the mod also makes it from the files and carries it, gzipped, so the list works offline and before the
+first download.
 
 ```jsonc
 {

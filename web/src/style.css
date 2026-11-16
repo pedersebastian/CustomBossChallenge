@@ -1213,7 +1213,8 @@ input:focus-visible {
   border: 2px solid var(--outline);
   border-radius: 50%;
   background: var(--blue);
-  color: var(--text);
+  /* Dark on the light blue: white was only 2.3:1 */
+  color: var(--outline);
   font: 700 0.95rem/1 Georgia, "Times New Roman", serif;
   font-style: italic;
   cursor: pointer;
@@ -1221,6 +1222,7 @@ input:focus-visible {
 
 .studio-info:hover {
   background: var(--sea-end);
+  color: var(--text);
 }
 
 .studio-info[aria-expanded="true"] {
@@ -1594,9 +1596,11 @@ input:focus-visible {
 }
 
 /* The Studio's lists, open: the browser's own colours were light blue under grey text, hard to read (#97). Every
-   choice is white on the dark card, the picked one dark on yellow, and the group names (Beginner, ...) yellow. */
+   choice is white on the dark card, the picked one dark on yellow, and the group names (Beginner, ...) yellow. The
+   Past Events filters' lists look the same. */
 .studio-controls select option,
-.studio-controls select optgroup {
+.studio-controls select optgroup,
+.past-events-filter option {
   background-color: var(--card);
   color: var(--text);
 }
@@ -1606,7 +1610,8 @@ input:focus-visible {
   font-weight: 800;
 }
 
-.studio-controls select option:checked {
+.studio-controls select option:checked,
+.past-events-filter option:checked {
   background-color: var(--gold);
   color: var(--outline);
 }
@@ -1865,6 +1870,12 @@ input:focus-visible {
   min-width: 0;
 }
 
+/* The browser's grey was only 2.5:1 on the card; the same light blue as the code box's */
+.past-events-search::placeholder {
+  color: #8fb0dd;
+  opacity: 1;
+}
+
 .past-events-filter {
   flex: 0 1 auto;
 }
@@ -1896,9 +1907,13 @@ input:focus-visible {
   contain-intrinsic-size: auto 190px;
 }
 
-.past-event.no-rules .past-event-badge,
-.past-event.no-rules .past-event-name {
+/* An event without rules: a faded badge, and its name in the muted colour (opacity would take the dates under 4.5:1) */
+.past-event.no-rules .past-event-badge {
   opacity: 0.6;
+}
+
+.past-event.no-rules .past-event-name {
+  color: var(--muted);
 }
 
 .past-event-body {

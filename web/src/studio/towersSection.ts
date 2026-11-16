@@ -2,8 +2,8 @@
 // game's. A class's rows are made the first time it is opened. Each tower is a fieldset named after it, with its limit,
 // the highest tier of each path and, for the 14 towers that have one, the paragon lock. Text only, no game art.
 
-import { h } from "../dom";
-import { NO_AUTOFILL, makeRows, nextId } from "./rows";
+import { NO_AUTOFILL, h } from "../dom";
+import { makeRows, nextId } from "./rows";
 import type { StudioSetup } from "./state";
 import {
   OTHER_TOWERS,

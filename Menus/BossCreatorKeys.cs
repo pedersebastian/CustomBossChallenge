@@ -53,14 +53,14 @@ public static class BossCreatorKeys
             return;
         }
 
-        // The Past Events window has the keyboard while it is open, except while its search is typed in or a filter's
-        // list is open (#146)
+        // The Past Events window has the keyboard while it is open, except while its search is typed in, a filter's
+        // list is open (#146) or a popup is on top: Enter on an event would otherwise ask to load it a second time
         if (PastEventsBrowser.Current is { } browser)
         {
             if (FocusedField() != null) fieldFocusedFrame = Time.frameCount;
             var pressed = ReadKeys();
             var typingSearch = Time.frameCount - fieldFocusedFrame <= 1;
-            if (pressed.Key != ShortcutKey.Other && !pressed.Ctrl && !typingSearch && browser.OpenList == null)
+            if (pressed.Key != ShortcutKey.Other && !pressed.Ctrl && !typingSearch && browser.OpenList == null && !PopupOpen())
             {
                 browser.Handle(pressed.Key, pressed.Shift);
             }
@@ -68,14 +68,15 @@ public static class BossCreatorKeys
             return;
         }
 
-        // The boss picker has the keyboard while it is open, except while its skull list is being typed in
+        // The boss picker has the keyboard while it is open, except while its skull list is being typed in or a popup is
+        // on top
         if (TierBossPicker.Current is { } picker)
         {
             if (FocusedField() != null) fieldFocusedFrame = Time.frameCount;
             var key = ReadKeys();
             var typing = Time.frameCount - fieldFocusedFrame <= 1;
             // An open skull list has the arrows to itself (#175)
-            if (key.Key != ShortcutKey.Other && !key.Ctrl && !typing && !picker.ListOpen) picker.Handle(key.Key, key.Shift);
+            if (key.Key != ShortcutKey.Other && !key.Ctrl && !typing && !picker.ListOpen && !PopupOpen()) picker.Handle(key.Key, key.Shift);
             FocusFrame.Fit();
             return;
         }
@@ -297,10 +298,12 @@ public static class BossCreatorKeys
         return field != null && field.isFocused ? field : null;
     }
 
+    private static bool PopupOpen() =>
+        PopupScreen.instance != null && PopupScreen.instance.GetFirstActivePopup() != null;
+
     private static bool BlockingUiOpen(BossEditorSection section) =>
         TierBossPicker.Current != null || PastEventsBrowser.Current != null || section.OpenList != null ||
-        PopupScreen.instance != null && PopupScreen.instance.GetFirstActivePopup() != null ||
-        ChallengeEditor_OverrideClose.OpenPanel(section.Editor);
+        PopupOpen() || ChallengeEditor_OverrideClose.OpenPanel(section.Editor);
 
     private static void Focus(TMP_InputField field)
     {
