@@ -109,10 +109,19 @@ public class BossNotDefeatedTest : CustomBossTest
 /// </summary>
 public class RetryTest : CustomBossTest
 {
-    internal static string SavedMaps()
+    internal static string SavedMaps() => SavedMaps(false);
+
+    /// <summary>
+    /// The player's map saves as "map@round"; <paramref name="identity"/> adds which save object it is, so a save
+    /// written again with the same round shows as a change too
+    /// </summary>
+    internal static string SavedMaps(bool identity)
     {
         var maps = new List<string>();
-        foreach (var entry in Game.instance.playerService.Player.Data.savedMaps) maps.Add($"{entry.Key}@{entry.Value.round}");
+        foreach (var entry in Game.instance.playerService.Player.Data.savedMaps)
+        {
+            maps.Add(identity ? $"{entry.Key}@{entry.Value.round}#{entry.Value.Pointer.ToInt64():x}" : $"{entry.Key}@{entry.Value.round}");
+        }
         return string.Join(", ", maps.OrderBy(map => map));
     }
 
@@ -174,6 +183,60 @@ public class RetryTest : CustomBossTest
             TierMath.FormatRounds(options.GameSpawnRounds), "Spawn rounds after a retry");
         Assert(ExtraTiers.HasAllTiers(InGame.instance.GetGameModel(), options), "Tier models after a retry");
         AssertEquals(Game.instance.playerService.Player.Data.monkeyMoney.Value, monkeyMoney, "Monkey Money after a retry");
-        AssertEquals(SavedMaps(), savedMaps, "The player's map saves after a retry");
+        AssertEquals(SavedMaps(), savedMaps, $"The player's map saves after a retry: {SavedMaps()} (before: {savedMaps})");
     }
+}
+
+/// <summary>
+/// A custom game keeps the player's own unfinished Boss Challenge of the same boss: the game removes it when a new
+/// Boss Challenge of that boss starts, and a custom Bloonarius game threw the player's Bloonarius game away
+/// </summary>
+public class PlayerSaveKeptTest : CustomBossTest
+{
+    private const string Key = "BCBloonarius";
+
+    protected override IEnumerator Run()
+    {
+        var profile = Game.instance.playerService.Player.Data;
+        var own = profile.savedMaps.ContainsKey(Key) ? profile.savedMaps[Key] : null;
+        var options = new BossOptions {Tiers = 1};
+
+        // A save to keep: the player's own, or one from a custom game standing in for it
+        yield return LoadIntoGame(SetupBossChallenge(CustomBossState.Prepare(BaseDcm(), options), options.Boss));
+        var planted = own ?? InGame.instance.CreateCurrentMapSave(0, Key);
+        yield return ToMainMenu();
+        CustomBossState.Clear();
+        if (own == null) profile.SetSavedMap(Key, planted);
+        try
+        {
+            // The game removes the save when a Boss Challenge of that boss starts, and when one is retried
+            var retried = new BossOptions {Tiers = 3, SpawnRounds = "40, 43, 46"};
+            var dcm = BaseDcm();
+            dcm.startRules.round = 38;
+            dcm.startRules.lives = dcm.startRules.maxLives = 5000;
+            yield return LoadIntoGame(SetupBossChallenge(CustomBossState.Prepare(dcm, retried), retried.Boss));
+            Assert(CustomBossState.IsActive, "The second game is custom");
+            AssertKept(profile, planted, "starting");
+
+            BossDefeatScreen? screen = null;
+            yield return LoseAndOpenDefeatScreen(found => screen = found);
+            screen!.retryButton.onClick.Invoke();
+            yield return WaitForResume();
+            AssertKept(profile, planted, "Retry Last Round");
+            yield return ToMainMenu();
+            CustomBossState.Clear();
+        }
+        finally
+        {
+            // Only the stand-in goes, also when the test failed in the custom game (where the guard keeps every save);
+            // the player's own save stays as it was
+            CustomBossState.Clear();
+            if (own == null && profile.savedMaps.ContainsKey(Key)) profile.RemoveSavedMap(Key);
+        }
+    }
+
+    private void AssertKept(Il2CppAssets.Scripts.Models.Profile.ProfileModel profile,
+        Il2CppAssets.Scripts.Models.Profile.MapSaveDataModel planted, string when) =>
+        Assert(profile.savedMaps.ContainsKey(Key) && profile.savedMaps[Key].Pointer == planted.Pointer,
+            $"A custom Bloonarius game must keep the player's unfinished Bloonarius Boss Challenge ({when})");
 }

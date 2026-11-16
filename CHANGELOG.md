@@ -58,6 +58,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Your unfinished Boss Challenge is kept**: losing a custom game deleted your unfinished normal Boss Challenge of
+  the same boss, since the game removes that boss's save when one of its games is lost. Custom games now leave it
+  alone. The in-game tests also no longer leave a normal Boss Challenge among your unfinished games, and every test
+  checks that your map saves are unchanged after it.
 - **Advanced Mode after Load, Paste, Random or Undo** (#166): the tabs remembered the bosses per tier and Standard's
   Boss Speed, Boss Health and skulls across a new setup. Advanced could then get the old setup's lineup, and
   Standard could write the old 200 % into a pasted code. A loaded, pasted or random setup now starts over, and

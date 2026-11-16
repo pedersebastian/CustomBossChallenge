@@ -268,6 +268,27 @@ internal static class Btd6Player_SetBossChallengeRecord
 }
 
 /// <summary>
+/// A custom game must never delete the player's own unfinished games. Starting a new Boss Challenge removes the
+/// map save of the last one of that boss (e.g. "BCBloonarius"), and the profile is then saved without it: a custom
+/// Bloonarius game threw away the player's unfinished normal Bloonarius Boss Challenge for good. Custom games are
+/// never saved by the game (dcm.disableSaves), so there is nothing of theirs to remove either.
+/// </summary>
+[HarmonyPatch(typeof(ProfileModel), nameof(ProfileModel.RemoveSavedMap))]
+[GuardPatch]
+internal static class ProfileModel_RemoveSavedMap
+{
+    [HarmonyPrefix]
+    internal static bool Prefix(string key, ref bool __result)
+    {
+        if (!CustomBossState.IsActive) return true;
+
+        ModHelper.Msg<CustomBossChallenge>($"Keeping the player's map save {key}: a custom boss challenge doesn't replace it");
+        __result = false;
+        return false;
+    }
+}
+
+/// <summary>
 /// Custom games must not award boss tier progress, badges or event completion either
 /// </summary>
 [HarmonyPatch]

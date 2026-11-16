@@ -51,7 +51,10 @@ public abstract class CustomBossTest : ModTest
         Log("starting");
         var started = UnityEngine.Time.realtimeSinceStartup;
         yield return RunSafely(ToMainMenu());
+        // The player's own map saves (their unfinished games) must come out of every test as they went in
+        var savedMaps = RetryTest.SavedMaps(true);
         yield return RunSafely(Run());
+        yield return RunSafely(SavedMapsUnchanged(savedMaps));
         Log($"done in {UnityEngine.Time.realtimeSinceStartup - started:0}s");
 
         Visuals.RankedHud.ShowRankedStatsOverride = null;
@@ -69,6 +72,19 @@ public abstract class CustomBossTest : ModTest
     protected string TempFolder { get; private set; } = "";
 
     protected abstract IEnumerator Run();
+
+    private IEnumerator SavedMapsUnchanged(string before)
+    {
+        var after = RetryTest.SavedMaps(true);
+        if (after != before)
+        {
+            var was = before.Split(", ", StringSplitOptions.RemoveEmptyEntries);
+            var now = after.Split(", ", StringSplitOptions.RemoveEmptyEntries);
+            Fail($"The test changed the player's map saves: added {string.Join(", ", now.Except(was))}, " +
+                 $"removed {string.Join(", ", was.Except(now))}");
+        }
+        yield break;
+    }
 
     protected void Log(string message) => ModHelper.Msg<CustomBossChallenge>($"{Name}: {message}");
 
