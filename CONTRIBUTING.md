@@ -385,6 +385,13 @@ as a palette PNG.
 
 ## Boss events archive
 
+The mod carries the whole archive: `CustomBossChallenge.csproj` runs `node tools/boss-events/archive.mjs --bundle` into
+`obj/` and builds the gzipped `boss-events.json` in (#146), so building the mod needs Node 24 (a Release build fails
+without it, a Debug build only warns). It is made again only when a file in `data/boss-events/` or the archiver
+changes. Being in `obj/`, it isn't part of the source hash, so the archiver's daily commits don't need a new in-game
+test run before a release. At the game's start the mod downloads the published `boss-events.json` in the background
+(`Persistence/PastEvents.cs`), unless `--modhelper.offline` is set (the headless tests) or the setting is off.
+
 `data/boss-events/` holds every official Boss Bloon Event, one file per event, for the Past Events list (#143). The
 format, the sources and their licences are in [data/boss-events/README.md](data/boss-events/README.md).
 

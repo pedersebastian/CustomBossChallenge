@@ -98,19 +98,9 @@ public static class SetupCode
             if (raw == null) return false;
             var decoded = raw.Sanitized();
 
-            // Only what the Challenge Editor and the Boss Creator can set, with the right types (#108)
-            var challenge = ChallengeJson(DailyChallengeModel.CreateDefaultEditorModel());
-            var ignored = new List<string>();
-            if (payload["c"] is JObject challengeDiff)
-            {
-                CodeFormat.Apply(challenge, CodeFormat.FilterChallenge(challengeDiff, (JObject) challenge.DeepClone(), ignored));
-            }
-            var model = DcmJson.Deserialize(challenge.ToString(Formatting.None));
-            if (model == null) return false;
-
             var changes = ChallengeLimits.OptionChanges(raw, decoded);
-            if (ignored.Count > 0) changes.Add($"ignored {string.Join(", ", ignored)}");
-            changes.AddRange(ChallengeLimits.Sanitize(model, BossMode.DefaultDcm(decoded)));
+            var model = Challenge(payload["c"] as JObject, decoded, changes, new List<string>());
+            if (model == null) return false;
             ChallengeLimits.Report(source, changes);
 
             options = decoded;
@@ -123,6 +113,28 @@ public static class SetupCode
             ModHelper.Warning<CustomBossChallenge>($"{source}: ignoring unreadable setup code: {e.Message}");
             return false;
         }
+    }
+
+    /// <summary>
+    /// The editor's challenge from a code's challenge diff: only what the Challenge Editor and the Boss Creator can
+    /// set, with the right types (#108), in the range they allow. What was left out goes to <paramref name="ignored"/>
+    /// and, with what was brought into range, to <paramref name="changes"/> for the log. Past events (#146) are read
+    /// the same way.
+    /// </summary>
+    internal static DailyChallengeModel? Challenge(JObject? diff, BossOptions options, List<string> changes,
+        List<string> ignored)
+    {
+        var challenge = ChallengeJson(DailyChallengeModel.CreateDefaultEditorModel());
+        if (diff != null)
+        {
+            CodeFormat.Apply(challenge, CodeFormat.FilterChallenge(diff, (JObject) challenge.DeepClone(), ignored));
+        }
+        var model = DcmJson.Deserialize(challenge.ToString(Formatting.None));
+        if (model == null) return null;
+
+        if (ignored.Count > 0) changes.Add($"ignored {string.Join(", ", ignored)}");
+        changes.AddRange(ChallengeLimits.Sanitize(model, BossMode.DefaultDcm(options)));
+        return model;
     }
 
     /// <inheritdoc cref="CodeFormat.Contents"/>

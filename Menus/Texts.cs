@@ -207,6 +207,51 @@ public static class Texts
         "The clipboard doesn't contain a Boss Creator code. Copy the whole code, starting with CBC.");
     public static readonly string CodeTooNew = Key(nameof(CodeTooNew),
         "This code comes from a newer version of Custom Boss Challenge. Update the mod to load it.");
+
+    // The Past Events row and window (#146)
+    public static readonly string PastEvents = Key(nameof(PastEvents), "Past Events");
+    public static readonly string PastEventsInfo = Key(nameof(PastEventsInfo),
+        "Play the official boss events again with their own rules: the map, mode, cash, lives, towers and the " +
+        "bloon and boss modifiers, normal or Elite. Browse lists every boss event since 2021; search by name, map " +
+        "or mode, or pick a boss, year or mode. New events are downloaded when the game starts, unless that is " +
+        "turned off in the mod's settings.");
+    public static readonly string BrowsePastEvents = Key(nameof(BrowsePastEvents), "Browse Events ({0})");
+    public static readonly string PastEventsLoading = Key(nameof(PastEventsLoading), "Loading the events…");
+    public static readonly string PastEventsChecking = Key(nameof(PastEventsChecking), "Looking for new events…");
+    public static readonly string PastEventsUpToDate = Key(nameof(PastEventsUpToDate), "Up to date, list from {0}");
+    public static readonly string PastEventsFromCache = Key(nameof(PastEventsFromCache), "Downloaded list from {0}");
+    public static readonly string PastEventsFromMod = Key(nameof(PastEventsFromMod),
+        "List from {0}, came with the mod");
+    public static readonly string PastEventsDownloadsOff = Key(nameof(PastEventsDownloadsOff),
+        "Downloading new events is turned off");
+    public static readonly string PastEventsNone = Key(nameof(PastEventsNone), "No events could be loaded.");
+    public static readonly string PastEventsTitle = Key(nameof(PastEventsTitle), "Past Boss Events");
+    public static readonly string PastEventsSearch = Key(nameof(PastEventsSearch), "Search: name, map, mode…");
+    public static readonly string AnyBoss = Key(nameof(AnyBoss), "Every Boss");
+    public static readonly string AnyYear = Key(nameof(AnyYear), "Every Year");
+    public static readonly string AnyMode = Key(nameof(AnyMode), "Every Mode");
+    public static readonly string PastEventsCount = Key(nameof(PastEventsCount), "{0} of {1}");
+    public static readonly string PastEventsNoMatch = Key(nameof(PastEventsNoMatch), "No events match the search.");
+    public static readonly string PastEventNormal = Key(nameof(PastEventNormal), "Normal");
+    public static readonly string PastEventRanked = Key(nameof(PastEventRanked), "Ranked: {0}, Elite: {1}");
+    public static readonly string ScoringTime = Key(nameof(ScoringTime), "Time");
+    public static readonly string ScoringLeastCash = Key(nameof(ScoringLeastCash), "Least Cash");
+    public static readonly string ScoringLeastTiers = Key(nameof(ScoringLeastTiers), "Least Tiers");
+    public static readonly string PastEventNoRules = Key(nameof(PastEventNoRules), "No rules saved");
+    public static readonly string PastEventReplacedBy = Key(nameof(PastEventReplacedBy), "Replaced by {0}");
+    public static readonly string LoadPastEventQuestion = Key(nameof(LoadPastEventQuestion),
+        "Load this boss event? Your current setup will be replaced.");
+    public static readonly string PastEventScoring = Key(nameof(PastEventScoring),
+        "The event was ranked on {0}. The Boss Creator plays it with the same rules, timed like a Game Time " +
+        "event.");
+    public static readonly string PastEventUnsupported = Key(nameof(PastEventUnsupported),
+        "The Boss Creator can't play these rules of the event, so they are left out: {0}");
+    public static readonly string PastEventMissingMap = Key(nameof(PastEventMissingMap),
+        "This event's map, {0}, isn't in this version of the game, so the event can't be opened.");
+    public static readonly string PastEventUnknownBoss = Key(nameof(PastEventUnknownBoss),
+        "This event's boss isn't in this version of the mod. Update the mod to play it.");
+    public static readonly string PastEventCantOpen = Key(nameof(PastEventCantOpen),
+        "There are no rules saved for this event, so it can't be opened.");
     public static readonly string Load = Key(nameof(Load), "Load");
     public static readonly string Ok = Key(nameof(Ok), "OK");
     public static readonly string Cancel = Key(nameof(Cancel), "Cancel");

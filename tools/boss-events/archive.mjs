@@ -3,7 +3,8 @@
 // .github/workflows/boss-events.yml, and locally too:
 //
 //   node tools/boss-events/archive.mjs [--dry-run]     save the new events, update the changed ones
-//   node tools/boss-events/archive.mjs --bundle <path>  write boss-events.json from the files (offline)
+//   node tools/boss-events/archive.mjs --bundle <path>  write boss-events.json from the files (offline); a path
+//                                                      ending in .gz is gzipped, the copy built into the mod (#146)
 //
 // The API only keeps the last few events, so whatever it doesn't save in time is lost. An event is listed (and saved)
 // days before it starts, and Ninja Kiwi sometimes changes its rules or dates before it ends (#178), so the metadata of
@@ -13,6 +14,7 @@
 import { appendFile, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { gzipSync } from 'node:zlib';
 import { formatVersion } from './convert.mjs';
 import { formatRecord } from './format.mjs';
 import { replaces } from './records.mjs';
@@ -236,6 +238,16 @@ export function replacements(events) {
     return links;
 }
 
+/**
+ * Writes boss-events.json to path, gzipped when the path ends in .gz: the copy the mod builds in, so a release has
+ * every event up to its build without downloading anything (#146)
+ */
+export async function writeBundle(path, records, generatedAt) {
+    const text = JSON.stringify(buildBundle(records, generatedAt)) + '\n';
+    await mkdir(dirname(resolve(path)), { recursive: true });
+    await writeFile(path, path.endsWith('.gz') ? gzipSync(text, { level: 9 }) : text);
+}
+
 /** Every file in the archive, as Map(id -> record). */
 export async function readArchive(dir) {
     const records = new Map();
@@ -263,8 +275,7 @@ async function main(args) {
         const path = args[bundleArg + 1];
         if (!path) throw new Error('--bundle needs the path to write boss-events.json to');
         const archive = await readArchive(dir);
-        await mkdir(dirname(resolve(path)), { recursive: true });
-        await writeFile(path, JSON.stringify(buildBundle(archive.values(), Date.now())) + '\n');
+        await writeBundle(path, archive.values(), Date.now());
         console.log(`${path}: ${archive.size} events`);
         return;
     }

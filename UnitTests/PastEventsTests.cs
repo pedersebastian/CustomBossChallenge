@@ -1,0 +1,409 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Text;
+using CustomBossChallenge.Config;
+using CustomBossChallenge.Persistence;
+using Il2CppAssets.Scripts.Data.Boss;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Xunit;
+
+namespace CustomBossChallenge.UnitTests;
+
+/// <summary>
+/// The Past Events list (#146): reading boss-events.json, choosing between the built-in copy, the cache and the
+/// download, mapping the events' rules onto the Boss Creator, and the list's search, on the real archive in
+/// data/boss-events/
+/// </summary>
+public class PastEventsTests : IDisposable
+{
+    private static readonly string Root = FindRoot();
+    private static readonly string ArchiveDir = Path.Combine(Root, "data", "boss-events");
+
+    /// <summary>The default challenge as a share code sees it, which the in-game WebDataTest writes for the website</summary>
+    private static readonly JObject Defaults =
+        (JObject) JObject.Parse(File.ReadAllText(Path.Combine(Root, "web", "src", "data", "game.json")))["defaultChallenge"]!;
+
+    private static readonly HashSet<string> Maps =
+        ((JObject) JObject.Parse(File.ReadAllText(Path.Combine(Root, "web", "src", "data", "game.json")))["maps"]!)
+        .Properties().Select(property => property.Name).ToHashSet();
+
+    private static readonly string[] UnsupportedModes = ["Deflation", "Apopalypse"];
+
+    private readonly string folder = Path.Combine(Path.GetTempPath(), "CbcPastEvents-" + Guid.NewGuid().ToString("N"));
+
+    public void Dispose()
+    {
+        if (Directory.Exists(folder)) Directory.Delete(folder, true);
+    }
+
+    private static string FindRoot()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, "data", "boss-events"))) dir = dir.Parent;
+        return dir?.FullName ?? throw new DirectoryNotFoundException("data/boss-events not found above " + AppContext.BaseDirectory);
+    }
+
+    /// <summary>The archive's files as one boss-events.json, like archive.mjs --bundle without what it adds</summary>
+    private static string Bundle(string generated = "2026-11-12T06:00:00.000Z", int formatVersion = 1,
+        Func<JObject, bool>? only = null)
+    {
+        var events = new JArray(Directory.GetFiles(ArchiveDir, "*.json")
+            .Select(file => JObject.Parse(File.ReadAllText(file)))
+            .Where(e => only == null || only(e)));
+        return new JObject
+        {
+            ["formatVersion"] = formatVersion, ["generated"] = generated, ["license"] = "test", ["events"] = events
+        }.ToString(Formatting.None);
+    }
+
+    private static PastEvent Event(string id)
+    {
+        var read = PastEventsFormat.Read(Bundle(only: e => (string?) e["id"] == id));
+        return Assert.Single(read.Value!.Events);
+    }
+
+    private static PastEventSetup Map(PastEvent pastEvent, bool elite) =>
+        PastEventRules.Map(pastEvent, elite, Defaults, Maps.Contains, UnsupportedModes);
+
+    private static MemoryStream Gzip(string text)
+    {
+        var stream = new MemoryStream();
+        using (var gzip = new GZipStream(stream, CompressionLevel.Optimal, true)) gzip.Write(Encoding.UTF8.GetBytes(text));
+        stream.Position = 0;
+        return stream;
+    }
+
+    [Fact]
+    public void Every_event_in_the_archive_is_read()
+    {
+        var read = PastEventsFormat.Read(Bundle());
+        Assert.Equal(FormatProblem.None, read.Problem);
+        Assert.Empty(read.Changes);
+        Assert.Equal(Directory.GetFiles(ArchiveDir, "*.json").Length, read.Value!.Events.Count);
+        Assert.All(read.Value.Events, e => Assert.NotNull(PastEventRules.Boss(e.BossKey)));
+    }
+
+    [Fact]
+    public void Every_event_in_the_archive_maps_onto_the_Boss_Creator()
+    {
+        foreach (var pastEvent in PastEventsFormat.Read(Bundle()).Value!.Events)
+        {
+            foreach (var elite in new[] {false, true})
+            {
+                var setup = Map(pastEvent, elite);
+                Assert.True(setup.Problem == PastEventProblem.None, $"{pastEvent.Id}: {setup.Problem}");
+                Assert.Equal(elite, setup.Options.Elite);
+                Assert.Equal(PastEventRules.Boss(pastEvent.BossKey), setup.Options.Boss);
+
+                // Exactly what a share code may set, so nothing is dropped on the way into the editor
+                var dropped = new List<string>();
+                CodeFormat.FilterChallenge(setup.Challenge, (JObject) Defaults.DeepClone(), dropped);
+                Assert.True(dropped.Count == 0, $"{pastEvent.Id}: dropped {string.Join(", ", dropped)}");
+            }
+        }
+    }
+
+    [Fact]
+    public void Lych47_has_its_own_rules_normal_and_Elite()
+    {
+        var lych = Event("Lych47_m5zq59de");
+        Assert.Equal("LeastCash", lych.NormalScoring);
+        Assert.Equal("LeastTiers", lych.EliteScoring);
+
+        var normal = Map(lych, false);
+        Assert.Equal(BossType.Lych, normal.Options.Boss);
+        Assert.True(normal.Options.BossEventRounds);
+        Assert.Equal("Tinkerton", (string?) normal.Challenge["map"]);
+        Assert.Equal("Medium", (string?) normal.Challenge["difficulty"]);
+        Assert.Equal(2500, (int) normal.Challenge["startRules"]!["cash"]!);
+        Assert.Equal(200, (int) normal.Challenge["startRules"]!["lives"]!);
+        Assert.Equal(4, (int) normal.Challenge["maxParagons"]!);
+        Assert.Equal(0.5, (double) normal.Challenge["bloonModifiers"]!["bossSpeedMultiplier"]!);
+        Assert.Equal(2, (double) normal.Challenge["bloonModifiers"]!["healthMultipliers"]!["boss"]!);
+        // The bundle's displayName ("Lych 47"), or the name without it
+        Assert.Equal($"{lych.DisplayName} 17 Jan 2025", (string?) normal.Challenge["name"]);
+        Assert.Empty(normal.Unsupported);
+
+        // Only the six towers the event lists are allowed; the rest of the game's towers are not
+        var towers = ((JArray) normal.Challenge["towers"]!).Cast<JObject>().ToDictionary(t => (string) t["tower"]!);
+        Assert.Equal(((JArray) Defaults["towers"]!).Count, towers.Count);
+        Assert.Equal(99, (int) towers["Benjamin"]["max"]!);
+        Assert.Equal(-1, (int) towers["BananaFarm"]["max"]!);
+        Assert.Equal(0, (int) towers["DartMonkey"]["max"]!);
+        Assert.Equal(0, (int) towers["Quincy"]["max"]!);
+        Assert.Equal(6, towers.Values.Count(t => (int) t["max"]! != 0));
+
+        var elite = Map(lych, true);
+        Assert.True(elite.Options.Elite);
+        Assert.Equal(3000, (int) elite.Challenge["startRules"]!["cash"]!);
+        Assert.Equal($"{lych.DisplayName} Elite 17 Jan 2025", (string?) elite.Challenge["name"]);
+    }
+
+    [Theory]
+    [InlineData("Bloonarius55_m41kgdwk", ChimpsRounds.Earlier)]
+    [InlineData("Diamondback8_mvaa404d", ChimpsRounds.Newest)]
+    public void CHIMPS_events_play_the_CHIMPS_event_rounds_the_mod_carries(string id, ChimpsRounds rounds)
+    {
+        var setup = Map(Event(id), false);
+        Assert.Equal("Clicks", (string?) setup.Challenge["mode"]);
+        Assert.True(setup.Options.BossEventRounds);
+        Assert.Equal(rounds, setup.Options.ChimpsRounds);
+        Assert.Empty(setup.Unsupported);
+    }
+
+    [Fact]
+    public void The_first_Bloonarius_events_round_set_is_the_bosss_own_under_its_old_name()
+    {
+        var setup = Map(Event("krmwspoc"), false);
+        Assert.True(setup.Options.BossEventRounds);
+        Assert.Empty(setup.Unsupported);
+    }
+
+    [Theory]
+    [InlineData("Vortex10_l7si69ji", "round set default1")]
+    [InlineData("Bloonarius52ABR_lyhw36tt", "round set alternateRound140")]
+    public void Round_sets_the_Boss_Creator_cant_play_are_listed(string id, string unsupported)
+    {
+        var setup = Map(Event(id), false);
+        Assert.Contains(unsupported, setup.Unsupported);
+    }
+
+    private static PastEvent WithRules(Action<JObject> change)
+    {
+        var lych = Event("Lych47_m5zq59de");
+        var rules = (JObject) lych.Standard!.DeepClone();
+        change(rules);
+        return lych with {Standard = rules};
+    }
+
+    [Fact]
+    public void Rules_the_Boss_Creator_cant_play_are_listed_not_half_applied()
+    {
+        var setup = Map(WithRules(rules =>
+        {
+            rules["disableInstas"] = true;
+            rules["_powers"] = new JArray(new JObject {["power"] = "MonkeyBoost", ["max"] = 1});
+            rules["someNewRule"] = 5;
+            rules["mode"] = "Deflation";
+            rules["_towers"] = new JArray(new JObject {["tower"] = "FutureMonkey", ["max"] = 2});
+        }), false);
+
+        Assert.Equal(PastEventProblem.None, setup.Problem);
+        Assert.Contains("disableInstas", setup.Unsupported);
+        Assert.Contains("_powers", setup.Unsupported);
+        Assert.Contains("someNewRule", setup.Unsupported);
+        Assert.Contains("mode Deflation", setup.Unsupported);
+        Assert.Contains("tower FutureMonkey", setup.Unsupported);
+        Assert.Equal("Standard", (string?) setup.Challenge["mode"]);
+        Assert.DoesNotContain("disableInstas", setup.Challenge.Properties().Select(p => p.Name));
+    }
+
+    [Fact]
+    public void Setup_names_only_have_what_the_Challenge_Editors_name_field_keeps()
+    {
+        var lych = Event("Lych47_m5zq59de");
+        Assert.Equal("Vortex 17 EX Elite 17 Jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Vortex 17 EX"}, true));
+        Assert.Equal("Got you 17 Jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Got_you!"}, false));
+        foreach (var pastEvent in PastEventsFormat.Read(Bundle()).Value!.Events)
+        {
+            var name = PastEventRules.SetupName(pastEvent, true);
+            Assert.All(name, c => Assert.True(char.IsLetterOrDigit(c) || c == ' ', $"{name}: '{c}'"));
+            Assert.True(name.Length <= ChallengeLimits.MaxNameLength, name);
+        }
+    }
+
+    [Fact]
+    public void Rules_that_change_nothing_are_not_listed()
+    {
+        var setup = Map(WithRules(rules =>
+        {
+            rules["disableInstas"] = false;
+            rules["_powers"] = new JArray();
+        }), false);
+        Assert.Empty(setup.Unsupported);
+    }
+
+    [Fact]
+    public void A_missing_map_unknown_boss_or_event_without_rules_cant_be_opened()
+    {
+        var missingMap = Map(WithRules(rules => rules["map"] = "RemovedMap"), false);
+        Assert.Equal(PastEventProblem.MissingMap, missingMap.Problem);
+        Assert.Equal("RemovedMap", missingMap.Map);
+
+        var lych = Event("Lych47_m5zq59de");
+        Assert.Equal(PastEventProblem.UnknownBoss, Map(lych with {BossKey = "newboss"}, false).Problem);
+        Assert.Equal(PastEventProblem.NoRules, Map(lych with {Standard = null}, false).Problem);
+        Assert.False((lych with {Standard = null, Elite = null}).HasRules);
+    }
+
+    [Fact]
+    public void A_file_from_a_newer_format_is_too_new_and_so_is_an_event_in_it()
+    {
+        Assert.Equal(FormatProblem.TooNew, PastEventsFormat.Read(Bundle(formatVersion: 2)).Problem);
+        Assert.Equal(FormatProblem.Invalid, PastEventsFormat.Read("not json").Problem);
+        Assert.Equal(FormatProblem.Invalid, PastEventsFormat.Read("{\"formatVersion\": 1}").Problem);
+
+        var bundle = JObject.Parse(Bundle(only: e => (string?) e["id"] == "Lych47_m5zq59de"));
+        var newer = (JObject) bundle["events"]![0]!.DeepClone();
+        newer["formatVersion"] = 2;
+        newer["id"] = "Future";
+        ((JArray) bundle["events"]!).Add(newer);
+        var read = PastEventsFormat.Read(bundle.ToString());
+        Assert.Single(read.Value!.Events);
+        Assert.Contains(read.Changes, change => change.Contains("Future"));
+    }
+
+    [Fact]
+    public void The_file_that_knows_the_newest_event_is_used()
+    {
+        var all = PastEventsFormat.Read(Bundle("2026-11-01T00:00:00Z")).Value!;
+        var older = PastEventsFormat.Read(Bundle("2026-11-20T00:00:00Z",
+            only: e => (long) e["start"]! < all.NewestStart)).Value!;
+        Assert.Same(all, PastEventsFormat.Newest(older, all));
+        Assert.Same(all, PastEventsFormat.Newest(null, all));
+
+        var sameButLater = PastEventsFormat.Read(Bundle("2026-11-05T00:00:00Z")).Value!;
+        Assert.Same(sameButLater, PastEventsFormat.Newest(all, sameButLater));
+        Assert.Null(PastEventsFormat.Newest(null, null));
+    }
+
+    private PastEventsStore Store(string? builtIn, List<string>? warnings = null) =>
+        new(Path.Combine(folder, "boss-events.json"), () => builtIn == null ? null : Gzip(builtIn),
+            message => warnings?.Add(message));
+
+    [Fact]
+    public void Without_a_cache_the_built_in_copy_is_shown()
+    {
+        var store = Store(Bundle());
+        store.Load();
+        Assert.Equal(PastEventsSource.BuiltIn, store.Source);
+        Assert.NotEmpty(store.Current!.Events);
+        Assert.Null(store.ETag());
+    }
+
+    [Fact]
+    public void A_download_is_cached_with_its_ETag_and_used_on_the_next_start()
+    {
+        var builtIn = Bundle("2026-11-01T00:00:00Z", only: e => (string?) e["bossType"] != "diamondback");
+        var store = Store(builtIn);
+        store.Load();
+        var before = store.Current!.Events.Count;
+
+        Assert.True(store.Accept(Bundle("2026-11-15T00:00:00Z"), "\"abc\""));
+        Assert.Equal(PastEventsSource.Download, store.Source);
+        Assert.True(store.Current!.Events.Count > before);
+        Assert.Equal("\"abc\"", store.ETag());
+
+        var next = Store(builtIn);
+        next.Load();
+        Assert.Equal(PastEventsSource.Cache, next.Source);
+        Assert.Equal(store.Current.Events.Count, next.Current!.Events.Count);
+    }
+
+    [Fact]
+    public void A_cache_older_than_the_built_in_copy_doesnt_hide_its_events()
+    {
+        var store = Store(Bundle("2026-11-15T00:00:00Z"));
+        store.Load();
+        Assert.True(store.Accept(Bundle("2026-11-01T00:00:00Z", only: e => (string?) e["bossType"] != "diamondback"), null));
+        Assert.Equal(PastEventsSource.BuiltIn, store.Source);
+
+        var next = Store(Bundle("2026-11-15T00:00:00Z"));
+        next.Load();
+        Assert.Equal(PastEventsSource.BuiltIn, next.Source);
+    }
+
+    [Fact]
+    public void A_broken_cache_gives_the_built_in_copy()
+    {
+        Directory.CreateDirectory(folder);
+        File.WriteAllText(Path.Combine(folder, "boss-events.json"), "{ broken");
+        var warnings = new List<string>();
+        var store = Store(Bundle(), warnings);
+        store.Load();
+        Assert.Equal(PastEventsSource.BuiltIn, store.Source);
+        Assert.Contains(warnings, warning => warning.Contains("cached"));
+    }
+
+    [Fact]
+    public void A_cache_from_a_newer_version_is_kept_and_not_overwritten()
+    {
+        Directory.CreateDirectory(folder);
+        var path = Path.Combine(folder, "boss-events.json");
+        var newer = Bundle(formatVersion: 2);
+        File.WriteAllText(path, newer);
+
+        var store = Store(Bundle());
+        store.Load();
+        Assert.Equal(PastEventsSource.BuiltIn, store.Source);
+        Assert.True(store.Accept(Bundle("2026-12-01T00:00:00Z"), "\"x\""));
+        Assert.Equal(newer, File.ReadAllText(path));
+    }
+
+    [Fact]
+    public void A_download_that_cant_be_read_changes_nothing()
+    {
+        var store = Store(Bundle());
+        store.Load();
+        var shown = store.Current;
+        Assert.False(store.Accept("<!DOCTYPE html>", "\"y\""));
+        Assert.False(store.Accept(Bundle(formatVersion: 2), "\"z\""));
+        Assert.Same(shown, store.Current);
+        Assert.False(File.Exists(store.CachePath));
+    }
+
+    [Fact]
+    public void Without_a_built_in_copy_or_cache_there_are_no_events()
+    {
+        var warnings = new List<string>();
+        var store = Store(null, warnings);
+        store.Load();
+        Assert.Null(store.Current);
+        Assert.Equal(PastEventsSource.None, store.Source);
+        Assert.NotEmpty(warnings);
+    }
+
+    private static string Shown(string id) => id switch
+    {
+        "Tutorial" => "Monkey Meadow",
+        "Clicks" => "CHIMPS",
+        _ => id
+    };
+
+    [Fact]
+    public void The_search_finds_events_by_name_boss_year_map_and_mode()
+    {
+        var events = PastEventsFormat.Read(Bundle()).Value!.Events;
+        IReadOnlyList<PastEvent> Find(PastEventQuery query) =>
+            events.Where(e => PastEventFilter.Matches(e, query, Shown)).ToList();
+
+        Assert.Equal(events.Count, Find(new PastEventQuery()).Count);
+        Assert.Contains(Find(new PastEventQuery("lych 47")), e => e.Id == "Lych47_m5zq59de");
+        Assert.Contains(Find(new PastEventQuery("TINKERTON 2025")), e => e.Id == "Lych47_m5zq59de");
+        Assert.All(Find(new PastEventQuery(Boss: "vortex")), e => Assert.Equal("vortex", e.BossKey));
+        Assert.All(Find(new PastEventQuery(Year: 2024)), e => Assert.Equal(2024, e.StartDate.Year));
+        Assert.All(Find(new PastEventQuery(Mode: "Clicks")), e => Assert.Contains("Clicks", PastEventFilter.Modes(e)));
+        Assert.Equal(Find(new PastEventQuery(Mode: "Clicks")).Count, Find(new PastEventQuery("chimps")).Count);
+        Assert.Empty(Find(new PastEventQuery("lych", Boss: "vortex")));
+        Assert.Empty(Find(new PastEventQuery("no such event")));
+    }
+
+    [Fact]
+    public void The_filters_offer_the_years_and_modes_the_events_have()
+    {
+        var events = PastEventsFormat.Read(Bundle()).Value!.Events;
+        var years = PastEventFilter.Years(events);
+        Assert.Equal(years.OrderByDescending(year => year), years);
+        Assert.Contains(2021, years);
+        var modes = PastEventFilter.AllModes(events);
+        Assert.Equal("Standard", modes[0]);
+        Assert.Contains("Clicks", modes);
+
+        var newestFirst = PastEventsFormat.NewestFirst(events);
+        Assert.Equal(events.Max(e => e.Start), newestFirst[0].Start);
+    }
+}

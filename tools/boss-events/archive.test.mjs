@@ -2,11 +2,13 @@
 //   node --test "tools/boss-events/*.test.mjs"
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { gunzipSync } from 'node:zlib';
 import { buildBundle, bundleLicense, changedRecords, displayNameOf, madeAt, metadataUrl, newEntries, newRecords,
-    openEntries, outputNames, parseApi, readArchive, replacements, sameEvent, validMetadata } from './archive.mjs';
+    openEntries, outputNames, parseApi, readArchive, replacements, sameEvent, validMetadata, writeBundle } from './archive.mjs';
 import { formatRecord } from './format.mjs';
 import { fetchText } from './sources.mjs';
 
@@ -164,6 +166,22 @@ test('boss-events.json has every file, oldest first, with its licence and source
     for (let i = 1; i < bundle.events.length; i++) assert.ok(bundle.events[i - 1].start <= bundle.events[i].start);
     assert.ok(bundle.events.some(event => event.license === 'CC BY-NC-SA 4.0'));
     assert.ok(bundle.events.every(event => Array.isArray(event.sourceUrls) && 'license' in event));
+});
+
+test('a bundle path ending in .gz is gzipped, the copy built into the mod (#146)', async () => {
+    const archive = await readArchive(archiveDir);
+    const dir = mkdtempSync(join(tmpdir(), 'boss-events-'));
+    try {
+        await writeBundle(join(dir, 'boss-events.json.gz'), archive.values(), 0);
+        await writeBundle(join(dir, 'boss-events.json'), archive.values(), 0);
+        const zipped = readFileSync(join(dir, 'boss-events.json.gz'));
+        const plain = readFileSync(join(dir, 'boss-events.json'), 'utf8');
+        assert.equal(gunzipSync(zipped).toString('utf8'), plain);
+        assert.ok(zipped.length < plain.length / 5, `${zipped.length} bytes gzipped of ${plain.length}`);
+        assert.equal(JSON.parse(plain).events.length, archive.size);
+    } finally {
+        rmSync(dir, { recursive: true, force: true });
+    }
 });
 
 test('the bundle says which events replaced which (#180)', async () => {

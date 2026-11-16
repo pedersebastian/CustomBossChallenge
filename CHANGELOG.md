@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Past Events** (#146): a new row in the Boss Creator opens every official boss event since July 2021 in a window of
+  its own, with a search and filters for the boss, the year and the mode. **Normal** or **Elite** opens an event with
+  its own rules (map, mode, cash, lives, towers, paragons, bloon and boss modifiers and its event rounds), named after
+  the event and its date, as one Undo step. Rules the Boss Creator can't play are listed instead of half applied. The
+  mod carries the events up to its release and downloads newer ones from the mod's website at the start of the game,
+  in the background and with a cache, so new events show up without an update; **Download New Boss Events** in the
+  mod's settings turns that off.
 - **Undo and Redo buttons** (#185): next to Reset Boss Options, two buttons undo and redo one step like Ctrl+Z and
   Ctrl+Y, so the mouse and touch screens can too. They name their shortcut, are greyed out when there is nothing to
   undo or redo, and the keyboard reaches them with Tab.
