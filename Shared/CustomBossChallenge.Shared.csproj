@@ -37,6 +37,7 @@
         <Compile Include="..\Persistence\FileChange.cs" Link="Mod\FileChange.cs" />
         <Compile Include="..\Persistence\FormatRead.cs" Link="Mod\FormatRead.cs" />
         <Compile Include="..\Persistence\LastSetupFormat.cs" Link="Mod\LastSetupFormat.cs" />
+        <Compile Include="..\Persistence\PastEventsDownload.cs" Link="Mod\PastEventsDownload.cs" />
         <Compile Include="..\Persistence\PastEventsFormat.cs" Link="Mod\PastEventsFormat.cs" />
         <Compile Include="..\Persistence\PastEventsStore.cs" Link="Mod\PastEventsStore.cs" />
         <Compile Include="..\Persistence\SafeFile.cs" Link="Mod\SafeFile.cs" />

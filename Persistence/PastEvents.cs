@@ -32,9 +32,17 @@ public static class PastEvents
     /// Whether the download is allowed: off with the setting, and with Mod Helper's --modhelper.offline, which the
     /// headless tests use. Tests can set it.
     /// </summary>
-    public static Func<bool> DownloadAllowed { get; set; } = () =>
-        Settings.DownloadPastEvents &&
-        !Environment.GetCommandLineArgs().Any(arg => arg.StartsWith("--modhelper.offline", StringComparison.OrdinalIgnoreCase));
+    public static Func<bool> DownloadAllowed { get; set; } = DefaultDownloadAllowed;
+
+    /// <summary>The setting and Mod Helper's command line, as the game is running</summary>
+    public static bool DefaultDownloadAllowed() =>
+        PastEventsDownload.Allowed(Settings.DownloadPastEvents, Environment.GetCommandLineArgs());
+
+    /// <summary>What the website is asked with; tests give a fake website</summary>
+    internal static Func<HttpMessageInvoker> Client { get; set; } = () => SharedClient!.Value;
+
+    /// <summary>What the last download gave, or null when there was none on this start</summary>
+    public static PastEventsDownloadResult? LastResult { get; private set; }
 
     /// <summary>What the background task is doing, for the Past Events row</summary>
     public static bool Loading => task is {IsCompleted: false} && !loaded;
@@ -55,7 +63,7 @@ public static class PastEvents
     private static bool shownChecking;
     private static readonly ConcurrentQueue<string> Warnings = new();
 
-    private static readonly Lazy<HttpClient> Client = new(() =>
+    private static readonly Lazy<HttpClient> SharedClient = new(() =>
     {
         var client = new HttpClient(new HttpClientHandler
         {
@@ -73,7 +81,25 @@ public static class PastEvents
         if (task != null) return;
         var download = DownloadAllowed();
         var store = Store;
-        task = Task.Run(() => Run(store, download));
+        var client = download ? Client() : null;
+        task = Task.Run(() => Run(store, client));
+    }
+
+    /// <summary>The background task, for tests that wait for it</summary>
+    internal static Task? Running => task;
+
+    /// <summary>
+    /// Forgets this start's download, so <see cref="Start"/> runs again: for tests, after they swapped
+    /// <see cref="Store"/>, <see cref="Client"/> or <see cref="DownloadAllowed"/>
+    /// </summary>
+    internal static void Restart()
+    {
+        task?.Wait(Timeout);
+        task = null;
+        loaded = false;
+        answered = false;
+        LastResult = null;
+        Update();
     }
 
     /// <summary>
@@ -98,45 +124,31 @@ public static class PastEvents
         Update();
     }
 
-    private static async Task Run(PastEventsStore store, bool download)
+    private static async Task Run(PastEventsStore store, HttpMessageInvoker? client)
     {
         try
         {
             store.Load();
             loaded = true;
-            if (!download) return;
+            if (client == null) return;
 
-            using var request = new HttpRequestMessage(HttpMethod.Get, PastEventsFormat.Url);
-            if (store.ETag() is { } etag && EntityTagHeaderValueParse(etag) is { } tag) request.Headers.IfNoneMatch.Add(tag);
-            using var cancel = new CancellationTokenSource(Timeout);
-            using var response = await Client.Value.SendAsync(request, cancel.Token).ConfigureAwait(false);
-            if (response.StatusCode == HttpStatusCode.NotModified)
+            var (result, problem) = await PastEventsDownload.Run(client, store, PastEventsFormat.Url, Timeout).ConfigureAwait(false);
+            LastResult = result;
+            if (result is PastEventsDownloadResult.Downloaded or PastEventsDownloadResult.NotModified) answered = true;
+            if (result == PastEventsDownloadResult.Failed)
             {
-                answered = true;
-                return;
+                Warn($"Couldn't download the newest boss events from {PastEventsFormat.Url}: {problem}");
             }
-            if (!response.IsSuccessStatusCode)
-            {
-                Warn($"Couldn't download the newest boss events from {PastEventsFormat.Url}: {(int) response.StatusCode} {response.ReasonPhrase}");
-                return;
-            }
-
-            var text = await response.Content.ReadAsStringAsync(cancel.Token).ConfigureAwait(false);
-            if (store.Accept(text, response.Headers.ETag?.ToString())) answered = true;
         }
         catch (Exception e)
         {
-            // Offline, a timeout, a proxy: the list keeps the copy it has
-            Warn($"Couldn't download the newest boss events from {PastEventsFormat.Url}: {e.GetBaseException().Message}");
+            Warn($"Couldn't read the boss events: {e.GetBaseException().Message}");
         }
         finally
         {
             loaded = true;
         }
     }
-
-    private static System.Net.Http.Headers.EntityTagHeaderValue? EntityTagHeaderValueParse(string etag) =>
-        System.Net.Http.Headers.EntityTagHeaderValue.TryParse(etag, out var tag) ? tag : null;
 
     /// <summary>
     /// Runs every frame on the main thread: logs what the background task found, and tells the menus when the events
