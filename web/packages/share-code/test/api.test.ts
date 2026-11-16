@@ -8,7 +8,7 @@ import * as sdk from "../src/index";
 import { PREFIXES, decode, defaultChallenge, defaultOptions, encode, extractCode, tierBosses, tiers } from "../src/index";
 
 const README = readFileSync(fileURLToPath(new URL("../README.md", import.meta.url)), "utf8");
-const SOURCES = ["index", "decode", "encode", "options", "data", "math/tiers", "math/skulls", "math/tierBosses", "math/limits", "math/dotnet", "math/warnings"].map(
+const SOURCES = ["index", "decode", "encode", "options", "data", "math/tiers", "math/skulls", "math/tierBosses", "math/limits", "math/dotnet", "math/warnings", "pastEvents"].map(
   (name) => readFileSync(fileURLToPath(new URL(`../src/${name}.ts`, import.meta.url)), "utf8"),
 );
 

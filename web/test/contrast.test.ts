@@ -39,6 +39,9 @@ describe("contrast", () => {
     ["--muted", "--card"],
     // The Past Events rows (#213): their Source links and the search and filters
     ["--gold", "--panel-inner"],
+    // The Studio's i buttons: dark on blue, white on the darker blue under the mouse
+    ["--outline", "--blue"],
+    ["--text", "--sea-end"],
   ])("%s on %s is at least 4.5:1", (text, background) => {
     expect(contrast(token(text), token(background))).toBeGreaterThanOrEqual(4.5);
   });
@@ -63,6 +66,19 @@ describe("contrast", () => {
   it.each(Object.entries(TIER_LOOK.themes).map(([boss, colours]) => [boss, colours[0]]))("%s's badge letter is readable", (_, colour) => {
     expect(contrast(token("--outline"), colour)).toBeGreaterThanOrEqual(4.5);
   });
+
+  it("the Past Events search's placeholder is readable on the card", () => {
+    const match = /\.past-events-search::placeholder\s*\{\s*color:\s*(#[0-9a-fA-F]{6})/.exec(css);
+    expect(match).not.toBeNull();
+    expect(contrast(match![1], token("--card"))).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("the Past Events filters' lists use the Studio's colours (#97)", () => {
+    expect(css).toMatch(/\.past-events-filter option \{/);
+    expect(css).toMatch(/\.past-events-filter option:checked \{/);
+  });
+
+  it("the Studio's i button is dark text on blue", () => expect(css).toMatch(/\.studio-info \{[^}]*color:\s*var\(--outline\)/));
 
   it("the health note uses the lighter colour", () => expect(css).toMatch(/\.note\.harder\s*\{\s*color:\s*var\(--harder-text\)/));
 });

@@ -6,14 +6,13 @@
 import {
   canUseCodes,
   data,
-  filterChallenge,
+  encode,
   hasRules,
-  mapPastEvent,
   matchesPastEvent,
   newestFirst,
   pastEventBoss,
-  pastEventCode,
   pastEventModes,
+  pastEventSetup,
   pastEventYears,
   readPastEvents,
   rulesOf,
@@ -25,9 +24,11 @@ import {
 } from "@cbc/share-code";
 import { linkTo, replaceAddress, studioLinkTo } from "../code/link";
 import { GAME } from "../data/types";
-import { announce, copyWithFeedback, h } from "../dom";
+import { NO_AUTOFILL, announce, copyWithFeedback, h } from "../dom";
 import { MOD_TEXTS, fillText } from "../modTexts";
-import { NO_AUTOFILL } from "../studio/rows";
+
+/** How long after the last change screen readers hear the count */
+export const COUNT_DELAY = 600;
 
 /** Where the website publishes the events; pages.yml builds it next to the pages */
 export const PAST_EVENTS_FILE = "boss-events.json";
@@ -49,6 +50,18 @@ export function eventDates(event: PastEvent): string {
   const start = englishDate(event.start);
   const end = englishDate(event.end);
   return `${event.datesGuessed ? "~" : ""}${start === end ? start : `${start} - ${end}`}`;
+}
+
+const QUERY_KEYS = ["q", "boss", "year", "mode"];
+
+/**
+ * Whether the address's # holds a search: empty (every event) or with q, boss, year or mode. Another # like the skip
+ * link's #top isn't one, and leaves the search as it is.
+ */
+export function isQueryHash(hash = location.hash): boolean {
+  if (hash === "" || hash === "#") return true;
+  const params = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
+  return QUERY_KEYS.some((key) => params.has(key));
 }
 
 /** The search and the filters in the address: #q=lych&boss=lych&year=2025&mode=Clicks */
@@ -76,25 +89,14 @@ export function hashForQuery(query: PastEventQuery): string {
 /** The page's address with this query, for the address bar */
 const addressFor = (query: PastEventQuery): string => location.pathname + location.search + hashForQuery(query);
 
-/** The codes made so far, by event and level, so a second click doesn't make it again */
-const codes = new Map<string, Promise<string | null>>();
-const codeOf = (event: PastEvent, elite: boolean): Promise<string | null> => {
-  const key = `${event.id}/${elite}`;
-  let code = codes.get(key);
-  if (!code) {
-    code = pastEventCode(event, elite).then((result) => result.code);
-    codes.set(key, code);
+/** Only https links to an event's sources: the file comes from the website, but a link must never run script */
+export function safeSource(url: string | undefined): string | null {
+  if (!url) return null;
+  try {
+    return new URL(url).protocol === "https:" ? url : null;
+  } catch {
+    return null;
   }
-  return code;
-};
-
-/** What the Boss Creator leaves out of the normal or Elite event, also what a code can't hold */
-function leftOut(event: PastEvent, elite: boolean): string[] {
-  const setup = mapPastEvent(event, elite);
-  if (setup.problem !== "None") return [];
-  const dropped: string[] = [];
-  filterChallenge(setup.challenge, data.defaultChallenge, dropped);
-  return [...setup.unsupported, ...dropped];
 }
 
 /** The details line: map, modes and difficulty, Elite's map where it differs, and how both were ranked */
@@ -117,59 +119,81 @@ function details(event: PastEvent): string {
   return parts.filter((part) => part.length > 0).join(" | ");
 }
 
-/** The buttons of the normal or the Elite event, or why it can't be opened */
-function level(event: PastEvent, elite: boolean, codesWork: boolean): HTMLElement | null {
+/**
+ * The buttons of the normal or the Elite event, or why it can't be opened. The code is made ahead, when the mouse,
+ * the keyboard or a finger comes to the event (prepare): a copy then starts in the click itself, which Safari needs,
+ * and Open in Studio and Details are real links, so a middle-click opens them in a new tab.
+ */
+function level(event: PastEvent, elite: boolean, codesWork: boolean): { row: HTMLElement; prepare: () => void } | null {
   const rules = rulesOf(event, elite);
   if (!rules) return null;
   const label = elite ? "Elite" : MOD_TEXTS.PastEventNormal;
-  const setup = mapPastEvent(event, elite);
+  const { setup, json } = pastEventSetup(event, elite);
   const row = h("div", { class: "past-event-level" + (elite ? " elite" : "") }, h("span", { class: "past-event-level-name" }, label));
 
   if (setup.problem === "MissingMap") {
     row.append(h("span", { class: "muted" }, fillText(MOD_TEXTS.PastEventMissingMap, setup.map ?? "?")));
-    return row;
+    return { row, prepare: () => {} };
   }
 
   const name = `${event.displayName}${elite ? " Elite" : ""}`;
-  const button = (text: string, cls: string, aria: string) =>
-    h("button", { class: `button small ${cls}`, type: "button", "aria-label": `${text}: ${aria}`, disabled: codesWork ? undefined : "" }, text);
-  const studio = button("Open in Studio", "", name);
-  const copyCode = button("Copy code", "blue", name);
-  const copyLink = button("Copy link", "blue", name);
-  const view = button("Details", "orange", name);
+  const button = (text: string, cls: string) =>
+    h("button", { class: `button small ${cls}`, type: "button", "aria-label": `${text}: ${name}`, disabled: codesWork ? undefined : "" }, text);
+  // Without CompressionStream there is no code to link to: the links are turned off like the buttons
+  const link = (text: string, cls: string) =>
+    h("a", { class: `button small ${cls}`, "aria-label": `${text}: ${name}`, "aria-disabled": codesWork ? undefined : "true" }, text);
+  const studio = link("Open in Studio", "");
+  const copyCode = button("Copy code", "blue");
+  const copyLink = button("Copy link", "blue");
+  const view = link("Details", "orange");
+  const detailsOf = (code: string) => linkTo(code, new URL("./", location.href).href);
 
-  studio.addEventListener("click", async () => {
-    const code = await codeOf(event, elite);
-    if (code) location.href = studioLinkTo(code);
-  });
-  view.addEventListener("click", async () => {
-    const code = await codeOf(event, elite);
-    if (code) location.href = linkTo(code, new URL("./", location.href).href);
-  });
-  copyCode.addEventListener("click", async () => {
-    const code = await codeOf(event, elite);
-    if (code) await copyWithFeedback(copyCode, code);
-  });
-  copyLink.addEventListener("click", async () => {
-    const code = await codeOf(event, elite);
-    if (code) await copyWithFeedback(copyLink, linkTo(code, new URL("./", location.href).href), "Link copied!");
-  });
+  let made: Promise<string> | null = null;
+  let code: string | null = null;
+  const prepare = (): Promise<string> => {
+    if (!made) {
+      made = json && codesWork ? encode(setup.options, json) : Promise.reject(new Error(UNSUPPORTED_REASON));
+      made.then(
+        (done) => {
+          code = done;
+          studio.href = studioLinkTo(done);
+          view.href = detailsOf(done);
+        },
+        () => {},
+      );
+    }
+    return made;
+  };
+  /** The text to copy: at once when the code is made, else a promise the copy waits for */
+  const textOf = (to: (done: string) => string): string | Promise<string> => (code ? to(code) : prepare().then(to));
+
+  // A click before the code was made waits for it, then goes there
+  const follow = (anchor: HTMLAnchorElement, to: (done: string) => string) =>
+    anchor.addEventListener("click", (e) => {
+      if (anchor.hasAttribute("href")) return;
+      e.preventDefault();
+      if (codesWork) prepare().then((done) => (location.href = to(done)), () => {});
+    });
+  follow(studio, (done) => studioLinkTo(done));
+  follow(view, detailsOf);
+  copyCode.addEventListener("click", () => void copyWithFeedback(copyCode, textOf((done) => done)));
+  copyLink.addEventListener("click", () => void copyWithFeedback(copyLink, textOf(detailsOf), "Link copied!"));
 
   row.append(h("span", { class: "actions past-event-actions" }, studio, copyCode, copyLink, view));
-  const missing = leftOut(event, elite);
-  if (missing.length > 0) row.append(h("p", { class: "note past-event-note" }, fillText(MOD_TEXTS.PastEventUnsupported, missing.join(", "))));
-  return row;
+  if (setup.unsupported.length > 0) {
+    row.append(h("p", { class: "note past-event-note" }, fillText(MOD_TEXTS.PastEventUnsupported, setup.unsupported.join(", "))));
+  }
+  return { row, prepare: () => void prepare().catch(() => {}) };
 }
 
 function renderEvent(event: PastEvent, all: Map<string, PastEvent>, codesWork: boolean): HTMLElement {
   const boss = pastEventBoss(event.bossKey);
   const replacedBy = event.replacedBy.map((id) => all.get(id)?.displayName ?? id);
-  const levels = [level(event, false, codesWork), level(event, true, codesWork)].filter((part): part is HTMLElement => part !== null);
-  const source = event.license && event.sourceUrls[0]
-    ? h("a", { class: "past-event-source", href: event.sourceUrls[0], rel: "noopener" }, `Source (${event.license})`)
-    : null;
+  const levels = [level(event, false, codesWork), level(event, true, codesWork)].filter((part) => part !== null);
+  const sourceUrl = safeSource(event.sourceUrls[0]);
+  const source = event.license && sourceUrl ? h("a", { class: "past-event-source", href: sourceUrl }, `Source (${event.license})`) : null;
 
-  return h(
+  const article = h(
     "article",
     { class: "past-event" + (hasRules(event) ? "" : " no-rules"), "data-id": event.id },
     h("div", { class: "boss-badge past-event-badge", "aria-hidden": "true" }, (boss ?? "?").slice(0, 1)),
@@ -185,11 +209,22 @@ function renderEvent(event: PastEvent, all: Map<string, PastEvent>, codesWork: b
       ),
       h("p", { class: "past-event-details" }, details(event)),
       replacedBy.length > 0 ? h("p", { class: "past-event-replaced" }, fillText(MOD_TEXTS.PastEventReplacedBy, replacedBy.join(", "))) : null,
-      ...levels,
+      ...levels.map((part) => part.row),
       hasRules(event) ? null : h("p", { class: "muted" }, MOD_TEXTS.PastEventNoRules),
       source,
     ),
   );
+  // The codes are made when the visitor comes to the event, before any click
+  if (codesWork && levels.length > 0) {
+    let prepared = false;
+    const prepare = () => {
+      if (prepared) return;
+      prepared = true;
+      levels.forEach((part) => part.prepare());
+    };
+    for (const type of ["pointerenter", "focusin", "touchstart"]) article.addEventListener(type, prepare, { passive: true });
+  }
+  return article;
 }
 
 function select(label: string, choices: [string, string][], value: string | null): HTMLSelectElement {
@@ -201,7 +236,7 @@ function select(label: string, choices: [string, string][], value: string | null
 
 /**
  * Fills the page: loads the events (load gives the file's text; tests give their own) and shows them with the
- * address's search and filters
+ * address's search and filters. Gives what stops it following the address.
  */
 export async function setUpPastEvents(
   root: HTMLElement,
@@ -210,7 +245,7 @@ export async function setUpPastEvents(
     if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
     return response.text();
   },
-): Promise<void> {
+): Promise<() => void> {
   const status = h("p", { class: "muted", role: "status" }, MOD_TEXTS.PastEventsLoading);
   root.replaceChildren(status);
 
@@ -220,7 +255,7 @@ export async function setUpPastEvents(
   } catch {
     status.textContent = `${MOD_TEXTS.PastEventsNone} Try again later.`;
     status.className = "error";
-    return;
+    return () => {};
   }
   const read = readPastEvents(text);
   if (read.problem !== "None") {
@@ -228,14 +263,31 @@ export async function setUpPastEvents(
       ? "The list of events is from a newer version of the website. Reload the page to get it."
       : `${MOD_TEXTS.PastEventsNone} Try again later.`;
     status.className = read.problem === "TooNew" ? "warning" : "error";
-    return;
+    return () => {};
   }
 
   const events = newestFirst(read.file.events);
   const byId = new Map(events.map((event) => [event.id, event]));
   const codesWork = canUseCodes();
   const searchTexts = new Map(events.map((event) => [event.id, searchText(event, shownName)]));
-  let query = queryFromHash();
+  const bosses = data.bosses.filter((boss) => events.some((event) => event.bossKey === boss.toLowerCase()));
+  const years = pastEventYears(events);
+  const modes = pastEventModes(events);
+
+  /** The address's query with only what the filters offer: #boss=Lych is lych, #year=1999 is every year */
+  const known = (read: PastEventQuery): PastEventQuery => ({
+    text: read.text,
+    boss: bosses.find((b) => b.toLowerCase() === read.boss?.toLowerCase())?.toLowerCase() ?? null,
+    year: read.year !== null && years.includes(read.year) ? read.year : null,
+    mode: modes.find((m) => m.toLowerCase() === read.mode?.toLowerCase()) ?? null,
+  });
+  const fromAddress = (): PastEventQuery => {
+    const read = queryFromHash();
+    const shown = known(read);
+    if (hashForQuery(shown) !== hashForQuery(read)) replaceAddress(addressFor(shown));
+    return shown;
+  };
+  let query = fromAddress();
 
   const search = h("input", {
     class: "past-events-search",
@@ -245,12 +297,11 @@ export async function setUpPastEvents(
     ...NO_AUTOFILL,
   });
   search.value = query.text;
-  const bosses = data.bosses.filter((boss) => events.some((event) => event.bossKey === boss.toLowerCase()));
   const boss = select("Boss", [["", MOD_TEXTS.AnyBoss], ...bosses.map((b): [string, string] => [b.toLowerCase(), b])], query.boss);
-  const year = select("Year", [["", MOD_TEXTS.AnyYear], ...pastEventYears(events).map((y): [string, string] => [String(y), String(y)])],
+  const year = select("Year", [["", MOD_TEXTS.AnyYear], ...years.map((y): [string, string] => [String(y), String(y)])],
     query.year ? String(query.year) : null);
-  const mode = select("Mode", [["", MOD_TEXTS.AnyMode], ...pastEventModes(events).map((m): [string, string] => [m, shownName(m)])], query.mode);
-  const count = h("p", { class: "past-events-count", "aria-live": "polite" });
+  const mode = select("Mode", [["", MOD_TEXTS.AnyMode], ...modes.map((m): [string, string] => [m, shownName(m)])], query.mode);
+  const count = h("p", { class: "past-events-count" });
   const list = h("div", { class: "past-events-list" });
   const empty = h("p", { class: "muted past-events-empty" }, MOD_TEXTS.PastEventsNoMatch);
 
@@ -264,11 +315,15 @@ export async function setUpPastEvents(
     return row;
   };
 
+  // Screen readers hear the count once the typing stops, not after every letter
+  let countTimer: ReturnType<typeof setTimeout> | undefined;
   function show(): void {
     const shown = events.filter((event) => matchesPastEvent(event, query, () => searchTexts.get(event.id) ?? ""));
     list.replaceChildren(...shown.map(rowOf));
     count.textContent = fillText(MOD_TEXTS.PastEventsCount, shown.length, events.length);
     empty.hidden = shown.length > 0;
+    clearTimeout(countTimer);
+    countTimer = setTimeout(() => announce(count.textContent ?? ""), COUNT_DELAY);
   }
 
   function update(change: Partial<PastEventQuery>): void {
@@ -282,20 +337,25 @@ export async function setUpPastEvents(
   year.addEventListener("change", () => update({ year: year.value ? Number(year.value) : null }));
   mode.addEventListener("change", () => update({ mode: mode.value || null }));
 
-  // A link with other filters, or Back, shows those
-  window.addEventListener("hashchange", () => {
-    query = queryFromHash();
+  // A link with other filters, or Back, shows those; another # like the skip link's leaves them
+  const follow = (): void => {
+    if (!isQueryHash()) return;
+    query = fromAddress();
     search.value = query.text;
     boss.value = query.boss ?? "";
     year.value = query.year ? String(query.year) : "";
     mode.value = query.mode ?? "";
     show();
-  });
+  };
+  window.addEventListener("hashchange", follow);
 
   root.replaceChildren(h("div", { class: "past-events-filters" }, search, boss, year, mode, count));
   // Without CompressionStream no code can be made; the list still shows the events
   if (!codesWork) root.append(h("p", { class: "warning" }, UNSUPPORTED_REASON));
   root.append(list, empty);
   show();
-  announce(fillText(MOD_TEXTS.PastEventsCount, list.childElementCount, events.length));
+  return () => {
+    window.removeEventListener("hashchange", follow);
+    clearTimeout(countTimer);
+  };
 }

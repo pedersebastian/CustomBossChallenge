@@ -104,6 +104,10 @@ if (result.ok) {
 - **Helpers:** `tiers` (spawn rounds, health and speed per tier), `skulls`, `tierBosses` (the per-tier tokens like
   `"LychElite@120/80#4"`), `limits` (the mod's clamping) and `warnings` (the Boss Creator's warnings before Play). Each
   is also on its own path, e.g. `@cbc/share-code/tiers`.
+- **Past events:** `readPastEvents` reads the official boss events (`boss-events.json`, which the website publishes
+  next to its pages), and `mapPastEvent` and `pastEventCode` turn the normal or the Elite event into the setup and the
+  code the mod's Past Events list makes of it. `matchesPastEvent`, `pastEventYears` and `pastEventModes` search and
+  filter them like the list, and `setupName` names them. Also on its own path: `@cbc/share-code/past-events`.
 - **Data:** `data` holds the game data the codes are made against (`gameVersion`, the default challenge, the maps,
   modes and limits), and `PREFIXES`, `LIMITS` and `defaultChallenge()` give parts of it.
 
@@ -111,7 +115,8 @@ if (result.ok) {
 
 - **The mod is the reference.** Each part is a port of the mod's C#: `Persistence/CodeFormat.cs` and `SetupCode.cs`,
   and `Config/BossOptions.cs`, `ChallengeLimits.cs`, `TierMath.cs`, `SkullMath.cs`, `TierBossMath.cs` and
-  `SetupWarnings.cs`. The comments name the C# each function follows.
+  `SetupWarnings.cs`, and `Persistence/PastEventsFormat.cs` and `Config/PastEventRules.cs` for the past events.
+  The comments name the C# each function follows.
 - **Same JSON, not the same bytes.** The mod packs a code with .NET's `DeflateStream` and this package with the
   browser's `CompressionStream`. The JSON inside is the same, key for key, and the mod reads any raw deflate.
 - **Shared test vectors.** The website's tests (`web/test`) and the mod's C# tests (`UnitTests/`, `PropertyTests/`)
@@ -119,7 +124,7 @@ if (result.ok) {
   - codes made in the game, with what the mod reads from them
   - 200 random codes from the property tests
   - codes this package made, which the mod's `CodeFormat` must load unchanged
-  - cases for links, skulls, options, tier bosses and the warnings before Play
+  - cases for links, skulls, options, tier bosses, the warnings before Play and the past events
 
   CI runs both sides.
 - **Game data.** `src/data.json` is a copy of part of `web/src/data/game.json`, which the mod's `WebDataTest` writes

@@ -1,7 +1,7 @@
 // The rows of the Studio's controls (#12, #95): a label, the control, its value and a Reset, each showing the setup
 // it is given. Built with h(), so every control has a label and works with the keyboard like any form field.
 
-import { h } from "../dom";
+import { NO_AUTOFILL, h } from "../dom";
 import type { StudioSetup } from "./state";
 import { icon, iconNameFor } from "./icons";
 
@@ -11,17 +11,6 @@ export interface Control {
   sync: (setup: StudioSetup) => void;
 }
 
-/**
- * Keeps password managers out of the Studio's fields: "Challenge name" looks like a name to them, and they offered
- * to fill in the player's own (Dashlane reads data-form-type, 1Password, LastPass and Bitwarden their own markers)
- */
-export const NO_AUTOFILL = {
-  autocomplete: "off",
-  "data-form-type": "other",
-  "data-1p-ignore": "true",
-  "data-lpignore": "true",
-  "data-bwignore": "true",
-} as const;
 
 let ids = 0;
 export const nextId = (name: string): string => `studio-${name}-${++ids}`;
