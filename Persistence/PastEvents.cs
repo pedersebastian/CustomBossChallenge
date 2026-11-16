@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using BTD_Mod_Helper;
 using MelonLoader.Utils;
@@ -39,7 +37,7 @@ public static class PastEvents
         PastEventsDownload.Allowed(Settings.DownloadPastEvents, Environment.GetCommandLineArgs());
 
     /// <summary>What the website is asked with; tests give a fake website</summary>
-    internal static Func<HttpMessageInvoker> Client { get; set; } = () => SharedClient!.Value;
+    internal static Func<HttpMessageInvoker> Client { get; set; } = () => SharedClient.Value;
 
     /// <summary>What the last download gave, or null when there was none on this start</summary>
     public static PastEventsDownloadResult? LastResult { get; private set; }
@@ -68,7 +66,7 @@ public static class PastEvents
         var client = new HttpClient(new HttpClientHandler
         {
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-        }) {Timeout = Timeout};
+        });
         client.DefaultRequestHeaders.UserAgent.ParseAdd($"{ModHelperData.Name}/{ModHelperData.Version}");
         return client;
     });

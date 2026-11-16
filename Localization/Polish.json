@@ -169,7 +169,7 @@
   "CustomBossChallenge-ShowRankedStats Setting Description": "Pokazuje we własnych grach z bossami to, co mierzą rankingowe wydarzenia z bossami: łączny czas życia bossów, karę za przeciągającą się rundę bez bossa oraz użyte poziomy ulepszeń i gotówkę. Po zwycięstwie widzisz też czas każdego poziomu, więc także podejście Least Tiers lub Least Cash można porównać czasem. Własne gry pozostają nierankingowe.",
   "CustomBossChallenge-Past Events Category": "Minione wydarzenia",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Pobieraj nowe wydarzenia z bossami",
-  "CustomBossChallenge-DownloadPastEvents Setting Description": "Przy starcie gry lista minionych wydarzeń w Kreatorze Bossów pobiera najnowszą listę oficjalnych wydarzeń z bossami ze strony moda (pedersebastian.github.io/CustomBossChallenge), więc nowe wydarzenia pojawiają się bez aktualizacji moda. Nic o tobie nie jest wysyłane. Po wyłączeniu lista ma wydarzenia dołączone do moda i te pobrane wcześniej.",
+  "CustomBossChallenge-DownloadPastEvents Setting Description": "Przy starcie gry lista minionych wydarzeń w Kreatorze Bossów pobiera najnowszą listę oficjalnych wydarzeń z bossami ze strony moda (pedersebastian.github.io/CustomBossChallenge), więc nowe wydarzenia pojawiają się bez aktualizacji moda. Żadne dane osobowe nie są wysyłane. Po wyłączeniu lista ma wydarzenia dołączone do moda i te pobrane wcześniej.",
   "CustomBossChallenge-TierTime": "Poziom {0}",
   "CustomBossChallenge-TotalTime": "Razem",
   "CustomBossChallenge-PenaltyTime": "Kara",

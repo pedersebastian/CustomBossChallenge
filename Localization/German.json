@@ -169,7 +169,7 @@
   "CustomBossChallenge-ShowRankedStats Setting Description": "Zeigt in eigenen Bossspielen, was die Ranglisten-Boss-Events werten: wie lange die Bosse zusammen am Leben waren, die Strafe für eine sich hinziehende Runde ohne Boss sowie die verwendeten Upgrade-Stufen und das verwendete Geld. Nach dem Sieg siehst du auch die Zeit jeder Stufe, damit sich auch ein Least-Tiers- oder Least-Cash-Lauf nach Zeit vergleichen lässt. Eigene Spiele bleiben ohne Wertung.",
   "CustomBossChallenge-Past Events Category": "Vergangene Events",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Neue Boss-Events herunterladen",
-  "CustomBossChallenge-DownloadPastEvents Setting Description": "Beim Spielstart lädt die Liste der vergangenen Events im Boss-Ersteller die neueste Liste offizieller Boss-Events von der Website der Mod herunter (pedersebastian.github.io/CustomBossChallenge), damit neue Events ohne Update der Mod erscheinen. Es wird nichts über dich gesendet. Ausgeschaltet enthält die Liste die Events, die mit der Mod kamen, und die zuvor heruntergeladenen.",
+  "CustomBossChallenge-DownloadPastEvents Setting Description": "Beim Spielstart lädt die Liste der vergangenen Events im Boss-Ersteller die neueste Liste offizieller Boss-Events von der Website der Mod herunter (pedersebastian.github.io/CustomBossChallenge), damit neue Events ohne Update der Mod erscheinen. Es werden keine persönlichen Daten gesendet. Ausgeschaltet enthält die Liste die Events, die mit der Mod kamen, und die zuvor heruntergeladenen.",
   "CustomBossChallenge-TierTime": "Stufe {0}",
   "CustomBossChallenge-TotalTime": "Gesamt",
   "CustomBossChallenge-PenaltyTime": "Strafe",

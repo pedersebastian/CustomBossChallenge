@@ -169,7 +169,7 @@
   "CustomBossChallenge-ShowRankedStats Setting Description": "แสดงสิ่งที่อีเวนต์บอสแบบจัดอันดับวัด ในเกมบอสที่กำหนดเอง: ผลรวมของเวลาที่บอสมีชีวิตอยู่ บทลงโทษเมื่อรอบที่ไม่มีบอสยืดเยื้อ และระดับอัปเกรดกับเงินที่ใช้ เมื่อชนะจะเห็นเวลาของแต่ละระดับด้วย จึงเทียบรอบ Least Tiers หรือ Least Cash ด้วยเวลาได้เช่นกัน เกมที่กำหนดเองยังคงไม่จัดอันดับ",
   "CustomBossChallenge-Past Events Category": "อีเวนต์ที่ผ่านมา",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "ดาวน์โหลดอีเวนต์บอสใหม่",
-  "CustomBossChallenge-DownloadPastEvents Setting Description": "เมื่อเริ่มเกม รายการอีเวนต์ที่ผ่านมาของตัวสร้างบอส จะดาวน์โหลดรายการอีเวนต์บอสอย่างเป็นทางการล่าสุดจากเว็บไซต์ของม็อด (pedersebastian.github.io/CustomBossChallenge) เพื่อให้อีเวนต์ใหม่ปรากฏโดยไม่ต้องอัปเดตม็อด ไม่มีการส่งข้อมูลใดๆ เกี่ยวกับคุณ เมื่อปิด รายการจะมีอีเวนต์ที่มากับม็อดและที่ดาวน์โหลดไว้ก่อนหน้า",
+  "CustomBossChallenge-DownloadPastEvents Setting Description": "เมื่อเริ่มเกม รายการอีเวนต์ที่ผ่านมาของตัวสร้างบอส จะดาวน์โหลดรายการอีเวนต์บอสอย่างเป็นทางการล่าสุดจากเว็บไซต์ของม็อด (pedersebastian.github.io/CustomBossChallenge) เพื่อให้อีเวนต์ใหม่ปรากฏโดยไม่ต้องอัปเดตม็อด ไม่มีการส่งข้อมูลส่วนบุคคล เมื่อปิด รายการจะมีอีเวนต์ที่มากับม็อดและที่ดาวน์โหลดไว้ก่อนหน้า",
   "CustomBossChallenge-TierTime": "ระดับ {0}",
   "CustomBossChallenge-TotalTime": "รวม",
   "CustomBossChallenge-PenaltyTime": "บทลงโทษ",

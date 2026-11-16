@@ -169,7 +169,7 @@
   "CustomBossChallenge-ShowRankedStats Setting Description": "Näyttää omissa bossipeleissä sen, mitä rankatut bossitapahtumat mittaavat: kuinka kauan bossit olivat elossa yhteensä, rangaistuksen venyvästä kierroksesta ilman bossia sekä käytetyt päivitystasot ja rahat. Kun peli on voitettu, näet myös jokaisen tason ajan, joten Least Tiers- tai Least Cash -yrityksiäkin voi verrata ajalla. Omat pelit pysyvät rankkaamattomina.",
   "CustomBossChallenge-Past Events Category": "Menneet tapahtumat",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Lataa uudet pomotapahtumat",
-  "CustomBossChallenge-DownloadPastEvents Setting Description": "Kun peli käynnistyy, Pomoluojan menneiden tapahtumien lista lataa uusimman listan virallisista pomotapahtumista modin verkkosivulta (pedersebastian.github.io/CustomBossChallenge), joten uudet tapahtumat näkyvät ilman modin päivitystä. Sinusta ei lähetetä mitään. Pois päältä listassa ovat modin mukana tulleet tapahtumat ja aiemmin ladatut.",
+  "CustomBossChallenge-DownloadPastEvents Setting Description": "Kun peli käynnistyy, Pomoluojan menneiden tapahtumien lista lataa uusimman listan virallisista pomotapahtumista modin verkkosivulta (pedersebastian.github.io/CustomBossChallenge), joten uudet tapahtumat näkyvät ilman modin päivitystä. Henkilötietoja ei lähetetä. Pois päältä listassa ovat modin mukana tulleet tapahtumat ja aiemmin ladatut.",
   "CustomBossChallenge-TierTime": "Taso {0}",
   "CustomBossChallenge-TotalTime": "Yhteensä",
   "CustomBossChallenge-PenaltyTime": "Rangaistus",

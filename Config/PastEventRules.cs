@@ -144,8 +144,8 @@ public static class PastEventRules
     /// "Lych 47 Elite, 17 Jan 2025", or "Blastapopoulos 20, 10. okt. 2026" in Norwegian: <paramref name="date"/>
     /// writes the date in the player's language (<see cref="PastEventDates"/>, English without it).
     /// <br/>
-    /// The Challenge Editor's name field keeps only letters, digits, spaces and . , ! ' / # ? ~ (checked in the game:
-    /// it made "(2025-01-17)" "20250117" and drops a colon), so the name has letters and digits, and the date its dots.
+    /// The Challenge Editor's name field keeps only letters, digits, spaces and . , ! ' / # ? ~, so the name keeps
+    /// letters and digits, and the date its dots.
     /// </summary>
     public static string SetupName(PastEvent pastEvent, bool elite, Func<DateTime, string>? date = null,
         string eliteName = "Elite") =>

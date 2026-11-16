@@ -169,7 +169,7 @@
   "CustomBossChallenge-ShowRankedStats Setting Description": "يعرض في ألعاب الزعماء المخصصة ما تقيسه أحداث الزعماء المصنفة: مجموع المدة التي بقي فيها الزعماء أحياء، وعقوبة الجولة التي تطول دون زعيم، ومستويات الترقية والمال المستخدم. عند الفوز ترى أيضًا وقت كل مستوى، لتقارن محاولات Least Tiers أو Least Cash بالوقت أيضًا. تبقى الألعاب المخصصة غير مصنفة.",
   "CustomBossChallenge-Past Events Category": "الأحداث السابقة",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "تنزيل أحداث الزعماء الجديدة",
-  "CustomBossChallenge-DownloadPastEvents Setting Description": "عند بدء اللعبة، تنزّل قائمة الأحداث السابقة في منشئ الزعماء أحدث قائمة لأحداث الزعماء الرسمية من موقع التعديل (pedersebastian.github.io/CustomBossChallenge)، لتظهر الأحداث الجديدة دون تحديث التعديل. لا يُرسل أي شيء عنك. عند الإيقاف، تحتوي القائمة على الأحداث المرفقة مع التعديل وتلك التي نُزّلت من قبل.",
+  "CustomBossChallenge-DownloadPastEvents Setting Description": "عند بدء اللعبة، تنزّل قائمة الأحداث السابقة في منشئ الزعماء أحدث قائمة لأحداث الزعماء الرسمية من موقع التعديل (pedersebastian.github.io/CustomBossChallenge)، لتظهر الأحداث الجديدة دون تحديث التعديل. لا تُرسل أي بيانات شخصية. عند الإيقاف، تحتوي القائمة على الأحداث المرفقة مع التعديل وتلك التي نُزّلت من قبل.",
   "CustomBossChallenge-TierTime": "المستوى {0}",
   "CustomBossChallenge-TotalTime": "المجموع",
   "CustomBossChallenge-PenaltyTime": "العقوبة",

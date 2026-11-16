@@ -169,7 +169,7 @@
   "CustomBossChallenge-ShowRankedStats Setting Description": "Viser det, de rangerede boss-events måler, i egne boss-spil: hvor længe bosserne levede, lagt sammen, straffen for en runde uden boss, der trækker ud, og de opgraderingsniveauer og penge, der er brugt. Når spillet er vundet, ser du også tiden for hvert niveau, så en Least Tiers- eller Least Cash-runde også kan sammenlignes på tid. Egne spil forbliver urangerede.",
   "CustomBossChallenge-Past Events Category": "Tidligere events",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Hent nye boss-events",
-  "CustomBossChallenge-DownloadPastEvents Setting Description": "Når spillet starter, henter Boss-skaberens liste over tidligere events den nyeste liste over officielle boss-events fra moddens hjemmeside (pedersebastian.github.io/CustomBossChallenge), så nye events dukker op uden en opdatering af modden. Intet om dig bliver sendt. Slået fra har listen de events, modden kom med, og dem, den har hentet før.",
+  "CustomBossChallenge-DownloadPastEvents Setting Description": "Når spillet starter, henter Boss-skaberens liste over tidligere events den nyeste liste over officielle boss-events fra moddens hjemmeside (pedersebastian.github.io/CustomBossChallenge), så nye events dukker op uden en opdatering af modden. Der sendes ingen personlige oplysninger. Slået fra har listen de events, modden kom med, og dem, den har hentet før.",
   "CustomBossChallenge-TierTime": "Niveau {0}",
   "CustomBossChallenge-TotalTime": "I alt",
   "CustomBossChallenge-PenaltyTime": "Straf",

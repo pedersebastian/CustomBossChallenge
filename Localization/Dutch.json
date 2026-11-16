@@ -169,7 +169,7 @@
   "CustomBossChallenge-ShowRankedStats Setting Description": "Toont in eigen baasspellen wat de ranked baas-events meten: hoe lang de bazen samen leefden, de straf voor een uitlopende ronde zonder baas, en de gebruikte upgradeniveaus en het gebruikte geld. Na de overwinning zie je ook de tijd van elk niveau, zodat ook een Least Tiers- of Least Cash-poging op tijd te vergelijken is. Eigen spellen blijven unranked.",
   "CustomBossChallenge-Past Events Category": "Eerdere events",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Nieuwe boss-events downloaden",
-  "CustomBossChallenge-DownloadPastEvents Setting Description": "Als het spel start, downloadt de lijst met eerdere events van de Bossmaker de nieuwste lijst met officiële boss-events van de website van de mod (pedersebastian.github.io/CustomBossChallenge), zodat nieuwe events verschijnen zonder update van de mod. Er wordt niets over jou verstuurd. Uit heeft de lijst de events die met de mod meekwamen en de events die eerder zijn gedownload.",
+  "CustomBossChallenge-DownloadPastEvents Setting Description": "Als het spel start, downloadt de lijst met eerdere events van de Bossmaker de nieuwste lijst met officiële boss-events van de website van de mod (pedersebastian.github.io/CustomBossChallenge), zodat nieuwe events verschijnen zonder update van de mod. Er worden geen persoonsgegevens verstuurd. Uit heeft de lijst de events die met de mod meekwamen en de events die eerder zijn gedownload.",
   "CustomBossChallenge-TierTime": "Niveau {0}",
   "CustomBossChallenge-TotalTime": "Totaal",
   "CustomBossChallenge-PenaltyTime": "Straf",

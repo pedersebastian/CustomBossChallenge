@@ -80,6 +80,7 @@ public sealed class PastEventsBrowser
     public sealed class EventRow
     {
         public GameObject Row { get; init; } = null!;
+        public RectTransform Rect { get; init; } = null!;
         public ModHelperImage Portrait { get; init; } = null!;
         public ModHelperText Title { get; init; } = null!;
         public ModHelperText Details { get; init; } = null!;
@@ -245,9 +246,6 @@ public sealed class PastEventsBrowser
         new[] {BossFilter, YearFilter, ModeFilter}.Select(filter => filter.Dropdown)
             .FirstOrDefault(dropdown => dropdown != null && dropdown.IsExpanded);
 
-    /// <summary>Whether the search field is being typed in</summary>
-    public bool Typing => Search.InputField.isFocused;
-
     /// <summary>A narrow screen (4:3) gets the whole window, a little smaller</summary>
     private void FitScreen()
     {
@@ -274,12 +272,7 @@ public sealed class PastEventsBrowser
             text.textWrappingMode = TextWrappingModes.NoWrap;
             text.overflowMode = TextOverflowModes.Ellipsis;
             // Already translated: the game's localizer would take a boss's or a map's name for a key
-            var nkText = text.TryCast<Il2Cpp.NK_TextMeshProUGUI>();
-            if (nkText != null)
-            {
-                nkText.AutoLocalize = false;
-                nkText.localizeKey = "";
-            }
+            EditorRows.KeepAsIs(text);
         }
         return filter;
     }
@@ -360,7 +353,7 @@ public sealed class PastEventsBrowser
             $"<color={BossEditorSection.ExampleColor}>{Texts.Elite.T()}</color>", () => PickRow(eventRow!, true));
         eventRow = new EventRow
         {
-            Row = row.gameObject, Portrait = portrait, Title = title, Details = details, NoRules = noRules,
+            Row = row.gameObject, Rect = row.gameObject.GetComponent<RectTransform>(), Portrait = portrait, Title = title, Details = details, NoRules = noRules,
             Normal = normal, Elite = elite
         };
         row.gameObject.SetActive(false);
@@ -402,8 +395,7 @@ public sealed class PastEventsBrowser
     private void Bind(EventRow row, int index)
     {
         var pastEvent = shown[index];
-        var rect = row.Row.GetComponent<RectTransform>();
-        rect.anchoredPosition = new Vector2(0, -(ListPadding + index * RowStep));
+        row.Rect.anchoredPosition = new Vector2(0, -(ListPadding + index * RowStep));
         if (!row.Row.activeSelf) row.Row.SetActive(true);
         if (row.Index == index && ReferenceEquals(row.Event, pastEvent)) return;
         row.Index = index;
@@ -465,7 +457,7 @@ public sealed class PastEventsBrowser
         }
     }
 
-    /// <summary>"17-22 Jan 2025", with "~" in front when the archive only knows the dates roughly</summary>
+    /// <summary>"17 Jan 2025 - 22 Jan 2025" in the player's language, with "~" in front when the archive only knows the dates roughly</summary>
     public static string Dates(PastEvent pastEvent)
     {
         // Written whole, the way the player's language writes a date ("17. okt. 2026", "2026年10月17日"): a shortened
@@ -479,18 +471,12 @@ public sealed class PastEventsBrowser
     /// <summary>
     /// Shows text that is already translated, with its rich text tags. Set through the game's localizer, the text is
     /// taken for a key and spaced out, which breaks a colour like #C8D8FF into "#C8 D8 F F" and shows the tag: the
-    /// localizer is turned off first, and only then is the text set.
+    /// localizer is turned off first (<see cref="EditorRows.SetText"/>), and only then is the text set.
     /// </summary>
     public static void ShowAsIs(TMP_Text text, string value)
     {
-        var nkText = text.TryCast<Il2Cpp.NK_TextMeshProUGUI>();
-        if (nkText != null)
-        {
-            nkText.AutoLocalize = false;
-            nkText.localizeKey = "";
-        }
         text.richText = true;
-        text.text = value;
+        EditorRows.SetText(text, value);
     }
 
     /// <summary>
@@ -641,6 +627,7 @@ public sealed class PastEventsBrowser
     private void ApplyQuery()
     {
         shown = all.Where(e => PastEventFilter.Matches(e, Query, () => SearchTextOf(e))).ToList();
+        stopList = null;
 
         // A new list starts at its top, as high as its rows
         var content = List.ScrollContent.RectTransform;
@@ -732,23 +719,25 @@ public sealed class PastEventsBrowser
     /// What the keyboard moves through, in order: the search field, the filters, the buttons of every event shown, and
     /// Close
     /// </summary>
-    public IReadOnlyList<Stop> Stops
+    public IReadOnlyList<Stop> Stops => stopList ??= BuildStops();
+
+    /// <summary>The stops of the events shown, made again only when those change (<see cref="ApplyQuery"/>)</summary>
+    private List<Stop>? stopList;
+
+    private List<Stop> BuildStops()
     {
-        get
+        var stops = new List<Stop>
         {
-            var stops = new List<Stop>
-            {
-                new(Search.gameObject, -1, false), new(BossFilter.gameObject, -1, false),
-                new(YearFilter.gameObject, -1, false), new(ModeFilter.gameObject, -1, false)
-            };
-            for (var i = 0; i < shown.Count; i++)
-            {
-                if (shown[i].Standard != null) stops.Add(new Stop(null, i, false));
-                if (shown[i].Elite != null) stops.Add(new Stop(null, i, true));
-            }
-            stops.Add(new Stop(Close.gameObject, -1, false));
-            return stops;
+            new(Search.gameObject, -1, false), new(BossFilter.gameObject, -1, false),
+            new(YearFilter.gameObject, -1, false), new(ModeFilter.gameObject, -1, false)
+        };
+        for (var i = 0; i < shown.Count; i++)
+        {
+            if (shown[i].Standard != null) stops.Add(new Stop(null, i, false));
+            if (shown[i].Elite != null) stops.Add(new Stop(null, i, true));
         }
+        stops.Add(new Stop(Close.gameObject, -1, false));
+        return stops;
     }
 
     /// <summary>The control a stop is on the screen, or null for an event that is out of view</summary>

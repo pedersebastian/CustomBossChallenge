@@ -415,12 +415,7 @@ public sealed class BossEditorSection
             text.textWrappingMode = TextWrappingModes.NoWrap;
             text.overflowMode = TextOverflowModes.Ellipsis;
             // Already translated: the game's localizer would take "CHIMPS" for a key and space out its letters
-            var nkText = text.TryCast<Il2Cpp.NK_TextMeshProUGUI>();
-            if (nkText != null)
-            {
-                nkText.AutoLocalize = false;
-                nkText.localizeKey = "";
-            }
+            EditorRows.KeepAsIs(text);
         }
         for (var i = 0; i < chimpsEntries.Count; i++) ChimpsEventRounds.Dropdown.options[i].text = chimpsEntries[i];
         ChimpsEventRounds.Dropdown.RefreshShownValue();

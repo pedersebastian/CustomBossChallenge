@@ -169,7 +169,7 @@
   "CustomBossChallenge-ShowRankedStats Setting Description": "在自定义首领游戏中显示排位首领活动所计的数据：各首领存活时间的总和、无首领回合拖延的惩罚，以及已用升级等级和已用金钱。获胜后还会显示每个阶段的用时，这样 Least Tiers 或 Least Cash 的尝试也能按时间比较。自定义游戏仍不计排名。",
   "CustomBossChallenge-Past Events Category": "往期活动",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "下载新的首领活动",
-  "CustomBossChallenge-DownloadPastEvents Setting Description": "游戏启动时，Boss创建器的往期活动列表会从模组网站（pedersebastian.github.io/CustomBossChallenge）下载最新的官方首领活动列表，这样无需更新模组就能看到新活动。不会发送任何关于你的信息。关闭后，列表只包含模组附带的活动和之前下载的活动。",
+  "CustomBossChallenge-DownloadPastEvents Setting Description": "游戏启动时，Boss创建器的往期活动列表会从模组网站（pedersebastian.github.io/CustomBossChallenge）下载最新的官方首领活动列表，这样无需更新模组就能看到新活动。不会发送任何个人数据。关闭后，列表只包含模组附带的活动和之前下载的活动。",
   "CustomBossChallenge-TierTime": "第 {0} 阶段",
   "CustomBossChallenge-TotalTime": "总计",
   "CustomBossChallenge-PenaltyTime": "惩罚",

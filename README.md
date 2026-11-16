@@ -196,7 +196,7 @@ The setup keeps the event's name and date, and like Load it asks first and is on
 **What is downloaded:** every release carries the events up to its build, so the list works offline. When the game
 starts, the mod also downloads the newest list from
 <https://pedersebastian.github.io/CustomBossChallenge/boss-events.json> in the background (under 100 KB, or
-nothing when it hasn't changed), so new events show up without an update of the mod. Nothing about you is sent, and
+nothing when it hasn't changed), so new events show up without an update of the mod. No personal data is sent, and
 the menus never wait for it. The list is kept in `BloonsTD6/UserData/CustomBossChallenge/boss-events.json`; offline,
 the mod uses that copy or its own. To never download it, turn off **Download New Boss Events** under Past Events in
 the mod's settings (Mod Helper's Mod Settings).

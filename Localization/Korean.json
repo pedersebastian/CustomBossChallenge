@@ -169,7 +169,7 @@
   "CustomBossChallenge-ShowRankedStats Setting Description": "사용자 지정 보스 게임에서 랭크 보스 이벤트가 재는 기록을 보여 줍니다: 보스들이 살아 있던 시간의 합, 보스 없는 라운드가 길어질 때의 페널티, 사용한 업그레이드 티어와 돈입니다. 승리하면 각 단계의 시간도 보여 주므로 Least Tiers나 Least Cash 도전도 시간으로 비교할 수 있습니다. 사용자 지정 게임은 계속 랭크에 반영되지 않습니다.",
   "CustomBossChallenge-Past Events Category": "지난 이벤트",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "새 보스 이벤트 다운로드",
-  "CustomBossChallenge-DownloadPastEvents Setting Description": "게임을 시작하면 보스 크리에이터의 지난 이벤트 목록이 모드 웹사이트(pedersebastian.github.io/CustomBossChallenge)에서 공식 보스 이벤트의 최신 목록을 다운로드하므로, 모드를 업데이트하지 않아도 새 이벤트가 나타납니다. 사용자에 대한 정보는 전송되지 않습니다. 끄면 목록에는 모드에 포함된 이벤트와 이전에 다운로드한 이벤트가 있습니다.",
+  "CustomBossChallenge-DownloadPastEvents Setting Description": "게임을 시작하면 보스 크리에이터의 지난 이벤트 목록이 모드 웹사이트(pedersebastian.github.io/CustomBossChallenge)에서 공식 보스 이벤트의 최신 목록을 다운로드하므로, 모드를 업데이트하지 않아도 새 이벤트가 나타납니다. 개인 데이터는 전송되지 않습니다. 끄면 목록에는 모드에 포함된 이벤트와 이전에 다운로드한 이벤트가 있습니다.",
   "CustomBossChallenge-TierTime": "{0}단계",
   "CustomBossChallenge-TotalTime": "합계",
   "CustomBossChallenge-PenaltyTime": "페널티",
