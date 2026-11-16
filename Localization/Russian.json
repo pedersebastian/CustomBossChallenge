@@ -110,6 +110,7 @@
   "CustomBossChallenge-PastEventMissingMap": "Карты этого события, {0}, нет в этой версии игры, поэтому событие нельзя открыть.",
   "CustomBossChallenge-PastEventUnknownBoss": "Босса этого события нет в этой версии мода. Обновите мод, чтобы сыграть в него.",
   "CustomBossChallenge-PastEventCantOpen": "Для этого события не сохранены правила, поэтому его нельзя открыть.",
+  "CustomBossChallenge-PastEventOpenFailed": "Не удалось открыть это событие.",
   "CustomBossChallenge-DateMonths": "янв.,февр.,мар.,апр.,мая,июн.,июл.,авг.,сент.,окт.,нояб.,дек.",
   "CustomBossChallenge-DateFormat": "{0} {1} {2}",
   "CustomBossChallenge-Load": "Загрузить",

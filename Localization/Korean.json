@@ -110,6 +110,7 @@
   "CustomBossChallenge-PastEventMissingMap": "이 이벤트의 맵({0})이 이 버전의 게임에 없어서 이벤트를 열 수 없습니다.",
   "CustomBossChallenge-PastEventUnknownBoss": "이 이벤트의 보스가 이 버전의 모드에 없습니다. 플레이하려면 모드를 업데이트하세요.",
   "CustomBossChallenge-PastEventCantOpen": "이 이벤트에 저장된 규칙이 없어서 열 수 없습니다.",
+  "CustomBossChallenge-PastEventOpenFailed": "이 이벤트를 열 수 없었습니다.",
   "CustomBossChallenge-DateMonths": "1월,2월,3월,4월,5월,6월,7월,8월,9월,10월,11월,12월",
   "CustomBossChallenge-DateFormat": "{2}년 {1} {0}일",
   "CustomBossChallenge-Load": "불러오기",

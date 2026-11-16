@@ -252,6 +252,7 @@ public static class Texts
         "This event's boss isn't in this version of the mod. Update the mod to play it.");
     public static readonly string PastEventCantOpen = Key(nameof(PastEventCantOpen),
         "There are no rules saved for this event, so it can't be opened.");
+    public static readonly string PastEventOpenFailed = Key(nameof(PastEventOpenFailed), "This event couldn't be opened.");
     // How the player's language writes a date (Config/PastEventDates): the twelve month names, comma separated, and the
     // order of {0} day, {1} month and {2} year
     public static readonly string DateMonths = Key(nameof(DateMonths), "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec");

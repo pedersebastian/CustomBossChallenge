@@ -302,6 +302,39 @@ public class PastEventsTests : IDisposable
     }
 
     [Fact]
+    public void A_huge_format_version_is_too_new_instead_of_throwing()
+    {
+        var bundle = JObject.Parse(Bundle(only: e => (string?) e["id"] == "Lych47_m5zq59de"));
+        var newer = (JObject) bundle["events"]![0]!.DeepClone();
+        newer["formatVersion"] = JToken.Parse("99999999999999999999999");
+        newer["id"] = "Huge";
+        ((JArray) bundle["events"]!).Add(newer);
+        var read = PastEventsFormat.Read(bundle.ToString());
+        Assert.Single(read.Value!.Events);
+        Assert.Contains(read.Changes, change => change.Contains("Huge"));
+
+        foreach (var huge in new[] {"99999999999999999999999", "4294967296"})
+        {
+            bundle["formatVersion"] = JToken.Parse(huge);
+            Assert.Equal(FormatProblem.TooNew, PastEventsFormat.Read(bundle.ToString()).Problem);
+        }
+    }
+
+    [Fact]
+    public void A_cache_that_cant_be_read_sends_no_ETag_so_it_is_replaced()
+    {
+        var store = Store(Bundle());
+        Directory.CreateDirectory(Path.GetDirectoryName(store.CachePath)!);
+        File.WriteAllText(store.CachePath, "broken");
+        File.WriteAllText(store.ETagPath, "\"abc\"");
+        store.Load();
+        Assert.Null(store.ETag());
+
+        Assert.True(store.Accept(Bundle("2026-11-15T00:00:00Z"), "\"def\""));
+        Assert.Equal("\"def\"", store.ETag());
+    }
+
+    [Fact]
     public void The_file_that_knows_the_newest_event_is_used()
     {
         var all = PastEventsFormat.Read(Bundle("2026-11-01T00:00:00Z")).Value!;

@@ -61,6 +61,22 @@ public sealed record PastEventsFile(DateTimeOffset Generated, IReadOnlyList<Past
 /// </summary>
 public static class PastEventsFormat
 {
+    /// <summary>
+    /// A formatVersion as a long; a broken file's number too big even for that counts as the biggest, so it reads as
+    /// too new instead of throwing out of the read
+    /// </summary>
+    private static long VersionOf(JToken token)
+    {
+        try
+        {
+            return (long) token;
+        }
+        catch (OverflowException)
+        {
+            return token.ToString(Formatting.None).StartsWith("-") ? long.MinValue : long.MaxValue;
+        }
+    }
+
     /// <summary>The newest formatVersion this version of the mod reads, of the file and of each event</summary>
     public const int Version = 1;
 
@@ -92,8 +108,8 @@ public static class PastEventsFormat
         {
             return FormatRead<PastEventsFile>.Invalid("no formatVersion");
         }
-        var version = (int) versionToken;
-        if (version > Version) return FormatRead<PastEventsFile>.TooNew(version);
+        var version = VersionOf(versionToken);
+        if (version > Version) return FormatRead<PastEventsFile>.TooNew((int) Math.Min(version, int.MaxValue));
         if (root["events"] is not JArray list) return FormatRead<PastEventsFile>.Invalid("no events");
         if (root["generated"] is not {Type: JTokenType.String} generatedToken ||
             !DateTimeOffset.TryParse((string?) generatedToken, CultureInfo.InvariantCulture,
@@ -132,9 +148,9 @@ public static class PastEventsFormat
         }
 
         var id = Text(e, "id");
-        if (e["formatVersion"] is {Type: JTokenType.Integer} v && (int) v > Version)
+        if (e["formatVersion"] is {Type: JTokenType.Integer} v && VersionOf(v) > Version)
         {
-            why = $"skipped {id ?? "an event"}: format version {(int) v} is newer";
+            why = $"skipped {id ?? "an event"}: format version {v} is newer";
             return null;
         }
 

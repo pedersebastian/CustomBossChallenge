@@ -110,6 +110,7 @@
   "CustomBossChallenge-PastEventMissingMap": "De map van dit event, {0}, zit niet in deze versie van het spel, dus het event kan niet worden geopend.",
   "CustomBossChallenge-PastEventUnknownBoss": "De boss van dit event zit niet in deze versie van de mod. Werk de mod bij om het te spelen.",
   "CustomBossChallenge-PastEventCantOpen": "Er zijn geen regels opgeslagen voor dit event, dus het kan niet worden geopend.",
+  "CustomBossChallenge-PastEventOpenFailed": "Dit event kon niet worden geopend.",
   "CustomBossChallenge-DateMonths": "jan,feb,mrt,apr,mei,jun,jul,aug,sep,okt,nov,dec",
   "CustomBossChallenge-DateFormat": "{0} {1} {2}",
   "CustomBossChallenge-Load": "Laden",

@@ -110,6 +110,7 @@
   "CustomBossChallenge-PastEventMissingMap": "Banen i dette event, {0}, findes ikke i denne version af spillet, så eventet kan ikke åbnes.",
   "CustomBossChallenge-PastEventUnknownBoss": "Bossen i dette event findes ikke i denne version af modden. Opdater modden for at spille det.",
   "CustomBossChallenge-PastEventCantOpen": "Der er ingen regler gemt for dette event, så det kan ikke åbnes.",
+  "CustomBossChallenge-PastEventOpenFailed": "Dette event kunne ikke åbnes.",
   "CustomBossChallenge-DateMonths": "jan.,feb.,mar.,apr.,maj,jun.,jul.,aug.,sep.,okt.,nov.,dec.",
   "CustomBossChallenge-DateFormat": "{0}. {1} {2}",
   "CustomBossChallenge-Load": "Indlæs",

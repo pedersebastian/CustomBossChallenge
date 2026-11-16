@@ -110,6 +110,7 @@
   "CustomBossChallenge-PastEventMissingMap": "Banan i det här eventet, {0}, finns inte i den här versionen av spelet, så eventet kan inte öppnas.",
   "CustomBossChallenge-PastEventUnknownBoss": "Bossen i det här eventet finns inte i den här versionen av modden. Uppdatera modden för att spela det.",
   "CustomBossChallenge-PastEventCantOpen": "Det finns inga regler sparade för det här eventet, så det kan inte öppnas.",
+  "CustomBossChallenge-PastEventOpenFailed": "Det här eventet kunde inte öppnas.",
   "CustomBossChallenge-DateMonths": "jan.,feb.,mars,apr.,maj,juni,juli,aug.,sep.,okt.,nov.,dec.",
   "CustomBossChallenge-DateFormat": "{0} {1} {2}",
   "CustomBossChallenge-Load": "Läs in",

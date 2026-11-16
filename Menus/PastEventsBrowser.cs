@@ -213,7 +213,8 @@ public sealed class PastEventsBrowser
     /// <summary>Opens the window on the Boss Creator, closing one that is open</summary>
     public static PastEventsBrowser Open(BossEditorSection section)
     {
-        Current?.Hide();
+        // current, not Current: a window whose root is already gone must still stop following PastEvents.Changed
+        current?.Hide();
         current = new PastEventsBrowser(section);
         return current;
     }
@@ -283,10 +284,15 @@ public sealed class PastEventsBrowser
         return filter;
     }
 
+    /// <summary>
+    /// PastEvents.Changed also comes when the download only starts or ends (a 304, or a failure): then the same events
+    /// stay where they are, and only the count and the empty text are updated
+    /// </summary>
     private void OnEventsChanged()
     {
         if (Root == null) return;
-        Refresh();
+        if (ReferenceEquals(PastEvents.Current, shownFile)) ShowCount();
+        else Refresh();
     }
 
     /// <summary>
@@ -644,7 +650,12 @@ public sealed class PastEventsBrowser
         foreach (var row in rows) row.Index = -1;
         ClearFocus();
         ShowRows();
+        ShowCount();
+    }
 
+    /// <summary>The count and, when no event is shown, why</summary>
+    private void ShowCount()
+    {
         ShowAsIs(Count.Text, Texts.PastEventsCount.T(shown.Count, all.Count));
         ShowAsIs(Empty.Text, all.Count == 0 ? EmptyText() : shown.Count == 0 ? Texts.PastEventsNoMatch.T() : "");
         Empty.gameObject.SetActive(shown.Count == 0);
@@ -678,7 +689,9 @@ public sealed class PastEventsBrowser
             {
                 PastEventProblem.MissingMap => Texts.PastEventMissingMap.T(BossEditorSection.PlainText(setup.Map ?? "?")),
                 PastEventProblem.UnknownBoss => Texts.PastEventUnknownBoss.T(),
-                _ => Texts.PastEventCantOpen.T()
+                PastEventProblem.NoRules => Texts.PastEventCantOpen.T(),
+                // The rules were read, but the challenge couldn't be made of them
+                _ => Texts.PastEventOpenFailed.T()
             };
             ModHelper.Msg<CustomBossChallenge>($"Could not open the past event {pastEvent.Id}{(elite ? " (Elite)" : "")}: {setup.Problem}");
             PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(why, null));

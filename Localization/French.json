@@ -110,6 +110,7 @@
   "CustomBossChallenge-PastEventMissingMap": "La carte de cet événement, {0}, n'existe pas dans cette version du jeu, l'événement ne peut donc pas être ouvert.",
   "CustomBossChallenge-PastEventUnknownBoss": "Le boss de cet événement n'existe pas dans cette version du mod. Mettez le mod à jour pour y jouer.",
   "CustomBossChallenge-PastEventCantOpen": "Aucune règle n'est enregistrée pour cet événement, il ne peut donc pas être ouvert.",
+  "CustomBossChallenge-PastEventOpenFailed": "Cet événement n'a pas pu être ouvert.",
   "CustomBossChallenge-DateMonths": "janv.,févr.,mars,avr.,mai,juin,juil.,août,sept.,oct.,nov.,déc.",
   "CustomBossChallenge-DateFormat": "{0} {1} {2}",
   "CustomBossChallenge-Load": "Charger",

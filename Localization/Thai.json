@@ -110,6 +110,7 @@
   "CustomBossChallenge-PastEventMissingMap": "แผนที่ของอีเวนต์นี้ {0} ไม่มีในเกมเวอร์ชันนี้ จึงเปิดอีเวนต์ไม่ได้",
   "CustomBossChallenge-PastEventUnknownBoss": "บอสของอีเวนต์นี้ไม่มีในม็อดเวอร์ชันนี้ อัปเดตม็อดเพื่อเล่น",
   "CustomBossChallenge-PastEventCantOpen": "ไม่มีกฎที่บันทึกไว้สำหรับอีเวนต์นี้ จึงเปิดไม่ได้",
+  "CustomBossChallenge-PastEventOpenFailed": "ไม่สามารถเปิดอีเวนต์นี้ได้",
   "CustomBossChallenge-DateMonths": "ม.ค.,ก.พ.,มี.ค.,เม.ย.,พ.ค.,มิ.ย.,ก.ค.,ส.ค.,ก.ย.,ต.ค.,พ.ย.,ธ.ค.",
   "CustomBossChallenge-DateFormat": "{0} {1} {2}",
   "CustomBossChallenge-Load": "โหลด",

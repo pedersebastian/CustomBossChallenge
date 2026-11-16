@@ -110,6 +110,7 @@
   "CustomBossChallenge-PastEventMissingMap": "Bu etkinliğin haritası, {0}, oyunun bu sürümünde yok, bu yüzden etkinlik açılamaz.",
   "CustomBossChallenge-PastEventUnknownBoss": "Bu etkinliğin bossu modun bu sürümünde yok. Oynamak için modu güncelle.",
   "CustomBossChallenge-PastEventCantOpen": "Bu etkinlik için kayıtlı kural yok, bu yüzden açılamaz.",
+  "CustomBossChallenge-PastEventOpenFailed": "Bu etkinlik açılamadı.",
   "CustomBossChallenge-DateMonths": "Oca,Şub,Mar,Nis,May,Haz,Tem,Ağu,Eyl,Eki,Kas,Ara",
   "CustomBossChallenge-DateFormat": "{0} {1} {2}",
   "CustomBossChallenge-Load": "Yükle",
