@@ -140,17 +140,22 @@ public static class PastEventRules
     }
 
     /// <summary>
-    /// The setup's name: the event's name and its date, so a saved setup still says which event it was, like
-    /// "Lych 47 Elite 17 Jan 2025", or "Lych 47 Elite 17 jan 2025" in Norwegian: <paramref name="date"/> writes the
-    /// date in the player's language (<see cref="PastEventDates"/>, English without it). Only letters, digits and
-    /// spaces: the Challenge Editor's name field drops anything else, which made "(2025-01-17)" "20250117" and drops
-    /// the dots of "17. jan. 2025".
+    /// The setup's name: the event's name, a comma and its date, so a saved setup still says which event it was, like
+    /// "Lych 47 Elite, 17 Jan 2025", or "Blastapopoulos 20, 10. okt. 2026" in Norwegian: <paramref name="date"/>
+    /// writes the date in the player's language (<see cref="PastEventDates"/>, English without it).
+    /// <br/>
+    /// The Challenge Editor's name field keeps only letters, digits, spaces and . , ! ' / # ? ~ (checked in the game:
+    /// it made "(2025-01-17)" "20250117" and drops a colon), so the name has letters and digits, and the date its dots.
     /// </summary>
     public static string SetupName(PastEvent pastEvent, bool elite, Func<DateTime, string>? date = null,
-        string eliteName = "Elite")
+        string eliteName = "Elite") =>
+        $"{NameText($"{pastEvent.DisplayName}{(elite ? " " + eliteName : "")}", "")}, " +
+        NameText((date ?? PastEventDates.English)(pastEvent.StartDate), ".");
+
+    /// <summary>Letters, digits and <paramref name="keep"/>, one space between the words</summary>
+    private static string NameText(string text, string keep)
     {
-        var text = $"{pastEvent.DisplayName}{(elite ? " " + eliteName : "")} {(date ?? PastEventDates.English)(pastEvent.StartDate)}";
-        var name = new string(text.Select(c => char.IsLetterOrDigit(c) ? c : ' ').ToArray());
+        var name = new string(text.Select(c => char.IsLetterOrDigit(c) || keep.Contains(c) ? c : ' ').ToArray());
         return string.Join(" ", name.Split(' ', StringSplitOptions.RemoveEmptyEntries));
     }
 

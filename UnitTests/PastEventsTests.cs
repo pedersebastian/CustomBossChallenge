@@ -125,7 +125,7 @@ public class PastEventsTests : IDisposable
         Assert.Equal(0.5, (double) normal.Challenge["bloonModifiers"]!["bossSpeedMultiplier"]!);
         Assert.Equal(2, (double) normal.Challenge["bloonModifiers"]!["healthMultipliers"]!["boss"]!);
         // The bundle's displayName ("Lych 47"), or the name without it
-        Assert.Equal($"{lych.DisplayName} 17 Jan 2025", (string?) normal.Challenge["name"]);
+        Assert.Equal($"{lych.DisplayName}, 17 Jan 2025", (string?) normal.Challenge["name"]);
         Assert.Empty(normal.Unsupported);
 
         // Only the six towers the event lists are allowed; the rest of the game's towers are not
@@ -140,7 +140,7 @@ public class PastEventsTests : IDisposable
         var elite = Map(lych, true);
         Assert.True(elite.Options.Elite);
         Assert.Equal(3000, (int) elite.Challenge["startRules"]!["cash"]!);
-        Assert.Equal($"{lych.DisplayName} Elite 17 Jan 2025", (string?) elite.Challenge["name"]);
+        Assert.Equal($"{lych.DisplayName} Elite, 17 Jan 2025", (string?) elite.Challenge["name"]);
     }
 
     [Theory]
@@ -239,21 +239,23 @@ public class PastEventsTests : IDisposable
         var lych = Event("Lych47_m5zq59de");
         string Norwegian(DateTime date) =>
             PastEventDates.Format(date, "{0}. {1} {2}", "jan.,feb.,mar.,apr.,mai,jun.,jul.,aug.,sep.,okt.,nov.,des.");
-        Assert.Equal("Diamondback 8 17 jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Diamondback 8"}, false, Norwegian));
-        Assert.Equal("Lych 47 Élite 17 jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Lych 47"}, true, Norwegian, "Élite"));
-        Assert.Equal("Lych 47 Elite 17 Jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Lych 47"}, true));
+        Assert.Equal("Blastapopoulos 20, 17. jan. 2025", PastEventRules.SetupName(lych with {DisplayName = "Blastapopoulos 20"}, false, Norwegian));
+        Assert.Equal("Lych 47 Élite, 17. jan. 2025", PastEventRules.SetupName(lych with {DisplayName = "Lych 47"}, true, Norwegian, "Élite"));
+        Assert.Equal("Lych 47 Elite, 17 Jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Lych 47"}, true));
     }
 
     [Fact]
     public void Setup_names_only_have_what_the_Challenge_Editors_name_field_keeps()
     {
         var lych = Event("Lych47_m5zq59de");
-        Assert.Equal("Vortex 17 EX Elite 17 Jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Vortex 17 EX"}, true));
-        Assert.Equal("Got you 17 Jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Got_you!"}, false));
+        Assert.Equal("Vortex 17 EX Elite, 17 Jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Vortex 17 EX"}, true));
+        Assert.Equal("Got you, 17 Jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Got_you!"}, false));
         foreach (var pastEvent in PastEventsFormat.Read(Bundle()).Value!.Events)
         {
             var name = PastEventRules.SetupName(pastEvent, true);
-            Assert.All(name, c => Assert.True(char.IsLetterOrDigit(c) || c == ' ', $"{name}: '{c}'"));
+            // What the game's name field keeps
+            Assert.All(name, c => Assert.True(char.IsLetterOrDigit(c) || c is ' ' or ',' or '.', $"{name}: '{c}'"));
+            Assert.Single(name, ',');
             Assert.True(name.Length <= ChallengeLimits.MaxNameLength, name);
         }
     }
