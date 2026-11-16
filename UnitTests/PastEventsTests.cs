@@ -203,6 +203,48 @@ public class PastEventsTests : IDisposable
     }
 
     [Fact]
+    public void Dates_are_written_the_way_the_language_writes_them()
+    {
+        var date = new DateTime(2026, 10, 17);
+        Assert.Equal("17 Oct 2026", PastEventDates.English(date));
+        Assert.Equal("17. okt. 2026",
+            PastEventDates.Format(date, "{0}. {1} {2}", "jan.,feb.,mar.,apr.,mai,jun.,jul.,aug.,sep.,okt.,nov.,des."));
+        Assert.Equal("2026年10月17日",
+            PastEventDates.Format(date, "{2}年{1}{0}日", string.Join(",", Enumerable.Range(1, 12).Select(m => $"{m}月"))));
+
+        // A translation that can't be used gives the English date
+        Assert.Equal("17 Oct 2026", PastEventDates.Format(date, "{0} {1} {2}", "only,three,months"));
+        Assert.Equal("17 Oct 2026", PastEventDates.Format(date, "{0} {5}", PastEventDates.EnglishMonths));
+    }
+
+    [Fact]
+    public void Every_language_has_a_usable_date()
+    {
+        foreach (var file in Directory.GetFiles(Path.Combine(Root, "Localization"), "*.json"))
+        {
+            var texts = JObject.Parse(File.ReadAllText(file));
+            var months = (string?) texts["CustomBossChallenge-DateMonths"];
+            var format = (string?) texts["CustomBossChallenge-DateFormat"];
+            Assert.True(months != null && format != null, file);
+            Assert.Equal(12, months!.Split(',').Count(month => month.Trim().Length > 0));
+            var october = months.Split(',')[9].Trim();
+            var written = PastEventDates.Format(new DateTime(2026, 10, 17), format!, months);
+            Assert.True(written.Contains("17") && written.Contains("2026") && written.Contains(october), $"{file}: {written}");
+        }
+    }
+
+    [Fact]
+    public void Setup_names_have_the_date_in_the_players_language()
+    {
+        var lych = Event("Lych47_m5zq59de");
+        string Norwegian(DateTime date) =>
+            PastEventDates.Format(date, "{0}. {1} {2}", "jan.,feb.,mar.,apr.,mai,jun.,jul.,aug.,sep.,okt.,nov.,des.");
+        Assert.Equal("Diamondback 8 17 jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Diamondback 8"}, false, Norwegian));
+        Assert.Equal("Lych 47 Élite 17 jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Lych 47"}, true, Norwegian, "Élite"));
+        Assert.Equal("Lych 47 Elite 17 Jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Lych 47"}, true));
+    }
+
+    [Fact]
     public void Setup_names_only_have_what_the_Challenge_Editors_name_field_keeps()
     {
         var lych = Event("Lych47_m5zq59de");

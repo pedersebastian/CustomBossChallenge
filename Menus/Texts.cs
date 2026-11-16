@@ -252,6 +252,10 @@ public static class Texts
         "This event's boss isn't in this version of the mod. Update the mod to play it.");
     public static readonly string PastEventCantOpen = Key(nameof(PastEventCantOpen),
         "There are no rules saved for this event, so it can't be opened.");
+    // How the player's language writes a date (Config/PastEventDates): the twelve month names, comma separated, and the
+    // order of {0} day, {1} month and {2} year
+    public static readonly string DateMonths = Key(nameof(DateMonths), "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec");
+    public static readonly string DateFormat = Key(nameof(DateFormat), "{0} {1} {2}");
     public static readonly string Load = Key(nameof(Load), "Load");
     public static readonly string Ok = Key(nameof(Ok), "OK");
     public static readonly string Cancel = Key(nameof(Cancel), "Cancel");
@@ -394,6 +398,11 @@ public static class Texts
             : ChimpsEventRoundsNewest.T(),
         _ => HardSetup.T()
     };
+
+    /// <summary>
+    /// A date the way the player's language writes it, e.g. "17 Oct 2026" or "17. okt. 2026"
+    /// </summary>
+    public static string Date(System.DateTime date) => Config.PastEventDates.Format(date, DateFormat.T(), DateMonths.T());
 
     /// <summary>
     /// The text for a key in the player's language

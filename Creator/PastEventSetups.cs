@@ -16,7 +16,7 @@ public static class PastEventSetups
     /// <summary>The event's rules as the Boss Creator's options and challenge, before they are read into a model</summary>
     public static PastEventSetup Map(PastEvent pastEvent, bool elite) =>
         PastEventRules.Map(pastEvent, elite, SetupCode.ChallengeJson(DailyChallengeModel.CreateDefaultEditorModel()),
-            ChallengeLimits.IsKnownMap, BossEditorSection.UnsupportedModes);
+            ChallengeLimits.IsKnownMap, BossEditorSection.UnsupportedModes, Texts.Date, Texts.Elite.T());
 
     /// <summary>
     /// The setup of the normal or the Elite event. False when it can't be opened; <paramref name="setup"/> says why.

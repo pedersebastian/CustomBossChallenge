@@ -110,6 +110,8 @@
   "CustomBossChallenge-PastEventMissingMap": "Mapy tego wydarzenia, {0}, nie ma w tej wersji gry, więc wydarzenia nie można otworzyć.",
   "CustomBossChallenge-PastEventUnknownBoss": "Bossa z tego wydarzenia nie ma w tej wersji moda. Zaktualizuj moda, aby w nie zagrać.",
   "CustomBossChallenge-PastEventCantOpen": "Dla tego wydarzenia nie zapisano zasad, więc nie można go otworzyć.",
+  "CustomBossChallenge-DateMonths": "sty,lut,mar,kwi,maj,cze,lip,sie,wrz,paź,lis,gru",
+  "CustomBossChallenge-DateFormat": "{0} {1} {2}",
   "CustomBossChallenge-Load": "Wczytaj",
   "CustomBossChallenge-Ok": "OK",
   "CustomBossChallenge-Cancel": "Anuluj",

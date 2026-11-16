@@ -462,13 +462,11 @@ public sealed class PastEventsBrowser
     /// <summary>"17-22 Jan 2025", with "~" in front when the archive only knows the dates roughly</summary>
     public static string Dates(PastEvent pastEvent)
     {
-        var start = pastEvent.StartDate;
-        var end = pastEvent.EndDate;
-        var culture = CultureInfo.InvariantCulture;
-        var dates = start.Year != end.Year ? $"{start.ToString("d MMM yyyy", culture)} - {end.ToString("d MMM yyyy", culture)}"
-            : start.Month != end.Month ? $"{start.ToString("d MMM", culture)} - {end.ToString("d MMM yyyy", culture)}"
-            : start.Day != end.Day ? $"{start.Day}-{end.ToString("d MMM yyyy", culture)}"
-            : start.ToString("d MMM yyyy", culture);
+        // Written whole, the way the player's language writes a date ("17. okt. 2026", "2026年10月17日"): a shortened
+        // range like "17-22 Oct 2026" only works for some languages
+        var start = Texts.Date(pastEvent.StartDate);
+        var end = Texts.Date(pastEvent.EndDate);
+        var dates = start == end ? start : $"{start} - {end}";
         return pastEvent.DatesGuessed ? "~" + dates : dates;
     }
 

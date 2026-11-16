@@ -506,12 +506,10 @@ public sealed class BossEditorSection
             () => OpenPastEvents(), BrowseEventsWidth);
         var browseLabel = BrowseEvents.GetDescendent<ModHelperText>("Label");
         browseLabel.Text.enableAutoSizing = true;
-        browseLabel.Text.fontSizeMax = 70;
+        browseLabel.Text.fontSizeMax = BrowseEventsFontSize;
         browseLabel.Text.fontSizeMin = 40;
         browseLabel.Text.textWrappingMode = TextWrappingModes.NoWrap;
-        var statusLeft = eventsLeft + 20 + BrowseEventsWidth + 40;
-        var statusWidth = EditorRows.ControlWidth - (statusLeft - eventsLeft);
-        PastEventsStatus = ModHelperText.Create(new Info("PastEventsStatus", statusLeft + statusWidth / 2, 0, statusWidth, 170)
+        PastEventsStatus = ModHelperText.Create(new Info("PastEventsStatus", 0, 0, 100, 170)
         {
             Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
         }, "", 48, TextAlignmentOptions.Left);
@@ -554,7 +552,10 @@ public sealed class BossEditorSection
     /// <summary>The height of the CHIMPS dropdown and of each entry in its opened list</summary>
     public const float ChimpsItemHeight = 150;
 
+    /// <summary>The Browse button's narrowest width, and its widest, which leaves room for the status next to it</summary>
     public const float BrowseEventsWidth = 900;
+    public const float BrowseEventsMaxWidth = 1350;
+    private const float BrowseEventsFontSize = 70;
 
     public const float SavedListWidth = 760;
     public const float SavedListHeight = 750;
@@ -833,8 +834,10 @@ public sealed class BossEditorSection
     {
         var file = PastEvents.Current;
         var label = BrowseEvents.GetDescendent<ModHelperText>("Label");
-        label.SetText(Texts.BrowsePastEvents.T(file?.Events.Count ?? 0));
-        var date = file?.Generated.UtcDateTime.ToString("d MMM yyyy", System.Globalization.CultureInfo.InvariantCulture) ?? "";
+        var browse = Texts.BrowsePastEvents.T(file?.Events.Count ?? 0);
+        PastEventsBrowser.ShowAsIs(label.Text, browse);
+        FitBrowseEvents(label.Text, browse);
+        var date = file == null ? "" : Texts.Date(file.Generated.UtcDateTime);
         var status = PastEvents.Loading ? Texts.PastEventsLoading.T()
             : file == null ? Texts.PastEventsNone.T()
             : PastEvents.Checking ? Texts.PastEventsChecking.T()
@@ -846,6 +849,34 @@ public sealed class BossEditorSection
             status += $"\n<size=80%>{Texts.PastEventsDownloadsOff.T()}</size>";
         }
         PastEventsBrowser.ShowAsIs(PastEventsStatus.Text, status);
+    }
+
+    /// <summary>
+    /// Makes the Browse button as wide as its text needs in the player's language (up to
+    /// <see cref="BrowseEventsMaxWidth"/>, past which the text shrinks), and the status take the rest of the row
+    /// </summary>
+    private void FitBrowseEvents(TMP_Text label, string text)
+    {
+        var autoSize = label.enableAutoSizing;
+        var size = label.fontSize;
+        label.enableAutoSizing = false;
+        label.fontSize = BrowseEventsFontSize;
+        var needed = label.GetPreferredValues(text, 100000, 170).x;
+        label.fontSize = size;
+        label.enableAutoSizing = autoSize;
+
+        var left = EditorRows.ControlX - EditorRows.ControlWidth / 2;
+        var width = Mathf.Clamp(needed + 120, BrowseEventsWidth, BrowseEventsMaxWidth);
+        var button = BrowseEvents.RectTransform;
+        button.sizeDelta = new Vector2(width, button.sizeDelta.y);
+        button.anchoredPosition = new Vector2(left + 20 + width / 2, button.anchoredPosition.y);
+
+        var statusLeft = left + 20 + width + 40;
+        var statusWidth = EditorRows.ControlWidth - (statusLeft - left);
+        var status = PastEventsStatus.RectTransform;
+        status.sizeDelta = new Vector2(statusWidth, status.sizeDelta.y);
+        status.anchoredPosition = new Vector2(statusLeft + statusWidth / 2, status.anchoredPosition.y);
+        label.ForceMeshUpdate();
     }
 
     /// <summary>

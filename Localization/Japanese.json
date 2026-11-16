@@ -110,6 +110,8 @@
   "CustomBossChallenge-PastEventMissingMap": "このイベントのマップ（{0}）はこのバージョンのゲームにないため、イベントを開けません。",
   "CustomBossChallenge-PastEventUnknownBoss": "このイベントのボスはこのバージョンのMODにありません。プレイするにはMODを更新してください。",
   "CustomBossChallenge-PastEventCantOpen": "このイベントにはルールが保存されていないため、開けません。",
+  "CustomBossChallenge-DateMonths": "1月,2月,3月,4月,5月,6月,7月,8月,9月,10月,11月,12月",
+  "CustomBossChallenge-DateFormat": "{2}年{1}{0}日",
   "CustomBossChallenge-Load": "読み込む",
   "CustomBossChallenge-Ok": "OK",
   "CustomBossChallenge-Cancel": "キャンセル",

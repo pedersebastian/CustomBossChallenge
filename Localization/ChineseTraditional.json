@@ -110,6 +110,8 @@
   "CustomBossChallenge-PastEventMissingMap": "該活動的地圖 {0} 不在此遊戲版本中，因此無法開啟該活動。",
   "CustomBossChallenge-PastEventUnknownBoss": "該活動的首領不在此模組版本中。請更新模組後再玩。",
   "CustomBossChallenge-PastEventCantOpen": "該活動沒有儲存規則，因此無法開啟。",
+  "CustomBossChallenge-DateMonths": "1月,2月,3月,4月,5月,6月,7月,8月,9月,10月,11月,12月",
+  "CustomBossChallenge-DateFormat": "{2}年{1}{0}日",
   "CustomBossChallenge-Load": "載入",
   "CustomBossChallenge-Ok": "確定",
   "CustomBossChallenge-Cancel": "取消",

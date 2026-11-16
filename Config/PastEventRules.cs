@@ -80,10 +80,11 @@ public static class PastEventRules
     /// The setup for the normal or the Elite event. <paramref name="defaults"/> is the default challenge as a share
     /// code sees it (<c>SetupCode.ChallengeJson</c>), whose tower list says which towers the game has;
     /// <paramref name="mapExists"/> says whether the game has a map, and <paramref name="unsupportedModes"/> are the
-    /// modes the Boss Creator can't play (<c>BossEditorSection.UnsupportedModes</c>).
+    /// modes the Boss Creator can't play (<c>BossEditorSection.UnsupportedModes</c>). <paramref name="date"/> and
+    /// <paramref name="eliteName"/> write the setup's name in the player's language (<see cref="SetupName"/>).
     /// </summary>
     public static PastEventSetup Map(PastEvent pastEvent, bool elite, JObject defaults, Func<string, bool> mapExists,
-        IReadOnlyCollection<string> unsupportedModes)
+        IReadOnlyCollection<string> unsupportedModes, Func<DateTime, string>? date = null, string eliteName = "Elite")
     {
         var rules = pastEvent.Rules(elite);
         var options = new BossOptions {Elite = elite};
@@ -101,7 +102,7 @@ public static class PastEventRules
             return new PastEventSetup(PastEventProblem.MissingMap, options, challenge, unsupported, map);
         }
 
-        challenge["name"] = SetupName(pastEvent, elite);
+        challenge["name"] = SetupName(pastEvent, elite, date, eliteName);
         foreach (var field in SameName)
         {
             if (rules[field] is { } value && value.Type != JTokenType.Null) challenge[field] = value.DeepClone();
@@ -140,14 +141,17 @@ public static class PastEventRules
 
     /// <summary>
     /// The setup's name: the event's name and its date, so a saved setup still says which event it was, like
-    /// "Lych 47 Elite 17 Jan 2025". Only letters, digits and spaces: the Challenge Editor's name field drops anything
-    /// else, which made "(2025-01-17)" "20250117".
+    /// "Lych 47 Elite 17 Jan 2025", or "Lych 47 Elite 17 jan 2025" in Norwegian: <paramref name="date"/> writes the
+    /// date in the player's language (<see cref="PastEventDates"/>, English without it). Only letters, digits and
+    /// spaces: the Challenge Editor's name field drops anything else, which made "(2025-01-17)" "20250117" and drops
+    /// the dots of "17. jan. 2025".
     /// </summary>
-    public static string SetupName(PastEvent pastEvent, bool elite)
+    public static string SetupName(PastEvent pastEvent, bool elite, Func<DateTime, string>? date = null,
+        string eliteName = "Elite")
     {
-        var name = new string(pastEvent.DisplayName.Select(c => char.IsLetterOrDigit(c) ? c : ' ').ToArray());
-        name = string.Join(" ", name.Split(' ', StringSplitOptions.RemoveEmptyEntries));
-        return $"{name}{(elite ? " Elite" : "")} {pastEvent.StartDate.ToString("d MMM yyyy", CultureInfo.InvariantCulture)}".Trim();
+        var text = $"{pastEvent.DisplayName}{(elite ? " " + eliteName : "")} {(date ?? PastEventDates.English)(pastEvent.StartDate)}";
+        var name = new string(text.Select(c => char.IsLetterOrDigit(c) ? c : ' ').ToArray());
+        return string.Join(" ", name.Split(' ', StringSplitOptions.RemoveEmptyEntries));
     }
 
     /// <summary>The boss of the API's lowercase name, or null for one this version doesn't know</summary>

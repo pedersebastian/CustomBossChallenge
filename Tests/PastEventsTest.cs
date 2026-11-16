@@ -101,7 +101,7 @@ public class PastEventsTest : CustomBossTest
         AssertEquals(editor.dcm.startRules.cash, 2500, "Cash");
         AssertEquals(editor.dcm.startRules.lives, 200, "Lives");
         AssertEquals(editor.dcm.maxParagons, 4, "Max paragons");
-        AssertEquals(editor.dcm.name, PastEventRules.SetupName(lych, false), $"The event's name and date: {editor.dcm.name} / {editor.chalName?.text}");
+        AssertEquals(editor.dcm.name, PastEventRules.SetupName(lych, false, Texts.Date, Texts.Elite.T()), $"The event's name and date: {editor.dcm.name} / {editor.chalName?.text}");
         AssertEquals(editor.dcm.towers.ToArray().First(t => t.tower == "DartMonkey").max, 0, "Towers the event didn't allow");
 
         // Elite, and played: the match has the event's rules

@@ -110,6 +110,8 @@
   "CustomBossChallenge-PastEventMissingMap": "Tämän tapahtuman karttaa, {0}, ei ole tässä pelin versiossa, joten tapahtumaa ei voi avata.",
   "CustomBossChallenge-PastEventUnknownBoss": "Tämän tapahtuman pomoa ei ole tässä modin versiossa. Päivitä modi pelataksesi sitä.",
   "CustomBossChallenge-PastEventCantOpen": "Tälle tapahtumalle ei ole tallennettu sääntöjä, joten sitä ei voi avata.",
+  "CustomBossChallenge-DateMonths": "tammi,helmi,maalis,huhti,touko,kesä,heinä,elo,syys,loka,marras,joulu",
+  "CustomBossChallenge-DateFormat": "{0}. {1}kuuta {2}",
   "CustomBossChallenge-Load": "Lataa",
   "CustomBossChallenge-Ok": "OK",
   "CustomBossChallenge-Cancel": "Peruuta",

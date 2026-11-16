@@ -110,6 +110,8 @@
   "CustomBossChallenge-PastEventMissingMap": "خريطة هذا الحدث، {0}، غير موجودة في هذا الإصدار من اللعبة، لذا لا يمكن فتح الحدث.",
   "CustomBossChallenge-PastEventUnknownBoss": "زعيم هذا الحدث غير موجود في هذا الإصدار من التعديل. حدّث التعديل لتلعبه.",
   "CustomBossChallenge-PastEventCantOpen": "لا توجد قواعد محفوظة لهذا الحدث، لذا لا يمكن فتحه.",
+  "CustomBossChallenge-DateMonths": "يناير,فبراير,مارس,أبريل,مايو,يونيو,يوليو,أغسطس,سبتمبر,أكتوبر,نوفمبر,ديسمبر",
+  "CustomBossChallenge-DateFormat": "{0} {1} {2}",
   "CustomBossChallenge-Load": "تحميل",
   "CustomBossChallenge-Ok": "موافق",
   "CustomBossChallenge-Cancel": "إلغاء",
