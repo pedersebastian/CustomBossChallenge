@@ -31,6 +31,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         _ = Patches.PatchCheck.AllInPlace;
         Patches.ConflictReport.LogOnce();
         Visuals.TierLookApplier.Prepare();
+        Persistence.PastEvents.Start();
     }
 
     public override void OnUpdate()
@@ -38,6 +39,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         // Each part on its own, so one that throws doesn't stop the others for the rest of the match (#112)
         Guarded("main menu button", Menus.MainMenuButton.UpdatePosition);
         Guarded("Boss Creator keys", Menus.BossCreatorKeys.Update);
+        Guarded("past events", Persistence.PastEvents.Update);
         Guarded("tier look", Visuals.TierLookApplier.Update);
         Guarded("boss panel", () =>
         {

@@ -40,6 +40,39 @@
                           Condition="'$(Configuration)' == 'Debug'" />
     </ItemGroup>
 
+    <!-- The Past Events list's copy of boss-events.json (#146), built from data/boss-events/ by Node and gzipped, so a
+         release has every event up to its build without downloading anything. It is made in obj/ and never
+         committed, so the archiver's daily commits don't change the source hash of the in-game tests. Without Node a
+         Debug build only warns (the mod then has the downloaded copy only); a Release build fails, so no release is
+         made without it. -->
+    <PropertyGroup>
+        <BossEventsBundle>$(BaseIntermediateOutputPath)$(Configuration)\boss-events.json.gz</BossEventsBundle>
+    </PropertyGroup>
+    <ItemGroup>
+        <BossEventFile Include="data\boss-events\*.json" />
+        <BossEventFile Include="tools\boss-events\*.mjs" Exclude="tools\boss-events\*.test.mjs" />
+    </ItemGroup>
+    <Target Name="FindNode" BeforeTargets="BuildBossEventsBundle">
+        <Exec Command="node --version" ContinueOnError="true" StandardOutputImportance="low" StandardErrorImportance="low"
+              EchoOff="true">
+            <Output TaskParameter="ExitCode" PropertyName="NodeExitCode" />
+        </Exec>
+        <Error Condition="'$(NodeExitCode)' != '0' And '$(Configuration)' == 'Release'"
+               Text="Node.js is needed to build the copy of boss-events.json a release carries (#146). Install Node 24 and build again." />
+        <Warning Condition="'$(NodeExitCode)' != '0' And '$(Configuration)' != 'Release'"
+                 Text="Node.js wasn't found, so this build has no copy of boss-events.json: the Past Events list only has the downloaded one (#146)." />
+    </Target>
+    <Target Name="BuildBossEventsBundle" BeforeTargets="BeforeBuild" Inputs="@(BossEventFile)" Outputs="$(BossEventsBundle)">
+        <Exec Command="node &quot;$(MSBuildProjectDirectory)/tools/boss-events/archive.mjs&quot; --bundle &quot;$(BossEventsBundle)&quot;"
+              WorkingDirectory="$(MSBuildProjectDirectory)" Condition="'$(NodeExitCode)' == '0'" />
+    </Target>
+    <Target Name="EmbedBossEventsBundle" AfterTargets="BuildBossEventsBundle" BeforeTargets="BeforeBuild"
+            Condition="Exists('$(BossEventsBundle)')">
+        <ItemGroup>
+            <EmbeddedResource Include="$(BossEventsBundle)" LogicalName="CustomBossChallenge.boss-events.json.gz" />
+        </ItemGroup>
+    </Target>
+
     <!-- Debug builds, which the in-game tests run on, know which code they were built from, so the tests can write it to
          TestResults/ingame.json for Check-Release.ps1 (see CONTRIBUTING.md). Release builds don't carry the author's
          folder or commit. -->

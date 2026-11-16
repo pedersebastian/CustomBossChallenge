@@ -108,7 +108,7 @@ public static partial class ChallengeLimits
         if (changes.Count == 0) return;
         ModHelper.Msg<CustomBossChallenge>($"{source}: brought into range: {string.Join(", ", changes)}");
     }
-    private static bool IsKnownMap(string? map)
+    public static bool IsKnownMap(string? map)
     {
         if (string.IsNullOrEmpty(map)) return false;
         var maps = GameData.Instance?.mapSet;

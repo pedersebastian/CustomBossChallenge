@@ -53,6 +53,21 @@ public static class BossCreatorKeys
             return;
         }
 
+        // The Past Events window has the keyboard while it is open, except while its search is typed in or a filter's
+        // list is open (#146)
+        if (PastEventsBrowser.Current is { } browser)
+        {
+            if (FocusedField() != null) fieldFocusedFrame = Time.frameCount;
+            var pressed = ReadKeys();
+            var typingSearch = Time.frameCount - fieldFocusedFrame <= 1;
+            if (pressed.Key != ShortcutKey.Other && !pressed.Ctrl && !typingSearch && browser.OpenList == null)
+            {
+                browser.Handle(pressed.Key, pressed.Shift);
+            }
+            FocusFrame.Fit();
+            return;
+        }
+
         // The boss picker has the keyboard while it is open, except while its skull list is being typed in
         if (TierBossPicker.Current is { } picker)
         {
@@ -208,6 +223,20 @@ public static class BossCreatorKeys
             return true;
         }
 
+        if (EscapePressed() && PastEventsBrowser.Current?.OpenList is { } filterList)
+        {
+            filterList.Hide();
+            return true;
+        }
+
+        if (PastEventsBrowser.Current is { } browser && EscapePressed())
+        {
+            // Esc while typing a search only ends the edit
+            if (FocusedField() is { } searchField) searchField.DeactivateInputField();
+            else if (Time.frameCount - fieldFocusedFrame > 1) browser.Hide();
+            return true;
+        }
+
         if (TierBossPicker.Current is { } picker && EscapePressed())
         {
             // Esc while typing the skull list only ends the edit
@@ -269,7 +298,7 @@ public static class BossCreatorKeys
     }
 
     private static bool BlockingUiOpen(BossEditorSection section) =>
-        TierBossPicker.Current != null || section.OpenList != null ||
+        TierBossPicker.Current != null || PastEventsBrowser.Current != null || section.OpenList != null ||
         PopupScreen.instance != null && PopupScreen.instance.GetFirstActivePopup() != null ||
         ChallengeEditor_OverrideClose.OpenPanel(section.Editor);
 

@@ -176,6 +176,29 @@ Up to 50 setups are kept, in `BloonsTD6/UserData/CustomBossChallenge/SavedSetups
 
 ![Saved Setups](docs/saved-setups.jpg)
 
+## Past events
+
+The **Past Events** row opens every official Boss Bloon Event since July 2021 in a window of its own, newest first.
+Search by name, map or mode, or pick a boss, a year or a mode, and press **Normal** or **Elite** to open the event
+with its own rules: the map, mode and difficulty, starting cash and lives, the towers it allowed and their blocked
+upgrades, the paragon limit, the bloon and boss modifiers and the boss's event rounds (also the CHIMPS events' rounds).
+The setup keeps the event's name and date, and like Load it asks first and is one step for Undo.
+
+- Rules the Boss Creator can't play, like an event round set the game doesn't have, are listed when you open the
+  event and left out instead of half applied. An event whose map isn't in your version of the game says so.
+- The Boss Creator times every game like a Game Time event. Events ranked on Least Cash or Least Tiers say so; turn
+  on **Show Ranked Stats** in the mod's settings to see the cash and tiers you used.
+- The events come from the mod's own archive (`data/boss-events/`, see its
+  [README](data/boss-events/README.md) for the sources and their licences).
+
+**What is downloaded:** every release carries the events up to its build, so the list works offline. When the game
+starts, the mod also downloads the newest list from
+<https://pedersebastian.github.io/CustomBossChallenge/boss-events.json> in the background (under 100 KB, or
+nothing when it hasn't changed), so new events show up without an update of the mod. Nothing about you is sent, and
+the menus never wait for it. The list is kept in `BloonsTD6/UserData/CustomBossChallenge/boss-events.json`; offline,
+the mod uses that copy or its own. To never download it, turn off **Download New Boss Events** under Past Events in
+the mod's settings (Mod Helper's Mod Settings).
+
 ## Sharing setups
 
 The **Share Code** row at the bottom of the Boss section turns the whole setup, boss options and every Challenge Editor
@@ -271,6 +294,8 @@ next to them. Tiers 1-5 and games outside the Boss Creator keep the game's look.
   overwritten; the mod keeps them in its own file to continue them) and never
   update Boss Challenge records, boss tier progress, badges or achievements. XP and Monkey Money are still earned.
 - Your own Challenge Editor draft is never replaced by the boss setup.
+- The only thing the mod downloads is the list of past boss events from its own website (see
+  [Past events](#past-events)); it can be turned off, and nothing about you is sent.
 - If a BTD6 update renames or removes a game method these guards hook into, the Boss Creator stays closed and says
   which ones, instead of starting games without them. It can't notice an update that keeps a method but changes what
   it does, so after a big BTD6 update it's safest to wait for a mod update.

@@ -37,4 +37,28 @@ public class Settings : ModSettings
                       "Least Cash run can be compared on time too. Custom games stay unranked.",
         icon = VanillaSprites.StopWatch
     };
+
+    public const string PastEventsName = "Past Events";
+
+    public static readonly ModSettingCategory PastEvents = new(PastEventsName)
+    {
+        order = 1,
+        collapsed = false,
+        icon = VanillaSprites.BossChallenge
+    };
+
+    /// <summary>
+    /// Whether the Past Events list asks the website for new boss events at the game's start (#146). Off, the list has
+    /// the events the mod's release brought, and those downloaded before.
+    /// </summary>
+    public static readonly ModSettingBool DownloadPastEvents = new(true)
+    {
+        category = PastEvents,
+        displayName = "Download New Boss Events",
+        description = "When the game starts, the Boss Creator's Past Events list downloads the newest list of " +
+                      "official boss events from the mod's website (pedersebastian.github.io/CustomBossChallenge), " +
+                      "so new events show up without an update of the mod. Nothing about you is sent. Off, the list " +
+                      "has the events the mod came with, and the ones it downloaded before.",
+        icon = VanillaSprites.BossChallenge
+    };
 }

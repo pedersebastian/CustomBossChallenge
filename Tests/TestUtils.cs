@@ -25,11 +25,15 @@ internal static class TestUtils
     }
 
     /// <summary>
-    /// Sets up a fresh InGameData for a single player Boss Challenge with the given model
+    /// Sets up a fresh InGameData for a single player Boss Challenge with the given model. The game never saves it,
+    /// normal Boss Challenges included: a test's game must not end up among the player's own unfinished games (a normal
+    /// Bloonarius game of ContinueLifecycleTest was saved as BCBloonarius at round 11). Custom games are told apart by
+    /// their name, so this doesn't make a normal one custom.
     /// </summary>
     public static InGameData SetupBossChallenge(DailyChallengeModel dcm, BossType boss, bool ranked = false,
         bool elite = false)
     {
+        dcm.disableSaves = true;
         InGameData.CreateNewInstance();
         var data = InGameData.Editable;
         data.selectedMap = dcm.map;

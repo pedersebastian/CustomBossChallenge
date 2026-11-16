@@ -18,6 +18,9 @@
         <Compile Include="..\Config\ChallengeLimits.Options.cs" Link="Mod\ChallengeLimits.Options.cs" />
         <Compile Include="..\Config\BossRandomizer.Weights.cs" Link="Mod\BossRandomizer.Weights.cs" />
         <Compile Include="..\Config\ParagonMath.Slider.cs" Link="Mod\ParagonMath.Slider.cs" />
+        <Compile Include="..\Config\PastEventDates.cs" Link="Mod\PastEventDates.cs" />
+        <Compile Include="..\Config\PastEventFilter.cs" Link="Mod\PastEventFilter.cs" />
+        <Compile Include="..\Config\PastEventRules.cs" Link="Mod\PastEventRules.cs" />
         <Compile Include="..\Config\KeyboardShortcuts.cs" Link="Mod\KeyboardShortcuts.cs" />
         <Compile Include="..\Config\RandomNames.cs" Link="Mod\RandomNames.cs" />
         <Compile Include="..\Config\RankedTime.cs" Link="Mod\RankedTime.cs" />
@@ -34,6 +37,9 @@
         <Compile Include="..\Persistence\FileChange.cs" Link="Mod\FileChange.cs" />
         <Compile Include="..\Persistence\FormatRead.cs" Link="Mod\FormatRead.cs" />
         <Compile Include="..\Persistence\LastSetupFormat.cs" Link="Mod\LastSetupFormat.cs" />
+        <Compile Include="..\Persistence\PastEventsDownload.cs" Link="Mod\PastEventsDownload.cs" />
+        <Compile Include="..\Persistence\PastEventsFormat.cs" Link="Mod\PastEventsFormat.cs" />
+        <Compile Include="..\Persistence\PastEventsStore.cs" Link="Mod\PastEventsStore.cs" />
         <Compile Include="..\Persistence\SafeFile.cs" Link="Mod\SafeFile.cs" />
         <Compile Include="..\Persistence\SavedSetupsFormat.cs" Link="Mod\SavedSetupsFormat.cs" />
     </ItemGroup>

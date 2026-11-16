@@ -140,6 +140,12 @@ public sealed class BossEditorSection
 
     public ModHelperButton CopyCode { get; private set; } = null!;
     public ModHelperButton PasteCode { get; private set; } = null!;
+
+    /// <summary>Opens the Past Events window (#146), with how many events there are</summary>
+    public ModHelperButton BrowseEvents { get; private set; } = null!;
+
+    /// <summary>Next to <see cref="BrowseEvents"/>: where the events come from, and whether new ones are being looked for</summary>
+    public ModHelperText PastEventsStatus { get; private set; } = null!;
     public Dictionary<BossType, ModHelperButton> BossButtons { get; } = new();
 
     private readonly Transform rows;
@@ -493,6 +499,27 @@ public sealed class BossEditorSection
         CopyCode = ShareButton(shareRow, "CopyCode", shareX, Texts.CopyCode.T(), OnCopyCode);
         PasteCode = ShareButton(shareRow, "PasteCode", shareX + 640, Texts.PasteCode.T(), OnPasteCode);
 
+        // The official boss events, in a window of their own (#146)
+        var eventsRow = EditorRows.LabelRow(template, rows, "PastEventsRow", Texts.PastEvents.T(), VanillaSprites.BossChallenge);
+        var eventsLeft = EditorRows.ControlX - EditorRows.ControlWidth / 2;
+        BrowseEvents = ShareButton(eventsRow, "BrowseEvents", eventsLeft + 20 + BrowseEventsWidth / 2, Texts.BrowsePastEvents.T(0),
+            () => OpenPastEvents(), BrowseEventsWidth);
+        var browseLabel = BrowseEvents.GetDescendent<ModHelperText>("Label");
+        browseLabel.Text.enableAutoSizing = true;
+        browseLabel.Text.fontSizeMax = BrowseEventsFontSize;
+        browseLabel.Text.fontSizeMin = 40;
+        browseLabel.Text.textWrappingMode = TextWrappingModes.NoWrap;
+        PastEventsStatus = ModHelperText.Create(new Info("PastEventsStatus", 0, 0, 100, 170)
+        {
+            Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
+        }, "", 48, TextAlignmentOptions.Left);
+        PastEventsStatus.transform.SetParent(eventsRow.transform, false);
+        PastEventsStatus.Text.enableAutoSizing = true;
+        PastEventsStatus.Text.fontSizeMax = 48;
+        PastEventsStatus.Text.fontSizeMin = 30;
+        PastEventsStatus.Text.raycastTarget = false;
+        ShowPastEvents();
+
         EditorRows.AddInfo(bossRow, Texts.BossType, Texts.BossTypeInfo);
         EditorRows.AddInfo(BossSpeed.Row, Texts.BossSpeed, Texts.BossSpeedInfo);
         EditorRows.AddInfo(BossHealth.Row, Texts.BossHealth, Texts.BossHealthInfo);
@@ -511,6 +538,7 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(skullStripRow, Texts.SkullPreview, Texts.SkullPreviewInfo);
         EditorRows.AddInfo(savedRow, Texts.SavedSetups, Texts.SavedSetupsInfo);
         EditorRows.AddInfo(shareRow, Texts.ShareCode, Texts.ShareCodeInfo);
+        EditorRows.AddInfo(eventsRow, Texts.PastEvents, Texts.PastEventsInfo);
 
         // The Tier Preview sits right under the boss, where in Advanced Mode its cards pick the bosses, and Max Paragons,
         // a rule of the game rather than of the boss, after the skulls
@@ -523,6 +551,11 @@ public sealed class BossEditorSection
 
     /// <summary>The height of the CHIMPS dropdown and of each entry in its opened list</summary>
     public const float ChimpsItemHeight = 150;
+
+    /// <summary>The Browse button's narrowest width, and its widest, which leaves room for the status next to it</summary>
+    public const float BrowseEventsWidth = 900;
+    public const float BrowseEventsMaxWidth = 1350;
+    private const float BrowseEventsFontSize = 70;
 
     public const float SavedListWidth = 760;
     public const float SavedListHeight = 750;
@@ -719,6 +752,7 @@ public sealed class BossEditorSection
         focusStops.Add(FocusStop.ForButton("DeleteSetup", DeleteSetup.Button));
         focusStops.Add(FocusStop.ForButton("CopyCode", CopyCode.Button));
         focusStops.Add(FocusStop.ForButton("PasteCode", PasteCode.Button));
+        focusStops.Add(FocusStop.ForButton("BrowseEvents", BrowseEvents.Button));
         focusStops.Add(FocusStop.ForButton("Play", PlayButton));
     }
 
@@ -779,6 +813,71 @@ public sealed class BossEditorSection
     }
 
     private static IReadOnlyList<ExampleSetup> Examples => Creator.ExampleSetups.All;
+
+    /// <summary>Opens the Past Events window (#146)</summary>
+    public PastEventsBrowser OpenPastEvents()
+    {
+        BossCreatorKeys.ClearFocus();
+        return PastEventsBrowser.Open(this);
+    }
+
+    static BossEditorSection()
+    {
+        // The download finishes on its own time: the row shows what it brought whenever that is
+        PastEvents.Changed += () => Current?.ShowPastEvents();
+    }
+
+    /// <summary>
+    /// Shows how many past events there are, where they come from, and whether new ones are being looked for
+    /// </summary>
+    public void ShowPastEvents()
+    {
+        var file = PastEvents.Current;
+        var label = BrowseEvents.GetDescendent<ModHelperText>("Label");
+        var browse = Texts.BrowsePastEvents.T(file?.Events.Count ?? 0);
+        PastEventsBrowser.ShowAsIs(label.Text, browse);
+        FitBrowseEvents(label.Text, browse);
+        var date = file == null ? "" : Texts.Date(file.Generated.UtcDateTime);
+        var status = PastEvents.Loading ? Texts.PastEventsLoading.T()
+            : file == null ? Texts.PastEventsNone.T()
+            : PastEvents.Checking ? Texts.PastEventsChecking.T()
+            : PastEvents.Store.Source == PastEventsSource.Download || PastEvents.Checked ? Texts.PastEventsUpToDate.T(date)
+            : PastEvents.Store.Source == PastEventsSource.Cache ? Texts.PastEventsFromCache.T(date)
+            : Texts.PastEventsFromMod.T(date);
+        if (!PastEvents.Loading && !PastEvents.Checking && !Settings.DownloadPastEvents)
+        {
+            status += $"\n<size=80%>{Texts.PastEventsDownloadsOff.T()}</size>";
+        }
+        PastEventsBrowser.ShowAsIs(PastEventsStatus.Text, status);
+    }
+
+    /// <summary>
+    /// Makes the Browse button as wide as its text needs in the player's language (up to
+    /// <see cref="BrowseEventsMaxWidth"/>, past which the text shrinks), and the status take the rest of the row
+    /// </summary>
+    private void FitBrowseEvents(TMP_Text label, string text)
+    {
+        var autoSize = label.enableAutoSizing;
+        var size = label.fontSize;
+        label.enableAutoSizing = false;
+        label.fontSize = BrowseEventsFontSize;
+        var needed = label.GetPreferredValues(text, 100000, 170).x;
+        label.fontSize = size;
+        label.enableAutoSizing = autoSize;
+
+        var left = EditorRows.ControlX - EditorRows.ControlWidth / 2;
+        var width = Mathf.Clamp(needed + 120, BrowseEventsWidth, BrowseEventsMaxWidth);
+        var button = BrowseEvents.RectTransform;
+        button.sizeDelta = new Vector2(width, button.sizeDelta.y);
+        button.anchoredPosition = new Vector2(left + 20 + width / 2, button.anchoredPosition.y);
+
+        var statusLeft = left + 20 + width + 40;
+        var statusWidth = EditorRows.ControlWidth - (statusLeft - left);
+        var status = PastEventsStatus.RectTransform;
+        status.sizeDelta = new Vector2(statusWidth, status.sizeDelta.y);
+        status.anchoredPosition = new Vector2(statusLeft + statusWidth / 2, status.anchoredPosition.y);
+        label.ForceMeshUpdate();
+    }
 
     /// <summary>
     /// Golden "Example:" in front of an example's name, so it can't be taken for one of the player's own setups
@@ -1094,6 +1193,7 @@ public sealed class BossEditorSection
     public static void Hide(ChallengeEditor editor)
     {
         TierBossPicker.CloseOn(editor);
+        PastEventsBrowser.CloseOn(editor);
         if (Current != null && Current.BelongsTo(editor))
         {
             Current.SetVisible(false);
@@ -1120,7 +1220,11 @@ public sealed class BossEditorSection
 
     private void SetVisible(bool show)
     {
-        if (!show) TierBossPicker.CloseOn(Editor);
+        if (!show)
+        {
+            TierBossPicker.CloseOn(Editor);
+            PastEventsBrowser.CloseOn(Editor);
+        }
         Section.SetActive(show);
         Play.SetActive(show);
         ShowEndRound(Editor, !show);
