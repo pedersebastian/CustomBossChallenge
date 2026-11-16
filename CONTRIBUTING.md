@@ -317,6 +317,13 @@ npm run dev
 Then open http://localhost:5173. To try the site on a phone, `npm run dev:lan` serves it on your local network too,
 and prints the address to open on the phone (on the same network). `npm test` runs its tests and `npm run build`
 puts the finished site in `web/dist`.
+
+The Past Events page (`past-events.html`, #213) loads `boss-events.json`, which isn't committed: run
+`npm run boss-events` once in `web/` to build it into `web/public/` from `data/boss-events/`, as `pages.yml` does
+before every deploy. The tests don't need it; they read the archive itself. The website's mapping
+(`web/packages/share-code/src/pastEvents.ts`) is a port of the mod's `Config/PastEventRules.cs`, and
+`web/test/past-event-cases.json` keeps the two the same: after changing the mod's mapping, run
+`CBC_PAST_EVENT_CASES=1 dotnet test --project UnitTests` to write it again, then `npm test`.
 `.github/workflows/pages.yml` does the same on GitHub and publishes the site to
 https://pedersebastian.github.io/CustomBossChallenge/ whenever `web/` changes on master (or when run by hand).
 Visits are counted with [GoatCounter](https://pedersebastian.goatcounter.com/) (the script at the end of

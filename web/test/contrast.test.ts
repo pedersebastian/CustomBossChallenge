@@ -37,6 +37,8 @@ describe("contrast", () => {
     ["--outline", "--gold"],
     ["--gold", "--card"],
     ["--muted", "--card"],
+    // The Past Events rows (#213): their Source links and the search and filters
+    ["--gold", "--panel-inner"],
   ])("%s on %s is at least 4.5:1", (text, background) => {
     expect(contrast(token(text), token(background))).toBeGreaterThanOrEqual(4.5);
   });

@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   mod carries the events up to its release and downloads newer ones from the mod's website at the start of the game,
   in the background and with a cache, so new events show up without an update; **Download New Boss Events** in the
   mod's settings turns that off.
+- **Past Events on the website** (#213): a new page, Past events, lists the same events with the same search and
+  filters, which stay in the address so a filtered list can be shared. Each event opens in the Studio, normal or
+  Elite, or is copied as a code or a link the Boss Creator loads with the event's rules; rules the Boss Creator can't
+  play are named, and events that use wiki content link their source and licence.
 - **Undo and Redo buttons** (#185): next to Reset Boss Options, two buttons undo and redo one step like Ctrl+Z and
   Ctrl+Y, so the mouse and touch screens can too. They name their shortcut, are greyed out when there is nothing to
   undo or redo, and the keyboard reaches them with Tab.

@@ -34,6 +34,9 @@ export { encode, payload, prefixFor, normalized, pack, diff, deepEqual } from ".
 // The Boss Creator's options, read and kept in range like BossOptions
 export * from "./options";
 
+// The official boss events of the Past Events list (#146, #213), mapped onto setups like the mod does
+export * from "./pastEvents";
+
 export type { Json, JsonObject, ShareCodeData } from "./data";
 
 // The helpers, each also on its own path, e.g. "@cbc/share-code/tiers"
