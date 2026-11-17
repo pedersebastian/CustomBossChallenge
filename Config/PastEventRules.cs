@@ -105,13 +105,13 @@ public static class PastEventRules
         challenge["name"] = SetupName(pastEvent, elite, date, eliteName);
         foreach (var field in SameName)
         {
-            if (rules[field] is { } value && value.Type != JTokenType.Null) challenge[field] = value.DeepClone();
+            if (IsSet(rules, field)) challenge[field] = rules[field]!.DeepClone();
         }
 
         var start = new JObject();
         foreach (var (from, to) in StartRules)
         {
-            if (rules[from] is { } value && value.Type != JTokenType.Null) start[to] = value.DeepClone();
+            if (IsSet(rules, from)) start[to] = rules[from]!.DeepClone();
         }
         if (start.HasValues) challenge["startRules"] = start;
 
@@ -241,6 +241,17 @@ public static class PastEventRules
 
         return options;
     }
+
+    /// <summary>
+    /// The limits the API writes as 0 when it has no rules for them, like Diamondback 6's placeholder metadata
+    /// (<c>"id": "n/a"</c>): no boss event has 0 towers or 0 max lives, so 0 means the game's default
+    /// </summary>
+    private static readonly HashSet<string> ZeroIsUnset = ["maxTowers", "maxLives"];
+
+    /// <summary>Whether the event sets a rule: not null, and not 0 for a <see cref="ZeroIsUnset"/> limit</summary>
+    private static bool IsSet(JObject rules, string field) =>
+        rules[field] is { } value && value.Type != JTokenType.Null &&
+        !(ZeroIsUnset.Contains(field) && value.Type == JTokenType.Integer && (long) value == 0);
 
     /// <summary>Whether a value the mapping doesn't know changes nothing: false, 0, -1, null, empty or 1 (a multiplier)</summary>
     private static bool IsDefault(JToken value) => value.Type switch

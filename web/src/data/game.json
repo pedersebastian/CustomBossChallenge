@@ -1789,7 +1789,7 @@
     "minMultiplier": 0.01,
     "maxMultiplier": 100.0,
     "minBossSpeed": 0.1,
-    "maxBossSpeed": 10.0,
+    "maxBossSpeed": 25.0,
     "minBossHealth": 0.1,
     "maxBossHealth": 20.0,
     "maxCash": 100000000,

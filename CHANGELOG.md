@@ -9,7 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Boss Speed up to 2500 %** (#220), the fastest boss Ninja Kiwi has run (Bloonarius 61). Also each tier's own
+  speed in Advanced, share codes, and the website. Bloonarius 61 and Dreadbloon 27 Elite now open in Past Events with
+  their real boss speed instead of 1000 %. A code with more than 1000 % opens at 1000 % in older versions of the mod.
+
 ### Fixed
+
+- **Diamondback 6 in Past Events**: its rules from Ninja Kiwi say 0 max lives and 0 max monkeys, which opened it with
+  one max life. Those 0s now mean the game's default, so it plays with its 200 (Elite 100) lives and no monkey limit.
 
 - **Setup names in every language** (#218): the Challenge Editor's name field only keeps plain letters (A-Z), digits
   and some punctuation, so a translated example or Past Events name lost letters as soon as it was loaded

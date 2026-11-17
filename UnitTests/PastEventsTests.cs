@@ -108,6 +108,57 @@ public class PastEventsTests : IDisposable
     }
 
     [Fact]
+    public void Every_events_boss_speed_and_health_fit_the_Boss_Creator()
+    {
+        foreach (var pastEvent in PastEventsFormat.Read(Bundle()).Value!.Events)
+        {
+            foreach (var elite in new[] {false, true})
+            {
+                var modifiers = Map(pastEvent, elite).Challenge["bloonModifiers"];
+                var speed = (float?) modifiers?["bossSpeedMultiplier"] ?? 1;
+                var health = (float?) modifiers?["healthMultipliers"]?["boss"] ?? 1;
+                Assert.True(speed is >= ChallengeLimits.MinBossSpeed and <= ChallengeLimits.MaxBossSpeed,
+                    $"{pastEvent.Id}{(elite ? " Elite" : "")}: boss speed {speed}");
+                Assert.True(health is >= ChallengeLimits.MinBossHealth and <= ChallengeLimits.MaxBossHealth,
+                    $"{pastEvent.Id}{(elite ? " Elite" : "")}: boss health {health}");
+            }
+        }
+    }
+
+    [Fact]
+    public void The_fastest_bosses_keep_their_speed()
+    {
+        // #220: Bloonarius 61 ran at 2500 %, Dreadbloon 27 Elite at 2000 %
+        Assert.Equal(25f, (float) Map(Event("Bloonarius61_me1upcdz"), false).Challenge["bloonModifiers"]!["bossSpeedMultiplier"]!);
+        Assert.Equal(25f, (float) Map(Event("Bloonarius61_me1upcdz"), true).Challenge["bloonModifiers"]!["bossSpeedMultiplier"]!);
+        Assert.Equal(20f, (float) Map(Event("Dreadbloon27_m9xxdr7g"), true).Challenge["bloonModifiers"]!["bossSpeedMultiplier"]!);
+        Assert.Equal(TierBossMath.MaxSpeed, (int) Math.Round(ChallengeLimits.MaxBossSpeed * TierBossMath.Normal));
+    }
+
+    [Fact]
+    public void Zero_max_towers_and_lives_are_the_games_default()
+    {
+        // Diamondback 6's placeholder metadata has 0 for both, which would leave the player no towers and one life
+        foreach (var elite in new[] {false, true})
+        {
+            var challenge = Map(Event("Diamondback6_mrea6zh0"), elite).Challenge;
+            Assert.Null(challenge["maxTowers"]);
+            Assert.Null(challenge["startRules"]!["maxLives"]);
+            Assert.Equal(elite ? 100 : 200, (int) challenge["startRules"]!["lives"]!);
+        }
+
+        foreach (var pastEvent in PastEventsFormat.Read(Bundle()).Value!.Events)
+        {
+            foreach (var elite in new[] {false, true})
+            {
+                var challenge = Map(pastEvent, elite).Challenge;
+                Assert.NotEqual(0, (int?) challenge["maxTowers"] ?? -1);
+                Assert.NotEqual(0, (int?) challenge["startRules"]?["maxLives"] ?? -1);
+            }
+        }
+    }
+
+    [Fact]
     public void Lych47_has_its_own_rules_normal_and_Elite()
     {
         var lych = Event("Lych47_m5zq59de");

@@ -15,10 +15,6 @@ public static partial class ChallengeLimits
 {
     public const float MinMultiplier = 0.01f;
     public const float MaxMultiplier = 100;
-    public const float MinBossSpeed = 0.1f;
-    public const float MaxBossSpeed = 10;
-    public const float MinBossHealth = 0.1f;
-    public const float MaxBossHealth = 20;
     public const int MaxCash = 100_000_000;
     public const int MaxLives = 1_000_000;
     public const int MaxRevives = 100;
