@@ -104,9 +104,9 @@ public class ExampleSetupsTest : CustomBossTest
         yield return WaitForPopup(p => popup = p);
         yield return ClosePopup(popup, true);
         var last = ExampleSetups.All[^1];
-        AssertEquals(string.Join(", ", BossMode.Saved.All.Select(entry => entry.Name)), last.Name, "Saved setups");
+        AssertEquals(string.Join(", ", BossMode.Saved.All.Select(entry => entry.Name)), last.SetupName, "Saved setups");
         AssertEquals(dropdown.options.Count, 1 + ExampleSetups.All.Count, "The saved setup and the examples");
-        AssertEquals(section.SelectedSetup, last.Name, "The saved setup is picked");
+        AssertEquals(section.SelectedSetup, last.SetupName, "The saved setup is picked");
         Assert(section.DeleteSetup.Button.interactable, "The player's own setup can be deleted");
         Assert(!dropdown.options[0].text.Contains(BossEditorSection.ExampleColor), "The saved setup isn't marked as an example");
 
