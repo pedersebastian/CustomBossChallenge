@@ -42,14 +42,7 @@ public static class RandomNames
     /// The game's challenge name field holds 40 characters, so every name the rules can make fits in it (and in
     /// ChallengeLimits.MaxNameLength)
     /// </summary>
-    public const int MaxLength = 40;
-
-    /// <summary>
-    /// Besides ASCII letters and digits, the only characters the game's name field keeps when the name is put into it:
-    /// it drops others like '-', ':' or '(' and turns 'Å' into 'A', so a name using them would no longer match its
-    /// rule. RandomNamesFieldTest checks every name against the real field.
-    /// </summary>
-    public const string FieldPunctuation = " !?;/#%',.";
+    public const int MaxLength = NameField.MaxLength;
 
     /// <summary>From how far off the normal 100 % a boss speed or health counts as striking</summary>
     public const int High = 250;

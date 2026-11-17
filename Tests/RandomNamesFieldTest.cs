@@ -35,6 +35,17 @@ public class RandomNamesFieldTest : CustomBossTest
         }).Select(name => $"{name} -> {field.text}").ToList();
         Assert(changed.Count == 0, $"The name field changes {changed.Count} name(s): {string.Join(", ", changed.Take(5))}");
 
+        // The rule the setup names follow (NameField, #218): what it keeps stays, what it doesn't is changed
+        var kept = "Az09" + NameField.Punctuation;
+        field.text = kept;
+        AssertEquals(field.text, kept, "The name field keeps NameField's characters");
+        foreach (var text in new[] {"nåde", "Élite", "Marathon-Lych", "a:b", "März", "年", "ปีศาจ", "Пример"})
+        {
+            Assert(!NameField.Fits(text), $"NameField says the field keeps {text}");
+            field.text = text;
+            Assert(field.text != text, $"The name field keeps {text}, which NameField says it changes");
+        }
+
         Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
         yield return WaitFor(() => !BossMode.Active, "Leaving the Boss Creator");
     }

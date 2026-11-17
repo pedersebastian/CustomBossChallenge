@@ -132,7 +132,7 @@ public class RandomNamesTests
             Assert.True(RandomNames.IsGenerated(name), name);
             Assert.InRange(name.Length, 1, RandomNames.MaxLength);
             Assert.Equal(name.Trim(), name);
-            Assert.All(name, c => Assert.True(char.IsAsciiLetterOrDigit(c) || RandomNames.FieldPunctuation.Contains(c),
+            Assert.All(name, c => Assert.True(NameField.Keeps(c),
                 $"'{c}' in {name}, which the game's name field drops"));
         });
     }

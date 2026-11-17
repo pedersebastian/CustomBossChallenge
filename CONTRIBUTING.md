@@ -385,6 +385,10 @@ variable), then rebuild the mod and run the tests again:
 $env:CBC_WEB_DATA = "<repo>\web\src\data"
 ```
 
+The names of maps, towers, modes and difficulties in `game.json` are the game's own texts, and the website is English,
+so writing the files needs the game in English (#218). In another language `WebDataTest` refuses to write them, and
+when it checks them it leaves those names out.
+
 A shared link to the website shows a card with `web/public/og-card.png` (1200 × 630), the tags in `web/index.html`
 and the address in `web/.env` (`VITE_SITE_URL`, which link previews need in full; change it if the site moves). A
 `#code=…` never reaches the server, so every link shows the same card. The picture is made from

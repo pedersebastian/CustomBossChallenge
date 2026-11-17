@@ -17,6 +17,12 @@ public sealed record ExampleSetup(string NameKey, string DescriptionKey, string 
     BossOptions Options, Action<DailyChallengeModel> Rules)
 {
     public string Name => NameKey.T();
+
+    /// <summary>
+    /// The setup's name: the translated name when the Challenge Editor's name field keeps it as it is, else the English
+    /// one (#218); the lists show <see cref="Name"/>
+    /// </summary>
+    public string SetupName => NameField.Translated(Name, EnglishName);
     public string Description => DescriptionKey.T();
 }
 
@@ -83,15 +89,15 @@ public static class ExampleSetups
     /// The example with this name, in the player's language or in English, or null
     /// </summary>
     public static ExampleSetup? Named(string? name) =>
-        All.FirstOrDefault(example => name == example.Name || name == example.EnglishName);
+        All.FirstOrDefault(example => name == example.Name || name == example.SetupName || name == example.EnglishName);
 
     /// <summary>
-    /// The example's setup, named in the player's language, or in English for the website
+    /// The example's setup, named in the player's language where the name field keeps it, or in English for the website
     /// </summary>
     public static (BossOptions Options, DailyChallengeModel Dcm) Build(ExampleSetup example, bool english = false)
     {
         var dcm = BossMode.DefaultDcm(example.Options);
-        dcm.name = english ? example.EnglishName : example.Name;
+        dcm.name = english ? example.EnglishName : example.SetupName;
         dcm.seed = Seed;
         example.Rules(dcm);
         return (example.Options, dcm);
