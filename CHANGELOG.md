@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.13.0] - 2026-11-17
+
 ### Changed
 
 - **Boss Speed up to 2500 %** (#220), the fastest boss Ninja Kiwi has run (Bloonarius 61). Also each tier's own
@@ -606,7 +608,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety guards: only Boss Challenges are affected; custom games are always unranked, never saved and never update Boss Challenge records. The weekly Boss Event, co-op and all other modes are untouched.
 - In-game automated tests (Mod Helper `ModTest`) covering config application, skull math, all boss/Elite skulls, ranked/co-op guards, the Customize button and a game test comparing a vanilla and a custom Bloonarius challenge.
 
-[unreleased]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.12.0...HEAD
+[unreleased]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.13.0...HEAD
+[2.13.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.12.0...2.13.0
 [2.12.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.11.0...2.12.0
 [2.11.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.10.2...2.11.0
 [2.10.2]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.10.1...2.10.2
