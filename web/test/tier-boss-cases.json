@@ -32,11 +32,11 @@
     { "list": null, "boss": "Bloonarius", "elite": false, "tiers": 12, "pick": 0, "standard": "#60%;20%", "expected": "Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%,Bloonarius#60%;20%" }
   ],
   "normalize": [
-    { "list": "Lych@2147483647/2147483647", "expected": "Lych@1000/2000" },
+    { "list": "Lych@2147483647/2147483647", "expected": "Lych@2500/2000" },
     { "list": "Lych@-2147483647/-2147483647", "expected": "Lych@10/10" },
     { "list": "Lych@-2147483648/100", "expected": "Lych@10/100" },
     { "list": "Lych@2147483648/-2147483649", "expected": "Lych" },
-    { "list": "Lych@2147483645/15", "expected": "Lych@1000/20" },
+    { "list": "Lych@2147483645/15", "expected": "Lych@2500/20" },
     { "list": "Lych#-2147483648", "expected": "Lych#0" },
     { "list": "Lych#2147483647", "expected": "Lych#10" }
   ]

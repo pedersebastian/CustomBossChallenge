@@ -11,6 +11,15 @@ public static partial class ChallengeLimits
     public const int MaxNameLength = 60;
 
     /// <summary>
+    /// The boss's speed and health multipliers, the range of Boss Speed and Boss Health. 25× is the fastest boss
+    /// Ninja Kiwi has run (Bloonarius 61, #220).
+    /// </summary>
+    public const float MinBossSpeed = 0.1f;
+    public const float MaxBossSpeed = 25;
+    public const float MinBossHealth = 0.1f;
+    public const float MaxBossHealth = 20;
+
+    /// <summary>
     /// The boss options <see cref="BossOptions.Sanitized"/> changed, e.g. "Tiers 50 -> 10"
     /// </summary>
     public static List<string> OptionChanges(BossOptions before, BossOptions after) =>

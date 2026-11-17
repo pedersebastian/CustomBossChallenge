@@ -78,10 +78,10 @@ public static class TierBossMath
     /// A tier's speed and health in percent, with the range and step of Boss Speed and Boss Health
     /// </summary>
     public const int Normal = 100;
-    public const int MinSpeed = 10;
-    public const int MaxSpeed = 1000;
-    public const int MinHealth = 10;
-    public const int MaxHealth = 2000;
+    public const int MinSpeed = (int) (ChallengeLimits.MinBossSpeed * Normal + 0.5f);
+    public const int MaxSpeed = (int) (ChallengeLimits.MaxBossSpeed * Normal + 0.5f);
+    public const int MinHealth = (int) (ChallengeLimits.MinBossHealth * Normal + 0.5f);
+    public const int MaxHealth = (int) (ChallengeLimits.MaxBossHealth * Normal + 0.5f);
     public const int ValueStep = 10;
 
     /// <summary>

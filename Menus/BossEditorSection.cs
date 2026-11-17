@@ -323,10 +323,10 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(modeRow, Texts.DifferentBosses, Texts.DifferentBossesInfo);
 
         BossSpeed = SliderRow.Clone(template, rows, "BossSpeedRow", Texts.BossSpeed.T(), VanillaSprites.FasterBossIcon,
-            10, 1000, 10, 100, Percent, value => UpdateDcm("BossSpeed", dcm => dcm.bloonModifiers.bossSpeedMultiplier, value / 100f,
+            TierBossMath.MinSpeed, TierBossMath.MaxSpeed, TierBossMath.ValueStep, TierBossMath.Normal, Percent, value => UpdateDcm("BossSpeed", dcm => dcm.bloonModifiers.bossSpeedMultiplier, value / 100f,
                 (dcm, speed) => dcm.bloonModifiers.bossSpeedMultiplier = speed));
         BossHealth = SliderRow.Clone(template, rows, "BossHealthRow", Texts.BossHealth.T(), VanillaSprites.BossBoostIcon,
-            10, 2000, 10, 100, Percent, value => UpdateDcm("BossHealth", dcm => dcm.bloonModifiers.healthMultipliers.boss, value / 100f,
+            TierBossMath.MinHealth, TierBossMath.MaxHealth, TierBossMath.ValueStep, TierBossMath.Normal, Percent, value => UpdateDcm("BossHealth", dcm => dcm.bloonModifiers.healthMultipliers.boss, value / 100f,
                 (dcm, health) => dcm.bloonModifiers.healthMultipliers.boss = health));
 
         // The last position means no limit

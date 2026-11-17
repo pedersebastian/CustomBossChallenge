@@ -133,7 +133,7 @@ arrows step a card's boss, Enter opens the picker and Delete puts the tier back 
 Going back to **Standard** brings the Boss Type back and keeps your choices, so **Advanced** brings them back too.
 
 In **Advanced**, **Boss Speed**, **Boss Health** and the **Skulls** are set per tier instead: their rows and the
-Skull Preview are hidden, and each tier's picker has its own, from 10 to 1000 % speed and 10 to 2000 % health, and
+Skull Preview are hidden, and each tier's picker has its own, from 10 to 2500 % speed and 10 to 2000 % health, and
 Vanilla, Evenly Spaced or Custom skulls with a Skull Preview of that tier. Every tier starts with what Standard had,
 and **Standard** brings that back. Speed per Tier and Health per Tier still go on top, and the cards show the result.
 
@@ -252,7 +252,7 @@ CBC3:HY2xCsMwDER_pWjWUDK04DEESiFDh5BdSQQ2dSxjOdA05N9rd7u7B_cOEDAHDI6TgrnjP7WiyqV
 |---|---|---|---|
 | Boss Type | 7 bosses | Bloonarius | Elite toggle next to it. |
 | Standard / Advanced | tabs | Standard | Hides the Boss Type, Boss Speed, Boss Health and the skulls; each tier's boss, speed, health and skulls are picked on its card in the Tier Preview: any boss, Elite or not, or Random. |
-| Boss Speed | 10–1000 % | 100 % | In Advanced, set per tier in its picker. |
+| Boss Speed | 10–2500 % | 100 % | In Advanced, set per tier in its picker. |
 | Boss Health | 10–2000 % | 100 % | In Advanced, set per tier in its picker. |
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
 | Boss Tiers | 1–10 | 5 | The game is won when the last tier is defeated. |

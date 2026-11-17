@@ -47,7 +47,7 @@ describe("edit functions", () => {
 
   it("keep Boss Speed and Boss Health on the Boss Creator's steps and ranges", () => {
     expect(edit.bossSpeed(edit.setBossSpeed(fresh(), 254))).toBe(250);
-    expect(edit.bossSpeed(edit.setBossSpeed(fresh(), 5000))).toBe(1000);
+    expect(edit.bossSpeed(edit.setBossSpeed(fresh(), 5000))).toBe(2500);
     expect(edit.bossHealth(edit.setBossHealth(fresh(), 1))).toBe(10);
     expect(edit.bossHealth(edit.setBossHealth(fresh(), 1990))).toBe(1990);
     const health = edit.setBossHealth(fresh(), 150).challenge.bloonModifiers as { healthMultipliers: { boss: number } };
@@ -187,7 +187,7 @@ describe("Advanced Mode (#95)", () => {
 
   it("keeps a tier's values in range", () => {
     const on = edit.setAdvanced(fresh(), true, edit.NO_MEMORY).setup;
-    expect(edit.shownTier(edit.setTierSpeed(on, 1, 4999), 1).speed).toBe(1000);
+    expect(edit.shownTier(edit.setTierSpeed(on, 1, 4999), 1).speed).toBe(2500);
     expect(edit.shownTier(edit.setTierHealth(on, 1, 3), 1).health).toBe(10);
     expect(edit.shownTier(edit.setTierHealth(on, 1, 255), 1).health).toBe(260);
     // The count is only kept in the token with Evenly Spaced skulls, like in the mod

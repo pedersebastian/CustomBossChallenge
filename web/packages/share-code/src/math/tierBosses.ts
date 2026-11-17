@@ -15,7 +15,7 @@ const SKULLS_MARK = "#";
 /** A tier's speed and health in percent, with the range and step of Boss Speed and Boss Health */
 export const NORMAL = 100;
 export const MIN_SPEED = 10;
-export const MAX_SPEED = 1000;
+export const MAX_SPEED = 2500;
 export const MIN_HEALTH = 10;
 export const MAX_HEALTH = 2000;
 const VALUE_STEP = 10;

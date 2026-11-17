@@ -264,7 +264,7 @@ public class MaliciousCodeTest : CustomBossTest
         tooFast.bloonModifiers.bossSpeedMultiplier = 1e30f;
         tooFast.map = "NoSuchMap";
         var changes = ChallengeLimits.Sanitize(tooFast, defaults);
-        AssertEquals(string.Join("; ", changes), $"unknown map 'NoSuchMap' -> {defaults.map}; boss speed 1E+30 -> 10",
+        AssertEquals(string.Join("; ", changes), $"unknown map 'NoSuchMap' -> {defaults.map}; boss speed 1E+30 -> {ChallengeLimits.MaxBossSpeed.ToString(System.Globalization.CultureInfo.InvariantCulture)}",
             "Reported changes");
         var tooMany = new BossOptions {Tiers = 50};
         AssertEquals(string.Join("; ", ChallengeLimits.OptionChanges(tooMany, tooMany.Sanitized())), "Tiers 50 -> 10",
