@@ -12,6 +12,7 @@ using Il2CppAssets.Scripts.Data;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Models.ServerEvents;
 using Il2CppAssets.Scripts.Unity;
+using Il2CppNinjaKiwi.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -25,12 +26,32 @@ namespace CustomBossChallenge.Tests;
 /// Started with the environment variable <c>CBC_WEB_DATA=&lt;repo&gt;/web/src/data</c>, this writes those files.
 /// Otherwise it checks that the files in the repo still match the game and the mod, so a game update or a change to
 /// the mod's code math is noticed.
+/// <br/>
+/// The names of maps, towers, modes and difficulties are the game's own texts in the game's language, and the website
+/// is English: in another language the names aren't compared, and the files can't be written (#218).
 /// </summary>
 public class WebDataTest : CustomBossTest
 {
     public const string EnvironmentVariable = "CBC_WEB_DATA";
 
     public static readonly string[] Files = {"game.json", "tierlook.json", "examples.json", "fixtures.json"};
+
+    /// <summary>The parts of game.json that hold the game's texts, in the game's language</summary>
+    public static readonly string[] Names = {"maps", "towers", "modes", "difficulties"};
+
+    private static bool English => LocalizationManager.Instance.ActiveLanguage.ToString() == "English";
+
+    /// <summary>game.json with the game's texts left out, keeping which maps, towers, modes and difficulties there are</summary>
+    private static JToken WithoutNames(JToken gameJson)
+    {
+        var copy = gameJson.DeepClone();
+        foreach (var part in Names)
+        {
+            if (copy[part] is not JObject names) continue;
+            foreach (var name in names.Properties()) name.Value = "";
+        }
+        return copy;
+    }
 
     protected override IEnumerator Run()
     {
@@ -50,6 +71,12 @@ public class WebDataTest : CustomBossTest
         var folder = System.Environment.GetEnvironmentVariable(EnvironmentVariable);
         if (!string.IsNullOrEmpty(folder))
         {
+            if (!English)
+            {
+                Fail($"{EnvironmentVariable} writes the website's English names of maps and towers: switch the game to " +
+                     $"English first (it is in {LocalizationManager.Instance.ActiveLanguage})");
+                yield break;
+            }
             Directory.CreateDirectory(folder);
             foreach (var (file, json) in data)
             {
@@ -69,12 +96,18 @@ public class WebDataTest : CustomBossTest
             yield break;
         }
 
+        if (!English) Log($"the game is in {LocalizationManager.Instance.ActiveLanguage}: the names in game.json are only checked in English");
         foreach (var (file, json) in data)
         {
             var stream = typeof(WebDataTest).Assembly.GetManifestResourceStream("CustomBossChallenge.web." + file);
             var committed = stream == null ? null : JToken.Parse(new StreamReader(stream).ReadToEnd());
             // Through text like the file, so the game's floats (0.8333f) compare equal to the numbers read back (0.8333)
             var current = JToken.Parse(json.ToString(Formatting.None));
+            if (!English && file == "game.json" && committed != null)
+            {
+                committed = WithoutNames(committed);
+                current = WithoutNames(current);
+            }
             Assert(committed != null && JToken.DeepEquals(committed, current),
                 $"web/src/data/{file} is out of date: run the tests with {EnvironmentVariable}=<repo>/web/src/data " +
                 "and rebuild (see CONTRIBUTING.md)");

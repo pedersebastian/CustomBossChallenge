@@ -307,9 +307,12 @@ export function englishDate(time: number): string {
   return `${date.getUTCDate()} ${ENGLISH_MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
 }
 
-const LETTER_OR_DIGIT = /[\p{L}\p{Nd}]/u;
+const LETTER_OR_DIGIT = /[A-Za-z0-9]/;
 
-/** Letters, digits and `keep`, one space between the words */
+/** How many characters the Challenge Editor's name field holds */
+const NAME_FIELD_LENGTH = 40;
+
+/** ASCII letters, digits and `keep`, one space between the words: what the name field keeps (NameField, #218) */
 function nameText(value: string, keep: string): string {
   const name = [...value].map((c) => (LETTER_OR_DIGIT.test(c) || keep.includes(c) ? c : " ")).join("");
   return name.split(" ").filter((word) => word.length > 0).join(" ");
@@ -317,10 +320,12 @@ function nameText(value: string, keep: string): string {
 
 /**
  * The setup's name, like PastEventRules.SetupName in English: "Lych 47 Elite, 17 Jan 2025". The Challenge Editor's
- * name field keeps only letters, digits, spaces and . , ! ' / # ? ~
+ * name field keeps only ASCII letters, digits and some punctuation, and 40 characters; a longer name is cut there.
  */
-export const setupName = (event: PastEvent, elite: boolean): string =>
-  `${nameText(`${event.displayName}${elite ? " Elite" : ""}`, "")}, ${nameText(englishDate(event.start), ".")}`;
+export function setupName(event: PastEvent, elite: boolean): string {
+  const name = `${nameText(`${event.displayName}${elite ? " Elite" : ""}`, "")}, ${nameText(englishDate(event.start), ".")}`;
+  return name.length <= NAME_FIELD_LENGTH ? name : name.slice(0, NAME_FIELD_LENGTH).trimEnd();
+}
 
 /**
  * The setup of the normal or the Elite event and the game's JSON its code holds, made the way the mod reads an event:

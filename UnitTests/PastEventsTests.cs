@@ -240,8 +240,32 @@ public class PastEventsTests : IDisposable
         string Norwegian(DateTime date) =>
             PastEventDates.Format(date, "{0}. {1} {2}", "jan.,feb.,mar.,apr.,mai,jun.,jul.,aug.,sep.,okt.,nov.,des.");
         Assert.Equal("Blastapopoulos 20, 17. jan. 2025", PastEventRules.SetupName(lych with {DisplayName = "Blastapopoulos 20"}, false, Norwegian));
-        Assert.Equal("Lych 47 Élite, 17. jan. 2025", PastEventRules.SetupName(lych with {DisplayName = "Lych 47"}, true, Norwegian, "Élite"));
         Assert.Equal("Lych 47 Elite, 17 Jan 2025", PastEventRules.SetupName(lych with {DisplayName = "Lych 47"}, true));
+
+        // An Elite or a date the name field would change is English (#218)
+        Assert.Equal("Lych 47 Elite, 17. jan. 2025", PastEventRules.SetupName(lych with {DisplayName = "Lych 47"}, true, Norwegian, "Élite"));
+        string German(DateTime date) =>
+            PastEventDates.Format(date, "{0}. {1} {2}", "Jan.,Feb.,März,Apr.,Mai,Juni,Juli,Aug.,Sep.,Okt.,Nov.,Dez.");
+        Assert.Equal("Lych 47, 17 Mar 2025", PastEventRules.SetupName(lych with {DisplayName = "Lych 47", Start = new DateTimeOffset(2025, 3, 17, 12, 0, 0, TimeSpan.Zero).ToUnixTimeMilliseconds()}, false, German));
+        Assert.Equal("Lych 47, 17. Jan. 2025", PastEventRules.SetupName(lych with {DisplayName = "Lych 47"}, false, German));
+    }
+
+    [Fact]
+    public void Setup_names_fit_the_name_field_in_every_language()
+    {
+        var events = PastEventsFormat.Read(Bundle()).Value!.Events;
+        foreach (var file in Directory.GetFiles(Path.Combine(Root, "Localization"), "*.json"))
+        {
+            var texts = JObject.Parse(File.ReadAllText(file));
+            var months = (string) texts["CustomBossChallenge-DateMonths"]!;
+            var format = (string) texts["CustomBossChallenge-DateFormat"]!;
+            var eliteName = (string) texts["CustomBossChallenge-Elite"]!;
+            foreach (var pastEvent in events)
+            {
+                var name = PastEventRules.SetupName(pastEvent, true, date => PastEventDates.Format(date, format, months), eliteName);
+                Assert.True(NameField.Fits(name), $"{Path.GetFileName(file)}: {name}");
+            }
+        }
     }
 
     [Fact]
@@ -253,10 +277,8 @@ public class PastEventsTests : IDisposable
         foreach (var pastEvent in PastEventsFormat.Read(Bundle()).Value!.Events)
         {
             var name = PastEventRules.SetupName(pastEvent, true);
-            // What the game's name field keeps
-            Assert.All(name, c => Assert.True(char.IsLetterOrDigit(c) || c is ' ' or ',' or '.', $"{name}: '{c}'"));
+            Assert.True(NameField.Fits(name), name);
             Assert.Single(name, ',');
-            Assert.True(name.Length <= ChallengeLimits.MaxNameLength, name);
         }
     }
 

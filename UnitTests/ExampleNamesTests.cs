@@ -1,21 +1,19 @@
 using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
+using CustomBossChallenge.Config;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace CustomBossChallenge.UnitTests;
 
 /// <summary>
-/// An example's name becomes the setup's name, and the Challenge Editor's name field keeps only letters, digits,
-/// spaces and . , ! ' / # ? ~: a name with a hyphen or a full-width comma was changed when it was loaded ("Maraton-Lych"
-/// in Norwegian), so every translation of an example's name may only use those
+/// An example's name becomes the setup's name, and the Challenge Editor's name field keeps only ASCII letters, digits
+/// and some punctuation (<see cref="NameField"/>): a translated name it would change ("Ingen hodeskaller, ingen nåde")
+/// is replaced by the English one, so in every language the setup's name fits the field (#218)
 /// </summary>
 public class ExampleNamesTests
 {
-    private const string Kept = " .,!'/#?~";
-
     private static string LocalizationDir()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
@@ -23,10 +21,19 @@ public class ExampleNamesTests
         return Path.Combine(dir?.FullName ?? throw new DirectoryNotFoundException("Localization not found"), "Localization");
     }
 
-    // Letters and digits, and the marks some scripts write on their letters (Thai vowels and tones)
-    private static bool NameField(char c) =>
-        char.IsLetterOrDigit(c) || Kept.Contains(c) ||
-        char.GetUnicodeCategory(c) is UnicodeCategory.NonSpacingMark or UnicodeCategory.SpacingCombiningMark;
+    private static JObject Texts(string language) =>
+        JObject.Parse(File.ReadAllText(Path.Combine(LocalizationDir(), language + ".json")));
+
+    /// <summary>The examples' name keys, with their English names</summary>
+    private static (string Key, string English)[] Names()
+    {
+        var english = Texts("English");
+        return english.Properties()
+            .Where(p => p.Name.StartsWith("CustomBossChallenge-Example") && !p.Name.EndsWith("Info") &&
+                        p.Name is not ("CustomBossChallenge-ExampleSetups" or "CustomBossChallenge-ExampleLabel"))
+            .Select(p => (p.Name, (string) p.Value!))
+            .ToArray();
+    }
 
     public static TheoryData<string> Languages()
     {
@@ -37,19 +44,26 @@ public class ExampleNamesTests
 
     [Theory]
     [MemberData(nameof(Languages))]
-    public void Example_names_only_use_what_the_name_field_keeps(string language)
+    public void Every_examples_setup_name_fits_the_name_field(string language)
     {
-        var texts = JObject.Parse(File.ReadAllText(Path.Combine(LocalizationDir(), language + ".json")));
-        var names = texts.Properties()
-            .Where(p => p.Name.StartsWith("CustomBossChallenge-Example") && !p.Name.EndsWith("Info") &&
-                        p.Name is not ("CustomBossChallenge-ExampleSetups" or "CustomBossChallenge-ExampleLabel"))
-            .ToList();
+        var texts = Texts(language);
+        var names = Names();
         Assert.NotEmpty(names);
-        foreach (var name in names)
+        foreach (var (key, english) in names)
         {
-            var text = (string) name.Value!;
-            var bad = text.Where(c => !NameField(c)).Distinct().ToArray();
-            Assert.True(bad.Length == 0, $"{language} {name.Name} \"{text}\" has {string.Join(" ", bad)}, which the name field drops");
+            Assert.True(NameField.Fits(english), $"English {key} \"{english}\" doesn't fit the name field");
+            var name = NameField.Translated((string) texts[key]!, english);
+            Assert.True(NameField.Fits(name), $"{language} {key} \"{name}\"");
         }
+    }
+
+    [Fact]
+    public void A_translation_the_field_keeps_stays_and_others_are_English()
+    {
+        var norwegian = Texts("Norwegian");
+        Assert.Equal("Maraton Lych", NameField.Translated((string) norwegian["CustomBossChallenge-ExampleMarathonLych"]!, "Marathon Lych"));
+        Assert.Equal("No Skulls, No Mercy",
+            NameField.Translated((string) norwegian["CustomBossChallenge-ExampleNoSkullsNoMercy"]!, "No Skulls, No Mercy"));
+        Assert.Equal("Boss Gauntlet", NameField.Translated("ด่านบอสต่อเนื่อง", "Boss Gauntlet"));
     }
 }

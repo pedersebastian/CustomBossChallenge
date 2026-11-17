@@ -71,7 +71,8 @@ describe("past events, like the mod", () => {
         const dropped: string[] = [];
         filterChallenge(setup.challenge, data.defaultChallenge, dropped);
         expect(dropped, `${event.id} ${elite}`).toEqual([]);
-        expect(setupName(event, elite)).toMatch(/^[\p{L}\p{Nd} ]+, [\p{L}\p{Nd} .]+$/u);
+        expect(setupName(event, elite)).toMatch(/^[A-Za-z0-9 ]+, [A-Za-z0-9 .]+$/);
+        expect(setupName(event, elite).length).toBeLessThanOrEqual(40);
       }
     }
   });

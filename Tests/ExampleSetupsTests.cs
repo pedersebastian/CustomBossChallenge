@@ -30,7 +30,7 @@ public class ExampleSetupsTest : CustomBossTest
             AssertEquals(BossEditorSection.PlayProblem(dcm, options), null, $"Example {example.EnglishName} can't be played");
             Assert(example.Name != example.NameKey && example.Description != example.DescriptionKey,
                 $"Example {example.EnglishName} is not translated");
-            AssertEquals(dcm.name, example.Name, $"Example {example.EnglishName} is named in the player's language");
+            AssertEquals(dcm.name, example.SetupName, $"Example {example.EnglishName} is named in the player's language");
         }
 
         Assert(ExampleSetups.All.Count(example => example.Options.UsesBossEventRounds) >= 3,
@@ -79,7 +79,7 @@ public class ExampleSetupsTest : CustomBossTest
             Assert(popup.body.text.Contains(example.Description), $"Load popup of {example.EnglishName}: {popup.body.text}");
             yield return ClosePopup(popup, true);
             AssertEquals(BossMode.Options, example.Options, $"Loaded options of {example.EnglishName}");
-            AssertEquals(editor!.dcm.name, example.Name, $"Loaded name of {example.EnglishName}");
+            AssertEquals(editor!.dcm.name, example.SetupName, $"Loaded name of {example.EnglishName}");
 
             // A CHIMPS example shows its CHIMPS round set in the dropdown that replaces the Boss Event Rounds tick (#162)
             var chimps = ExampleSetups.Build(example).Dcm.mode == BossOptions.ChimpsMode;
@@ -104,9 +104,9 @@ public class ExampleSetupsTest : CustomBossTest
         yield return WaitForPopup(p => popup = p);
         yield return ClosePopup(popup, true);
         var last = ExampleSetups.All[^1];
-        AssertEquals(string.Join(", ", BossMode.Saved.All.Select(entry => entry.Name)), last.Name, "Saved setups");
+        AssertEquals(string.Join(", ", BossMode.Saved.All.Select(entry => entry.Name)), last.SetupName, "Saved setups");
         AssertEquals(dropdown.options.Count, 1 + ExampleSetups.All.Count, "The saved setup and the examples");
-        AssertEquals(section.SelectedSetup, last.Name, "The saved setup is picked");
+        AssertEquals(section.SelectedSetup, last.SetupName, "The saved setup is picked");
         Assert(section.DeleteSetup.Button.interactable, "The player's own setup can be deleted");
         Assert(!dropdown.options[0].text.Contains(BossEditorSection.ExampleColor), "The saved setup isn't marked as an example");
 
@@ -117,7 +117,7 @@ public class ExampleSetupsTest : CustomBossTest
             section.LoadSetup.Button.onClick.Invoke();
             yield return WaitForPopup(p => popup = p);
             yield return ClosePopup(popup, true);
-            AssertEquals(editor!.chalName.text, ExampleSetups.All[0].Name, "The example's name is loaded");
+            AssertEquals(editor!.chalName.text, ExampleSetups.All[0].SetupName, "The example's name is loaded");
             if (randomly) editor.Randomize();
             else section.BossButtons[BossType.Vortex].Button.onClick.Invoke();
             if (randomly)

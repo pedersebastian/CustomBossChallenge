@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Setup names in every language** (#218): the Challenge Editor's name field only keeps plain letters (A-Z), digits
+  and some punctuation, so a translated example or Past Events name lost letters as soon as it was loaded
+  ("Ingen hodeskaller, ingen nåde", "Élite", "17. März 2025", and whole names in Chinese, Japanese, Russian or Thai),
+  and the example no longer counted as one. Now a translated name the field would change, or a Past Events name longer
+  than its 40 characters, is written in English, so it stays as it is; names the field keeps, like "Maraton Lych" or
+  "17. jan. 2025", stay translated. The lists still show the translations.
+- The in-game tests no longer need the game in English: the check of the website's game data leaves out the names
+  of maps and towers in another language, and only writes them in English.
+
 ## [2.12.0] - 2026-11-16
 
 ### Added

@@ -144,18 +144,31 @@ public static class PastEventRules
     /// "Lych 47 Elite, 17 Jan 2025", or "Blastapopoulos 20, 10. okt. 2026" in Norwegian: <paramref name="date"/>
     /// writes the date in the player's language (<see cref="PastEventDates"/>, English without it).
     /// <br/>
-    /// The Challenge Editor's name field keeps only letters, digits, spaces and . , ! ' / # ? ~, so the name keeps
-    /// letters and digits, and the date its dots.
+    /// The Challenge Editor's name field only keeps ASCII letters, digits and some punctuation (<see cref="NameField"/>),
+    /// so the name keeps letters and digits, and the date its dots. A translated Elite or date the field would change
+    /// ("Élite", "17. März 2025") is written in English instead (#218), and so is a name that would be longer than the
+    /// field's 40 characters; one still too long is cut there.
     /// </summary>
     public static string SetupName(PastEvent pastEvent, bool elite, Func<DateTime, string>? date = null,
-        string eliteName = "Elite") =>
-        $"{NameText($"{pastEvent.DisplayName}{(elite ? " " + eliteName : "")}", "")}, " +
-        NameText((date ?? PastEventDates.English)(pastEvent.StartDate), ".");
+        string eliteName = "Elite")
+    {
+        var start = pastEvent.StartDate;
+        var english = Name(pastEvent, elite, "Elite", PastEventDates.English(start));
+        if (date == null) return Fit(english);
+        var translated = Name(pastEvent, elite, NameField.Translated(eliteName, "Elite"),
+            NameField.Translated(date(start), PastEventDates.English(start)));
+        return translated.Length <= NameField.MaxLength ? translated : Fit(english);
+    }
 
-    /// <summary>Letters, digits and <paramref name="keep"/>, one space between the words</summary>
+    private static string Name(PastEvent pastEvent, bool elite, string eliteName, string date) =>
+        $"{NameText(pastEvent.DisplayName + (elite ? " " + eliteName : ""), "")}, {NameText(date, ".")}";
+
+    private static string Fit(string name) => name.Length <= NameField.MaxLength ? name : name[..NameField.MaxLength].TrimEnd();
+
+    /// <summary>ASCII letters, digits and <paramref name="keep"/>, one space between the words</summary>
     private static string NameText(string text, string keep)
     {
-        var name = new string(text.Select(c => char.IsLetterOrDigit(c) || keep.Contains(c) ? c : ' ').ToArray());
+        var name = new string(text.Select(c => NameField.IsAsciiLetterOrDigit(c) || keep.Contains(c) ? c : ' ').ToArray());
         return string.Join(" ", name.Split(' ', StringSplitOptions.RemoveEmptyEntries));
     }
 
