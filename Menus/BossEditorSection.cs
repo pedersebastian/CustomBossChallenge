@@ -1956,10 +1956,17 @@ public sealed class BossEditorSection
         (BossType.Blastapopoulos, true) => VanillaSprites.BlastapopoulosPortraitElite,
         (BossType.Diamondback, false) => VanillaSprites.DiamondbackPortrait,
         (BossType.Diamondback, true) => VanillaSprites.DiamondbackPortraitElite,
-        (BossList.Gildebloon, false) => VanillaSprites.GoldenBloonIcon,
-        (BossList.Gildebloon, true) => VanillaSprites.GoldenBloonMagicIcon,
+        (BossList.Gildebloon, false) => GildebloonPortrait("Gildebloon"),
+        (BossList.Gildebloon, true) => GildebloonPortrait("GildebloonElite"),
         _ => MissingSprite(boss, "portrait")
     };
+
+    /// <summary>
+    /// Gildebloon's portrait from Images/, rendered by UnityProject's BuildGildebloon (#25), or the Golden Bloon if it
+    /// is missing
+    /// </summary>
+    internal static string GildebloonPortrait(string name) =>
+        BTD_Mod_Helper.Api.ModContent.GetTextureGUID<CustomBossChallenge>(name) is {Length: > 0} guid ? guid : VanillaSprites.GoldenBloonIcon;
 
     private static readonly HashSet<string> MissingSprites = new();
 

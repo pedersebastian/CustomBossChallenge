@@ -23,3 +23,8 @@
 # Unity needs the manifest to know which packages (URP) the shader project uses
 !/Packages/
 !/Packages/manifest.json
+
+# Gildebloon's look is made by Assets/Editor/BuildGildebloon.cs; only a hand-made model would be kept (#25)
+/Assets/Gildebloon/*
+!/Assets/Gildebloon/Model/
+/Assets/Gildebloon.meta

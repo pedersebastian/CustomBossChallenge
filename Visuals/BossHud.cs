@@ -87,7 +87,7 @@ public static class BossHud
         BossType.Phayze => VanillaSprites.PhayzeBtn,
         BossType.Blastapopoulos => VanillaSprites.BlastapopoulosBtn,
         BossType.Diamondback => VanillaSprites.DiamondbackBtn,
-        BossList.Gildebloon => VanillaSprites.GoldenBloonIcon,
+        BossList.Gildebloon => Menus.BossEditorSection.GildebloonPortrait("Gildebloon"),
         _ => Menus.BossEditorSection.MissingSprite(boss, "HUD icon")
     };
 

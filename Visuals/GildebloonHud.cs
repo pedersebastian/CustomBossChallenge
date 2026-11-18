@@ -71,9 +71,9 @@ public static class GildebloonHud
 
     private static void Build(RectTransform canvas)
     {
-        var height = canvas.rect.height * 0.055f;
+        var height = canvas.rect.height * 0.045f;
         var width = height * 4.2f;
-        panel = ModHelperPanel.Create(new Info(Name, 0, -canvas.rect.height * 0.17f, width, height)
+        panel = ModHelperPanel.Create(new Info(Name, canvas.rect.height * 0.42f, -canvas.rect.height * 0.12f, width, height)
         {
             Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 0.5f)
         }, VanillaSprites.MainBGPanelBlue);

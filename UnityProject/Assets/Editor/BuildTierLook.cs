@@ -47,6 +47,9 @@ public static class BuildTierLook
     public const string PipelinePath = "Assets/Pipeline/URP.asset";
     public const string RendererPath = "Assets/Pipeline/URPRenderer.asset";
 
+    /// <summary>For BuildGildebloon, which needs the same pipeline</summary>
+    public static void UsePipelinePublic() => UsePipeline();
+
     /// <summary>
     /// Makes URP the project's pipeline, like it is in the game
     /// </summary>

@@ -46,3 +46,22 @@ boss name through `BossList.Name`. The game itself only ever sees the string `bo
 - `Patches/MixedBosses.cs` sets the game's boss type to "Gildebloon" before each of its tiers spawns, also when the
   whole setup is Gildebloon; `bossData.bossBloon` gets Bloonarius (`BossList.Host`).
 - `Visuals/GildebloonHud.cs` shows the Vault under the boss panel.
+
+## Its look (M4)
+
+- `UnityProject/Assets/Editor/BuildGildebloon.cs` builds the model in code: a gold hull with plate seams and rivets,
+  a vault door with a dial on top (the game looks down on it), money bags on its sides and a ring of coins; Elite is
+  darker with a red band and a crown of spikes. It writes `Bundles/gildebloon.layout.json`, the textures and the
+  portraits in `Images/`.
+- **No bundle.** In 57.4 the game crashes (natively, nothing logged) on `Il2CppAssetBundle.LoadAssetAsync` for a
+  `GameObject` (with or without a shader in the bundle) and for a `Texture2D`, at the main menu as in a match.
+  Only the TierGlow `Shader` loads. So `Visuals/GildebloonMeshes.cs` makes the same meshes in the game, and the
+  textures are pictures of the mod loaded with `ModContent.GetTexture`.
+- `Visuals/GildebloonLook.cs` hides the Bloonarius body, builds the parts under the boss's display, about as wide as
+  Bloonarius (45 units; the body's own bounds can't be used, its meshes reach across the map), gives them materials
+  made from the body's own material, and moves them: the dial spins, the coins circle, the bags empty with its
+  health, and the door bursts open with a spray of coins at each skull. Without the layout or textures the body is
+  tinted gold instead.
+- A hand-made model later (M6) only has to keep the part names `Hull`, `VaultDoor`, `Dial`, `BagLeft`,
+  `BagRight` and `CoinRing`. Since nothing can come from a bundle, it would have to be exported as meshes the mod
+  can read (for example as vertex data in the layout file) rather than as an FBX in a bundle.

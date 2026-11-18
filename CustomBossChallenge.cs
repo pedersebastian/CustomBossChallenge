@@ -33,6 +33,8 @@ public class CustomBossChallenge : BloonsTD6Mod
         Patches.ConflictReport.LogOnce();
         Visuals.TierLookApplier.Prepare();
         Config.Gildebloon.Register(Il2CppAssets.Scripts.Unity.Game.instance.model);
+        // Loading from a bundle during a match crashes the game; at the main menu it works, like TierGlow's shader
+        if (Config.Experimental.Gildebloon) Visuals.GildebloonLook.Load();
         Persistence.PastEvents.Start();
     }
 
@@ -50,6 +52,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         });
         Guarded("ranked timer", () => Visuals.RankedHud.Update());
         Guarded("Gildebloon vault", Visuals.GildebloonHud.Update);
+        Guarded("Gildebloon look", Visuals.GildebloonLook.Update);
         if (Time.realtimeSinceStartup >= nextPresentationCheck)
         {
             nextPresentationCheck = Time.realtimeSinceStartup + Visuals.BossPresentation.CheckInterval;
