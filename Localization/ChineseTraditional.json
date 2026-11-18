@@ -5,6 +5,7 @@
   "CustomBossChallenge-Boss": "Boss",
   "CustomBossChallenge-Play": "開始",
   "CustomBossChallenge-Elite": "精英",
+  "CustomBossChallenge-EliteBoss": "精英{0}",
   "CustomBossChallenge-BossType": "Boss類型",
   "CustomBossChallenge-BossTypeInfo": "選擇要挑戰的Boss。勾選精英可挑戰強大許多的精英版Boss。按 Ctrl+Z 可復原你對首領選項或挑戰編輯器規則的上一次變更（包括貼上、載入或隨機的設定），按 Ctrl+Y 可重做。按 Delete 可將黃色框中的選項恢復為預設值。",
   "CustomBossChallenge-BossSpeed": "Boss速度",

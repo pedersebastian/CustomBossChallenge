@@ -5,6 +5,7 @@
   "CustomBossChallenge-Boss": "Boss",
   "CustomBossChallenge-Play": "Graj",
   "CustomBossChallenge-Elite": "Elite",
+  "CustomBossChallenge-EliteBoss": "Elitarny {0}",
   "CustomBossChallenge-BossType": "Typ Bossa",
   "CustomBossChallenge-BossTypeInfo": "Wybierz, z którym bossem chcesz walczyć. Zaznacz Elite, aby walczyć z dużo silniejszą wersją Elite tego bossa. Ctrl+Z cofa ostatnią zmianę opcji bossa lub zasad edytora wyzwań, także wklejoną, wczytaną lub losową konfigurację, a Ctrl+Y ją ponawia. Delete przywraca domyślną wartość opcji w żółtej ramce.",
   "CustomBossChallenge-BossSpeed": "Prędkość Bossa",

@@ -20,6 +20,9 @@ public static class Texts
     public static readonly string Play = Key(nameof(Play), "Play");
     public static readonly string Elite = Key(nameof(Elite), "Elite");
 
+    /// <summary>An Elite boss's name: "Elite {0}" in English, "{0} Élite" in French; {0} is the boss</summary>
+    public static readonly string EliteBoss = Key(nameof(EliteBoss), "Elite {0}");
+
     public static readonly string BossType = Key(nameof(BossType), "Boss Type");
     public static readonly string BossTypeInfo = Key(nameof(BossTypeInfo),
         "Choose which boss to fight. Tick Elite to fight the much stronger Elite version of the boss. Ctrl+Z undoes " +

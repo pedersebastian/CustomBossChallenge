@@ -5,6 +5,7 @@
   "CustomBossChallenge-Boss": "บอส",
   "CustomBossChallenge-Play": "เล่น",
   "CustomBossChallenge-Elite": "Elite",
+  "CustomBossChallenge-EliteBoss": "Elite {0}",
   "CustomBossChallenge-BossType": "ชนิดบอส",
   "CustomBossChallenge-BossTypeInfo": "เลือกบอสที่จะต่อสู้ ติ๊ก Elite เพื่อสู้กับบอสเวอร์ชัน Elite ที่แข็งแกร่งกว่ามาก Ctrl+Z จะย้อนการเปลี่ยนแปลงล่าสุดของตัวเลือกบอสหรือกฎของ Challenge Editor รวมถึงการตั้งค่าที่วาง โหลด หรือสุ่มมา และ Ctrl+Y จะทำซ้ำ ปุ่ม Delete จะคืนค่าตัวเลือกในกรอบสีเหลืองเป็นค่าเริ่มต้น",
   "CustomBossChallenge-BossSpeed": "ความเร็วบอส",

@@ -5,6 +5,7 @@
   "CustomBossChallenge-Boss": "Chefe",
   "CustomBossChallenge-Play": "Jogar",
   "CustomBossChallenge-Elite": "Elite",
+  "CustomBossChallenge-EliteBoss": "{0} Elite",
   "CustomBossChallenge-BossType": "Tipo de Chefe",
   "CustomBossChallenge-BossTypeInfo": "Escolha qual chefe enfrentar. Marque Elite para enfrentar a versão Elite, muito mais forte, do chefe. Ctrl+Z desfaz sua última alteração nas opções do chefe ou nas regras do Editor de Desafios, inclusive uma configuração colada, carregada ou aleatória, e Ctrl+Y refaz. Delete volta a opção no quadro amarelo ao padrão.",
   "CustomBossChallenge-BossSpeed": "Velocidade",

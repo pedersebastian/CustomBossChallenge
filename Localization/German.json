@@ -5,6 +5,7 @@
   "CustomBossChallenge-Boss": "Boss",
   "CustomBossChallenge-Play": "Spielen",
   "CustomBossChallenge-Elite": "Elite",
+  "CustomBossChallenge-EliteBoss": "Elite-{0}",
   "CustomBossChallenge-BossType": "Boss-Typ",
   "CustomBossChallenge-BossTypeInfo": "Wähle, gegen welchen Boss du kämpfst. Aktiviere Elite, um gegen die viel stärkere Elite-Version des Bosses zu kämpfen. Strg+Z macht deine letzte Änderung an den Boss-Optionen oder den Challenge-Editor-Regeln rückgängig, auch ein eingefügtes, geladenes oder zufälliges Setup, und Strg+Y stellt sie wieder her. Entf setzt die Option im gelben Rahmen auf den Standard zurück.",
   "CustomBossChallenge-BossSpeed": "Boss-Tempo",
