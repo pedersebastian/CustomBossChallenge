@@ -80,6 +80,7 @@
   "CustomBossChallenge-LoadCodeQuestion": "Load this setup? Your current setup will be replaced.",
   "CustomBossChallenge-CodeInvalid": "The clipboard doesn't contain a Boss Creator code. Copy the whole code, starting with CBC.",
   "CustomBossChallenge-GildebloonOff": "This setup has Gildebloon, a boss made by this mod. Turn on Include Gildebloon in Mod Settings to play it.",
+  "CustomBossChallenge-GildebloonRepossession": "Repossession! Gildebloon took ${0} and stopped {1} towers",
   "CustomBossChallenge-CodeTooNew": "This code comes from a newer version of Custom Boss Challenge. Update the mod to load it.",
   "CustomBossChallenge-PastEvents": "Past Events",
   "CustomBossChallenge-PastEventsInfo": "Play the official boss events again with their own rules: the map, mode, cash, lives, towers and the bloon and boss modifiers, normal or Elite. Browse lists every boss event since 2021; search by name, map or mode, or pick a boss, year or mode. New events are downloaded when the game starts, unless that is turned off in the mod's settings.",

@@ -80,6 +80,7 @@
   "CustomBossChallenge-LoadCodeQuestion": "¿Cargar esta configuración? Tu configuración actual será reemplazada.",
   "CustomBossChallenge-CodeInvalid": "El portapapeles no contiene un código de Boss Creator. Copia el código completo, empezando por CBC.",
   "CustomBossChallenge-GildebloonOff": "Esta configuración tiene a Gildebloon, un jefe creado por este mod. Activa Incluir Gildebloon en Mod Settings para jugarla.",
+  "CustomBossChallenge-GildebloonRepossession": "¡Embargo! Gildebloon se llevó ${0} y detuvo {1} torres",
   "CustomBossChallenge-CodeTooNew": "Este código es de una versión más reciente de Custom Boss Challenge. Actualiza el mod para cargarlo.",
   "CustomBossChallenge-PastEvents": "Eventos pasados",
   "CustomBossChallenge-PastEventsInfo": "Vuelve a jugar los eventos de jefe oficiales con sus propias reglas: mapa, modo, dinero, vidas, torres y los modificadores de bloons y del jefe, normal o Élite. Explorar muestra cada evento de jefe desde 2021; busca por nombre, mapa o modo, o elige un jefe, un año o un modo. Los eventos nuevos se descargan al iniciar el juego, salvo que esté desactivado en los ajustes del mod.",

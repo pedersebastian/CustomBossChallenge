@@ -278,10 +278,32 @@ public class GildebloonBrainTest : GildebloonTest
         CreateTowerAt(bridge, new Vector2(position.X + 10, position.Y + 10), Game.instance.model.GetTowerFromId("BananaFarm"), costOverride: 0);
         yield return WaitFor(() => bridge.Simulation.towerManager.GetTowersByBaseId(GildebloonBrain.FarmBaseId).ToList().Count > 0, "The farm");
         var farm = bridge.Simulation.towerManager.GetTowersByBaseId(GildebloonBrain.FarmBaseId).ToList()[0];
+        var beforeSkull = GildebloonBrain.Stolen;
+        var cashBefore = bridge.GetCash(-1);
         boss.SetHealth((int) (boss.bloonModel.maxHealth * 0.79f));
         yield return WaitFor(() => GildebloonBrain.SeizedCount > 0, "A farm seized", 5);
         Assert(farm.IsAttackingDisabled, "The seized farm makes no money");
         Assert(farm.IsSellingBlocked, "The seized farm can't be sold");
+        Log($"at the skull: vault {beforeSkull} -> {GildebloonBrain.Stolen}, cash {cashBefore} -> {bridge.GetCash(-1)}");
+        Assert(GildebloonBrain.Stolen >= beforeSkull + Math.Min(cashBefore * GildebloonBrain.SkullShare, 150 * GildebloonBrain.SkullCapTimes) - 1,
+            "It seized a share of the cash at the skull");
+        yield return new WaitForSecondsRealtime(0.3f);
+        Assert(Visuals.GildebloonHud.Repossessions > 0, "The Repossession was shown");
+        var banner = AssertNotNull(Visuals.GildebloonHud.Banner, "The Repossession banner shows")!;
+        Assert(banner.Contains("Gildebloon"), $"Banner: {banner}");
+
+        // The Vault lies under the tower menu, like the boss panel (#25)
+        var menu = Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu.TowerSelectionMenu.instance;
+        var farmView = InGame.instance.bridge.GetAllTowers().ToList().First(tower => tower.tower.Pointer == farm.Pointer);
+        menu.SelectTower(farmView);
+        yield return new WaitForSecondsRealtime(1);
+        var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
+        if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, "gildebloon-tower-menu");
+        var panel = AssertNotNull(Visuals.GildebloonHud.Panel, "The Vault")!.transform;
+        var bossUi = UnityEngine.Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.InGame.Races.BossUI>()!.transform;
+        while (bossUi.parent != null && bossUi.parent != panel.parent) bossUi = bossUi.parent;
+        AssertEquals(panel.GetSiblingIndex(), bossUi.GetSiblingIndex() + 1, "The Vault comes right after the boss panel");
+        menu.DeselectTower();
 
         // Payout: beaten, it pays back what it stole, with interest
         var vault = GildebloonBrain.Stolen;
@@ -297,6 +319,17 @@ public class GildebloonBrainTest : GildebloonTest
         Log($"payout {GildebloonBrain.LastPayout} for a vault of at least {vault}, farm released {!farm.IsAttackingDisabled}");
         Assert(GildebloonBrain.LastPayout >= Math.Floor(vault * GildebloonBrain.PayoutFactor), "It paid back what it stole, with interest");
         Assert(!farm.IsAttackingDisabled && !farm.IsSellingBlocked, "The farm is released when it is beaten");
+
+        // The victory screen names Gildebloon and shows its portrait, not Bloonarius's
+        Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen? screen = null;
+        yield return WaitFor(() => (screen = UnityEngine.Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen>()) != null,
+            "The victory screen", 30);
+        yield return new WaitForSecondsRealtime(2);
+        var title = screen!.defeatedBossTxt.text;
+        Log($"victory screen: {title}");
+        Assert(title.Contains("Gildebloon", StringComparison.OrdinalIgnoreCase), $"The victory screen names Gildebloon: {title}");
+        Assert(!title.Contains("Bloonarius", StringComparison.OrdinalIgnoreCase), $"The victory screen doesn't name Bloonarius: {title}");
+        if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, "gildebloon-victory");
         yield return ToMainMenu();
     }
 }
@@ -329,10 +362,55 @@ public class GildebloonLookTest : GildebloonTest
             Assert(renderers > 10, "The model has its parts");
             yield return new WaitForSecondsRealtime(2);
             if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, $"gildebloon-tier{tier}");
+
+            // Hurt, the game swaps the body's parts (Elite's damage states); the Bloonarius body may show for a moment
+            // until the next check, but never longer
+            if (tier == 2)
+            {
+                ExtraTierGameTest.PlaceStrongTower(InGame.instance.GetGameModel().GetTowerFromId("DartMonkey"));
+                var boss = manager.CurrentBoss!;
+                var run = 0;
+                var longest = 0;
+                var start = Time.realtimeSinceStartup;
+                while (!boss.IsDestroyed && boss.health > boss.bloonModel.maxHealth * 0.1f && Time.realtimeSinceStartup - start < 60)
+                {
+                    run = Visuals.GildebloonLook.BodyShows(boss) ? run + 1 : 0;
+                    longest = Math.Max(longest, run);
+                    yield return null;
+                }
+                Log($"tier {tier}: hurt to {boss.health}, body shown again {Visuals.GildebloonLook.BodyShownAgain} times, at most {longest} frames");
+                Assert(longest <= Visuals.GildebloonLook.BodyCheckFrames + 2, $"The Bloonarius body showed for {longest} frames in a row");
+            }
+            if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, $"gildebloon-tier{tier}-hurt");
             manager.CurrentBoss?.Destroy();
             yield return new WaitForSecondsRealtime(1);
         }
 
+        yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// Losing to Gildebloon: the defeat screen names it and shows its portrait, not Bloonarius's (#25)
+/// </summary>
+public class GildebloonDefeatTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        var options = new BossOptions {Boss = BossList.Gildebloon, Elite = true, Tiers = 1, SpawnRounds = "40"};
+        var dcm = WeakBossDcm();
+        dcm.startRules.lives = dcm.startRules.maxLives = 1;
+        dcm.bloonModifiers.bossSpeedMultiplier = 10;
+        dcm.bloonModifiers.healthMultipliers.boss = 1;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+        Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen? found = null;
+        yield return LoseAndOpenDefeatScreen(screen => found = screen);
+        var texts = string.Join(" | ", found!.GetComponentsInChildren<Il2CppTMPro.TMP_Text>(true)
+            .Select(text => text.text).Where(text => !string.IsNullOrWhiteSpace(text)));
+        Log($"defeat screen: {texts}");
+        Assert(!texts.Contains("Bloonarius", StringComparison.OrdinalIgnoreCase), $"The defeat screen doesn't name Bloonarius: {texts}");
+        var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
+        if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, "gildebloon-defeat");
         yield return ToMainMenu();
     }
 }

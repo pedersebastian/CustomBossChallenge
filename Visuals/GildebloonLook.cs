@@ -92,6 +92,37 @@ public static class GildebloonLook
         }
 
         Animate(shown, boss);
+
+        // The game swaps the body's parts as it takes damage (Elite's damage states), turning the Bloonarius body back
+        // on halfway; it is hidden again here
+        if (shown.Look != null && Time.frameCount % BodyCheckFrames == 0) HideBody(shown, graphic.gameObject);
+    }
+
+    /// <summary>How often the body is checked for parts the game turned back on</summary>
+    public const int BodyCheckFrames = 10;
+
+    private static void HideBody(Shown look, GameObject graphic)
+    {
+        var root = look.Look!.transform;
+        foreach (var renderer in graphic.GetComponentsInChildren<Renderer>(true))
+        {
+            if (!renderer.enabled || renderer.transform.IsChildOf(root)) continue;
+            renderer.enabled = false;
+            look.Hidden.Add(renderer);
+            BodyShownAgain++;
+        }
+    }
+
+    /// <summary>How many body parts the game turned back on and were hidden again, for tests</summary>
+    public static int BodyShownAgain { get; private set; }
+
+    /// <summary>Whether a part of the Bloonarius body shows now, for tests</summary>
+    public static bool BodyShows(Il2CppAssets.Scripts.Simulation.Bloons.Bloon boss)
+    {
+        var graphic = boss.GetUnityDisplayNode();
+        if (graphic == null || shown?.Look == null) return false;
+        var root = shown.Look.transform;
+        return graphic.GetComponentsInChildren<Renderer>(true).Any(r => r.enabled && r.gameObject.activeInHierarchy && !r.transform.IsChildOf(root));
     }
 
     private static void Attach(Shown look, GameObject graphic, bool elite)

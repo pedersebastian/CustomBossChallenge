@@ -80,6 +80,7 @@
   "CustomBossChallenge-LoadCodeQuestion": "Charger cette configuration ? Votre configuration actuelle sera remplacée.",
   "CustomBossChallenge-CodeInvalid": "Le presse-papiers ne contient pas de code Boss Creator. Copiez le code en entier, en commençant par CBC.",
   "CustomBossChallenge-GildebloonOff": "Cette configuration contient Gildebloon, un boss créé par ce mod. Active Inclure Gildebloon dans les Mod Settings pour la jouer.",
+  "CustomBossChallenge-GildebloonRepossession": "Saisie ! Gildebloon a pris {0} $ et arrêté {1} tours",
   "CustomBossChallenge-CodeTooNew": "Ce code provient d'une version plus récente de Custom Boss Challenge. Mettez le mod à jour pour le charger.",
   "CustomBossChallenge-PastEvents": "Événements passés",
   "CustomBossChallenge-PastEventsInfo": "Rejouez les événements de boss officiels avec leurs propres règles : carte, mode, argent, vies, tours et modificateurs de bloons et du boss, normal ou Élite. Parcourir liste chaque événement de boss depuis 2021 ; cherchez par nom, carte ou mode, ou choisissez un boss, une année ou un mode. Les nouveaux événements sont téléchargés au lancement du jeu, sauf si c'est désactivé dans les paramètres du mod.",

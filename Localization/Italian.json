@@ -80,6 +80,7 @@
   "CustomBossChallenge-LoadCodeQuestion": "Caricare questa configurazione? La configurazione attuale verrà sostituita.",
   "CustomBossChallenge-CodeInvalid": "Gli appunti non contengono un codice di Boss Creator. Copia l'intero codice, che inizia con CBC.",
   "CustomBossChallenge-GildebloonOff": "Questa configurazione ha Gildebloon, un boss creato da questa mod. Attiva Includi Gildebloon nelle Mod Settings per giocarla.",
+  "CustomBossChallenge-GildebloonRepossession": "Pignoramento! Gildebloon ha preso ${0} e fermato {1} torri",
   "CustomBossChallenge-CodeTooNew": "Questo codice proviene da una versione più recente di Custom Boss Challenge. Aggiorna la mod per caricarlo.",
   "CustomBossChallenge-PastEvents": "Eventi passati",
   "CustomBossChallenge-PastEventsInfo": "Rigioca gli eventi boss ufficiali con le loro regole: mappa, modalità, soldi, vite, torri e i modificatori di bloon e boss, normale o Elite. Sfoglia elenca ogni evento boss dal 2021; cerca per nome, mappa o modalità, oppure scegli un boss, un anno o una modalità. I nuovi eventi vengono scaricati all'avvio del gioco, a meno che non sia disattivato nelle impostazioni della mod.",

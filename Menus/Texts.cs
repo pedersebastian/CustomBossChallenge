@@ -207,6 +207,8 @@ public static class Texts
         "The clipboard doesn't contain a Boss Creator code. Copy the whole code, starting with CBC.");
     public static readonly string GildebloonOff = Key(nameof(GildebloonOff),
         "This setup has Gildebloon, a boss made by this mod. Turn on Include Gildebloon in Mod Settings to play it.");
+    public static readonly string GildebloonRepossession = Key(nameof(GildebloonRepossession),
+        "Repossession! Gildebloon took ${0} and stopped {1} towers");
     public static readonly string CodeTooNew = Key(nameof(CodeTooNew),
         "This code comes from a newer version of Custom Boss Challenge. Update the mod to load it.");
 

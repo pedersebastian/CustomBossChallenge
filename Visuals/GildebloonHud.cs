@@ -2,6 +2,7 @@ using System;
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
 using CustomBossChallenge.Config;
+using CustomBossChallenge.Menus;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame.Races;
 using Il2CppTMPro;
 using UnityEngine;
@@ -38,6 +39,7 @@ public static class GildebloonHud
         {
             subscribed = true;
             GildebloonBrain.CashTaken += OnCashTaken;
+            GildebloonBrain.Repossessed += OnRepossessed;
         }
 
         if (!GildebloonBrain.Active)
@@ -50,7 +52,7 @@ public static class GildebloonHud
         {
             var ui = Object.FindObjectOfType<BossUI>();
             if (ui == null) return;
-            Build(ui.GetComponentInParent<Canvas>().rootCanvas.GetComponent<RectTransform>());
+            Build(ui);
         }
 
         Panel!.gameObject.SetActive(true);
@@ -59,7 +61,34 @@ public static class GildebloonHud
         var age = Time.unscaledTime - changeStart;
         change!.gameObject.SetActive(age < ChangeSeconds);
         if (age < ChangeSeconds) change.Text.alpha = Math.Min(1, (ChangeSeconds - age) / 0.6f);
+
+        var shown = Time.unscaledTime - bannerStart;
+        banner!.gameObject.SetActive(shown < BannerSeconds);
+        if (shown < BannerSeconds)
+        {
+            banner.Text.alpha = Math.Min(1, (BannerSeconds - shown) / 0.5f);
+            banner.transform.localScale = Vector3.one * (1 + 0.15f * Math.Max(0, 1 - shown * 4));
+        }
     }
+
+    /// <summary>The Repossession at a skull, shown big in the middle of the screen for a moment</summary>
+    private static void OnRepossessed(double cash, int towers)
+    {
+        if (Panel == null || banner == null) return;
+        banner.SetText(Menus.Texts.GildebloonRepossession.T($"{cash:N0}", towers));
+        bannerStart = Time.unscaledTime;
+        Repossessions++;
+    }
+
+    /// <summary>How many Repossessions the HUD showed, for tests</summary>
+    public static int Repossessions { get; private set; }
+
+    /// <summary>The Repossession banner while it shows, for tests</summary>
+    public static string? Banner => banner != null && banner.gameObject.activeSelf ? banner.Text.text : null;
+
+    private const float BannerSeconds = 2.5f;
+    private static ModHelperText? banner;
+    private static float bannerStart = -100;
 
     private static void OnCashTaken(double cash)
     {
@@ -69,8 +98,9 @@ public static class GildebloonHud
         changeStart = Time.unscaledTime;
     }
 
-    private static void Build(RectTransform canvas)
+    private static void Build(BossUI ui)
     {
+        var canvas = ui.GetComponentInParent<Canvas>().rootCanvas.GetComponent<RectTransform>();
         var height = canvas.rect.height * 0.045f;
         var width = height * 4.2f;
         panel = ModHelperPanel.Create(new Info(Name, canvas.rect.height * 0.42f, -canvas.rect.height * 0.12f, width, height)
@@ -78,6 +108,12 @@ public static class GildebloonHud
             Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 0.5f)
         }, VanillaSprites.MainBGPanelBlue);
         panel.transform.SetParent(canvas, false);
+
+        // Right after the boss panel among the canvas's children, so the tower menus and popups drawn after it cover
+        // the Vault like they cover the boss panel, instead of the Vault lying on top of them
+        var above = ui.transform;
+        while (above.parent != null && above.parent != canvas.transform) above = above.parent;
+        if (above.parent == canvas.transform) panel.transform.SetSiblingIndex(above.GetSiblingIndex() + 1);
         var group = panel.gameObject.AddComponent<CanvasGroup>();
         group.blocksRaycasts = false;
         group.interactable = false;
@@ -89,5 +125,15 @@ public static class GildebloonHud
         change = panel.AddText(new Info("Change", width * 0.5f + height * 1.2f, 0, height * 2.6f, height * 0.8f), "", height * 0.45f);
         change.Text.textWrappingMode = TextWrappingModes.NoWrap;
         change.gameObject.SetActive(false);
+
+        // The Repossession banner, under the boss panel's middle, in gold
+        banner = ModHelperText.Create(new Info("Repossession", -canvas.rect.height * 0.42f, -canvas.rect.height * 0.1f,
+            canvas.rect.height * 1.4f, height * 1.4f), "", height * 0.75f);
+        banner.transform.SetParent(panel.transform, false);
+        banner.Text.color = new Color(1f, 0.82f, 0.25f);
+        banner.Text.textWrappingMode = TextWrappingModes.NoWrap;
+        banner.Text.outlineWidth = 0.25f;
+        banner.Text.outlineColor = new Color32(70, 40, 0, 255);
+        banner.gameObject.SetActive(false);
     }
 }

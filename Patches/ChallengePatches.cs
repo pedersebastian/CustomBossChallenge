@@ -111,6 +111,7 @@ internal static class BossDefeatScreen_Open
             : Texts.OutOfTimeTier.T(tier, between);
 
         ShowRetries(__instance, rounds, lostRound);
+        Visuals.GildebloonScreens.Defeat(__instance);
     }
 
     /// <summary>

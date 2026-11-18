@@ -80,6 +80,7 @@
   "CustomBossChallenge-LoadCodeQuestion": "Indlæs denne opsætning? Din nuværende opsætning bliver erstattet.",
   "CustomBossChallenge-CodeInvalid": "Udklipsholderen indeholder ikke en kode fra Boss-skaberen. Kopiér hele koden, der starter med CBC.",
   "CustomBossChallenge-GildebloonOff": "Denne opsætning har Gildebloon, en boss lavet af dette mod. Slå Medtag Gildebloon til i Mod Settings for at spille den.",
+  "CustomBossChallenge-GildebloonRepossession": "Udpantning! Gildebloon tog ${0} og stoppede {1} tårne",
   "CustomBossChallenge-CodeTooNew": "Denne kode kommer fra en nyere version af Custom Boss Challenge. Opdater modden for at indlæse den.",
   "CustomBossChallenge-PastEvents": "Tidligere events",
   "CustomBossChallenge-PastEventsInfo": "Spil de officielle boss-events igen med deres egne regler: bane, tilstand, penge, liv, tårne og bloon- og boss-modifikatorer, normal eller Elite. Gennemse viser alle boss-events siden 2021; søg på navn, bane eller tilstand, eller vælg en boss, et år eller en tilstand. Nye events hentes, når spillet starter, medmindre det er slået fra i moddens indstillinger.",

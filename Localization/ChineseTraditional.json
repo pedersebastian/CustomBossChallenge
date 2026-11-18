@@ -80,6 +80,7 @@
   "CustomBossChallenge-LoadCodeQuestion": "載入此設定？你目前的設定將被取代。",
   "CustomBossChallenge-CodeInvalid": "剪貼簿中沒有 Boss Creator 代碼。請複製以 CBC 開頭的完整代碼。",
   "CustomBossChallenge-GildebloonOff": "此設定包含 Gildebloon，這是本模組製作的首領。請在 Mod Settings 中開啟「包含 Gildebloon」後再遊玩。",
+  "CustomBossChallenge-GildebloonRepossession": "查封！Gildebloon 拿走了 ${0}，並讓 {1} 座防禦塔停止攻擊",
   "CustomBossChallenge-CodeTooNew": "此代碼來自較新版本的 Custom Boss Challenge。請更新模組後再載入。",
   "CustomBossChallenge-PastEvents": "過往活動",
   "CustomBossChallenge-PastEventsInfo": "依照官方首領活動自己的規則再玩一次：地圖、模式、金錢、生命、塔以及氣球和首領的修正，普通或菁英。「瀏覽活動」列出自 2021 年以來的每個首領活動；可依名稱、地圖或模式搜尋，也可選擇首領、年份或模式。遊戲啟動時會下載新活動，除非在模組設定中關閉了此功能。",

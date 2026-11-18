@@ -80,6 +80,7 @@
   "CustomBossChallenge-LoadCodeQuestion": "Laste inn dette oppsettet? Det nåværende oppsettet ditt blir erstattet.",
   "CustomBossChallenge-CodeInvalid": "Utklippstavlen inneholder ikke en kode fra Boss-skaperen. Kopier hele koden, som starter med CBC.",
   "CustomBossChallenge-GildebloonOff": "Dette oppsettet har Gildebloon, en boss laget av denne modden. Slå på Ta med Gildebloon i Mod Settings for å spille det.",
+  "CustomBossChallenge-GildebloonRepossession": "Utpanting! Gildebloon tok ${0} og stanset {1} tårn",
   "CustomBossChallenge-CodeTooNew": "Denne koden er fra en nyere versjon av Custom Boss Challenge. Oppdater modden for å laste den inn.",
   "CustomBossChallenge-PastEvents": "Tidligere eventer",
   "CustomBossChallenge-PastEventsInfo": "Spill de offisielle boss-eventene igjen med deres egne regler: kart, modus, penger, liv, tårn og bloon- og boss-modifikatorer, normal eller Elite. Bla gjennom viser alle boss-eventer siden 2021; søk på navn, kart eller modus, eller velg en boss, et år eller en modus. Nye eventer lastes ned når spillet starter, med mindre det er slått av i moddens innstillinger.",

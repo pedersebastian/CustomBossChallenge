@@ -13,5 +13,9 @@ namespace CustomBossChallenge.Patches;
 internal static class BossVictoryScreen_Open
 {
     [HarmonyPostfix]
-    private static void Postfix(BossVictoryScreen __instance) => RankedHud.ShowSummary(__instance);
+    private static void Postfix(BossVictoryScreen __instance)
+    {
+        RankedHud.ShowSummary(__instance);
+        GildebloonScreens.Victory(__instance);
+    }
 }

@@ -16,7 +16,8 @@ namespace CustomBossChallenge.Config;
 /// <item><b>Toll</b>: every few seconds it steals a share of the player's cash, up to a cap per tier.</item>
 /// <item><b>Vault</b>: what it stole becomes a gold shield (armour) on top of its health.</item>
 /// <item><b>Interest</b> (Elite): the Vault grows while nothing hits it.</item>
-/// <item><b>Repossession</b>: at each skull the Banana Farms near it stop making money for a while and can't be sold.</item>
+/// <item><b>Repossession</b>: at each skull it seizes a bigger share of the cash, the towers near it stop attacking
+/// for a moment, and the Banana Farms near it stop making money for a while and can't be sold.</item>
 /// <item><b>Tax Collectors</b> that leak steal cash instead of lives.</item>
 /// <item><b>Payout</b>: when it is beaten the player gets what it stole back, with interest outside CHIMPS.</item>
 /// </list>
@@ -57,6 +58,14 @@ public static class GildebloonBrain
 
     public const int SeizeSeconds = 12;
 
+    /// <summary>How long the other towers near it stop attacking at a skull</summary>
+    public const int FreezeSeconds = 3;
+
+    /// <summary>At a skull it takes this share of the cash, up to <see cref="SkullCapTimes"/> times the Toll's cap</summary>
+    public const double SkullShare = 0.1;
+
+    public const int SkullCapTimes = 3;
+
     public const string VaultArmour = "GildeVault";
 
     public const string FarmBaseId = "BananaFarm";
@@ -80,7 +89,7 @@ public static class GildebloonBrain
 
     private static Vault? vault;
 
-    private static readonly List<(Tower Tower, long Until)> Seized = new();
+    private static readonly List<(Tower Tower, long Until, bool Farm)> Seized = new();
 
     /// <summary>What the Gildebloon alive has stolen and not paid back yet, or 0</summary>
     public static double Stolen => vault?.Stolen ?? 0;
@@ -95,7 +104,15 @@ public static class GildebloonBrain
     public static double TotalStolen { get; private set; }
 
     /// <summary>How many Banana Farms are seized now</summary>
-    public static int SeizedCount => Seized.Count;
+    public static int SeizedCount => Seized.Count(entry => entry.Farm);
+
+    /// <summary>How many other towers can't attack now, after a skull</summary>
+    public static int FrozenCount => Seized.Count(entry => !entry.Farm);
+
+    /// <summary>
+    /// A Gildebloon reached a skull: what it seized, and how many towers it stopped (farms included); the HUD shows it
+    /// </summary>
+    public static event Action<double, int>? Repossessed;
 
     /// <summary>A Gildebloon took cash, or paid it back (a negative amount); the HUD shows it</summary>
     public static event Action<double>? CashTaken;
@@ -103,7 +120,7 @@ public static class GildebloonBrain
     /// <summary>Forgets the last match; a new or restarted match starts here</summary>
     public static void Reset()
     {
-        foreach (var (tower, _) in Seized) Release(tower);
+        foreach (var (tower, _, _) in Seized) Release(tower);
         Seized.Clear();
         vault = null;
         LastPayout = 0;
@@ -160,7 +177,11 @@ public static class GildebloonBrain
         if (skulls > current.Skulls)
         {
             current.Skulls = skulls;
-            Repossess(sim, boss, frame);
+            var cap = TollCap[Math.Clamp(current.Tier, 1, TollCap.Length) - 1] * (current.Elite ? 2 : 1) * SkullCapTimes;
+            var before = current.Stolen;
+            Steal(sim, boss, current, Math.Min(Cash(sim) * SkullShare, cap));
+            var towers = Repossess(sim, boss, frame);
+            Repossessed?.Invoke(current.Stolen - before, towers);
         }
     }
 
@@ -187,7 +208,7 @@ public static class GildebloonBrain
     {
         var gone = vault!;
         vault = null;
-        foreach (var (tower, _) in Seized) Release(tower);
+        foreach (var (tower, _, _) in Seized) Release(tower);
         Seized.Clear();
         if (CustomBossState.HighestDefeatedTier < gone.Tier || gone.Stolen <= 0) return;
 
@@ -285,25 +306,30 @@ public static class GildebloonBrain
         return skulls.Count(skull => share <= skull);
     }
 
-    private static void Repossess(Simulation sim, Bloon boss, long frame)
+    /// <summary>Seizes the towers near the boss</summary>
+    /// <returns>How many towers it stopped</returns>
+    private static int Repossess(Simulation sim, Bloon boss, long frame)
     {
         var position = boss.Position;
-        var count = 0;
-        var farms = BTD_Mod_Helper.Extensions.Il2CppGenericIEnumerableExt.ToList(sim.towerManager.GetTowersByBaseId(FarmBaseId));
-        foreach (var tower in farms)
+        var farms = 0;
+        var others = 0;
+        foreach (var tower in BTD_Mod_Helper.Extensions.Il2CppGenericIEnumerableExt.ToList(sim.towerManager.GetTowers()))
         {
-            if (tower == null || Seized.Any(entry => entry.Tower.Pointer == tower.Pointer)) continue;
+            if (tower == null || tower.IsDestroyed || Seized.Any(entry => entry.Tower.Pointer == tower.Pointer)) continue;
             var dx = tower.Position.X - position.X;
             var dy = tower.Position.Y - position.Y;
             if (dx * dx + dy * dy > SeizeRadius * SeizeRadius) continue;
 
+            var farm = tower.towerModel?.baseId == FarmBaseId;
             tower.SetAttackingDisabled(true);
-            tower.SetSellingBlocked(true);
-            Seized.Add((tower, frame + SeizeSeconds * FramesPerSecond));
-            count++;
+            if (farm) tower.SetSellingBlocked(true);
+            Seized.Add((tower, frame + (farm ? SeizeSeconds : FreezeSeconds) * FramesPerSecond, farm));
+            if (farm) farms++;
+            else others++;
         }
 
-        ModHelper.Msg<CustomBossChallenge>($"{boss.bloonModel.id} reached a skull: {count} Banana Farms seized");
+        ModHelper.Msg<CustomBossChallenge>($"{boss.bloonModel.id} reached a skull: {farms} Banana Farms seized, {others} towers stopped");
+        return farms + others;
     }
 
     private static void ReleaseSeized(long frame)

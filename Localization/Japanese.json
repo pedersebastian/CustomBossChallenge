@@ -80,6 +80,7 @@
   "CustomBossChallenge-LoadCodeQuestion": "この設定を読み込みますか？現在の設定は置き換えられます。",
   "CustomBossChallenge-CodeInvalid": "クリップボードに Boss Creator のコードがありません。CBC から始まるコード全体をコピーしてください。",
   "CustomBossChallenge-GildebloonOff": "このセットアップには、このModで作られたボス Gildebloon が含まれています。プレイするには Mod Settings で「Gildebloon を含める」をオンにしてください。",
+  "CustomBossChallenge-GildebloonRepossession": "差し押さえ！Gildebloon が ${0} を奪い、タワー {1} 基を止めました",
   "CustomBossChallenge-CodeTooNew": "このコードは Custom Boss Challenge の新しいバージョンのものです。読み込むには MOD を更新してください。",
   "CustomBossChallenge-PastEvents": "過去のイベント",
   "CustomBossChallenge-PastEventsInfo": "公式のボスイベントを、そのイベント自身のルールでもう一度プレイできます：マップ、モード、所持金、ライフ、タワー、ブルーンとボスの補正、ノーマルまたはエリート。「イベントを見る」で2021年以降のすべてのボスイベントを一覧表示します。名前・マップ・モードで検索するか、ボス・年・モードで絞り込めます。新しいイベントはゲーム起動時にダウンロードされます（MOD設定でオフにできます）。",

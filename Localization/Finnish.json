@@ -80,6 +80,7 @@
   "CustomBossChallenge-LoadCodeQuestion": "Ladataanko tämä asetelma? Nykyinen asetelmasi korvataan.",
   "CustomBossChallenge-CodeInvalid": "Leikepöydällä ei ole Boss Creator -koodia. Kopioi koko koodi, joka alkaa CBC.",
   "CustomBossChallenge-GildebloonOff": "Tässä asetelmassa on Gildebloon, tämän modin tekemä pomo. Ota Sisällytä Gildebloon käyttöön Mod Settingsissä pelataksesi sitä.",
+  "CustomBossChallenge-GildebloonRepossession": "Ulosotto! Gildebloon vei ${0} ja pysäytti {1} tornia",
   "CustomBossChallenge-CodeTooNew": "Tämä koodi on Custom Boss Challengen uudemmasta versiosta. Päivitä modi ladataksesi sen.",
   "CustomBossChallenge-PastEvents": "Menneet tapahtumat",
   "CustomBossChallenge-PastEventsInfo": "Pelaa virallisia pomotapahtumia uudelleen niiden omilla säännöillä: kartta, tila, rahat, elämät, tornit sekä bloon- ja pomomuuttujat, normaali tai Elite. Selaa näyttää kaikki pomotapahtumat vuodesta 2021; hae nimellä, kartalla tai tilalla tai valitse pomo, vuosi tai tila. Uudet tapahtumat ladataan pelin käynnistyessä, ellei sitä ole kytketty pois modin asetuksista.",
