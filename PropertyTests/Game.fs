@@ -21,7 +21,9 @@ let private keys (name: string) = (game[name] :?> JObject).Properties() |> Seq.m
 let defaultOptions () = game["defaultOptions"].DeepClone() :?> JObject
 let defaultChallenge () = game["defaultChallenge"].DeepClone() :?> JObject
 
-let bosses = keys "bosses"
+/// The game's bosses; game.json also has the mod's own Gildebloon (#25) for the website's preview, which the Boss
+/// Creator only offers when it is switched on
+let bosses = keys "bosses" |> Array.filter (fun boss -> boss <> "Gildebloon")
 let maps = keys "maps"
 let modes = keys "modes"
 let difficulties = keys "difficulties"

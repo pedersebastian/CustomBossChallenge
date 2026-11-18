@@ -21,7 +21,9 @@ public class BossTypeTests
         if (folder == null) throw new FileNotFoundException("web/src/data/game.json not found above " + AppContext.BaseDirectory);
 
         var game = JObject.Parse(File.ReadAllText(Path.Combine(folder.FullName, "web", "src", "data", "game.json")));
-        var bosses = ((JObject) game["bosses"]!).Properties().Select(property => property.Name);
+        // game.json also has the mod's own Gildebloon (#25), which isn't one of the game's
+        var bosses = ((JObject) game["bosses"]!).Properties().Select(property => property.Name)
+            .Where(name => name != CustomBossChallenge.Config.BossList.GildebloonName);
         Assert.Equal(bosses, Enum.GetNames<BossType>());
     }
 }
