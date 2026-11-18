@@ -171,6 +171,8 @@ Dreadbloon on tier 1 their extra rounds come along.
 
 ![The line-up of bosses](docs/boss-lineup.jpg)
 
+![An Advanced Mode line-up in the Rules panel, two Random tiers still a secret](docs/rules-panel-advanced.jpg)
+
 ## Saved setups
 
 The **Saved Setups** row keeps your favourite setups in the game, so you can switch between them without share codes:
