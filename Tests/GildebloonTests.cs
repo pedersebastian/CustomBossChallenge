@@ -559,3 +559,52 @@ public class GildebloonNoBloonariusTest : GildebloonTest
         Assert(showing.Count == 0, $"Bloonarius shows {when}: {string.Join(", ", showing.Take(5))}");
     }
 }
+
+/// <summary>
+/// Gildebloon's own rounds, Gold Rush (#25): with Boss Event Rounds a Gildebloon match plays all 140 of them, as the
+/// mod brings them, and freeplay after; without, the default rounds; in CHIMPS the CHIMPS events' rounds, unless the
+/// setup picks the boss's own. In Advanced Mode a Gildebloon tier gets its own boss round.
+/// </summary>
+public class GildebloonRoundsTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        var defaults = Il2CppAssets.Scripts.Data.GameData.Instance.RoundSetByName("DefaultRoundSet").rounds;
+        var gold = ChimpsRoundSet.Rounds(BossOptions.GildebloonRoundSet);
+        string Mine(ChimpsRoundSet.Round round) => string.Join(" ", round.Groups.Select(g => $"{g.Count}x{g.Bloon}@{g.Start * 60f:0}"));
+        string Game(Il2CppAssets.Scripts.Models.Rounds.RoundModel round) => string.Join(" ", round.groups.Select(g => $"{g.count}x{g.bloon}@{g.start:0}"));
+        Il2CppAssets.Scripts.Models.Rounds.RoundModel[] Match() => InGame.instance.GetGameModel().roundSet.rounds.ToArray();
+
+        var on = new BossOptions {Boss = BossList.Gildebloon, Tiers = 1, SpawnRounds = "40", BossEventRounds = true};
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(BaseDcm(), on));
+        var rounds = Match();
+        AssertEquals(rounds.Length, defaults.Length, "As many rounds as the default, freeplay after them");
+        foreach (var number in new[] {11, 39, 63, 79, 119, 139})
+        {
+            AssertEquals(Game(rounds[number - 1]), Mine(gold[number - 1]), $"Round {number} is Gold Rush's");
+        }
+        Log($"round 39: {Game(rounds[38])}");
+        yield return ToMainMenu();
+
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(BaseDcm(), on with {BossEventRounds = false}));
+        AssertEquals(Game(Match()[38]), Game(defaults[38]), "Without Boss Event Rounds the default round 39");
+        yield return ToMainMenu();
+
+        var chimps = BaseDcm();
+        chimps.mode = BossOptions.ChimpsMode;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(chimps, on));
+        AssertEquals(Game(Match()[38]), Mine(ChimpsRoundSet.Rounds(BossOptions.ChimpsBossRoundSet)[38]), "CHIMPS plays the CHIMPS events' rounds");
+        yield return ToMainMenu();
+        chimps = BaseDcm();
+        chimps.mode = BossOptions.ChimpsMode;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(chimps, on with {ChimpsRounds = ChimpsRounds.Own}));
+        AssertEquals(Game(Match()[38]), Mine(gold[38]), "CHIMPS with the boss's own rounds plays Gold Rush");
+        yield return ToMainMenu();
+
+        // Advanced Mode: Lych's rounds, and Gildebloon's own boss round for its tier
+        var mixed = new BossOptions {Tiers = 2, SpawnRounds = "40,60", TierBosses = "Lych,Gildebloon", BossEventRounds = true};
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(BaseDcm(), mixed));
+        AssertEquals(Game(Match()[59]), Mine(gold[59]), "Gildebloon's tier has its own boss round");
+        yield return ToMainMenu();
+    }
+}

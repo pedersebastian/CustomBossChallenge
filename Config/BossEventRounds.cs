@@ -13,7 +13,8 @@ namespace CustomBossChallenge.Config;
 /// Boss Event Rounds in the match (#80). <see cref="ConfigApplier.Prepare"/> has the game merge the first tier's boss's
 /// round set over the default rounds; here its boss rounds move to the tiers' Spawn Rounds
 /// (<see cref="BossRoundsMath"/>), and in Advanced Mode every tier with another boss gets that boss's own round (#84).
-/// In CHIMPS the match plays the CHIMPS boss events' own rounds instead, the same for every boss (#139).
+/// In CHIMPS the match plays the CHIMPS boss events' own rounds instead, the same for every boss (#139). Gildebloon's
+/// own rounds (#25) the mod brings like the CHIMPS ones.
 /// </summary>
 public static class BossEventRounds
 {
@@ -31,11 +32,11 @@ public static class BossEventRounds
 
         var name = options.BaseEventRoundSetIn(mode);
         var rounds = set.rounds;
-        var chimps = false;
-        if (BossOptions.IsChimpsEventRoundSet(name))
+        var own = false;
+        if (BossOptions.IsModRoundSet(name))
         {
             rounds = ChimpsRounds(rounds, name);
-            chimps = true;
+            own = true;
         }
         else if (GameData.Instance.MergeableRoundSetByName(name) == null)
         {
@@ -45,7 +46,7 @@ public static class BossEventRounds
 
         var sources = BossRoundsMath.Sources(options.EffectiveSpawnRounds, rounds.Length);
         var reordered = sources.Select(source => rounds[source - 1]).ToArray();
-        var own = new List<string>();
+        var tiers = new List<string>();
         // Each tier's own boss round goes over the match's own rounds as the game has them, before the first tier's
         // boss rounds were merged in: AlternateBloonsRounds' for that mode, the default ones otherwise (#112)
         var defaults = (GameData.Instance.RoundSetByName(set.name) ?? GameData.Instance.RoundSetByName("DefaultRoundSet"))?.rounds;
@@ -59,11 +60,11 @@ public static class BossEventRounds
                 var replaced = RoundOf(tierSet, eventRound, defaults[eventRound - 1]);
                 if (replaced == null) continue;
                 reordered[round - 1] = replaced;
-                own.Add($"tier {tier} {tierSet}");
+                tiers.Add($"tier {tier} {tierSet}");
             }
         }
 
-        if (!chimps && BossRoundsMath.IsIdentity(sources) && own.Count == 0) return name;
+        if (!own && BossRoundsMath.IsIdentity(sources) && tiers.Count == 0) return name;
 
         var moved = set.Clone().Cast<RoundSetModel>();
         moved.rounds = new Il2CppReferenceArray<RoundModel>(reordered);
@@ -73,11 +74,12 @@ public static class BossEventRounds
         {
             log += $", moved to {TierMath.FormatRounds(options.EffectiveSpawnRounds.Take(TierMath.VanillaTiers).ToArray())}";
         }
-        return own.Count == 0 ? log : $"{log}, {string.Join(", ", own)}";
+        return tiers.Count == 0 ? log : $"{log}, {string.Join(", ", tiers)}";
     }
 
     /// <summary>
-    /// <paramref name="rounds"/> with the rounds of the CHIMPS boss events' set <paramref name="name"/> in place of their own. The game's own copy wins if
+    /// <paramref name="rounds"/> with the rounds of the mod's own set <paramref name="name"/> (a CHIMPS boss events' set
+    /// or Gildebloon's) in place of their own. The game's own copy wins if
     /// it ever has one, merged like the boss sets; otherwise the mod's (<see cref="ChimpsRoundSet"/>). Only the rounds
     /// the match has are replaced, so it keeps its length and freeplay starts on the same round as without them.
     /// </summary>
@@ -109,6 +111,15 @@ public static class BossEventRounds
     public static RoundModel? RoundOf(string setName, int roundNumber, RoundModel normal)
     {
         var set = GameData.Instance.MergeableRoundSetByName(setName);
+        if (set == null && BossOptions.IsModRoundSet(setName))
+        {
+            var mine = ChimpsRoundSet.Rounds(setName).FirstOrDefault(round => round.Number == roundNumber);
+            if (mine == null) return normal;
+            var made = mine.Groups.Select(group =>
+                new BloonGroupModel("", group.Bloon, group.Start * FramesPerSecond, group.End * FramesPerSecond, group.Count));
+            if (mine.AddToRound) made = normal.groups.Concat(made);
+            return new RoundModel("", new Il2CppReferenceArray<BloonGroupModel>(made.ToArray()));
+        }
         if (set == null)
         {
             ModHelper.Warning<CustomBossChallenge>($"The game has no round set '{setName}', keeping round {roundNumber}");

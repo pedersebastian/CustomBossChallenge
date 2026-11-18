@@ -6,9 +6,10 @@ using Newtonsoft.Json;
 namespace CustomBossChallenge.Config;
 
 /// <summary>
-/// The rounds of the CHIMPS boss events (#139), <see cref="BossOptions.ChimpsEventRoundSet"/>. NK sends these sets
-/// with the events, so the game itself doesn't have them; the mod brings copies in RoundSets/, in the game's own
-/// format:
+/// The round sets the mod brings itself, in RoundSets/, in the game's own format: Gildebloon's Gold Rush rounds (#25,
+/// gildebloon.json, made by tools/make-gildebloon-rounds.py) and the rounds of the CHIMPS boss events (#139),
+/// <see cref="BossOptions.ChimpsEventRoundSet"/>. NK sends the CHIMPS sets with the events, so the game itself doesn't
+/// have them; the mod's copies are:
 /// <list type="bullet">
 /// <item>chimpsbloonarius.json from Blooncyclopedia's dump of the set (JSON:Bloons_TD_6/Rounds/chimpsbloonarius)</item>
 /// <item>chimpsboss.json from BTD6 API Explorer's dump (github.com/HalfHydra/BTD6-API-Explorer,

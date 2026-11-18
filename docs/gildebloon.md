@@ -101,3 +101,17 @@ seized tower shows its time left in the middle of the screen. The Vault makes wa
 Things drawn on the map with a material made from the map's own are drawn before the towers and bloons (render queue
 1998), so they would be hidden under them; the padlocks and the ring use copies drawn last (3500). The game's camera is
 orthographic and looks down at 60 degrees; towers stand at y = 0, bosses fly at y = 180.
+
+## Gold Rush, its own rounds
+
+With Boss Event Rounds on, a Gildebloon match plays Gildebloon's own 140 rounds, `Config/RoundSets/gildebloon.json`
+(`BossOptions.GildebloonRoundSet`), like Dreadbloon's full set; in CHIMPS the CHIMPS events' rounds, unless the setup
+picks the boss's own. The game can't merge a set it doesn't have, so `BossEventRounds` swaps the rounds in like the
+CHIMPS sets, and past round 140 freeplay goes on as usual.
+
+`tools/make-gildebloon-rounds.py` makes the file from the game's default rounds and bloon RBE in `tools/data`
+(written by the in-game `RoundDataTest` with `CBC_ROUND_DATA=<repo>/tools/data`); `--check` tells whether the file is
+up to date. Rounds 1-10 and the boss rounds are the default ones; from round 11 plain bloons turn to metal (Lead, Zebra,
+Purple, later camo and fortified Lead and fortified Ceramics), MOAB-class groups come in half the time from round 40,
+and the rounds before the boss rounds (39, 59, 79, 99, 119) are short heists. Every round stays within 10 % of the
+default round's RBE (`UnitTests/GildebloonRoundsTests`).

@@ -28,6 +28,7 @@
     <ItemGroup>
         <EmbeddedResource Include="Config\RoundSets\chimpsbloonarius.json" LogicalName="CustomBossChallenge.chimpsbloonarius.json" />
         <EmbeddedResource Include="Config\RoundSets\chimpsboss.json" LogicalName="CustomBossChallenge.chimpsboss.json" />
+        <EmbeddedResource Include="Config\RoundSets\gildebloon.json" LogicalName="CustomBossChallenge.gildebloon.json" />
         <!-- How Gildebloon's parts sit together, made with Bundles/gildebloon.bundle by UnityProject (#25) -->
         <EmbeddedResource Include="Bundles\gildebloon.layout.json" LogicalName="CustomBossChallenge.gildebloon.layout.json" />
     </ItemGroup>

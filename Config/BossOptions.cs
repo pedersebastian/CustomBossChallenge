@@ -83,9 +83,22 @@ public sealed record BossOptions
     public string BaseEventRoundSet => BossEventRoundSet(BossOf(1).Boss);
 
     /// <summary>
-    /// The name of a boss's own round set in the game's mergeable round sets, the same for Elite, e.g. "bloonarius"
+    /// The name of a boss's own round set, the same for Elite: in the game's mergeable round sets for the game's bosses,
+    /// e.g. "bloonarius", and the mod's own Gold Rush rounds for Gildebloon (<see cref="GildebloonRoundSet"/>)
     /// </summary>
-    public static string BossEventRoundSet(BossType boss) => BossList.Name(BossList.Host(boss)).ToLowerInvariant();
+    public static string BossEventRoundSet(BossType boss) => BossList.Name(boss).ToLowerInvariant();
+
+    /// <summary>
+    /// Gildebloon's own rounds, "Gold Rush" (#25): all 140 rounds, made by tools/make-gildebloon-rounds.py. The game
+    /// doesn't have them, the mod brings them (<see cref="ChimpsRoundSet"/>).
+    /// </summary>
+    public const string GildebloonRoundSet = "gildebloon";
+
+    /// <summary>
+    /// Whether <paramref name="name"/> is a round set the mod brings itself, which the game can't merge: the CHIMPS
+    /// boss events' and Gildebloon's
+    /// </summary>
+    public static bool IsModRoundSet(string? name) => IsChimpsEventRoundSet(name) || name == GildebloonRoundSet;
 
     /// <summary>The game mode of CHIMPS in the game's challenge models</summary>
     public const string ChimpsMode = "Clicks";

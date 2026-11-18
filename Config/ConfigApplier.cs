@@ -56,9 +56,9 @@ public static class ConfigApplier
 
         // The game merges the boss's own round set over the default rounds, like in the boss events (#80);
         // CustomBossChallenge.OnNewGameModel then moves them to the tiers' Spawn Rounds. The game doesn't have the
-        // CHIMPS events' set (#139): BossEventRounds puts it in there instead.
+        // CHIMPS events' set (#139) or Gildebloon's (#25): BossEventRounds puts those in instead.
         var eventSet = options.BaseEventRoundSetIn(dcm.mode);
-        if (options.UsesBossEventRounds && !BossOptions.IsChimpsEventRoundSet(eventSet))
+        if (options.UsesBossEventRounds && !BossOptions.IsModRoundSet(eventSet))
         {
             var roundSets = dcm.roundSets ??= new Il2CppSystem.Collections.Generic.List<string>();
             if (!roundSets.Contains(eventSet)) roundSets.Add(eventSet);
