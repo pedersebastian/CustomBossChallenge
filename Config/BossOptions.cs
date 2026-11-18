@@ -85,7 +85,7 @@ public sealed record BossOptions
     /// <summary>
     /// The name of a boss's own round set in the game's mergeable round sets, the same for Elite, e.g. "bloonarius"
     /// </summary>
-    public static string BossEventRoundSet(BossType boss) => boss.ToString().ToLowerInvariant();
+    public static string BossEventRoundSet(BossType boss) => BossList.Name(boss).ToLowerInvariant();
 
     /// <summary>The game mode of CHIMPS in the game's challenge models</summary>
     public const string ChimpsMode = "Clicks";
@@ -156,7 +156,7 @@ public sealed record BossOptions
         var defaults = new BossOptions();
         return this with
         {
-            Boss = System.Enum.IsDefined(Boss) ? Boss : defaults.Boss,
+            Boss = BossList.IsKnown(Boss) ? Boss : defaults.Boss,
             SkullMode = System.Enum.IsDefined(SkullMode) ? SkullMode : defaults.SkullMode,
             ChimpsRounds = System.Enum.IsDefined(ChimpsRounds) ? ChimpsRounds : defaults.ChimpsRounds,
             SkullCount = System.Math.Clamp(SkullCount, 0, SkullMath.MaxSkulls),
@@ -185,7 +185,7 @@ public sealed record BossOptions
     public (BossType Boss, bool Elite) BossOf(int tier)
     {
         var entry = EntryOf(tier);
-        if (entry.FollowsSetup || entry.IsRandom || !System.Enum.TryParse<BossType>(entry.Boss, out var boss))
+        if (entry.FollowsSetup || entry.IsRandom || !BossList.TryParse(entry.Boss, out var boss))
         {
             return (Boss, Elite);
         }
@@ -207,6 +207,15 @@ public sealed record BossOptions
     /// </summary>
     public float[]? TierSkullPercents(int tier) => EntryOf(tier).SkullPercents ?? SkullPercents;
 
+    /// <summary>
+    /// Whether the setup has the mod's own boss Gildebloon (#25) for itself or one of its tiers, which only plays when
+    /// it is on (<see cref="Experimental.GildebloonAvailable"/>)
+    /// </summary>
+    [JsonIgnore]
+    public bool UsesGildebloon =>
+        Boss == BossList.Gildebloon ||
+        System.Linq.Enumerable.Any(System.Linq.Enumerable.Range(1, TierMath.ClampTiers(Tiers)), tier => BossOf(tier).Boss == BossList.Gildebloon);
+
     /// <summary>Whether a tier will get a random boss when the game starts</summary>
     [JsonIgnore]
     public bool HasRandom => Mixed && TierBossMath.HasRandom(TierBosses, Tiers);
@@ -219,7 +228,7 @@ public sealed record BossOptions
     public BossOptions ResolveRandom(System.Random random) => Mixed
         ? this with
         {
-            TierBosses = TierBossMath.Resolve(TierBosses, Boss.ToString(), Elite, Tiers, random.Next),
+            TierBosses = TierBossMath.Resolve(TierBosses, BossList.Name(Boss), Elite, Tiers, random.Next),
             RandomTiers = TierBossMath.RandomTiers(TierBosses, Tiers)
         }
         : this;
@@ -246,7 +255,7 @@ public sealed record BossOptions
     /// <summary>
     /// The bloon id of a boss at the given tier, e.g. "VortexElite3"
     /// </summary>
-    public static string BossIdOf(BossType boss, bool elite, int tier) => $"{boss}{(elite ? "Elite" : "")}{tier}";
+    public static string BossIdOf(BossType boss, bool elite, int tier) => $"{BossList.Name(boss)}{(elite ? "Elite" : "")}{tier}";
 }
 
 /// <summary>

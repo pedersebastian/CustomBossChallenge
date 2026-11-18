@@ -151,6 +151,13 @@ public static class MainMenuButton
             return;
         }
 
+        // An unfinished game with Gildebloon waits until it is on again (#25)
+        if (BossEditorSection.GildebloonProblem(game.Options) is { } off)
+        {
+            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(off, new System.Action(BossMode.Enter)));
+            return;
+        }
+
         // New Game keeps the unfinished game until a new one is actually played
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
             Texts.UnfinishedGame.T(), UnfinishedGameText(game),

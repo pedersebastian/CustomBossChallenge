@@ -48,7 +48,7 @@ public static class TierStars
             return;
         }
 
-        var color = TierLook.Color(CustomBossState.ActiveOptions!.BossOf(tier).Boss.ToString(), tier);
+        var color = TierLook.Color(BossList.Name(CustomBossState.ActiveOptions!.BossOf(tier).Boss), tier);
         var unity = new Color(color.R, color.G, color.B, 1);
         for (var i = 0; i < stars.Length; i++)
         {

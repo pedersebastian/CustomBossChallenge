@@ -49,7 +49,7 @@ public class CodeFormatTests
 
     private static readonly JsonSerializer OptionsSerializer = JsonSerializer.Create(new JsonSerializerSettings
     {
-        Converters = {new StringEnumConverter()}
+        Converters = {new BossNameConverter()}
     });
 
     /// <summary>The options as SetupCode.TryDecode reads them, without RandomTiers, which only the game fills in</summary>

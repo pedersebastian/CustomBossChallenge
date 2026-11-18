@@ -20,6 +20,7 @@ public class CustomBossChallenge : BloonsTD6Mod
     public override void OnApplicationStart()
     {
         ModHelper.Msg<CustomBossChallenge>("CustomBossChallenge loaded!");
+        Config.Experimental.GildebloonSetting = () => Settings.IncludeGildebloon;
     }
 
     /// <summary>

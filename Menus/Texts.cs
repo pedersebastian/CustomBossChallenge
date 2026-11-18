@@ -205,6 +205,8 @@ public static class Texts
         "Load this setup? Your current setup will be replaced.");
     public static readonly string CodeInvalid = Key(nameof(CodeInvalid),
         "The clipboard doesn't contain a Boss Creator code. Copy the whole code, starting with CBC.");
+    public static readonly string GildebloonOff = Key(nameof(GildebloonOff),
+        "This setup has Gildebloon, a boss made by this mod. Turn on Include Gildebloon in Mod Settings to play it.");
     public static readonly string CodeTooNew = Key(nameof(CodeTooNew),
         "This code comes from a newer version of Custom Boss Challenge. Update the mod to load it.");
 

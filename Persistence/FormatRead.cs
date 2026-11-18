@@ -41,7 +41,7 @@ internal static class FormatJson
     public static readonly JsonSerializerSettings WithEnumNames = new()
     {
         Formatting = Formatting.Indented,
-        Converters = {new StringEnumConverter()}
+        Converters = {new BossNameConverter()}
     };
 
     public static readonly JsonSerializerSettings Plain = new() {Formatting = Formatting.Indented};

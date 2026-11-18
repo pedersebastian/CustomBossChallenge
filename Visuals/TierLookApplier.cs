@@ -244,7 +244,7 @@ public static class TierLookApplier
         var tier = current != null && TierMath.TierOf(current.bloonModel.id) is var own and > 0 ? own : manager.CurrentBossTier;
         if (current != null && TierLook.HasLook(tier))
         {
-            var boss = CustomBossState.ActiveOptions!.BossOf(tier).Boss.ToString();
+            var boss = BossList.Name(CustomBossState.ActiveOptions!.BossOf(tier).Boss);
             Track(current, boss, tier);
 
             // Diamondback's body is its segments, which share tier 5's models and spawn one after another

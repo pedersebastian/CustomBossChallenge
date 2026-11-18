@@ -12,6 +12,9 @@
 
     <ItemGroup>
         <Compile Include="..\Config\BossOptions.cs" Link="Mod\BossOptions.cs" />
+        <Compile Include="..\Config\BossList.cs" Link="Mod\BossList.cs" />
+        <Compile Include="..\Config\Experimental.cs" Link="Mod\Experimental.cs" />
+        <Compile Include="..\Persistence\BossNameConverter.cs" Link="Mod\BossNameConverter.cs" />
         <Compile Include="..\Config\BossRoundsMath.cs" Link="Mod\BossRoundsMath.cs" />
         <Compile Include="..\Config\BossRowMath.cs" Link="Mod\BossRowMath.cs" />
         <Compile Include="..\Config\ChimpsRoundSet.cs" Link="Mod\ChimpsRoundSet.cs" />

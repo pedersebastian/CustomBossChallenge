@@ -61,4 +61,32 @@ public class Settings : ModSettings
                       "has the events the mod came with, and the ones it downloaded before.",
         icon = VanillaSprites.BossChallenge
     };
+
+    public const string NewBossesName = "New Bosses";
+
+    /// <summary>
+    /// Bosses made by the mod (#25). The category and its options are hidden until a boss is switched on in the code
+    /// (<see cref="Config.Experimental"/>), so nothing of an unfinished boss shows up in a released version.
+    /// </summary>
+    public static readonly ModSettingCategory NewBosses = new(NewBossesName)
+    {
+        order = 2,
+        collapsed = false,
+        icon = VanillaSprites.GoldenBloonIcon,
+        modifyCategory = category => category.gameObject.SetActive(Config.Experimental.Gildebloon)
+    };
+
+    /// <summary>
+    /// Whether the mod's own boss Gildebloon can be picked in the Boss Creator, by Random and for tiers (#25)
+    /// </summary>
+    public static readonly ModSettingBool IncludeGildebloon = new(false)
+    {
+        category = NewBosses,
+        displayName = "Include Gildebloon",
+        description = "Adds Gildebloon, a boss made by this mod, to the Boss Creator: a golden vault that steals your " +
+                      "cash, hides behind a shield made of it and pays it back when it is beaten. Off, it can't be " +
+                      "picked, Random never chooses it, and setups and codes with it ask you to turn this on first.",
+        icon = VanillaSprites.GoldenBloonIcon,
+        modifyOption = option => option.gameObject.SetActive(Config.Experimental.Gildebloon)
+    };
 }

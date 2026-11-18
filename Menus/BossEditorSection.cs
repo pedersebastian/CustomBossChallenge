@@ -280,7 +280,7 @@ public sealed class BossEditorSection
         BossTypeRow = bossRow;
         // Measured from the control area's left edge; a game update with more bosses gets smaller buttons (#170)
         var left = EditorRows.ControlX - EditorRows.ControlWidth / 2;
-        var bosses = Enum.GetValues<BossType>();
+        var bosses = BossList.Available;
         var size = BossRowMath.ButtonSize(bosses.Length, EditorRows.ControlWidth);
         for (var i = 0; i < bosses.Length; i++)
         {
@@ -797,6 +797,13 @@ public sealed class BossEditorSection
             return;
         }
 
+        if (GildebloonProblem(options) is { } off)
+        {
+            ModHelper.Msg<CustomBossChallenge>("Pasted a share code with Gildebloon, which is off");
+            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(off, null));
+            return;
+        }
+
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.ShareCode.T(),
             $"{Texts.LoadCodeQuestion.T()}\n\n{Summary(options, dcm)}",
             new Action(() =>
@@ -1003,6 +1010,13 @@ public sealed class BossEditorSection
             return;
         }
 
+        if (GildebloonProblem(options) is { } off)
+        {
+            ModHelper.Msg<CustomBossChallenge>($"The saved setup '{name}' has Gildebloon, which is off");
+            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(off, null));
+            return;
+        }
+
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.SavedSetups.T(),
             $"{Texts.LoadSetupQuestion.T()}\n\n{Summary(options, dcm)}",
             new Action(() =>
@@ -1056,7 +1070,7 @@ public sealed class BossEditorSection
     /// A setup in one line for the log, e.g. "'Custom Vortex', Vortex Elite, 7 tiers, Logs, Hard, Standard"
     /// </summary>
     public static string Describe(BossOptions options, DailyChallengeModel dcm) =>
-        $"'{dcm.name}', {options.Boss}{(options.Elite ? " Elite" : "")}, {options.Tiers} tiers" +
+        $"'{dcm.name}', {BossList.Name(options.Boss)}{(options.Elite ? " Elite" : "")}, {options.Tiers} tiers" +
         (options.Mixed ? $" ({options.TierBosses})" : "") +
         (options.UsesBossEventRounds ? $", boss event rounds {options.BaseEventRoundSetIn(dcm.mode)}" : "") +
         $", {dcm.map}, {dcm.difficulty}, {dcm.mode}";
@@ -1067,7 +1081,7 @@ public sealed class BossEditorSection
     public static string Summary(BossOptions options, DailyChallengeModel dcm)
     {
         var boss = options.Mixed ? Texts.DifferentBosses.T()
-            : options.Elite ? $"{options.Boss} {Texts.Elite.T()}" : options.Boss.ToString();
+            : Visuals.BossHud.Name(options.Boss, options.Elite);
         var rounds = !options.UsesBossEventRounds ? ""
             : dcm.mode == BossOptions.ChimpsMode ? $", {Texts.BossEventRounds.T()} ({ChimpsEntry(options).T()})"
             : $", {Texts.BossEventRounds.T()}";
@@ -1416,7 +1430,7 @@ public sealed class BossEditorSection
     /// Standard
     /// </summary>
     private static string StartingTierBosses(BossOptions options, TierBoss values) =>
-        TierBossMath.Resolve(null, options.Boss.ToString(), options.Elite, TierMath.MaxTiers, _ => 0, values);
+        TierBossMath.Resolve(null, BossList.Name(options.Boss), options.Elite, TierMath.MaxTiers, _ => 0, values);
 
     /// <summary>
     /// Boss Speed and Boss Health in percent, in the challenge and on their sliders, and the skulls
@@ -1460,7 +1474,7 @@ public sealed class BossEditorSection
     {
         var options = BossMode.Options;
         if (!options.Mixed) return;
-        var next = TierBossMath.Step(options.EntryOf(tier), options.Boss.ToString(), options.Elite, direction);
+        var next = TierBossMath.Step(options.EntryOf(tier), BossList.Name(options.Boss), options.Elite, direction);
         BossHistory.RecordChange(Editor, TierStopName(tier));
         BossMode.Options = options with {TierBosses = TierBossMath.With(options.TierBosses, tier, next)};
         ShowBoss();
@@ -1859,6 +1873,7 @@ public sealed class BossEditorSection
     /// </summary>
     public static string? PlayProblem(DailyChallengeModel dcm, BossOptions options)
     {
+        if (GildebloonProblem(options) is { } off) return off;
         if (UnsupportedModes.Contains(dcm.mode)) return Texts.UnsupportedMode.T(dcm.mode);
 
         // Starting on or after a tier's round skips it, the same rule the Random button keeps to
@@ -1916,6 +1931,15 @@ public sealed class BossEditorSection
         glow.gameObject.SetActive(on);
     }
 
+    /// <summary>
+    /// Why a setup with the mod's own boss Gildebloon can't be loaded or played, or null when it can (#25): it is off
+    /// in Mod Settings, or this version doesn't have it at all, which reads like a code from a newer version
+    /// </summary>
+    public static string? GildebloonProblem(BossOptions options) =>
+        !options.UsesGildebloon || Experimental.GildebloonAvailable ? null
+        : Experimental.Gildebloon ? Texts.GildebloonOff.T()
+        : Texts.CodeTooNew.T();
+
     public static string Portrait(BossType boss, bool elite) => (boss, elite) switch
     {
         (BossType.Bloonarius, false) => VanillaSprites.BloonariusPortrait,
@@ -1932,6 +1956,8 @@ public sealed class BossEditorSection
         (BossType.Blastapopoulos, true) => VanillaSprites.BlastapopoulosPortraitElite,
         (BossType.Diamondback, false) => VanillaSprites.DiamondbackPortrait,
         (BossType.Diamondback, true) => VanillaSprites.DiamondbackPortraitElite,
+        (BossList.Gildebloon, false) => VanillaSprites.GoldenBloonIcon,
+        (BossList.Gildebloon, true) => VanillaSprites.GoldenBloonMagicIcon,
         _ => MissingSprite(boss, "portrait")
     };
 

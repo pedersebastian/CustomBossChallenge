@@ -297,7 +297,7 @@ public sealed class TierBossPicker
     {
         var options = Creator.BossMode.Options;
         var entry = options.EntryOf(Tier);
-        return entry.FollowsSetup ? entry with {Boss = options.Boss.ToString(), Elite = options.Elite} : entry;
+        return entry.FollowsSetup ? entry with {Boss = BossList.Name(options.Boss), Elite = options.Elite} : entry;
     }
 
     /// <summary>
@@ -310,7 +310,7 @@ public sealed class TierBossPicker
         {
             button.Image.SetSprite(choice == TierBossMath.Random
                 ? VanillaSprites.RandomIcon
-                : BossEditorSection.Portrait(Enum.Parse<BossType>(choice), shown.Elite));
+                : BossEditorSection.Portrait(BossList.TryParse(choice, out var boss) ? boss : BossType.Bloonarius, shown.Elite));
             button.transform.Find(BossEditorSection.SelectedMarker)?.gameObject.SetActive(choice == shown.Boss);
             if (choice == TierBossMath.Random) BossEditorSection.ShowEliteGlow(button, shown.Elite);
         }

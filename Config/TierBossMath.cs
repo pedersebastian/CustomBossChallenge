@@ -85,15 +85,26 @@ public static class TierBossMath
     public const int ValueStep = 10;
 
     /// <summary>
-    /// The bosses in the order the Boss Creator shows them, which is the order of the game's BossType
+    /// The game's bosses in the order the Boss Creator shows them, which is the order of the game's BossType
     /// </summary>
-    public static readonly string[] Bosses =
+    public static readonly string[] VanillaBosses =
         ["Bloonarius", "Lych", "Vortex", "Dreadbloon", "Phayze", "Blastapopoulos", "Diamondback"];
 
     /// <summary>
-    /// What a tier can be stepped through: every boss, then Random
+    /// The bosses that can be picked now, in the order the Boss Creator shows them: the game's, then Gildebloon when
+    /// it is on (<see cref="Experimental.GildebloonAvailable"/>)
     /// </summary>
-    public static readonly string[] Choices = [..Bosses, Random];
+    public static string[] Bosses => Experimental.GildebloonAvailable ? [..VanillaBosses, BossList.GildebloonName] : VanillaBosses;
+
+    /// <summary>
+    /// What a tier can be stepped through: every boss that can be picked, then Random
+    /// </summary>
+    public static string[] Choices => [..Bosses, Random];
+
+    /// <summary>
+    /// Every name a tier's token can have, Gildebloon included even when it is off, so a setup with it keeps it
+    /// </summary>
+    private static readonly string[] KnownChoices = [..VanillaBosses, BossList.GildebloonName, Random];
 
     /// <summary>
     /// The tiers' bosses in <paramref name="list"/>, at most <see cref="TierMath.MaxTiers"/>. Unknown tokens follow
@@ -128,7 +139,7 @@ public static class TierBossMath
 
         var elite = token.EndsWith(EliteSuffix, StringComparison.OrdinalIgnoreCase);
         var name = elite ? token[..^EliteSuffix.Length] : token;
-        var known = Choices.FirstOrDefault(choice => string.Equals(choice, name, StringComparison.OrdinalIgnoreCase));
+        var known = KnownChoices.FirstOrDefault(choice => string.Equals(choice, name, StringComparison.OrdinalIgnoreCase));
         return skulls with {Boss = known, Elite = known != null && elite, Speed = speed, Health = health};
     }
 
@@ -221,10 +232,11 @@ public static class TierBossMath
     public static TierBoss Step(TierBoss current, string setupBoss, bool setupElite, int direction)
     {
         var from = current.Boss ?? setupBoss;
-        var index = Array.IndexOf(Choices, from);
+        var choices = Choices;
+        var index = Array.IndexOf(choices, from);
         if (index < 0) index = 0;
-        var next = ((index + Math.Sign(direction)) % Choices.Length + Choices.Length) % Choices.Length;
-        return current with {Boss = Choices[next], Elite = current.FollowsSetup ? setupElite : current.Elite};
+        var next = ((index + Math.Sign(direction)) % choices.Length + choices.Length) % choices.Length;
+        return current with {Boss = choices[next], Elite = current.FollowsSetup ? setupElite : current.Elite};
     }
 
     /// <summary>
@@ -243,7 +255,8 @@ public static class TierBossMath
             var entry = tier <= parsed.Length ? parsed[tier - 1] : missing;
             if (entry.FollowsSetup) return entry with {Boss = setupBoss, Elite = setupElite};
             if (!entry.IsRandom) return entry;
-            return entry with {Boss = Bosses[Math.Clamp(pick(Bosses.Length), 0, Bosses.Length - 1)]};
+            var bosses = Bosses;
+            return entry with {Boss = bosses[Math.Clamp(pick(bosses.Length), 0, bosses.Length - 1)]};
         });
         return string.Join(",", resolved.Select(tier => tier.ToString()));
     }

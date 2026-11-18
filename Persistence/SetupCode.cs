@@ -27,7 +27,7 @@ public static class SetupCode
 
     private static readonly JsonSerializer OptionsSerializer = JsonSerializer.Create(new JsonSerializerSettings
     {
-        Converters = {new StringEnumConverter()}
+        Converters = {new BossNameConverter()}
     });
 
     public static string Encode(BossOptions options, DailyChallengeModel dcm)

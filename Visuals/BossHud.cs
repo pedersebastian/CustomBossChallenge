@@ -87,13 +87,14 @@ public static class BossHud
         BossType.Phayze => VanillaSprites.PhayzeBtn,
         BossType.Blastapopoulos => VanillaSprites.BlastapopoulosBtn,
         BossType.Diamondback => VanillaSprites.DiamondbackBtn,
+        BossList.Gildebloon => VanillaSprites.GoldenBloonIcon,
         _ => Menus.BossEditorSection.MissingSprite(boss, "HUD icon")
     };
 
     /// <summary>
     /// A boss's name for the banner, e.g. "Lych Elite"
     /// </summary>
-    public static string Name(BossType boss, bool elite) => elite ? $"{boss} {Texts.Elite.T()}" : boss.ToString();
+    public static string Name(BossType boss, bool elite) => elite ? $"{BossList.Name(boss)} {Texts.Elite.T()}" : BossList.Name(boss);
 
     private static BossOptions? MixedOptions =>
         CustomBossState.IsActive && CustomBossState.ActiveOptions is {Mixed: true} options ? options : null;

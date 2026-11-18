@@ -21,8 +21,8 @@ public class MixedBossModelTest : CustomBossTest
 {
     protected override IEnumerator Run()
     {
-        AssertEquals(string.Join(",", TierBossMath.Bosses), string.Join(",", Enum.GetNames<BossType>()),
-            "TierBossMath.Bosses must be the game's bosses in order");
+        AssertEquals(string.Join(",", TierBossMath.VanillaBosses), string.Join(",", Enum.GetNames<BossType>()),
+            "TierBossMath.VanillaBosses must be the game's bosses in order");
 
         var options = new BossOptions
             {Boss = BossType.Vortex, Elite = true, Tiers = 8, TierBosses = "Lych,,Random,PhayzeElite,,Diamondback,LychElite"}.Sanitized();

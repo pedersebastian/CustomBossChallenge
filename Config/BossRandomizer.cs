@@ -21,7 +21,7 @@ public static partial class BossRandomizer
     /// <param name="advanced">Whether the setup is in Advanced Mode, which random setups then are too</param>
     public static BossOptions Randomize(DailyChallengeModel dcm, string[] unsupportedModes, bool advanced = false)
     {
-        var bosses = Enum.GetValues<BossType>();
+        var bosses = BossList.Available;
         var options = new BossOptions
         {
             Boss = bosses[Random.Next(bosses.Length)],

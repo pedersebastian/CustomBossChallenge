@@ -59,7 +59,8 @@ public static class BossMode
     /// </summary>
     public static void Enter()
     {
-        if (!Store.TryLoad(out var options, out var dcm) || dcm == null)
+        // A last setup with Gildebloon while it is off starts from the defaults; the file keeps it for later (#25)
+        if (!Store.TryLoad(out var options, out var dcm) || dcm == null || Menus.BossEditorSection.GildebloonProblem(options) != null)
         {
             options = new BossOptions();
             dcm = DefaultDcm(options);
@@ -181,7 +182,7 @@ public static class BossMode
     /// The challenge name a new setup gets, e.g. "Custom Lych" or "Custom Elite Lych"
     /// </summary>
     public static string DefaultName(Il2CppAssets.Scripts.Data.Boss.BossType boss, bool elite = false) =>
-        elite ? $"Custom Elite {boss}" : $"Custom {boss}";
+        elite ? $"Custom Elite {BossList.Name(boss)}" : $"Custom {BossList.Name(boss)}";
 
     /// <summary>
     /// The name a setup with a different boss per tier gets
@@ -199,7 +200,7 @@ public static class BossMode
     /// made up counts too.
     /// </summary>
     public static bool IsDefaultName(string? name) =>
-        name == MixedName || RandomNames.IsGenerated(name) || System.Enum.GetValues<Il2CppAssets.Scripts.Data.Boss.BossType>()
+        name == MixedName || RandomNames.IsGenerated(name) || BossList.All
             .Any(boss => name == DefaultName(boss) || name == DefaultName(boss, true));
 
     /// <summary>
@@ -212,7 +213,7 @@ public static class BossMode
         var modifiers = dcm?.bloonModifiers;
         return new NameTraits
         {
-            Boss = options.Mixed ? "" : options.Elite ? $"Elite {options.Boss}" : options.Boss.ToString(),
+            Boss = options.Mixed ? "" : options.Elite ? $"Elite {BossList.Name(options.Boss)}" : BossList.Name(options.Boss),
             Elite = bosses.All(boss => boss.Elite),
             Tiers = options.Tiers,
             BossSpeed = (int) System.Math.Round((modifiers?.bossSpeedMultiplier ?? 1) * 100),
@@ -222,7 +223,7 @@ public static class BossMode
             NoSkulls = tiers.All(tier => options.TierSkullPercents(tier) is {Length: 0}),
             AllFortified = modifiers?.allFortified ?? false,
             SameBoss = options.Mixed && !options.HasRandom && bosses.Select(boss => boss.Boss).Distinct().Count() == 1
-                ? bosses[0].Boss.ToString()
+                ? BossList.Name(bosses[0].Boss)
                 : null
         };
     }
