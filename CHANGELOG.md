@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **The Rules panel shows the boss setup as pictures** (#147): the pause screen's Rules box no longer lists the boss
+  options as lines of text. The boss is a tile with its portrait (Elite's own when Elite), and Boss Event Rounds and
+  "No other changes" are tiles too, after the game's own rules like No Selling. Custom spawn rounds and Advanced Mode
+  line-ups are the Tier Preview's cards, with the round each tier arrives on, its speed and health, and in Advanced
+  Mode its boss and skulls; a boss picked at random stays a die with "?" until it arrives. Evenly spaced and custom
+  skulls are shown on a health bar like the Skull Preview. A 10-tier line-up fits at every screen format, and the box
+  scrolls to it.
+
 ## [2.13.0] - 2026-11-17
 
 ### Changed

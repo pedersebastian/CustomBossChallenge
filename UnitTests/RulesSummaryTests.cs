@@ -192,4 +192,53 @@ public class RulesSummaryTests
         Assert.Equal("Boss,Tiers,SpawnRounds,BossEventRounds,SpeedPerTier,HealthPerTier,Skulls", Kinds(options));
         Assert.Equal(["41, 61, 81, 101, 121, 141"], Line(options, RuleLine.SpawnRounds).Args);
     }
+
+    private static string Tiles(RulesView view) => string.Join(",", view.Tiles.Select(line => line.Kind));
+
+    [Fact]
+    public void The_view_of_a_default_setup_is_the_boss_and_no_changes_tiles()
+    {
+        var view = RulesSummary.View(new BossOptions());
+        Assert.Equal("Boss,NoChanges", Tiles(view));
+        Assert.False(view.TierStrip);
+        Assert.Null(view.Skulls);
+        Assert.Empty(view.SecretTiers);
+    }
+
+    [Fact]
+    public void The_view_shows_spawn_rounds_as_tier_cards_and_event_rounds_as_a_tile()
+    {
+        var view = RulesSummary.View(new BossOptions {Tiers = 6, SpawnRounds = "41", BossEventRounds = true, SpeedPerTier = 5});
+        Assert.Equal("Boss,BossEventRounds", Tiles(view));
+        Assert.True(view.TierStrip);
+    }
+
+    [Fact]
+    public void The_view_has_no_tier_cards_for_the_default_rounds() =>
+        Assert.False(RulesSummary.View(new BossOptions {Tiers = 7, HealthPerTier = 10}).TierStrip);
+
+    [Theory]
+    [InlineData(SkullMode.EvenlySpaced, 3, "")]
+    [InlineData(SkullMode.Custom, 0, "75, 50")]
+    public void The_view_has_the_skull_bar_for_evenly_spaced_and_custom_skulls(SkullMode mode, int count, string custom)
+    {
+        var view = RulesSummary.View(new BossOptions {SkullMode = mode, SkullCount = count, CustomSkulls = custom});
+        Assert.Equal(mode, (SkullMode) view.Skulls!.Value.Args[0]);
+        Assert.Equal("Boss", Tiles(view));
+    }
+
+    [Fact]
+    public void The_view_of_vanilla_skulls_has_no_skull_bar() =>
+        Assert.Null(RulesSummary.View(new BossOptions {SkullMode = SkullMode.Vanilla, SkullCount = 3}).Skulls);
+
+    [Fact]
+    public void The_view_of_advanced_mode_is_tier_cards_with_the_secret_tiers()
+    {
+        var options = new BossOptions {Tiers = 5, TierBosses = "Lych,Vortex,Phayze,Lych,Vortex", RandomTiers = "2,4"};
+        var view = RulesSummary.View(options, 2);
+        Assert.True(view.TierStrip);
+        Assert.Equal("NoChanges", Tiles(view));
+        Assert.Equal([4], view.SecretTiers);
+        Assert.Equal([2, 4], RulesSummary.View(options, 0).SecretTiers.Order());
+    }
 }

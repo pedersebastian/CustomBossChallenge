@@ -72,6 +72,12 @@ To build your own tools for share codes, see the [share-code package](web/packag
   upgrade tiers and cash you used, which Least Tiers and Least Cash events count. When you win, the victory screen also lists the time of every
   tier. Free retries and Continue keep the time right, as the game saves it. It is off by default, and custom games
   stay unranked.
+- **Your setup in the Rules panel** (#140): in a custom game, the pause screen's **Rules** button shows what you
+  play against, also after loading a share code or continuing a game. The Boss Creator's sliders are rows of the
+  **Modifiers** list after the game's Boss Health and Boss Speed. The **Rules** box shows the rest with the game's
+  look, after the game's own rules: the boss with its portrait, Boss Event Rounds, the tiers as the Tier Preview's
+  cards with the round each arrives on (in Advanced Mode with each tier's boss), and the skulls on a health bar like
+  the Skull Preview. A boss picked at random shows as a die until it arrives.
 - **Translated** into every language BTD6 supports (English, Arabic, Chinese Simplified and Traditional, Danish,
   Dutch, Finnish, French, German, Italian, Japanese, Korean, Norwegian, Polish, Brazilian Portuguese, Russian,
   Spanish, Latin American Spanish, Swedish, Thai and Turkish), following the game's language setting.
@@ -105,6 +111,8 @@ To build your own tools for share codes, see the [share-code package](web/packag
 ![Info popup](docs/info-popup.jpg)
 
 ![All Fortified among the modifiers](docs/modifiers.jpg)
+
+![The setup in the pause screen's Rules panel](docs/rules-panel.jpg)
 
 ## Usage
 

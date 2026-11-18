@@ -46,17 +46,27 @@ public readonly record struct SummaryLine(RuleLine Kind, params object[] Args)
 {
     /// <summary>
     /// Whether the line is a slider of the Boss Creator, which the panel shows as a row of its Modifiers list like the
-    /// game's Boss Speed and Boss Health, instead of a line of text in its Rules box
+    /// game's Boss Speed and Boss Health, instead of a part of its Rules box
     /// </summary>
     public bool IsModifier => Kind is RuleLine.Tiers or RuleLine.SpeedPerTier or RuleLine.HealthPerTier ||
                               Kind == RuleLine.Skulls && (SkullMode) Args[0] == SkullMode.EvenlySpaced;
 }
 
 /// <summary>
+/// What the Rules box shows for a setup (#147), made from <see cref="RulesSummary.Lines"/>: tiles in the game's rule
+/// grid, a strip of tier cards and a health bar with the skulls
+/// </summary>
+/// <param name="Tiles">The boss, Boss Event Rounds and No changes lines, each a tile like the game's own rules</param>
+/// <param name="TierStrip">Whether the tiers are shown as cards: for spawn rounds of their own, and in Advanced Mode</param>
+/// <param name="Skulls">The skulls other than the boss's own, for the skull bar; null for none</param>
+/// <param name="SecretTiers">The tiers whose boss, picked at random, has not arrived yet</param>
+public sealed record RulesView(List<SummaryLine> Tiles, bool TierStrip, SummaryLine? Skulls, HashSet<int> SecretTiers);
+
+/// <summary>
 /// The boss options of a game as short lines for the Challenge Rules panel of the pause screen (#140), every one that
-/// differs from a normal boss game. Without the game's types so it can be unit tested; Texts.Summary words the lines.
-/// The sliders go in the panel's Modifiers list (<see cref="Modifiers"/>), the rest in its Rules box
-/// (<see cref="Rules"/>).
+/// differs from a normal boss game. Without the game's types so it can be unit tested. The sliders go in the panel's
+/// Modifiers list (<see cref="Modifiers"/>), the rest in its Rules box (<see cref="Rules"/>), which shows them as tiles,
+/// tier cards and a skull bar (<see cref="View"/>).
 /// </summary>
 public static class RulesSummary
 {
@@ -123,6 +133,21 @@ public static class RulesSummary
     /// <summary>The lines for the Rules box: <see cref="Lines"/> without the sliders</summary>
     public static List<SummaryLine> Rules(BossOptions options, int arrivedTier = int.MaxValue) =>
         Lines(options, arrivedTier).Where(line => !line.IsModifier).ToList();
+
+    /// <summary>
+    /// What the Rules box shows for <paramref name="options"/>, from the same lines as <see cref="Rules"/>. Evenly
+    /// spaced skulls are a row of the Modifiers list and get the skull bar too, like custom ones.
+    /// </summary>
+    public static RulesView View(BossOptions options, int arrivedTier = int.MaxValue)
+    {
+        var lines = Lines(options, arrivedTier);
+        var tiles = lines.Where(line => line.Kind is RuleLine.Boss or RuleLine.BossEventRounds or RuleLine.NoChanges).ToList();
+        var strip = lines.Any(line => line.Kind is RuleLine.SpawnRounds or RuleLine.Tier);
+        var skulls = lines.Where(line => line.Kind == RuleLine.Skulls).Select(line => (SummaryLine?) line).FirstOrDefault();
+        var secret = lines.Where(line => line.Kind == RuleLine.Tier && (bool) line.Args[4])
+            .Select(line => (int) line.Args[0]).ToHashSet();
+        return new RulesView(tiles, strip, skulls, secret);
+    }
 
     /// <summary>The sliders, for rows of the Modifiers list</summary>
     public static List<SummaryLine> Modifiers(BossOptions options) => Lines(options).Where(line => line.IsModifier).ToList();

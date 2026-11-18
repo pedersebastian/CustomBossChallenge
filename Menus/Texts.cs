@@ -306,60 +306,7 @@ public static class Texts
     public static readonly string CashUsed = Key(nameof(CashUsed), "Cash Used");
     public static readonly string RankedTime = Key(nameof(RankedTime), "Time");
 
-    public static readonly string RulesHeader = Key(nameof(RulesHeader), "Boss Creator");
-    public static readonly string RulesLine = Key(nameof(RulesLine), "{0}: {1}");
-    public static readonly string RulesNoChanges = Key(nameof(RulesNoChanges),
-        "Everything else as in a normal boss game");
-    public static readonly string RulesTier = Key(nameof(RulesTier), "Tier {0}, round {1}: {2}");
-    public static readonly string RulesTierSpeed = Key(nameof(RulesTierSpeed), "{0} % speed");
-    public static readonly string RulesTierHealth = Key(nameof(RulesTierHealth), "{0} % health");
-    public static readonly string RulesTierSkulls = Key(nameof(RulesTierSkulls), "{0} skulls");
-    public static readonly string RulesTierCustomSkulls = Key(nameof(RulesTierCustomSkulls), "skulls at {0} %");
-
-    /// <summary>
-    /// A tier's line in the Rules panel in Advanced Mode (#142), e.g. "Tier 2, round 60: Vortex Elite, 120 % speed":
-    /// the boss, or Random while it is a secret, then what differs from the boss's own
-    /// </summary>
-    private static string TierSummary(object[] args)
-    {
-        var parts = new System.Collections.Generic.List<string>
-        {
-            (bool) args[4] ? RandomBoss.T() : Visuals.BossHud.Name((Il2CppAssets.Scripts.Data.Boss.BossType) args[2], (bool) args[3])
-        };
-        if ((int) args[5] != Config.TierBossMath.Normal) parts.Add(RulesTierSpeed.T(args[5]));
-        if ((int) args[6] != Config.TierBossMath.Normal) parts.Add(RulesTierHealth.T(args[6]));
-        switch ((Config.SkullMode) args[7])
-        {
-            case Config.SkullMode.EvenlySpaced:
-                parts.Add((int) args[8] == 0 ? NoSkulls.T() : RulesTierSkulls.T(args[8]));
-                break;
-            case Config.SkullMode.Custom:
-                parts.Add(RulesTierCustomSkulls.T(args[8]));
-                break;
-        }
-        return RulesTier.T(args[0], args[1], string.Join(", ", parts));
-    }
-
-    /// <summary>
-    /// The line the pause screen's Rules panel shows for a boss option (#141), with the Boss Creator's names
-    /// </summary>
-    public static string Summary(Config.SummaryLine line) => line.Kind switch
-    {
-        Config.RuleLine.Boss => RulesLine.T(BossType.T(),
-            Visuals.BossHud.Name((Il2CppAssets.Scripts.Data.Boss.BossType) line.Args[0], (bool) line.Args[1])),
-        Config.RuleLine.Tiers => RulesLine.T(BossTiers.T(), line.Args[0]),
-        Config.RuleLine.SpawnRounds => RulesLine.T(SpawnRounds.T(), line.Args[0]),
-        Config.RuleLine.Tier => TierSummary(line.Args),
-        Config.RuleLine.BossEventRounds => BossEventRounds.T(),
-        Config.RuleLine.SpeedPerTier => RulesLine.T(SpeedPerTier.T(), PerTier.T(Signed((int) line.Args[0]))),
-        Config.RuleLine.HealthPerTier => RulesLine.T(HealthPerTier.T(), PerTier.T(Signed((int) line.Args[0]))),
-        Config.RuleLine.Skulls => (Config.SkullMode) line.Args[0] == Config.SkullMode.Custom
-            ? RulesLine.T(SkullHealth.T(), line.Args[1])
-            : (int) line.Args[1] == 0
-                ? RulesLine.T(Skulls.T(), NoSkulls.T())
-                : RulesLine.T(SkullCount.T(), $"{line.Args[1]} ({SkullsEvenlySpaced.T()})"),
-        _ => RulesNoChanges.T()
-    };
+    public static readonly string RulesNoChanges = Key(nameof(RulesNoChanges), "No other changes");
 
     /// <summary>
     /// The name of a slider's row in the Rules panel's Modifiers list (#141), like the Boss Creator's

@@ -62,7 +62,7 @@ public class MixedBossCreatorTest : CustomBossTest
         // Off: one boss for every tier, and the cards are only a preview
         Assert(!BossMode.Options.Mixed, "Advanced Mode starts off");
         Assert(section.BossTypeRow.activeInHierarchy, "The Boss Type shows while Advanced Mode is off");
-        Assert(!card2.Button.interactable, "Cards can't be clicked while every tier has the Boss Type");
+        Assert(!card2.Button!.interactable, "Cards can't be clicked while every tier has the Boss Type");
         Assert(!card2.Edit.gameObject.activeSelf, "No pencil on the cards while Advanced Mode is off");
         Assert(section.OpenPicker(2) == null, "No picker while Advanced Mode is off");
 
@@ -80,11 +80,11 @@ public class MixedBossCreatorTest : CustomBossTest
         AssertEquals(BossMode.Options.TierBosses, string.Join(",", Enumerable.Repeat("Vortex", TierMath.MaxTiers)),
             "Advanced Mode on: every tier starts with the Boss Type");
         Assert(!section.BossTypeRow.activeInHierarchy, "The Boss Type is hidden in Advanced Mode");
-        Assert(card2.Button.interactable && card2.Edit.gameObject.activeSelf, "Cards are buttons in Advanced Mode");
+        Assert(card2.Button!.interactable && card2.Edit.gameObject.activeSelf, "Cards are buttons in Advanced Mode");
         AssertEquals(editor!.chalName.text, BossMode.MixedName, "The default name follows Advanced Mode");
 
         // A click on the card opens its picker with the tier's boss ticked; picking Lych closes it
-        card2.Button.onClick.Invoke();
+        card2.Button!.onClick.Invoke();
         var picker = AssertNotNull(TierBossPicker.Current, "Clicking a card opens the picker")!;
         AssertEquals(picker.Tier, 2, "Picker tier");
         Assert(picker.Choices[nameof(BossType.Vortex)].transform.Find(BossEditorSection.SelectedMarker).gameObject.activeSelf,
@@ -279,7 +279,7 @@ public class MixedBossCreatorTest : CustomBossTest
         Assert(!section.Mode.AdvancedPicked, "Clicking Standard picks its tab");
         AssertEquals(BossMode.Options.TierBosses, null, "Off: one boss for every tier");
         AssertEquals(BossMode.Options.BossId(2), "Vortex2", "Off: tier 2 has the Boss Type");
-        Assert(!card2.Button.interactable, "Off: the cards are a preview again");
+        Assert(!card2.Button!.interactable, "Off: the cards are a preview again");
         Assert(section.BossTypeRow.activeInHierarchy, "Off: the Boss Type shows again");
         section.Editor.randomBtn.onClick.Invoke();
         yield return new WaitForSecondsRealtime(0.5f);
