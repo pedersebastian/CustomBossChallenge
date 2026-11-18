@@ -139,7 +139,7 @@ public static class GildebloonMapLook
     }
 
     /// <summary>A material of the map to make the pile's from, so it is lit like the map</summary>
-    private static Material? Template(Transform map)
+    internal static Material? Template(Transform map)
     {
         foreach (var renderer in map.GetComponentsInChildren<MeshRenderer>(true))
         {

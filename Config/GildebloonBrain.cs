@@ -53,9 +53,13 @@ public static class GildebloonBrain
     /// <summary>A Tax Collector that leaks takes this share of the player's cash, up to twice the Toll's cap</summary>
     public const double CollectorShare = 0.05;
 
-    /// <summary>How far from Gildebloon Banana Farms are seized, and for how long</summary>
-    public const float SeizeRadius = 80;
+    /// <summary>How far from Gildebloon towers are seized at a skull, per tier 1-5</summary>
+    internal static readonly float[] SeizeRadii = [50, 55, 60, 65, 70];
 
+    /// <summary>How far from Gildebloon towers are seized at a skull</summary>
+    public static float SeizeRadiusFor(int tier) => SeizeRadii[Math.Clamp(tier, 1, SeizeRadii.Length) - 1];
+
+    /// <summary>How long Banana Farms near it are seized at a skull</summary>
     public const int SeizeSeconds = 12;
 
     /// <summary>How long the other towers near it stop attacking at a skull</summary>
@@ -89,6 +93,9 @@ public static class GildebloonBrain
 
     private static Vault? vault;
 
+    /// <summary>The simulation frame last run</summary>
+    private static long lastFrame;
+
     private static readonly List<(Tower Tower, long Until, bool Farm)> Seized = new();
 
     /// <summary>What the Gildebloon alive has stolen and not paid back yet, or 0</summary>
@@ -110,9 +117,17 @@ public static class GildebloonBrain
     public static int FrozenCount => Seized.Count(entry => !entry.Farm);
 
     /// <summary>
-    /// A Gildebloon reached a skull: what it seized, and how many towers it stopped (farms included); the HUD shows it
+    /// A Repossession at a skull: the cash it seized, how many towers it froze for <see cref="FreezeSeconds"/> and
+    /// how many Banana Farms it locked for <see cref="SeizeSeconds"/>, how far it reached, and the boss
     /// </summary>
-    public static event Action<double, int>? Repossessed;
+    public sealed record Repossession(double Cash, int Frozen, int Farms, float Radius, Bloon Boss);
+
+    /// <summary>A Gildebloon reached a skull; the HUD and the map show it</summary>
+    public static event Action<Repossession>? Repossessed;
+
+    /// <summary>The towers seized now, the seconds they have left, and whether each is a Banana Farm</summary>
+    public static List<(Tower Tower, float SecondsLeft, bool Farm)> SeizedNow() =>
+        Seized.Select(entry => (entry.Tower, Math.Max(0, (entry.Until - lastFrame) / (float) FramesPerSecond), entry.Farm)).ToList();
 
     /// <summary>A Gildebloon took cash, or paid it back (a negative amount); the HUD shows it</summary>
     public static event Action<double>? CashTaken;
@@ -134,6 +149,7 @@ public static class GildebloonBrain
         var sim = manager.sim;
         if (sim == null) return;
         var frame = (long) sim.time.elapsed;
+        lastFrame = frame;
 
         ReleaseSeized(frame);
 
@@ -180,8 +196,9 @@ public static class GildebloonBrain
             var cap = TollCap[Math.Clamp(current.Tier, 1, TollCap.Length) - 1] * (current.Elite ? 2 : 1) * SkullCapTimes;
             var before = current.Stolen;
             Steal(sim, boss, current, Math.Min(Cash(sim) * SkullShare, cap));
-            var towers = Repossess(sim, boss, frame);
-            Repossessed?.Invoke(current.Stolen - before, towers);
+            var radius = SeizeRadiusFor(current.Tier);
+            var (frozen, farms) = Repossess(sim, boss, frame, radius);
+            Repossessed?.Invoke(new Repossession(current.Stolen - before, frozen, farms, radius, boss));
         }
     }
 
@@ -307,8 +324,8 @@ public static class GildebloonBrain
     }
 
     /// <summary>Seizes the towers near the boss</summary>
-    /// <returns>How many towers it stopped</returns>
-    private static int Repossess(Simulation sim, Bloon boss, long frame)
+    /// <returns>How many towers it froze, and how many Banana Farms it locked</returns>
+    private static (int Frozen, int Farms) Repossess(Simulation sim, Bloon boss, long frame, float radius)
     {
         var position = boss.Position;
         var farms = 0;
@@ -318,7 +335,7 @@ public static class GildebloonBrain
             if (tower == null || tower.IsDestroyed || Seized.Any(entry => entry.Tower.Pointer == tower.Pointer)) continue;
             var dx = tower.Position.X - position.X;
             var dy = tower.Position.Y - position.Y;
-            if (dx * dx + dy * dy > SeizeRadius * SeizeRadius) continue;
+            if (dx * dx + dy * dy > radius * radius) continue;
 
             var farm = tower.towerModel?.baseId == FarmBaseId;
             tower.SetAttackingDisabled(true);
@@ -328,8 +345,8 @@ public static class GildebloonBrain
             else others++;
         }
 
-        ModHelper.Msg<CustomBossChallenge>($"{boss.bloonModel.id} reached a skull: {farms} Banana Farms seized, {others} towers stopped");
-        return farms + others;
+        ModHelper.Msg<CustomBossChallenge>($"{boss.bloonModel.id} reached a skull: {farms} Banana Farms seized, {others} towers frozen within {radius}");
+        return (others, farms);
     }
 
     private static void ReleaseSeized(long frame)

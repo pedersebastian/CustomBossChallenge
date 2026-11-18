@@ -89,3 +89,15 @@ What could still show of Bloonarius, and how each is handled:
 
 `Tests.GildebloonNoBloonariusTest` scans every renderer drawing during an Elite match, through every skull and its
 death, for "Bloonarius" in its object, mesh or material.
+
+## The Repossession on screen
+
+At each skull Gildebloon seizes cash and the towers near it (50 to 70 units, by tier). `Visuals/GildebloonSeizeLook.cs`
+shows it on the map: a gold ring grows out to its reach, coins fly from the seized towers to it, and every seized tower
+has a padlock over it whose ring shrinks as its time runs out (3 s, Banana Farms 12 s), bursting into coins when it is
+let go. The banner says what it took ("froze 1 tower for 3 s", the Banana Farms on their own line), and a selected
+seized tower shows its time left in the middle of the screen. The Vault makes way while the tower menu is open.
+
+Things drawn on the map with a material made from the map's own are drawn before the towers and bloons (render queue
+1998), so they would be hidden under them; the padlocks and the ring use copies drawn last (3500). The game's camera is
+orthographic and looks down at 60 degrees; towers stand at y = 0, bosses fly at y = 180.

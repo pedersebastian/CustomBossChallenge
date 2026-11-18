@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BTD_Mod_Helper.Api.Components;
 using BTD_Mod_Helper.Api.Enums;
 using CustomBossChallenge.Config;
@@ -26,7 +27,7 @@ public static class GildebloonHud
     private static float changeStart = -100;
     private static bool subscribed;
 
-    /// <summary>The Vault panel while it is shown, for tests</summary>
+    /// <summary>The Vault panel while it is shown, for tests (hidden while a tower is selected)</summary>
     public static ModHelperPanel? Panel => panel != null && panel.gameObject != null ? panel : null;
 
     /// <summary>The amount it shows, for tests</summary>
@@ -45,6 +46,7 @@ public static class GildebloonHud
         if (!GildebloonBrain.Active)
         {
             if (Panel != null) Panel.gameObject.SetActive(false);
+            if (seizedLine != null) seizedLine.gameObject.SetActive(false);
             return;
         }
 
@@ -55,12 +57,16 @@ public static class GildebloonHud
             Build(ui);
         }
 
-        Panel!.gameObject.SetActive(true);
+        // The tower menu covers the boss panel's right end, where the Vault is: the Vault makes way while it is open
+        var selected = Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu.TowerSelectionMenu.instance?.selectedTower != null;
+        Panel!.gameObject.SetActive(!selected);
         amount!.SetText($"${GildebloonBrain.Stolen:N0}");
 
         var age = Time.unscaledTime - changeStart;
         change!.gameObject.SetActive(age < ChangeSeconds);
         if (age < ChangeSeconds) change.Text.alpha = Math.Min(1, (ChangeSeconds - age) / 0.6f);
+
+        UpdateSeizedLine();
 
         var shown = Time.unscaledTime - bannerStart;
         banner!.gameObject.SetActive(shown < BannerSeconds);
@@ -72,12 +78,46 @@ public static class GildebloonHud
     }
 
     /// <summary>The Repossession at a skull, shown big in the middle of the screen for a moment</summary>
-    private static void OnRepossessed(double cash, int towers)
+    private static void OnRepossessed(GildebloonBrain.Repossession repossession)
     {
         if (Panel == null || banner == null) return;
-        banner.SetText(Menus.Texts.GildebloonRepossession.T($"{cash:N0}", towers));
+        banner.SetText(BannerText(repossession));
         bannerStart = Time.unscaledTime;
         Repossessions++;
+    }
+
+    /// <summary>
+    /// "Repossession! Gildebloon seized $2,400 and froze 3 towers for 3 s", with the Banana Farms it locked on a line
+    /// of their own
+    /// </summary>
+    public static string BannerText(GildebloonBrain.Repossession repossession)
+    {
+        var cash = $"{repossession.Cash:N0}";
+        var text = repossession.Frozen switch
+        {
+            0 => Texts.GildebloonRepossessionCash.T(cash),
+            1 => Texts.GildebloonRepossession.T(cash, Texts.GildebloonTowerOne.T(), GildebloonBrain.FreezeSeconds),
+            _ => Texts.GildebloonRepossession.T(cash, Texts.GildebloonTowers.T(repossession.Frozen), GildebloonBrain.FreezeSeconds)
+        };
+        if (repossession.Farms > 0) text += "\n" + Texts.GildebloonFarmsLocked.T(repossession.Farms, GildebloonBrain.SeizeSeconds);
+        return text;
+    }
+
+    /// <summary>The line under the Vault while a seized tower is selected, for tests</summary>
+    public static string? SeizedLine => seizedLine != null && seizedLine.gameObject.activeSelf ? seizedLine.Text.text : null;
+
+    private static ModHelperText? seizedLine;
+
+    /// <summary>A seized tower selected: how long until it is let go</summary>
+    private static void UpdateSeizedLine()
+    {
+        if (seizedLine == null) return;
+        var selected = Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu.TowerSelectionMenu.instance?.selectedTower?.tower;
+        var seized = selected == null ? null
+            : GildebloonBrain.SeizedNow().Where(entry => entry.Tower != null && entry.Tower.Pointer == selected.Pointer)
+                .Select(entry => (float?) entry.SecondsLeft).FirstOrDefault();
+        seizedLine.gameObject.SetActive(seized != null);
+        if (seized is { } left) seizedLine.SetText(Texts.GildebloonSeizedFor.T(Math.Ceiling(left)));
     }
 
     /// <summary>How many Repossessions the HUD showed, for tests</summary>
@@ -127,13 +167,26 @@ public static class GildebloonHud
         change.gameObject.SetActive(false);
 
         // The Repossession banner, under the boss panel's middle, in gold
-        banner = ModHelperText.Create(new Info("Repossession", -canvas.rect.height * 0.42f, -canvas.rect.height * 0.1f,
-            canvas.rect.height * 1.4f, height * 1.4f), "", height * 0.75f);
+        banner = ModHelperText.Create(new Info("Repossession", -canvas.rect.height * 0.42f, -canvas.rect.height * 0.12f,
+            canvas.rect.height * 1.4f, height * 2.8f), "", height * 0.75f);
         banner.transform.SetParent(panel.transform, false);
         banner.Text.color = new Color(1f, 0.82f, 0.25f);
         banner.Text.textWrappingMode = TextWrappingModes.NoWrap;
         banner.Text.outlineWidth = 0.25f;
         banner.Text.outlineColor = new Color32(70, 40, 0, 255);
         banner.gameObject.SetActive(false);
+
+        // A seized tower's time left, in the middle under the boss panel, where the tower menu doesn't cover it
+        seizedLine = ModHelperText.Create(new Info("GildebloonSeized", 0, -canvas.rect.height * 0.2f, canvas.rect.height * 0.8f, height)
+        {
+            Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 0.5f)
+        }, "", height * 0.6f);
+        seizedLine.transform.SetParent(canvas, false);
+        seizedLine.transform.SetSiblingIndex(panel.transform.GetSiblingIndex() + 1);
+        seizedLine.Text.color = new Color(1f, 0.82f, 0.25f);
+        seizedLine.Text.textWrappingMode = TextWrappingModes.NoWrap;
+        seizedLine.Text.outlineWidth = 0.2f;
+        seizedLine.Text.outlineColor = new Color32(70, 40, 0, 255);
+        seizedLine.gameObject.SetActive(false);
     }
 }

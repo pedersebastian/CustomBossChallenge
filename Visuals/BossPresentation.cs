@@ -99,7 +99,7 @@ public static class BossPresentation
         ? Effects(map).Select(effect => effect.name).OrderBy(name => name).ToArray()
         : Array.Empty<string>();
 
-    private static Transform? MapRoot() =>
+    internal static Transform? MapRoot() =>
         UI.instance?.mapLoader?.bossAmbientFx?.transform.parent ?? GameObject.Find("Map")?.transform;
 
     /// <summary>The boss effects the map has: its children named like the game's ambient and track effects</summary>

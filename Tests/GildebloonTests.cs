@@ -275,7 +275,8 @@ public class GildebloonBrainTest : GildebloonTest
 
         // Repossession: a Banana Farm next to it is seized at its first skull
         var position = boss.Position;
-        CreateTowerAt(bridge, new Vector2(position.X + 10, position.Y + 10), Game.instance.model.GetTowerFromId("BananaFarm"), costOverride: 0);
+        CreateTowerAt(bridge, new Vector2(position.X + 25, position.Y + 30), Game.instance.model.GetTowerFromId("BananaFarm"), costOverride: 0);
+        CreateTowerAt(bridge, new Vector2(position.X - 20, position.Y - 35), Game.instance.model.GetTowerFromId("DartMonkey"), costOverride: 0);
         yield return WaitFor(() => bridge.Simulation.towerManager.GetTowersByBaseId(GildebloonBrain.FarmBaseId).ToList().Count > 0, "The farm");
         var farm = bridge.Simulation.towerManager.GetTowersByBaseId(GildebloonBrain.FarmBaseId).ToList()[0];
         var beforeSkull = GildebloonBrain.Stolen;
@@ -287,18 +288,36 @@ public class GildebloonBrainTest : GildebloonTest
         Log($"at the skull: vault {beforeSkull} -> {GildebloonBrain.Stolen}, cash {cashBefore} -> {bridge.GetCash(-1)}");
         Assert(GildebloonBrain.Stolen >= beforeSkull + Math.Min(cashBefore * GildebloonBrain.SkullShare, 150 * GildebloonBrain.SkullCapTimes) - 1,
             "It seized a share of the cash at the skull");
+        yield return new WaitForSecondsRealtime(0.1f);
+        var folderNow = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
+        if (!string.IsNullOrEmpty(folderNow)) yield return ScreenshotTour.Capture(folderNow, "gildebloon-repossession-ring");
         yield return new WaitForSecondsRealtime(0.3f);
         Assert(Visuals.GildebloonHud.Repossessions > 0, "The Repossession was shown");
         var banner = AssertNotNull(Visuals.GildebloonHud.Banner, "The Repossession banner shows")!;
-        Assert(banner.Contains("Gildebloon"), $"Banner: {banner}");
+        Log($"banner: {banner.Replace('\n', '/')}; frozen {GildebloonBrain.FrozenCount}, padlocks {Visuals.GildebloonSeizeLook.PadlockCount}");
+        Assert(banner.Contains("Gildebloon") && banner.Contains("Banana Farms locked: 1"), $"Banner: {banner}");
+        Assert(Visuals.GildebloonSeizeLook.RingsShown > 0, "The ring showed how far it reached");
+        AssertEquals(Visuals.GildebloonSeizeLook.PadlockCount, GildebloonBrain.SeizedCount + GildebloonBrain.FrozenCount, "A padlock over each seized tower");
+        if (!string.IsNullOrEmpty(folderNow)) yield return ScreenshotTour.Capture(folderNow, "gildebloon-repossession");
+
+        // The banner says how many towers, in the right form
+        AssertEquals(Visuals.GildebloonHud.BannerText(new GildebloonBrain.Repossession(2400, 1, 0, 50, boss)),
+            "Repossession! Gildebloon seized $2,400 and froze 1 tower for 3 s", "One tower");
+        AssertEquals(Visuals.GildebloonHud.BannerText(new GildebloonBrain.Repossession(2400, 30, 0, 50, boss)),
+            "Repossession! Gildebloon seized $2,400 and froze 30 towers for 3 s", "Many towers");
+        AssertEquals(Visuals.GildebloonHud.BannerText(new GildebloonBrain.Repossession(80, 0, 0, 50, boss)),
+            "Repossession! Gildebloon seized $80", "No towers");
 
         // The Vault lies under the tower menu, like the boss panel (#25)
         var menu = Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu.TowerSelectionMenu.instance;
         var farmView = InGame.instance.bridge.GetAllTowers().ToList().First(tower => tower.tower.Pointer == farm.Pointer);
         menu.SelectTower(farmView);
         yield return new WaitForSecondsRealtime(1);
+        var line = AssertNotNull(Visuals.GildebloonHud.SeizedLine, "The selected farm's time left shows")!;
+        Assert(line.StartsWith("Repossessed: "), $"Seized line: {line}");
         var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
         if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, "gildebloon-tower-menu");
+        Assert(!Visuals.GildebloonHud.Panel!.gameObject.activeSelf, "The Vault makes way for the tower menu");
         var panel = AssertNotNull(Visuals.GildebloonHud.Panel, "The Vault")!.transform;
         var bossUi = UnityEngine.Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.InGame.Races.BossUI>()!.transform;
         while (bossUi.parent != null && bossUi.parent != panel.parent) bossUi = bossUi.parent;
@@ -319,6 +338,8 @@ public class GildebloonBrainTest : GildebloonTest
         Log($"payout {GildebloonBrain.LastPayout} for a vault of at least {vault}, farm released {!farm.IsAttackingDisabled}");
         Assert(GildebloonBrain.LastPayout >= Math.Floor(vault * GildebloonBrain.PayoutFactor), "It paid back what it stole, with interest");
         Assert(!farm.IsAttackingDisabled && !farm.IsSellingBlocked, "The farm is released when it is beaten");
+        yield return null;
+        AssertEquals(Visuals.GildebloonSeizeLook.PadlockCount, 0, "The padlocks are gone when it is beaten");
 
         // The victory screen names Gildebloon and shows its portrait, not Bloonarius's
         Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen? screen = null;

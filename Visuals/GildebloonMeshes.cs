@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
@@ -17,6 +18,7 @@ public static class GildebloonMeshes
         "sphere" => Sphere((int) Arg(args, 0, 16), (int) Arg(args, 1, 12)),
         "cylinder" => Cylinder((int) Arg(args, 0, 16), Arg(args, 1, 1), Arg(args, 2, 1)),
         "cone" => Cone((int) Arg(args, 0, 10)),
+        "ring" => Ring((int) Arg(args, 0, 48), Arg(args, 1, 0.85f)),
         _ => Box()
     };
 
@@ -114,6 +116,34 @@ public static class GildebloonMeshes
 
         for (var segment = 0; segment < segments; segment++) triangles.AddRange(new[] {0, segment + 2, segment + 1});
         return Finish(vertices, uvs, triangles);
+    }
+
+    /// <summary>
+    /// A flat ring of radius 1 on the ground (y = 0), seen from both sides, with the given inner radius. Only made in
+    /// the game: the Repossession's reach.
+    /// </summary>
+    public static Mesh Ring(int segments, float inner)
+    {
+        var vertices = new List<Vector3>();
+        var uvs = new List<Vector2>();
+        var triangles = new List<int>();
+        for (var segment = 0; segment <= segments; segment++)
+        {
+            var angle = segment / (float) segments * Mathf.PI * 2;
+            var direction = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+            vertices.Add(direction);
+            vertices.Add(direction * inner);
+            uvs.Add(new Vector2(segment / (float) segments, 1));
+            uvs.Add(new Vector2(segment / (float) segments, 0));
+            if (segment == segments) continue;
+            var i = segment * 2;
+            triangles.AddRange(new[] {i, i + 2, i + 1, i + 1, i + 2, i + 3});
+            triangles.AddRange(new[] {i, i + 1, i + 2, i + 1, i + 3, i + 2});
+        }
+        // Lit from above on both sides: the two windings' normals would cancel out
+        var mesh = Finish(vertices, uvs, triangles);
+        mesh.normals = new Il2CppStructArray<Vector3>(vertices.Select(_ => Vector3.up).ToArray());
+        return mesh;
     }
 
     public static Mesh Box()

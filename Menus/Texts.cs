@@ -208,7 +208,13 @@ public static class Texts
     public static readonly string GildebloonOff = Key(nameof(GildebloonOff),
         "This setup has Gildebloon, a boss made by this mod. Turn on Include Gildebloon in Mod Settings to play it.");
     public static readonly string GildebloonRepossession = Key(nameof(GildebloonRepossession),
-        "Repossession! Gildebloon took ${0} and stopped {1} towers");
+        "Repossession! Gildebloon seized ${0} and froze {1} for {2} s");
+    public static readonly string GildebloonRepossessionCash = Key(nameof(GildebloonRepossessionCash),
+        "Repossession! Gildebloon seized ${0}");
+    public static readonly string GildebloonTowerOne = Key(nameof(GildebloonTowerOne), "1 tower");
+    public static readonly string GildebloonTowers = Key(nameof(GildebloonTowers), "{0} towers");
+    public static readonly string GildebloonFarmsLocked = Key(nameof(GildebloonFarmsLocked), "Banana Farms locked: {0}, for {1} s");
+    public static readonly string GildebloonSeizedFor = Key(nameof(GildebloonSeizedFor), "Repossessed: {0} s");
     public static readonly string CodeTooNew = Key(nameof(CodeTooNew),
         "This code comes from a newer version of Custom Boss Challenge. Update the mod to load it.");
 
