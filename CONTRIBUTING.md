@@ -47,6 +47,12 @@ and the portraits `Images/Gildebloon.png` and `Images/GildebloonElite.png`. Ther
 loading a prefab, mesh or texture from one, so the mod makes the meshes itself (`Visuals/GildebloonMeshes.cs`, which
 must stay in step with the script's shapes). `GildebloonLookTest` checks the look in the game.
 
+Gildebloon's own rounds, Gold Rush, are made by `python tools/make-gildebloon-rounds.py` from the game's default rounds
+in `tools/data` (written by the in-game `RoundDataTest` with `CBC_ROUND_DATA=<repo>/tools/data`); `--check` tells
+whether `Config/RoundSets/gildebloon.json` is up to date. On the website the Studio offers Gildebloon only on the dev
+server or with `?experimental=gildebloon` in the address (`web/src/studio/experimental.ts`); codes with it open
+everywhere.
+
 The look itself (colours per boss, strength per tier) is in `Config/TierLook.cs`. `TierLookTour` saves tiers 5-10 of
 every boss next to each other when the game is started with `CBC_SCREENSHOTS=<folder>` (`CBC_TIERLOOK_BOSSES=Lych,Vortex`
 picks bosses).

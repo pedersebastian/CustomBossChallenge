@@ -144,6 +144,19 @@ public class WebDataTest : CustomBossTest
             bosses[boss.ToString()] = versions;
         }
 
+        // Gildebloon (#25) from the mod's own tables, so the website has its numbers whether or not it is switched on
+        var gildebloon = new JObject();
+        foreach (var elite in new[] {false, true})
+        {
+            gildebloon[elite ? "elite" : "normal"] = new JArray(Enumerable.Range(0, TierMath.VanillaTiers).Select(index => new JObject
+            {
+                ["health"] = (float) (elite ? Gildebloon.EliteHealth : Gildebloon.Health)[index],
+                ["speed"] = Gildebloon.Speed[index],
+                ["skulls"] = new JArray((elite ? Gildebloon.EliteSkulls : Gildebloon.Skulls).Select(p => (object) p))
+            }));
+        }
+        bosses[BossList.GildebloonName] = gildebloon;
+
         var defaults = DailyChallengeModel.CreateDefaultEditorModel();
         var maps = new JObject();
         // The map lists' groups in the game, e.g. "Beginner", so the Studio can group its map list the same way (#97)

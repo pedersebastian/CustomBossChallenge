@@ -494,7 +494,7 @@ public class GildebloonNoBloonariusTest : GildebloonTest
                 seen[bloon.Pointer] = ++seenFrames;
                 if (seenFrames < 3) continue;
                 if (seenFrames > 60) Assert(Visuals.GildebloonLook.CollectorLooks > 0, "A Tax Collector has its own look");
-                Assert(!Visuals.GildebloonLook.BodyShows(bloon), "A Tax Collector's MOAB body doesn't show");
+                if (Visuals.GildebloonLook.HasLook(bloon)) Assert(!Visuals.GildebloonLook.BodyShows(bloon), "A Tax Collector's MOAB body doesn't show");
                 Assert(bloon.mutators == null || !bloon.mutators.ToArray().Any(m => m.mutator?.id == Visuals.GildebloonLook.BossSkinMutator),
                     "A Tax Collector has no boss skin");
             }

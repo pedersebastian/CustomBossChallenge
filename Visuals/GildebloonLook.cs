@@ -192,6 +192,9 @@ public static class GildebloonLook
         }
     }
 
+    /// <summary>Whether the bloon has its look on now, for tests</summary>
+    public static bool HasLook(Bloon bloon) => Looks.TryGetValue(bloon.Pointer, out var look) && look.Look != null;
+
     /// <summary>Whether a part of the body the look replaces draws now, for tests</summary>
     public static bool BodyShows(Bloon bloon)
     {
@@ -312,9 +315,10 @@ public static class GildebloonLook
         {
             if (look.Look != null)
             {
-                if (gone && look.GraphicObject != null && look.GraphicObject.activeInHierarchy)
+                // Gone: it bursts where it was, on the map, also when the game put its display away at once
+                if (gone)
                 {
-                    look.Look.transform.SetParent(null, true);
+                    look.Look.transform.SetParent(BossPresentation.MapRoot(), true);
                     look.BurstStart = Time.time;
                     foreach (var (coin, _) in look.Spray)
                     {

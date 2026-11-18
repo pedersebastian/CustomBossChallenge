@@ -3,6 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { GAME, TIER_LOOK } from "../src/data/types";
 import { MAX_TIERS, VANILLA_TIERS } from "@cbc/share-code/tiers";
+import { MOD_BOSSES } from "@cbc/share-code";
 import { tierGlow, tierGlowStyle } from "../src/preview/tierLook";
 import css from "../src/style.css?raw";
 
@@ -11,7 +12,9 @@ const HEX = /^#[0-9A-F]{6}$/;
 
 describe("tier look data", () => {
   it("has a colour for each tier above 5 of every boss", () => {
-    expect(Object.keys(TIER_LOOK.themes).sort()).toEqual(Object.keys(GAME.bosses).sort());
+    // The game's bosses have their own colours; the mod's own Gildebloon (#25) has the default ones
+    const gameBosses = Object.keys(GAME.bosses).filter((boss) => !(MOD_BOSSES as readonly string[]).includes(boss));
+    expect(Object.keys(TIER_LOOK.themes).sort()).toEqual(gameBosses.sort());
     for (const theme of [...Object.values(TIER_LOOK.themes), TIER_LOOK.defaultTheme]) {
       expect(theme).toHaveLength(STEPS);
       for (const color of theme) expect(color).toMatch(HEX);

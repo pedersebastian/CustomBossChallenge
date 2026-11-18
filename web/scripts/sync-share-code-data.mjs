@@ -8,10 +8,16 @@ import { fileURLToPath } from "node:url";
 
 const game = JSON.parse(readFileSync(fileURLToPath(new URL("../src/data/game.json", import.meta.url)), "utf8"));
 
+/**
+ * The mod's own bosses (#25): game.json has their numbers for the preview, but the package lists them apart
+ * (MOD_BOSSES in options.ts), so its BOSSES stay the game's
+ */
+const MOD_BOSSES = ["Gildebloon"];
+
 /** The share-code data: what the package's decode and encode read, in a fixed order */
 export const shareCodeData = (data) => ({
   gameVersion: data.gameVersion,
-  bosses: Object.keys(data.bosses),
+  bosses: Object.keys(data.bosses).filter((boss) => !MOD_BOSSES.includes(boss)),
   defaultOptions: data.defaultOptions,
   defaultChallenge: data.defaultChallenge,
   challengeFields: data.challengeFields,

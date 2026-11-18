@@ -9,7 +9,8 @@ import { formatDecimals } from "@cbc/share-code/dotnet";
 import type { Challenge } from "@cbc/share-code";
 import { tierCards } from "../preview/compute";
 import { releaseSetup, renderSkulls } from "../preview/render";
-import { CHOICES, FOLLOWS, MAX_HEALTH, MAX_SPEED, MIN_HEALTH, MIN_SPEED, NORMAL, RANDOM } from "@cbc/share-code/tier-bosses";
+import { FOLLOWS, MAX_HEALTH, MAX_SPEED, MIN_HEALTH, MIN_SPEED, NORMAL, RANDOM } from "@cbc/share-code/tier-bosses";
+import { studioChoices } from "./experimental";
 import { MAX_SKULLS } from "@cbc/share-code/skulls";
 import { MAX_TIERS } from "@cbc/share-code/tiers";
 import * as edit from "./state";
@@ -36,6 +37,7 @@ export function setUpTierEditor(
   current: () => StudioSetup,
   resetAll: () => void,
 ): TierEditor {
+  const CHOICES = studioChoices();
   let selected = 1;
   const { reset, slider, checkbox, select, text } = makeRows(change);
 

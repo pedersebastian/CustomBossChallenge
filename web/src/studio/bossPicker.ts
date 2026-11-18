@@ -3,8 +3,8 @@
 // Config/TierLook.cs), not a portrait from the game (#96). A radio group: one tab stop, and the arrow keys, Home and End
 // pick a boss, like the Boss Creator's arrows.
 
-import { BOSSES } from "@cbc/share-code";
 import { h } from "../dom";
+import { GILDEBLOON_COLOUR, studioBosses } from "./experimental";
 import { TIER_LOOK } from "../data/types";
 import { icon } from "./icons";
 import { breakable } from "../preview/render";
@@ -13,13 +13,15 @@ import * as edit from "./state";
 import type { StudioSetup } from "./state";
 
 /** The colour of a boss's badge: the first of its tier colours */
-export const bossColour = (boss: string): string => (TIER_LOOK.themes[boss] ?? TIER_LOOK.defaultTheme)[0];
+export const bossColour = (boss: string): string =>
+  TIER_LOOK.themes[boss]?.[0] ?? (boss === "Gildebloon" ? GILDEBLOON_COLOUR : TIER_LOOK.defaultTheme[0]);
 
 export function setUpBossPicker(
   change: (update: (current: StudioSetup) => StudioSetup) => void,
   reset: (label: string, onReset: () => void) => HTMLButtonElement,
 ): Control & { buttons: HTMLButtonElement[]; elite: HTMLInputElement } {
   const labelId = nextId("boss-label");
+  const BOSSES = studioBosses();
 
   const buttons = BOSSES.map((boss) => {
     const button = h(
