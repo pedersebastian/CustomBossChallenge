@@ -16,9 +16,12 @@ namespace CustomBossChallenge.Visuals;
 /// Gildebloon's own look (#25): the gold vault-blimp, built from the layout in Bundles/gildebloon.layout.json and the
 /// textures in Images/ (both made by UnityProject's BuildGildebloon), takes the place of the Bloonarius body its
 /// models come with. Its parts are moved here, looked up by name: the dial spins, the coins circle it, the money bags
-/// shrink as its health goes, and the vault door bursts open with a spray of coins at each skull.
+/// shrink as its health goes, the vault door bursts open with a spray of coins at each skull, and it bursts into coins
+/// when it is beaten. Its Tax Collectors get a small gold vault of their own in place of the MOAB or BFB.
 /// <br/>
-/// If the layout or the textures are missing, the Bloonarius body is tinted gold instead.
+/// No part of the body it replaces may show (#25). The game's animations turn the body's parts back on as it takes
+/// damage, so they are kept from drawing with <c>forceRenderingOff</c>, which the animations leave alone, and checked
+/// every frame. If the layout or the textures are missing, the Bloonarius body is tinted gold instead.
 /// </summary>
 public static class GildebloonLook
 {
@@ -30,6 +33,17 @@ public static class GildebloonLook
 
     /// <summary>How wide it is on the map, in the game's units: about as wide as Bloonarius</summary>
     public const float MapWidth = 45;
+
+    /// <summary>How long a Tax Collector's hull is in the look's units</summary>
+    private const float CollectorModelLength = 2.7f;
+
+    /// <summary>How long a Tax Collector is on the map, about as long as the MOAB (BFB) it replaces</summary>
+    public const float CollectorLength = 26;
+
+    public const float EliteCollectorLength = 34;
+
+    /// <summary>The mutator the game gives bloons a boss sends, which dresses them in the boss's skin</summary>
+    public const string BossSkinMutator = "BossSkinMutator";
 
     /// <summary>The textures the parts get, by the start of their mesh's name ("Gold_Coin" gets Gold)</summary>
     private static readonly string[] TextureNames = {"Gold", "GoldElite", "Iron", "IronElite", "Sack"};
@@ -51,9 +65,12 @@ public static class GildebloonLook
     private sealed class Shown
     {
         public Bloon Bloon = null!;
+        public bool Collector;
         public IntPtr Graphic;
+        public GameObject? GraphicObject;
         public GameObject? Look;
         public readonly List<Renderer> Hidden = new();
+        public int Frames;
         public Transform? Dial, Door, Ring, BagLeft, BagRight;
         public Vector3 BagScale, DoorPosition;
         public int Skulls;
@@ -62,84 +79,179 @@ public static class GildebloonLook
         public bool Tinted;
     }
 
-    private static Shown? shown;
+    /// <summary>The looks on the bloons alive, by the bloon</summary>
+    private static readonly Dictionary<IntPtr, Shown> Looks = new();
+
+    /// <summary>The boss's look, while one is alive</summary>
+    private static Shown? Boss => Looks.Values.FirstOrDefault(look => !look.Collector);
+
+    /// <summary>
+    /// Bodies of bloons that are gone, still hidden while the game plays their end on them; drawn again once the game
+    /// puts the display away for the next bloon that uses it
+    /// </summary>
+    private static readonly List<(GameObject Graphic, List<Renderer> Hidden, float Until)> Leaving = new();
+
+    /// <summary>The longest a gone bloon's body stays hidden, for its end to play</summary>
+    private const float LeavingSeconds = 6;
+
+    /// <summary>Looks bursting into coins after their bloon was beaten</summary>
+    private static readonly List<Shown> Bursts = new();
+
+    private const float BurstSeconds = 1.4f;
 
     /// <summary>The look on the Gildebloon alive, for tests</summary>
-    public static GameObject? Look => shown?.Look;
+    public static GameObject? Look => Boss?.Look;
 
     /// <summary>Whether the Gildebloon alive is tinted gold because the model couldn't be loaded, for tests</summary>
-    public static bool Tinted => shown?.Tinted ?? false;
+    public static bool Tinted => Boss?.Tinted ?? false;
+
+    /// <summary>How many Tax Collectors have their own look now, for tests</summary>
+    public static int CollectorLooks => Looks.Values.Count(look => look.Collector && look.Look != null);
+
+    /// <summary>How many looks burst into coins, for tests</summary>
+    public static int BurstCount { get; private set; }
+
+    /// <summary>How many body parts the game turned back on and were hidden again, for tests</summary>
+    public static int BodyShownAgain { get; private set; }
 
     /// <summary>Called every frame</summary>
     public static void Update()
     {
-        var manager = InGame.instance?.bridge?.Simulation?.map?.spawner?.bossBloonManager;
-        var boss = manager?.CurrentBoss;
-        if (!Experimental.Gildebloon || !CustomBossState.IsActive || boss == null || !Gildebloon.IsGildebloon(boss.bloonModel?.id))
+        var sim = InGame.instance?.bridge?.Simulation;
+        if (!Experimental.Gildebloon || !CustomBossState.IsActive || sim == null ||
+            CustomBossState.ActiveOptions is not {UsesGildebloon: true})
         {
-            Clear();
+            ClearAll();
             return;
         }
 
-        var graphic = boss.GetUnityDisplayNode();
-        if (graphic == null) return;
-
-        if (shown == null || shown.Bloon.Pointer != boss.Pointer || shown.Graphic != graphic.Pointer)
+        var alive = new HashSet<IntPtr>();
+        var boss = sim.map?.spawner?.bossBloonManager?.CurrentBoss;
+        if (boss != null && Gildebloon.IsGildebloon(boss.bloonModel?.id) && boss.health > 0 && !boss.IsDestroyed)
         {
-            Clear();
-            shown = new Shown {Bloon = boss, Graphic = graphic.Pointer};
-            Attach(shown, graphic.gameObject, boss.bloonModel.id.Contains(TierBossMath.EliteSuffix));
+            Track(boss, false, alive);
         }
 
-        Animate(shown, boss);
+        foreach (var bloon in InGame.instance!.GetBloons())
+        {
+            if (bloon != null && !bloon.IsDestroyed && Gildebloon.IsCollector(bloon.bloonModel?.id)) Track(bloon, true, alive);
+        }
 
-        // The game swaps the body's parts as it takes damage (Elite's damage states), turning the Bloonarius body back
-        // on halfway; it is hidden again here
-        if (shown.Look != null && Time.frameCount % BodyCheckFrames == 0) HideBody(shown, graphic.gameObject);
+        foreach (var key in Looks.Keys.Where(key => !alive.Contains(key)).ToList())
+        {
+            Finish(Looks[key], true);
+            Looks.Remove(key);
+        }
+
+        UpdateLeaving();
+        UpdateBursts();
     }
 
-    /// <summary>How often the body is checked for parts the game turned back on</summary>
-    public const int BodyCheckFrames = 10;
+    private static void Track(Bloon bloon, bool collector, HashSet<IntPtr> alive)
+    {
+        alive.Add(bloon.Pointer);
+        // A Tax Collector is sent with the skin of the boss Gildebloon is made from; it has its own look
+        if (collector && !Looks.ContainsKey(bloon.Pointer)) bloon.RemoveMutatorsById(BossSkinMutator);
 
+        var graphic = bloon.GetUnityDisplayNode();
+        Looks.TryGetValue(bloon.Pointer, out var look);
+        if (graphic == null) return;
+
+        if (look == null || look.Graphic != graphic.Pointer)
+        {
+            if (look != null)
+            {
+                Finish(look, false);
+                Looks.Remove(bloon.Pointer);
+            }
+
+            look = new Shown {Bloon = bloon, Collector = collector, Graphic = graphic.Pointer, GraphicObject = graphic.gameObject};
+            // The game builds a new display over a few frames; the look waits until it has its parts
+            if (!Attach(look, graphic.gameObject, bloon.bloonModel.id.Contains(TierBossMath.EliteSuffix))) return;
+            Looks[bloon.Pointer] = look;
+        }
+
+        look.Frames++;
+        if (look.Look != null) HideBody(look, graphic.gameObject);
+        if (!collector) Animate(look, bloon);
+    }
+
+    /// <summary>
+    /// Keeps every part of the body that isn't the look from drawing, also the ones the game added or turned back on
+    /// since the last frame
+    /// </summary>
     private static void HideBody(Shown look, GameObject graphic)
     {
         var root = look.Look!.transform;
         foreach (var renderer in graphic.GetComponentsInChildren<Renderer>(true))
         {
-            if (!renderer.enabled || renderer.transform.IsChildOf(root)) continue;
-            renderer.enabled = false;
+            if (renderer.forceRenderingOff || renderer.transform.IsChildOf(root)) continue;
+            renderer.forceRenderingOff = true;
             look.Hidden.Add(renderer);
-            BodyShownAgain++;
+            if (look.Frames > 1) BodyShownAgain++;
         }
     }
 
-    /// <summary>How many body parts the game turned back on and were hidden again, for tests</summary>
-    public static int BodyShownAgain { get; private set; }
-
-    /// <summary>Whether a part of the Bloonarius body shows now, for tests</summary>
-    public static bool BodyShows(Il2CppAssets.Scripts.Simulation.Bloons.Bloon boss)
+    /// <summary>Whether a part of the body the look replaces draws now, for tests</summary>
+    public static bool BodyShows(Bloon bloon)
     {
-        var graphic = boss.GetUnityDisplayNode();
-        if (graphic == null || shown?.Look == null) return false;
-        var root = shown.Look.transform;
-        return graphic.GetComponentsInChildren<Renderer>(true).Any(r => r.enabled && r.gameObject.activeInHierarchy && !r.transform.IsChildOf(root));
+        var graphic = bloon.GetUnityDisplayNode();
+        if (graphic == null) return false;
+        Looks.TryGetValue(bloon.Pointer, out var look);
+        var root = look?.Look != null ? look.Look.transform : null;
+        return graphic.GetComponentsInChildren<Renderer>(true).Any(r =>
+            r.enabled && !r.forceRenderingOff && r.gameObject.activeInHierarchy && (root == null || !r.transform.IsChildOf(root)));
     }
 
-    private static void Attach(Shown look, GameObject graphic, bool elite)
+    /// <summary>
+    /// Where renderers drawing now belong to Bloonarius (by their object, mesh or material), for tests
+    /// </summary>
+    public static List<string> BloonariusShowing()
     {
-        var renderers = graphic.GetComponentsInChildren<Renderer>(true).Where(r => r.enabled).ToList();
+        var found = new List<string>();
+        foreach (var renderer in Object.FindObjectsOfType<Renderer>())
+        {
+            if (!renderer.enabled || renderer.forceRenderingOff || !renderer.gameObject.activeInHierarchy || IsOurs(renderer.transform)) continue;
+            var material = renderer.sharedMaterial;
+            var mesh = renderer.TryGetComponent<MeshFilter>(out var filter) ? filter.sharedMesh : null;
+            var names = $"{renderer.name} {(material != null ? material.name : "")} {(mesh != null ? mesh.name : "")} {PathOf(renderer.transform)}";
+            if (names.Contains("Bloonarius", StringComparison.OrdinalIgnoreCase)) found.Add(PathOf(renderer.transform));
+        }
+        return found;
+    }
+
+    /// <summary>Whether a part is one of the mod's own: a look or the pile of money</summary>
+    private static bool IsOurs(Transform transform)
+    {
+        for (var t = transform; t != null; t = t.parent)
+        {
+            if (t.name.StartsWith(RootName) || t.name == GildebloonMapLook.PileName) return true;
+        }
+        return false;
+    }
+
+    private static string PathOf(Transform transform)
+    {
+        var parts = new List<string>();
+        for (var t = transform; t != null && parts.Count < 6; t = t.parent) parts.Add(t.name);
+        parts.Reverse();
+        return string.Join("/", parts);
+    }
+
+    /// <returns>Whether the look is on; false while the display has no parts yet</returns>
+    private static bool Attach(Shown look, GameObject graphic, bool elite)
+    {
+        var renderers = graphic.GetComponentsInChildren<Renderer>(true).Where(r => !r.forceRenderingOff).ToList();
+        if (renderers.Count == 0) return false;
         if (!loaded) Load();
-        var layout = Layouts.TryGetValue(elite ? "GildebloonElite" : "Gildebloon", out var own) ? own
+        // A Tax Collector is always the bright gold one, Elite's only bigger
+        var layout = Layouts.TryGetValue(elite && !look.Collector ? "GildebloonElite" : "Gildebloon", out var own) ? own
             : Layouts.TryGetValue("Gildebloon", out var normal) ? normal : null;
-        if (Problem != null || layout == null || renderers.Count == 0)
+        if (Problem != null || layout == null)
         {
             Tint(look, renderers);
-            return;
+            return true;
         }
-
-        // Sized and placed like the body it replaces
-        var bounds = renderers[0].bounds;
-        foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
 
         var instance = Build(layout, graphic.transform);
         var parts = instance.GetComponentsInChildren<Renderer>(true);
@@ -147,7 +259,7 @@ public static class GildebloonLook
         {
             Object.Destroy(instance);
             Tint(look, renderers);
-            return;
+            return true;
         }
 
         // The parts get materials made here, from the body's own material where it has one, so they are lit like the
@@ -155,24 +267,30 @@ public static class GildebloonLook
         var template = renderers.Select(r => r.sharedMaterial).FirstOrDefault(m => m != null);
         foreach (var renderer in parts)
         {
-            var mesh = renderer.GetComponent<MeshFilter>()?.sharedMesh;
+            var mesh = renderer.TryGetComponent<MeshFilter>(out var filter) ? filter.sharedMesh : null;
             var key = mesh == null ? "Gold" : mesh.name.Split('_')[0];
             renderer.sharedMaterial = MaterialFor(key, template);
         }
 
-        // As wide on the map as Bloonarius, centred on the boss. The body's own bounds can't be used: its 70-odd
-        // meshes include parts far outside it. The look is ModelWidth wide in its own units.
+        // As wide on the map as Bloonarius, centred on the bloon. The body's own bounds can't be used: its 70-odd
+        // meshes include parts far outside it. The look is ModelWidth wide in its own units. A Tax Collector is a
+        // small vault, the hull and its door, as long as the MOAB or BFB it replaces.
         var scale = graphic.transform.lossyScale.x;
-        if (scale > 0) instance.transform.localScale = Vector3.one * (MapWidth / ModelWidth / scale);
+        var size = MapWidth / ModelWidth;
+        if (look.Collector)
+        {
+            foreach (var name in new[] {"BagLeft", "BagRight", "CoinRing", "Dial"})
+            {
+                if (Find(instance, name) is { } part) Object.DestroyImmediate(part.gameObject);
+            }
+            size = (elite ? EliteCollectorLength : CollectorLength) / CollectorModelLength;
+            instance.name = RootName + "Collector";
+        }
+        if (scale > 0) instance.transform.localScale = Vector3.one * (size / scale);
         instance.transform.localPosition = Vector3.zero;
 
-        foreach (var renderer in renderers)
-        {
-            renderer.enabled = false;
-            look.Hidden.Add(renderer);
-        }
-
         look.Look = instance;
+        HideBody(look, graphic);
         look.Dial = Find(instance, "Dial");
         look.Door = Find(instance, "VaultDoor");
         look.Ring = Find(instance, "CoinRing");
@@ -180,11 +298,140 @@ public static class GildebloonLook
         look.BagRight = Find(instance, "BagRight");
         if (look.BagLeft != null) look.BagScale = look.BagLeft.localScale;
         if (look.Door != null) look.DoorPosition = look.Door.localPosition;
-        look.Skulls = SkullsPassed(look.Bloon);
+        if (!look.Collector) look.Skulls = SkullsPassed(look.Bloon);
+        return true;
+    }
+
+    /// <summary>
+    /// Takes a look off its bloon. When the bloon is gone it bursts into coins where it was, and the body stays hidden
+    /// while the game plays its end; when only its display changed, the old display gets its parts back.
+    /// </summary>
+    private static void Finish(Shown look, bool gone)
+    {
+        try
+        {
+            if (look.Look != null)
+            {
+                if (gone && look.GraphicObject != null && look.GraphicObject.activeInHierarchy)
+                {
+                    look.Look.transform.SetParent(null, true);
+                    look.BurstStart = Time.time;
+                    foreach (var (coin, _) in look.Spray)
+                    {
+                        if (coin != null) Object.Destroy(coin.gameObject);
+                    }
+                    look.Spray.Clear();
+                    Spray(look, look.Collector ? 10 : 24);
+                    Bursts.Add(look);
+                    BurstCount++;
+                }
+                else Object.Destroy(look.Look);
+            }
+
+            if (gone && look.GraphicObject != null)
+            {
+                Leaving.Add((look.GraphicObject, new List<Renderer>(look.Hidden), Time.realtimeSinceStartup + LeavingSeconds));
+            }
+            else Restore(look.Hidden);
+            if (look.Tinted && look.GraphicObject != null)
+            {
+                foreach (var renderer in look.GraphicObject.GetComponentsInChildren<Renderer>(true)) renderer.SetPropertyBlock(null);
+            }
+        }
+        catch (Exception)
+        {
+            // The display went with the match
+        }
+    }
+
+    private static void UpdateLeaving()
+    {
+        for (var i = Leaving.Count - 1; i >= 0; i--)
+        {
+            var (graphic, hidden, until) = Leaving[i];
+            try
+            {
+                // Still out and in time: also what the game adds for the end stays hidden. Put away (inactive) or past
+                // the time: the parts come back for the next bloon that uses the display.
+                if (graphic != null && graphic.activeInHierarchy && Time.realtimeSinceStartup < until)
+                {
+                    foreach (var renderer in graphic.GetComponentsInChildren<Renderer>(true))
+                    {
+                        if (renderer.forceRenderingOff) continue;
+                        renderer.forceRenderingOff = true;
+                        hidden.Add(renderer);
+                    }
+                    continue;
+                }
+                Restore(hidden);
+            }
+            catch (Exception)
+            {
+                // The display went with the match
+            }
+            Leaving.RemoveAt(i);
+        }
+    }
+
+    private static void UpdateBursts()
+    {
+        var delta = Time.deltaTime * Math.Max(1, Time.timeScale);
+        for (var i = Bursts.Count - 1; i >= 0; i--)
+        {
+            var look = Bursts[i];
+            var age = Time.time - look.BurstStart;
+            if (look.Look == null || age > BurstSeconds)
+            {
+                if (look.Look != null) Object.Destroy(look.Look);
+                Bursts.RemoveAt(i);
+                continue;
+            }
+
+            // The vault flies apart: its parts shrink away while the coins fly out
+            foreach (var name in new[] {"Hull", "VaultDoor", "Dial", "BagLeft", "BagRight", "CoinRing"})
+            {
+                if (Find(look.Look, name) is { } part) part.localScale *= Math.Max(0.05f, 1 - delta * 2.5f);
+            }
+            MoveSpray(look, delta, BurstSeconds);
+        }
+    }
+
+    private static void Restore(List<Renderer> hidden)
+    {
+        foreach (var renderer in hidden)
+        {
+            if (renderer != null) renderer.forceRenderingOff = false;
+        }
+        hidden.Clear();
+    }
+
+    /// <summary>Takes every look off, at the end of a match</summary>
+    private static void ClearAll()
+    {
+        if (Looks.Count == 0 && Leaving.Count == 0 && Bursts.Count == 0) return;
+        foreach (var look in Looks.Values) Finish(look, false);
+        Looks.Clear();
+        foreach (var (_, hidden, _) in Leaving)
+        {
+            try
+            {
+                Restore(hidden);
+            }
+            catch (Exception)
+            {
+                // The display went with the match
+            }
+        }
+        Leaving.Clear();
+        foreach (var burst in Bursts)
+        {
+            if (burst.Look != null) Object.Destroy(burst.Look);
+        }
+        Bursts.Clear();
     }
 
     /// <summary>Builds the parts of a look under <paramref name="parent"/>, from its layout and the meshes made for it</summary>
-    private static GameObject Build(Newtonsoft.Json.Linq.JArray layout, Transform parent)
+    internal static GameObject Build(Newtonsoft.Json.Linq.JArray layout, Transform parent)
     {
         var made = new List<GameObject>();
         foreach (var token in layout)
@@ -213,7 +460,7 @@ public static class GildebloonLook
         return made[0];
     }
 
-    private static Mesh MeshFor(string name, string kind, float[] args)
+    internal static Mesh MeshFor(string name, string kind, float[] args)
     {
         if (Meshes.TryGetValue(name, out var mesh) && mesh != null) return mesh;
         mesh = GildebloonMeshes.Make(kind, args);
@@ -222,9 +469,11 @@ public static class GildebloonLook
         return mesh;
     }
 
-    private static Material MaterialFor(string key, Material? template)
+    internal static Material MaterialFor(string key, Material? template)
     {
-        if (Materials.TryGetValue(key, out var made) && made != null) return made;
+        // One per texture and the shader it is made with: the boss's from its body, the map's pile from the map
+        var cacheKey = template != null && template.shader != null ? $"{key}|{template.shader.name}" : key;
+        if (Materials.TryGetValue(cacheKey, out var made) && made != null) return made;
         var shader = Shader.Find("Universal Render Pipeline/Unlit");
         var material = template != null ? new Material(template) : new Material(shader);
         material.name = $"Gildebloon {key}";
@@ -243,7 +492,7 @@ public static class GildebloonLook
             if (material.HasProperty(property)) material.SetColor(property, Color.white);
         }
 
-        Materials[key] = material;
+        Materials[cacheKey] = material;
         return material;
     }
 
@@ -286,7 +535,7 @@ public static class GildebloonLook
         {
             look.Skulls = skulls;
             look.BurstStart = time;
-            Spray(look);
+            Spray(look, 14);
         }
 
         if (look.Door != null)
@@ -297,33 +546,60 @@ public static class GildebloonLook
             look.Door.localRotation = Quaternion.Euler(0, 0, -70 * open);
         }
 
+        MoveSpray(look, delta, 1.5f);
+    }
+
+    /// <summary>Throws <paramref name="count"/> coins out of the look's top</summary>
+    private static void Spray(Shown look, int count)
+    {
+        var coin = look.Ring != null && look.Ring.childCount > 0 ? look.Ring.GetChild(0) : null;
+        if (look.Look == null) return;
+        var template = coin != null ? coin.gameObject : CoinFor(look.Look);
+        if (template == null) return;
+        for (var i = 0; i < count; i++)
+        {
+            var angle = i * Mathf.PI * 2 / count;
+            var copy = Object.Instantiate(template, look.Look.transform, false).transform;
+            copy.localPosition = new Vector3(0, 0.9f, 0);
+            copy.localScale = coin != null ? coin.localScale : new Vector3(0.16f, 1, 0.16f);
+            var speed = 1.8f + (i % 3) * 0.4f;
+            look.Spray.Add((copy, new Vector3(Mathf.Cos(angle) * speed, 2.5f, Mathf.Sin(angle) * speed)));
+        }
+    }
+
+    /// <summary>A coin for a look without a ring of coins (a Tax Collector's)</summary>
+    private static GameObject? CoinFor(GameObject root)
+    {
+        var hull = Find(root, "Hull");
+        var renderer = hull != null ? hull.GetComponent<MeshRenderer>() : null;
+        if (renderer == null) return null;
+        var coin = new GameObject("Coin");
+        coin.transform.SetParent(root.transform, false);
+        coin.AddComponent<MeshFilter>().sharedMesh = MeshFor("Gold_Coin", "cylinder", [16, 1, 0.15f]);
+        coin.AddComponent<MeshRenderer>().sharedMaterial = renderer.sharedMaterial;
+        coin.SetActive(false);
+        return coin;
+    }
+
+    /// <summary>Moves the sprayed coins, and takes them away <paramref name="seconds"/> after the spray</summary>
+    private static void MoveSpray(Shown look, float delta, float seconds)
+    {
+        var time = Time.time;
         for (var i = look.Spray.Count - 1; i >= 0; i--)
         {
             var (coin, velocity) = look.Spray[i];
-            if (coin == null || time - look.BurstStart > 1.5f)
+            if (coin == null || time - look.BurstStart > seconds)
             {
                 if (coin != null) Object.Destroy(coin.gameObject);
                 look.Spray.RemoveAt(i);
                 continue;
             }
 
+            if (!coin.gameObject.activeSelf) coin.gameObject.SetActive(true);
             velocity += Vector3.down * (4 * delta);
             look.Spray[i] = (coin, velocity);
             coin.localPosition += velocity * delta;
             coin.Rotate(400 * delta, 0, 0, Space.Self);
-        }
-    }
-
-    private static void Spray(Shown look)
-    {
-        var coin = look.Ring != null && look.Ring.childCount > 0 ? look.Ring.GetChild(0) : null;
-        if (coin == null || look.Look == null) return;
-        for (var i = 0; i < 14; i++)
-        {
-            var angle = i * Mathf.PI * 2 / 14;
-            var copy = Object.Instantiate(coin.gameObject, look.Look.transform, false).transform;
-            copy.localPosition = new Vector3(0, 0.9f, 0);
-            look.Spray.Add((copy, new Vector3(Mathf.Cos(angle) * 2.2f, 2.5f, Mathf.Sin(angle) * 2.2f)));
         }
     }
 
@@ -333,31 +609,6 @@ public static class GildebloonLook
         if (skulls == null || boss.bloonModel.maxHealth <= 0) return 0;
         var share = boss.health / (double) boss.bloonModel.maxHealth;
         return skulls.Count(skull => share <= skull);
-    }
-
-    /// <summary>Takes the look off, before the game reuses the display for another bloon</summary>
-    private static void Clear()
-    {
-        if (shown == null) return;
-        try
-        {
-            if (shown.Look != null) Object.Destroy(shown.Look);
-            foreach (var renderer in shown.Hidden)
-            {
-                if (renderer != null) renderer.enabled = true;
-            }
-
-            if (shown.Tinted && shown.Bloon.GetUnityDisplayNode() is { } graphic)
-            {
-                foreach (var renderer in graphic.GetComponentsInChildren<Renderer>(true)) renderer.SetPropertyBlock(null);
-            }
-        }
-        catch (Exception)
-        {
-            // The display went with the match
-        }
-
-        shown = null;
     }
 
     // ---------- Loading ----------

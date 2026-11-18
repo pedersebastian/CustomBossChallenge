@@ -44,8 +44,13 @@ public static class BossPresentation
     /// </summary>
     public static void ShowMapEffects(BossType boss)
     {
-        // A mod boss has no map effects of its own yet; the map keeps the ones it has (#25)
-        if (Config.BossList.IsModBoss(boss)) return;
+        // Gildebloon has no effects of the game's: the game's are hidden and it has its pile of money instead (#25)
+        if (Config.BossList.IsModBoss(boss))
+        {
+            if (MapRoot() is { } root) GildebloonMapLook.Show(root, Effects(root), TrackSuffix);
+            return;
+        }
+        GildebloonMapLook.Hide();
 
         try
         {

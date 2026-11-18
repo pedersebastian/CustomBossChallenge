@@ -379,7 +379,7 @@ public class GildebloonLookTest : GildebloonTest
                     yield return null;
                 }
                 Log($"tier {tier}: hurt to {boss.health}, body shown again {Visuals.GildebloonLook.BodyShownAgain} times, at most {longest} frames");
-                Assert(longest <= Visuals.GildebloonLook.BodyCheckFrames + 2, $"The Bloonarius body showed for {longest} frames in a row");
+                Assert(longest <= 1, $"The Bloonarius body showed for {longest} frames in a row");
             }
             if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, $"gildebloon-tier{tier}-hurt");
             manager.CurrentBoss?.Destroy();
@@ -412,5 +412,129 @@ public class GildebloonDefeatTest : GildebloonTest
         var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
         if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, "gildebloon-defeat");
         yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// No sign of Bloonarius in a Gildebloon match (#25): not its slime on the map (a pile of money instead), not its body
+/// as the Elite is beaten down past every skull and dies, not its skin on the Tax Collectors. In Advanced Mode the
+/// map's effects follow the boss: a game boss's come back after Gildebloon's pile.
+/// </summary>
+public class GildebloonNoBloonariusTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
+        var options = new BossOptions {Boss = BossList.Gildebloon, Elite = true, Tiers = 1, SpawnRounds = "40"};
+        var dcm = WeakBossDcm();
+        dcm.bloonModifiers.healthMultipliers.boss = 1;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+        yield return WaitFor(() => Visuals.GildebloonMapLook.Pile != null, "The pile of money on the map", 10);
+        Assert(Visuals.BossPresentation.MapEffects.All(name => !name.Contains("Bloonarius") ||
+                UnityEngine.GameObject.Find(name) == null), $"Bloonarius's map effects are hidden: {string.Join(", ", Visuals.BossPresentation.MapEffects)}");
+        AssertNoBloonarius("before the boss");
+        if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, "gildebloon-pile");
+
+        var manager = InGame.instance.bridge.Simulation.map.spawner.bossBloonManager;
+        manager.SpawnBoss(1, false);
+        yield return WaitFor(() => Visuals.GildebloonLook.Look != null, "The look", 10);
+        var boss = manager.CurrentBoss!;
+
+        // A tower that beats it in some 25 hits, so it goes through every skull and damage state
+        var tower = InGame.instance.GetGameModel().GetTowerFromId("DartMonkey");
+        ExtraTierGameTest.MakeStrong(tower);
+        foreach (var attack in tower.GetAttackModels())
+        {
+            foreach (var weapon in attack.weapons)
+            {
+                weapon.rate = 0.05f;
+                if (weapon.projectile.GetDamageModel() is { } damage) damage.damage = boss.bloonModel.maxHealth / 25f;
+            }
+        }
+        CreateTowerAt(InGame.instance.bridge, Vector2.zero, tower, costOverride: 0);
+        InGame.instance.bridge.SetFastForward(true);
+
+        var frames = 0;
+        var collectors = 0;
+        var start = Time.realtimeSinceStartup;
+        var shotHurt = false;
+        var shotCollector = false;
+        var seen = new System.Collections.Generic.Dictionary<IntPtr, int>();
+        while (!boss.IsDestroyed && boss.health > 0)
+        {
+            if (Time.realtimeSinceStartup - start > 150) Fail($"Not beaten after 150s, {boss.health} health left");
+            frames++;
+            Assert(!Visuals.GildebloonLook.BodyShows(boss), $"The Bloonarius body shows at {boss.health} health");
+            foreach (var bloon in InGame.instance.GetBloons().Where(bloon => Gildebloon.IsCollector(bloon.bloonModel.id)))
+            {
+                collectors = Math.Max(collectors, 1);
+                // The look takes the skin off the frame after the game sends it
+                seen.TryGetValue(bloon.Pointer, out var seenFrames);
+                seen[bloon.Pointer] = ++seenFrames;
+                if (seenFrames < 3) continue;
+                if (seenFrames > 60) Assert(Visuals.GildebloonLook.CollectorLooks > 0, "A Tax Collector has its own look");
+                Assert(!Visuals.GildebloonLook.BodyShows(bloon), "A Tax Collector's MOAB body doesn't show");
+                Assert(bloon.mutators == null || !bloon.mutators.ToArray().Any(m => m.mutator?.id == Visuals.GildebloonLook.BossSkinMutator),
+                    "A Tax Collector has no boss skin");
+            }
+            if (frames % 5 == 0) AssertNoBloonarius($"at {boss.health} health");
+            if (!shotCollector && Visuals.GildebloonLook.CollectorLooks > 0 && !string.IsNullOrEmpty(folder))
+            {
+                shotCollector = true;
+                yield return ScreenshotTour.Capture(folder, "gildebloon-collector");
+            }
+            if (!shotHurt && boss.health < boss.bloonModel.maxHealth * 0.3f && !string.IsNullOrEmpty(folder))
+            {
+                shotHurt = true;
+                yield return ScreenshotTour.Capture(folder, "gildebloon-elite-hurt");
+            }
+            yield return null;
+        }
+
+        Log($"beaten after {frames} frames; skulls {InGame.instance.bridge.GetCurrentBossSkull()}, body parts hidden again {Visuals.GildebloonLook.BodyShownAgain}, " +
+            $"collectors seen {collectors}, collector looks now {Visuals.GildebloonLook.CollectorLooks}");
+        Assert(collectors > 0, "It sent Tax Collectors");
+
+        // Its end: it bursts into coins, and nothing of Bloonarius's death shows
+        var end = Time.realtimeSinceStartup;
+        while (Time.realtimeSinceStartup - end < 4)
+        {
+            AssertNoBloonarius("as it dies");
+            yield return null;
+        }
+        Assert(Visuals.GildebloonLook.BurstCount > 0, "It burst into coins");
+        yield return ToMainMenu();
+
+        // Advanced Mode: Lych's effects, then Gildebloon's pile, then Lych's again
+        options = new BossOptions {Tiers = 3, SpawnRounds = "40,41,42", TierBosses = "Lych,Gildebloon,Lych"};
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(WeakBossDcm(), options));
+        manager = InGame.instance.bridge.Simulation.map.spawner.bossBloonManager;
+        foreach (var tier in new[] {1, 2, 3})
+        {
+            manager.SpawnBoss(tier, false);
+            yield return new WaitForSecondsRealtime(1.5f);
+            var effects = string.Join(", ", Visuals.BossPresentation.MapEffects);
+            var active = Visuals.BossPresentation.MapEffects.Count(name => UnityEngine.GameObject.Find(name) != null);
+            Log($"tier {tier}: effects {effects} ({active} shown), pile {Visuals.GildebloonMapLook.Pile != null}");
+            if (tier == 2)
+            {
+                AssertNotNull(Visuals.GildebloonMapLook.Pile, "Gildebloon's pile");
+                AssertNoBloonarius("at Gildebloon's tier");
+            }
+            else
+            {
+                Assert(Visuals.GildebloonMapLook.Pile == null, $"No pile at tier {tier}");
+                Assert(effects.Length == 0 || active > 0, $"Lych's effects show at tier {tier}");
+            }
+            manager.CurrentBoss?.Destroy();
+            yield return new WaitForSecondsRealtime(1);
+        }
+        yield return ToMainMenu();
+    }
+
+    private void AssertNoBloonarius(string when)
+    {
+        var showing = Visuals.GildebloonLook.BloonariusShowing();
+        Assert(showing.Count == 0, $"Bloonarius shows {when}: {string.Join(", ", showing.Take(5))}");
     }
 }

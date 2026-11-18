@@ -75,7 +75,9 @@ public static class Gildebloon
             {
                 var source = BossOptions.BossIdOf(Il2CppAssets.Scripts.Data.Boss.BossType.Bloonarius, elite, tier);
                 if (!gameModel.DoesBloonExist(source)) continue;
-                added += Add(gameModel, Create(gameModel.GetBloon(source), elite, tier, collector?.id, Invulnerability(gameModel)));
+                var model = Create(gameModel.GetBloon(source), elite, tier, collector?.id, Invulnerability(gameModel));
+                Unbloonarius(model, gameModel);
+                added += Add(gameModel, model);
             }
         }
 
@@ -114,12 +116,13 @@ public static class Gildebloon
         model.RemoveBehaviors<PlayAnimTriggerActionModel>();
         model.RemoveBehaviors<SpawnBloonsActionModel>();
 
-        // Repossession at each skull: it can't be hurt for a moment and sends its Tax Collectors
+        // Repossession at each skull: it can't be hurt for a moment and sends its Tax Collectors. Like the game's bosses,
+        // no hit takes it past a skull.
         var skulls = elite ? EliteSkulls : Skulls;
         var actions = new[] {SkullInvulnerable, SkullTimer, SkullCollectors}
             .Where(action => (action != SkullCollectors || collector != null) && (action == SkullCollectors || invulnerability != null));
         model.AddBehavior(new HealthPercentTriggerModel("GildeSkulls", false, new Il2CppStructArray<float>(skulls),
-            new Il2CppStringArray(actions.ToArray()), false));
+            new Il2CppStringArray(actions.ToArray()), true));
         if (invulnerability is var (on, off))
         {
             var invulnerable = on.Clone().Cast<SetInvulnerableActionModel>();
@@ -146,6 +149,30 @@ public static class Gildebloon
         // Tarnish: acid hurts gold
         model.AddBehavior(new IncreaseDamageFromTypeModel("GildeTarnish", AcidDamage, new Il2CppStringArray(new[] {"Acid"}), false));
         return model;
+    }
+
+    /// <summary>The game bloon whose pops, sounds and end Gildebloon gets in place of Bloonarius's</summary>
+    public const string Presentation = "Zomg";
+
+    /// <summary>
+    /// Takes out what would show or sound like Bloonarius (#25): its pop effect and sounds become a ZOMG's, and its
+    /// death animation goes (the look bursts into coins instead, Visuals.GildebloonLook)
+    /// </summary>
+    private static void Unbloonarius(BloonModel model, GameModel gameModel)
+    {
+        model.RemoveBehaviors<SpawnDeathAnimModel>();
+        var other = gameModel.DoesBloonExist(Presentation) ? gameModel.GetBloon(Presentation) : null;
+        if (other == null) return;
+        Swap<PopEffectModel>(model, other);
+        Swap<CreateSoundOnDamageBloonModel>(model, other);
+        Swap<CreateSoundOnSpawnBloonModel>(model, other);
+    }
+
+    private static void Swap<T>(BloonModel model, BloonModel other) where T : Il2CppAssets.Scripts.Models.Model
+    {
+        var theirs = other.GetBehaviors<T>().ToList();
+        model.RemoveBehaviors<T>();
+        foreach (var behavior in theirs) model.AddBehavior(behavior.Clone().Cast<T>());
     }
 
     /// <summary>

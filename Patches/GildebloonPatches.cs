@@ -29,3 +29,20 @@ internal static class Bloon_Leaked
         if (Config.Gildebloon.IsCollector(__instance.bloonModel?.id)) Config.GildebloonBrain.CollectorLeaked(__instance);
     }
 }
+
+/// <summary>
+/// Gildebloon's Tax Collectors don't get the boss skin the game dresses bloons a boss sends in (#25): it is
+/// Bloonarius's, the boss Gildebloon is made from, and the Tax Collectors have their own look. Only looked at in a
+/// match with Gildebloon.
+/// </summary>
+[OptionalPatch]
+[HarmonyPatch(typeof(Bloon), nameof(Bloon.AddMutator))]
+internal static class Bloon_AddMutator_Gildebloon
+{
+    [HarmonyPrefix]
+    internal static bool Prefix(Bloon __instance, Il2CppAssets.Scripts.Simulation.Objects.BehaviorMutator mutator)
+    {
+        if (!Config.Experimental.Gildebloon || CustomBossState.ActiveOptions is not {UsesGildebloon: true} || !CustomBossState.IsActive) return true;
+        return !(mutator?.id == Visuals.GildebloonLook.BossSkinMutator && Config.Gildebloon.IsCollector(__instance.bloonModel?.id));
+    }
+}

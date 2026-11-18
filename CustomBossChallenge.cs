@@ -53,6 +53,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         Guarded("ranked timer", () => Visuals.RankedHud.Update());
         Guarded("Gildebloon vault", Visuals.GildebloonHud.Update);
         Guarded("Gildebloon look", Visuals.GildebloonLook.Update);
+        Guarded("Gildebloon's money", Visuals.GildebloonMapLook.Update);
         if (Time.realtimeSinceStartup >= nextPresentationCheck)
         {
             nextPresentationCheck = Time.realtimeSinceStartup + Visuals.BossPresentation.CheckInterval;

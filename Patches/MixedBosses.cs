@@ -143,7 +143,8 @@ public static class MixedBosses
     /// </summary>
     internal static void KeepPresentation()
     {
-        if (MixedOptions is { } options && Presented > 0) Visuals.BossPresentation.ShowMapEffects(options.BossOf(Presented).Boss);
+        // Before the first tier is shown its boss's effects are the ones the game put there, except for Gildebloon's (#25)
+        if (MixedOptions is { } options) Visuals.BossPresentation.ShowMapEffects(options.BossOf(Math.Max(Presented, 1)).Boss);
     }
 
     /// <summary>

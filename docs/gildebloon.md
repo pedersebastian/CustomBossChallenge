@@ -65,3 +65,27 @@ boss name through `BossList.Name`. The game itself only ever sees the string `bo
 - A hand-made model later (M6) only has to keep the part names `Hull`, `VaultDoor`, `Dial`, `BagLeft`,
   `BagRight` and `CoinRing`. Since nothing can come from a bundle, it would have to be exported as meshes the mod
   can read (for example as vertex data in the layout file) rather than as an FBX in a bundle.
+
+## No Bloonarius left (round 2)
+
+What could still show of Bloonarius, and how each is handled:
+
+- **Its map effects.** The game puts Bloonarius's slime (`BloonariusTrackFx`, `BloonariusAmbientMapFx`) on the map
+  for the boss it is launched as. While Gildebloon is shown they are hidden, and `Visuals/GildebloonMapLook.cs` puts a
+  pile of coins and money bags where the slime lay. A game boss in Advanced Mode gets its effects back.
+- **Its body as it takes damage.** The game's damage-state animation turns the body's parts back on every frame
+  (setting `Renderer.enabled`), so turning them off didn't hold: after a skull the Elite's damaged parts drew through.
+  They are now kept from drawing with `Renderer.forceRenderingOff`, which the animations leave alone, checked every
+  frame for parts the game adds.
+- **Its death.** `SpawnDeathAnimModel` is taken out of the models; the look bursts into coins instead, and the body
+  stays hidden until the game puts the display away.
+- **Its pops and sounds** are a ZOMG's (`PopEffectModel`, `CreateSoundOnDamageBloonModel`,
+  `CreateSoundOnSpawnBloonModel`).
+- **Its skin on the Tax Collectors.** Bloons a boss sends get a `BossSkinMutator`, which adds a separate display
+  (`BfbBloonariusTag`, Bloonarius's toad-skin bumps) outside the bloon's own. `Patches.Bloon_AddMutator_Gildebloon`
+  keeps it off the Tax Collectors, which get a small gold vault of their own as a look.
+- **Skulls.** The skull trigger now has `preventFallthrough` like the game's bosses, so no single hit takes it past a
+  skull, and every Repossession happens.
+
+`Tests.GildebloonNoBloonariusTest` scans every renderer drawing during an Elite match, through every skull and its
+death, for "Bloonarius" in its object, mesh or material.
