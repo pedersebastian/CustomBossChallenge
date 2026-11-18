@@ -39,8 +39,12 @@ boss name through `BossList.Name`. The game itself only ever sees the string `bo
   `GildebloonCollectorElite` (a gold BFB). They are added to the game's model at the main menu, and to each custom
   match's model, only while `Experimental.Gildebloon` is on.
 - From the game: the skull trigger (Repossession: 3 s invulnerable with Blastapopoulos's own invulnerability actions,
-  Tax Collectors sent), Skittish (`DamageTakenTriggerModel` + `DashForwardsActionModel`) and Tarnish (+50 % acid
-  damage, `IncreaseDamageFromTypeModel`).
+  Tax Collectors sent). The game's `DamageTakenTriggerModel` + `DashForwardsActionModel` (for Skittish) and
+  `IncreaseDamageFromTypeModel` (for Tarnish) did nothing on it when tried in the game, so those are the mod's own:
+  `GildebloonBrain` makes it dash 60 ahead (`Bloon.SetPath`) after losing 10 % of its health within a second, and the
+  Alchemist's and Glue Gunner's attacks get a `DamageModifierForTagModel` (x1.5) against the tag "Gildebloon" its
+  models carry. Damage over time (the Glue Gunner's corrosive glue) isn't covered. A Harmony prefix on `Bloon.Damage`
+  crashed the game natively at the first hit, so don't patch it.
 - `Config/GildebloonBrain.cs` runs each simulation frame (`BossBloonManager.Process`): Toll, Vault (an armour
   layer `GildeVault`), Interest (Elite), seizing Banana Farms at a skull, Tax Collector leaks and the Payout.
 - `Patches/MixedBosses.cs` sets the game's boss type to "Gildebloon" before each of its tiers spawns, also when the
@@ -115,3 +119,15 @@ up to date. Rounds 1-10 and the boss rounds are the default ones; from round 11 
 Purple, later camo and fortified Lead and fortified Ceramics), MOAB-class groups come in half the time from round 40,
 and the rounds before the boss rounds (39, 59, 79, 99, 119) are short heists. Every round stays within 10 % of the
 default round's RBE (`UnitTests/GildebloonRoundsTests`).
+
+## Checked once by hand (2026-11-18)
+
+A throwaway in-game probe, not kept as a test, checked what the tests don't: Elite's Interest (the Vault grew 303 ->
+315 in 4 s without a theft), the CHIMPS payout (x1), Skittish (one 12 % hit: one dash of 60), Tarnish (an Alchemist's
+100-damage potion did 150, a dart 100), a leaking Tax Collector (takes 5 % of the cash and no lives, also with 50
+lives) and Retry Last Round after Gildebloon leaked (offered, and Gildebloon comes back with its Vault and shield).
+
+It found that a leaking Gildebloon counted as beaten (and paid out, so no retry was offered): the game takes a boss
+away through `BossBloonManager.BloonDestroyed` also when it leaks, so a Gildebloon with health left isn't counted
+there now. A leaking Tax Collector cost the lives of the bloons inside it whatever its model's leak damage said, so
+`Patches.Bloon_Leaked` holds the lives up while it leaks and puts them back.

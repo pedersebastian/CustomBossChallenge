@@ -131,7 +131,7 @@ public class GildebloonModelTest : GildebloonTest
                     $"{id} skulls {Show(SkullModifier.GetSkulls(model))}");
                 AssertEquals(model.GetBehaviors<SpawnBloonsActionModel>().Count(spawn => !Gildebloon.IsCollector(spawn.bloonType)), 0,
                     $"{id} has none of Bloonarius's spawns, only its Tax Collectors");
-                AssertNotNull(model.GetBehavior<IncreaseDamageFromTypeModel>(), $"{id} takes more damage from acid");
+                Assert(model.GetBehavior<IncreaseDamageFromTypeModel>() == null && model.GetBehavior<SpawnDeathAnimModel>() == null, $"{id} has the mod's own Tarnish and no Bloonarius death");
                 Assert(Gildebloon.IsGildebloon(id), $"{id} is one of Gildebloon's tiers");
             }
         }

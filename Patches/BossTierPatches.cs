@@ -90,6 +90,8 @@ internal static class BossVictoryPatches
         var bloon = obj?.TryCast<Il2CppAssets.Scripts.Simulation.Bloons.Bloon>();
         var model = bloon?.bloonModel;
         if (model == null || !model.isBoss || model.isBossSegment) return;
+        // The game also takes a Gildebloon away like this when it leaks, with health left: that is a loss (#25)
+        if (Config.Gildebloon.IsGildebloon(model.id) && bloon!.health > 0) return;
 
         CustomBossState.OnBossDefeated(Config.TierMath.TierOf(model.id));
         GuardVictory(manager);

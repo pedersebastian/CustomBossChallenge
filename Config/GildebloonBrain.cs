@@ -89,7 +89,12 @@ public static class GildebloonBrain
         public float Health;
         public float Armour;
         public int Skulls;
+        public readonly Queue<(long Frame, float Damage)> Hits = new();
+        public long NextDash;
     }
+
+    /// <summary>How many times Gildebloon dashed this match, for tests</summary>
+    public static int Dashes { get; private set; }
 
     private static Vault? vault;
 
@@ -140,6 +145,7 @@ public static class GildebloonBrain
         vault = null;
         LastPayout = 0;
         TotalStolen = 0;
+        Dashes = 0;
     }
 
     /// <summary>Runs one simulation frame</summary>
@@ -167,8 +173,10 @@ public static class GildebloonBrain
         // Anything that took health or shield counts as a hit
         var armour = Armour(boss);
         if (boss.health < current.Health || armour < current.Armour) current.LastHit = frame;
+        if (boss.health < current.Health) current.Hits.Enqueue((frame, current.Health - boss.health));
         current.Health = boss.health;
         current.Armour = armour;
+        Skittish(boss, current, frame);
 
         if (frame >= current.NextToll)
         {
@@ -200,6 +208,23 @@ public static class GildebloonBrain
             var (frozen, farms) = Repossess(sim, boss, frame, radius);
             Repossessed?.Invoke(new Repossession(current.Stolen - before, frozen, farms, radius, boss));
         }
+    }
+
+    /// <summary>
+    /// Skittish: losing <see cref="Gildebloon.SkittishShare"/> of its health within <see cref="Gildebloon.SkittishSeconds"/>
+    /// makes it dash <see cref="Gildebloon.DashDistance"/> ahead along the track, not again for a few seconds
+    /// </summary>
+    private static void Skittish(Bloon boss, Vault current, long frame)
+    {
+        var window = (long) (Gildebloon.SkittishSeconds * FramesPerSecond);
+        while (current.Hits.Count > 0 && frame - current.Hits.Peek().Frame > window) current.Hits.Dequeue();
+        if (frame < current.NextDash || boss.health <= 0) return;
+        if (current.Hits.Sum(hit => hit.Damage) < boss.bloonModel.maxHealth * Gildebloon.SkittishShare) return;
+
+        current.Hits.Clear();
+        current.NextDash = frame + (long) (Gildebloon.DashCooldownSeconds * FramesPerSecond);
+        boss.SetPath(boss.path, boss.DistanceTraveled + Gildebloon.DashDistance, true);
+        Dashes++;
     }
 
     private static Vault Start(Bloon boss, long frame)

@@ -1,3 +1,4 @@
+using BTD_Mod_Helper.Extensions;
 using System.Linq;
 using Il2CppAssets.Scripts.Models;
 using Il2CppAssets.Scripts.Models.Bloons;
@@ -40,11 +41,26 @@ public static class Gildebloon
     /// <summary>Acid does this much more damage to it: gold tarnishes (#25)</summary>
     public const float AcidDamage = 1.5f;
 
-    /// <summary>A hit taking this share of its health at once makes it dash ahead, like a Golden Bloon</summary>
+    /// <summary>
+    /// Taking this share of its health within <see cref="SkittishSeconds"/> makes it dash ahead, like a Golden Bloon
+    /// (GildebloonBrain: the game's DamageTakenTriggerModel and DashForwardsActionModel do nothing on a boss)
+    /// </summary>
     public const float SkittishShare = 0.1f;
 
-    /// <summary>How far it dashes</summary>
+    public const float SkittishSeconds = 1;
+
+    /// <summary>How far it dashes, and how long until it can dash again</summary>
     public const float DashDistance = 60;
+
+    public const float DashCooldownSeconds = 3;
+
+    /// <summary>The towers whose attacks count as acid for Tarnish: the Alchemist's potions and the Glue Gunner's glue</summary>
+    public static readonly string[] AcidTowers = ["Alchemist", "GlueGunner"];
+
+    /// <summary>The tag Gildebloon's models carry, which the acid towers' attacks do more damage to</summary>
+    public const string Tag = "Gildebloon";
+
+    internal const string Tarnish = "GildeTarnish";
 
     /// <summary>How long it can't be hurt at a skull: the Repossession</summary>
     public const float SkullSeconds = 3;
@@ -81,6 +97,7 @@ public static class Gildebloon
             }
         }
 
+        AddTarnish(gameModel);
         return added;
     }
 
@@ -142,12 +159,11 @@ public static class Gildebloon
                 1.0f, 30, 0, 0, new Il2CppStringArray(0), new Il2CppStringArray(0), 0, false, 0, 0, Source));
         }
 
-        // Skittish: a big hit sends it ahead along the track
-        model.AddBehavior(new DamageTakenTriggerModel("GildeSkittish", Dash, (int) (model.maxHealth * SkittishShare), -1, 1));
-        model.AddBehavior(new DashForwardsActionModel("GildeDash", Dash, DashDistance, new Il2CppStringArray(0), 4, "", false));
-
-        // Tarnish: acid hurts gold
-        model.AddBehavior(new IncreaseDamageFromTypeModel("GildeTarnish", AcidDamage, new Il2CppStringArray(new[] {"Acid"}), false));
+        // Skittish (a big hit sends it ahead) is GildebloonBrain's: the game's DamageTakenTriggerModel and
+        // DashForwardsActionModel do nothing on a boss (tested 2026-11-18). Tarnish (acid hurts gold) goes by its tag:
+        // the game's IncreaseDamageFromTypeModel did nothing either, so the acid towers get a bonus against the tag.
+        model.tags = new Il2CppStringArray(model.tags.ToArray().Append(Tag).ToArray());
+        model.typedTagsBitmaskInitialized = false;
         return model;
     }
 
@@ -192,6 +208,26 @@ public static class Gildebloon
     /// The Tax Collector: a MOAB (a BFB for Elite) that Gildebloon sends at each skull. When one leaks it steals cash
     /// instead of lives (Simulation.GildebloonBrain).
     /// </summary>
+    /// <summary>
+    /// Tarnish: every attack of the acid towers (<see cref="AcidTowers"/>), at every upgrade, does
+    /// <see cref="AcidDamage"/> times its damage to bloons with Gildebloon's tag. Safe to call again.
+    /// </summary>
+    private static void AddTarnish(GameModel gameModel)
+    {
+        foreach (var tower in gameModel.towers)
+        {
+            if (System.Array.IndexOf(AcidTowers, tower.baseId) < 0) continue;
+            foreach (var projectile in tower.GetDescendants<Il2CppAssets.Scripts.Models.Towers.Projectiles.ProjectileModel>().ToList())
+            {
+                if (!projectile.HasBehavior<Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors.DamageModel>()) continue;
+                if (projectile.GetBehaviors<Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors.DamageModifierForTagModel>()
+                    .Any(modifier => modifier.name.EndsWith(Tarnish))) continue;
+                projectile.AddBehavior(new Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors.DamageModifierForTagModel(
+                    Tarnish, Tag, AcidDamage, 0, false, true, false));
+            }
+        }
+    }
+
     private static BloonModel? CreateCollector(GameModel gameModel, bool elite)
     {
         var source = elite ? "Bfb" : "Moab";
@@ -201,7 +237,10 @@ public static class Gildebloon
         model.id = id;
         model.name = id;
         model._name = id;
+        // A leak takes cash, no lives: not its own, nor what the bloons inside it would cost
         model.leakDamage = 0;
+        model.totalLeakDamage = new Il2CppSystem.Nullable<float>(0f);
+        model.leakDamageMultiplier = 0;
         model.AddBehavior(new ColorModel("GildeGold", 1f, 0.8f, 0.2f, 1f));
         return model;
     }

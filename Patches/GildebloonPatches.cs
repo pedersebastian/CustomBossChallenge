@@ -1,3 +1,5 @@
+using Il2CppAssets.Scripts.Unity.UI_New.InGame;
+using BTD_Mod_Helper.Extensions;
 using HarmonyLib;
 using Il2CppAssets.Scripts.Simulation.Bloons;
 using Il2CppAssets.Scripts.Simulation.Track;
@@ -17,16 +19,31 @@ internal static class BossBloonManager_Process_Gildebloon
 }
 
 /// <summary>
-/// A Gildebloon Tax Collector that leaks steals cash instead of lives (#25)
+/// A Gildebloon Tax Collector that leaks steals cash instead of lives (#25). The game still takes what the bloons inside
+/// it would cost (a MOAB's four Ceramics, whatever the model's own leak damage says), so the lives are held up while it
+/// leaks, so it can't end the game, and put back after.
 /// </summary>
 [OptionalPatch]
 [HarmonyPatch(typeof(Bloon), nameof(Bloon.Leaked))]
 internal static class Bloon_Leaked
 {
+    /// <summary>More than any leak can take</summary>
+    private const double Cushion = 1e9;
+
     [HarmonyPrefix]
-    internal static void Prefix(Bloon __instance)
+    internal static void Prefix(Bloon __instance, out double __state)
     {
-        if (Config.Gildebloon.IsCollector(__instance.bloonModel?.id)) Config.GildebloonBrain.CollectorLeaked(__instance);
+        __state = -1;
+        if (!Config.Gildebloon.IsCollector(__instance.bloonModel?.id) || InGame.instance == null) return;
+        Config.GildebloonBrain.CollectorLeaked(__instance);
+        __state = InGame.instance.GetHealth();
+        InGame.instance.SetHealth(__state + Cushion);
+    }
+
+    [HarmonyPostfix]
+    internal static void Postfix(double __state)
+    {
+        if (__state >= 0 && InGame.instance != null) InGame.instance.SetHealth(__state);
     }
 }
 
@@ -46,3 +63,4 @@ internal static class Bloon_AddMutator_Gildebloon
         return !(mutator?.id == Visuals.GildebloonLook.BossSkinMutator && Config.Gildebloon.IsCollector(__instance.bloonModel?.id));
     }
 }
+
