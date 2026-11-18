@@ -5,6 +5,7 @@
   "CustomBossChallenge-Boss": "الزعيم",
   "CustomBossChallenge-Play": "العب",
   "CustomBossChallenge-Elite": "Elite",
+  "CustomBossChallenge-EliteBoss": "{0} النخبة",
   "CustomBossChallenge-BossType": "نوع الزعيم",
   "CustomBossChallenge-BossTypeInfo": "اختر الزعيم الذي تريد قتاله. فعّل Elite لقتال نسخة Elite الأقوى بكثير من الزعيم. يتراجع Ctrl+Z عن آخر تغيير أجريته على خيارات الزعيم أو قواعد محرر التحديات، بما في ذلك إعداد ملصق أو محمّل أو عشوائي، ويعيده Ctrl+Y. يعيد مفتاح Delete الخيار الموجود في الإطار الأصفر إلى قيمته الافتراضية.",
   "CustomBossChallenge-BossSpeed": "سرعة الزعيم",

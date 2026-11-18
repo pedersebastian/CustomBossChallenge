@@ -13,7 +13,7 @@ body:
       label: What happened?
       description: What you did, what you expected and what happened instead.
       placeholder: |
-        1. Opened the Boss Creator and chose Lych Elite with 7 tiers
+        1. Opened the Boss Creator and chose Elite Lych with 7 tiers
         2. Pressed Play
         3. Expected tier 6 on round 140, but the game ended after tier 5
     validations:
