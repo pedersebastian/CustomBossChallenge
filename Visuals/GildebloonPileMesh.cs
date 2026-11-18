@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 using System.Text;
 using BTD_Mod_Helper;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
@@ -52,6 +53,7 @@ public static class GildebloonPileMesh
     {
         if (loaded) return;
         loaded = true;
+        var watch = System.Diagnostics.Stopwatch.StartNew();
         try
         {
             using var stream = typeof(GildebloonPileMesh).Assembly.GetManifestResourceStream(Resource);
@@ -74,7 +76,7 @@ public static class GildebloonPileMesh
             }
 
             Sparkles = sparkles;
-            ModHelper.Msg<CustomBossChallenge>($"Gildebloon's pile of money loaded: {Pile.vertexCount} vertices");
+            ModHelper.Msg<CustomBossChallenge>($"Gildebloon's pile of money loaded: {Pile.vertexCount} vertices in {watch.ElapsedMilliseconds} ms");
         }
         catch (Exception e)
         {
@@ -88,21 +90,40 @@ public static class GildebloonPileMesh
     {
         var name = Encoding.UTF8.GetString(reader.ReadBytes(reader.ReadByte()));
         var count = reader.ReadInt32();
-        var vertices = new Vector3[count];
-        for (var i = 0; i < count; i++) vertices[i] = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        var uvs = new Vector2[count];
-        for (var i = 0; i < count; i++) uvs[i] = new Vector2(reader.ReadSingle(), reader.ReadSingle());
-        var indices = new int[reader.ReadInt32()];
-        for (var i = 0; i < indices.Length; i++) indices[i] = reader.ReadInt32();
+        var positions = reader.ReadBytes(count * 12);
+        var uvs = reader.ReadBytes(count * 8);
+        var indexCount = reader.ReadInt32();
+        var indices = reader.ReadBytes(indexCount * 4);
 
         var mesh = new Mesh {name = $"Gildebloon {name}"};
         if (count > 65000) mesh.indexFormat = IndexFormat.UInt32;
-        mesh.vertices = new Il2CppStructArray<Vector3>(vertices);
-        mesh.uv = new Il2CppStructArray<Vector2>(uvs);
-        mesh.triangles = new Il2CppStructArray<int>(indices);
+        mesh.vertices = ToIl2Cpp<Vector3>(positions, count);
+        mesh.uv = ToIl2Cpp<Vector2>(uvs, count);
+        mesh.triangles = ToIl2Cpp<int>(indices, indexCount);
         mesh.RecalculateBounds();
         mesh.hideFlags = HideFlags.DontUnloadUnusedAsset;
         return mesh;
+    }
+
+    /// <summary>
+    /// The game's array of <paramref name="count"/> <typeparamref name="T"/> holding <paramref name="bytes"/> (as the
+    /// file has them, little-endian like the game), copied in one block: setting them one by one goes through the
+    /// interop for each and took 17 s for the pile at the game's start (2026-11-18). An Il2Cpp array's elements start
+    /// after its header of four pointers.
+    /// </summary>
+    private static Il2CppStructArray<T> ToIl2Cpp<T>(byte[] bytes, int count) where T : unmanaged
+    {
+        if (bytes.Length != count * Marshal.SizeOf<T>()) throw new EndOfStreamException($"{bytes.Length} bytes for {count} {typeof(T).Name}");
+        var array = new Il2CppStructArray<T>(count);
+        Marshal.Copy(bytes, 0, IntPtr.Add(array.Pointer, 4 * IntPtr.Size), bytes.Length);
+        // The last element read back the interop's way must be the file's, or the header isn't what this thinks
+        if (count > 0 && !EqualityComparer<T>.Default.Equals(array[count - 1],
+                MemoryMarshal.Read<T>(bytes.AsSpan(bytes.Length - Marshal.SizeOf<T>()))))
+        {
+            throw new InvalidDataException($"the copied {typeof(T).Name} array doesn't match");
+        }
+
+        return array;
     }
 
     /// <summary>Unlit, with the ramp: the bands are baked, so the map's light doesn't shade it again</summary>
