@@ -5,6 +5,7 @@
   "CustomBossChallenge-Boss": "Босс",
   "CustomBossChallenge-Play": "Играть",
   "CustomBossChallenge-Elite": "Элита",
+  "CustomBossChallenge-EliteBoss": "Элитный {0}",
   "CustomBossChallenge-BossType": "Тип босса",
   "CustomBossChallenge-BossTypeInfo": "Выберите, с каким боссом сражаться. Отметьте Элита, чтобы сразиться с намного более сильной элитной версией босса. Ctrl+Z отменяет последнее изменение параметров босса или правил редактора испытаний, в том числе вставленную, загруженную или случайную настройку, а Ctrl+Y возвращает его. Delete возвращает параметр в жёлтой рамке к значению по умолчанию.",
   "CustomBossChallenge-BossSpeed": "Скорость босса",

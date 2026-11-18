@@ -5,6 +5,7 @@
   "CustomBossChallenge-Boss": "Jefe",
   "CustomBossChallenge-Play": "Jugar",
   "CustomBossChallenge-Elite": "Élite",
+  "CustomBossChallenge-EliteBoss": "{0} Élite",
   "CustomBossChallenge-BossType": "Tipo de jefe",
   "CustomBossChallenge-BossTypeInfo": "Elige a qué jefe enfrentarte. Marca Élite para luchar contra la versión Élite del jefe, mucho más fuerte. Ctrl+Z deshace tu último cambio en las opciones del jefe o en las reglas del editor de desafíos, también una configuración pegada, cargada o aleatoria, y Ctrl+Y lo rehace. Supr devuelve la opción del marco amarillo a su valor predeterminado.",
   "CustomBossChallenge-BossSpeed": "Velocidad del jefe",

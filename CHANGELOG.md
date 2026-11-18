@@ -18,9 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Mode its boss and skulls; a boss picked at random stays a die with "?" until it arrives. Evenly spaced and custom
   skulls are shown on a health bar like the Skull Preview. A 10-tier line-up fits at every screen format, and the box
   scrolls to it.
-- **Elite comes before the boss's name**, like the game writes it: the banner when a tier arrives says
-  "Tier 1: Elite Bloonarius" instead of "Tier 1: Bloonarius Elite", and so do the Rules panel's boss tile and a shared
-  setup's summary.
+- **Elite goes where the language puts it**: the banner when a tier arrives says "Tier 1: Elite Bloonarius" in English
+  instead of "Tier 1: Bloonarius Elite", while French, Spanish, Italian, Portuguese and Arabic keep it after the boss,
+  like "Bloonarius Élite". The Rules panel's boss tile and a shared setup's summary follow the same order.
 
 ## [2.13.0] - 2026-11-17
 
