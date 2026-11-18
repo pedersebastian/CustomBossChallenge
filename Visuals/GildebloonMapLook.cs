@@ -19,7 +19,7 @@ public static class GildebloonMapLook
     public const string PileName = "GildebloonMoneyPile";
 
     /// <summary>How wide the pile is on the map, in the game's units</summary>
-    public const float PileWidth = 40;
+    public const float PileWidth = 26;
 
     /// <summary>The game's boss effects hidden while Gildebloon is shown</summary>
     private static readonly List<GameObject> Hidden = new();
