@@ -44,9 +44,15 @@ public static class CodeFormat
     public const string Version5Prefix = "CBC5:";
 
     /// <summary>
+    /// Version 6 has the mod's own boss Gildebloon (#25), for the setup or a tier; older versions ask for an update
+    /// instead of reading a boss they don't know
+    /// </summary>
+    public const string Version6Prefix = "CBC6:";
+
+    /// <summary>
     /// The prefixes this version reads
     /// </summary>
-    public static readonly string[] KnownPrefixes = [Prefix, Version2Prefix, Version3Prefix, Version4Prefix, Version5Prefix];
+    public static readonly string[] KnownPrefixes = [Prefix, Version2Prefix, Version3Prefix, Version4Prefix, Version5Prefix, Version6Prefix];
     public const string AnyVersionPrefix = "CBC";
     public const int PrefixLength = 5;
 

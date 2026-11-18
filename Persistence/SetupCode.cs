@@ -21,6 +21,7 @@ public static class SetupCode
     public const string Version3Prefix = CodeFormat.Version3Prefix;
     public const string Version4Prefix = CodeFormat.Version4Prefix;
     public const string Version5Prefix = CodeFormat.Version5Prefix;
+    public const string Version6Prefix = CodeFormat.Version6Prefix;
     public const int PrefixLength = CodeFormat.PrefixLength;
     public const int MaxLength = CodeFormat.MaxLength;
     public const int MaxJsonLength = CodeFormat.MaxJsonLength;
@@ -41,11 +42,17 @@ public static class SetupCode
     /// The oldest code version that holds everything in <paramref name="options"/>
     /// </summary>
     public static string PrefixFor(BossOptions options) =>
-        NeedsVersion5(options) ? Version5Prefix
+        NeedsVersion6(options) ? Version6Prefix
+        : NeedsVersion5(options) ? Version5Prefix
         : NeedsVersion4(options) ? Version4Prefix
         : NeedsVersion3(options) ? Version3Prefix
         : NeedsVersion2(options) ? Version2Prefix
         : Prefix;
+
+    /// <summary>
+    /// Whether the code has a boss that version 5 readers don't know: the mod's own Gildebloon (#25)
+    /// </summary>
+    public static bool NeedsVersion6(BossOptions options) => options.UsesGildebloon;
 
     /// <summary>
     /// Whether the code uses an option that version 4 readers (2.10-2.11) don't know: the boss's own event rounds in

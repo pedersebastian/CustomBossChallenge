@@ -35,6 +35,18 @@ the game's URP version is in `BloonsTD6_Data/resources.assets`, e.g. `render-pip
 3. Run `TierLookTest` (`CBC_TESTS=TierLookTest`): it fails if the game can't use the shader. Without the bundle, or
    when the game can't run it, players still get a simpler glow made from the game's own shaders.
 
+The same project makes the look of the mod's own boss Gildebloon (#25, see docs/gildebloon.md). Run it without
+`-nographics`, which the portraits need:
+
+```
+"C:\Program Files\Unity\Hub\Editor\<version>\Editor\Unity.exe" -batchmode -quit -projectPath UnityProject -executeMethod BuildGildebloon.Build -logFile -
+```
+
+It writes `Bundles/gildebloon.layout.json` (how its parts sit together), the textures `Images/Gildebloon*Texture.png`
+and the portraits `Images/Gildebloon.png` and `Images/GildebloonElite.png`. There is no bundle for it: the game crashes
+loading a prefab, mesh or texture from one, so the mod makes the meshes itself (`Visuals/GildebloonMeshes.cs`, which
+must stay in step with the script's shapes). `GildebloonLookTest` checks the look in the game.
+
 The look itself (colours per boss, strength per tier) is in `Config/TierLook.cs`. `TierLookTour` saves tiers 5-10 of
 every boss next to each other when the game is started with `CBC_SCREENSHOTS=<folder>` (`CBC_TIERLOOK_BOSSES=Lych,Vortex`
 picks bosses).
@@ -71,7 +83,7 @@ Share codes are also tested with random data, in F# with [FsCheck](https://fsche
 `PropertyTests/`. Thousands of random setups the Boss Creator can make, and broken codes, check that:
 
 - a code reads back as exactly the setup it was made from, and encoding that setup again gives the same code;
-- codes use the oldest version that holds the setup (`CBC1:` to `CBC5:`), and only characters chat apps leave
+- codes use the oldest version that holds the setup (`CBC1:` to `CBC6:`; `CBC6:` has the mod's own boss Gildebloon, docs/gildebloon.md), and only characters chat apps leave
   alone;
 - broken codes (cut short, changed, junk, too big once unpacked) are refused as `Invalid` or `TooNew` and never throw;
 - a hand made challenge only keeps the fields `CodeFormat.ChallengeFields` allows, with their types, and nothing the

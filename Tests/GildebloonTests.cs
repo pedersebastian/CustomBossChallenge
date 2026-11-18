@@ -29,6 +29,7 @@ public abstract class GildebloonTest : CustomBossTest
         try
         {
             Gildebloon.Register(Game.instance.model);
+            Visuals.GildebloonLook.Load();
             yield return RunOn();
         }
         finally
@@ -128,8 +129,8 @@ public class GildebloonModelTest : GildebloonTest
                 Assert(model.isBoss, $"{id} is a boss");
                 Assert(SameValues(SkullModifier.GetSkulls(model), elite ? Gildebloon.EliteSkulls : Gildebloon.Skulls),
                     $"{id} skulls {Show(SkullModifier.GetSkulls(model))}");
-                AssertEquals(model.GetBehaviors<SpawnBloonsActionModel>().Count(spawn => spawn.bossName == Source), 0,
-                    $"{id} has none of Bloonarius's spawns");
+                AssertEquals(model.GetBehaviors<SpawnBloonsActionModel>().Count(spawn => !Gildebloon.IsCollector(spawn.bloonType)), 0,
+                    $"{id} has none of Bloonarius's spawns, only its Tax Collectors");
                 AssertNotNull(model.GetBehavior<IncreaseDamageFromTypeModel>(), $"{id} takes more damage from acid");
                 Assert(Gildebloon.IsGildebloon(id), $"{id} is one of Gildebloon's tiers");
             }
@@ -146,6 +147,18 @@ public class GildebloonModelTest : GildebloonTest
         var options = new BossOptions {Boss = BossList.Gildebloon, Elite = true, Tiers = 7};
         AssertEquals(ExtraTiers.MissingVanillaTier(game, options), null, "Every tier has a source model");
         AssertEquals(options.SourceId(7), "GildebloonElite5", "Tier 7's source");
+
+        // Share codes with it are version 6, by name, and read back the same (#25)
+        var dcm = BossMode.DefaultDcm(options);
+        var code = Persistence.SetupCode.Encode(options, dcm);
+        Assert(code.StartsWith(Persistence.SetupCode.Version6Prefix), $"A code with Gildebloon is version 6: {code}");
+        Assert(Persistence.CodeFormat.Contents(code).Contains("\"Gildebloon\""), "The code has it by name");
+        Assert(Persistence.SetupCode.TryDecode(code, out var read, out _, out var problem), $"The code loads: {problem}");
+        AssertEquals(read, options.Sanitized(), "Options read from the code");
+        var mixed = new BossOptions {Tiers = 2, TierBosses = "Lych,GildebloonElite"};
+        Assert(Persistence.SetupCode.Encode(mixed, dcm).StartsWith(Persistence.SetupCode.Version6Prefix), "A tier with it is version 6 too");
+        Assert(!Persistence.SetupCode.Encode(new BossOptions {Tiers = 1, TierBosses = ",Gildebloon"}, dcm)
+            .StartsWith(Persistence.SetupCode.Version6Prefix), "A tier that isn't played doesn't count");
         yield break;
     }
 
@@ -284,6 +297,42 @@ public class GildebloonBrainTest : GildebloonTest
         Log($"payout {GildebloonBrain.LastPayout} for a vault of at least {vault}, farm released {!farm.IsAttackingDisabled}");
         Assert(GildebloonBrain.LastPayout >= Math.Floor(vault * GildebloonBrain.PayoutFactor), "It paid back what it stole, with interest");
         Assert(!farm.IsAttackingDisabled && !farm.IsSellingBlocked, "The farm is released when it is beaten");
+        yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// Gildebloon's own model from Bundles/gildebloon.bundle takes the place of its Bloonarius body, normal and Elite,
+/// and its portraits come from Images/ (#25). With CBC_SCREENSHOTS set it takes a screenshot of each.
+/// </summary>
+public class GildebloonLookTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        Assert(Menus.BossEditorSection.GildebloonPortrait("Gildebloon") != BTD_Mod_Helper.Api.Enums.VanillaSprites.GoldenBloonIcon,
+            "Gildebloon's portrait is in the mod");
+        Assert(Menus.BossEditorSection.GildebloonPortrait("GildebloonElite") != BTD_Mod_Helper.Api.Enums.VanillaSprites.GoldenBloonIcon,
+            "Elite Gildebloon's portrait is in the mod");
+
+        var options = new BossOptions {Tiers = 2, SpawnRounds = "40,41", TierBosses = "Gildebloon,GildebloonElite"};
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(WeakBossDcm(), options));
+        var manager = InGame.instance.bridge.Simulation.map.spawner.bossBloonManager;
+        var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
+        foreach (var tier in new[] {1, 2})
+        {
+            manager.SpawnBoss(tier, false);
+            yield return WaitFor(() => Visuals.GildebloonLook.Look != null || Visuals.GildebloonLook.Tinted, $"Tier {tier}'s look", 10);
+            AssertEquals(Visuals.GildebloonLook.Problem, null, "The bundle loads");
+            Assert(!Visuals.GildebloonLook.Tinted, $"Tier {tier} has its own model");
+            var renderers = Visuals.GildebloonLook.Look!.GetComponentsInChildren<Renderer>().Length;
+            Log($"tier {tier}: {manager.CurrentBoss?.bloonModel.id} with {renderers} renderers");
+            Assert(renderers > 10, "The model has its parts");
+            yield return new WaitForSecondsRealtime(2);
+            if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, $"gildebloon-tier{tier}");
+            manager.CurrentBoss?.Destroy();
+            yield return new WaitForSecondsRealtime(1);
+        }
+
         yield return ToMainMenu();
     }
 }

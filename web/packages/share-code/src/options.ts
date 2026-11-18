@@ -19,7 +19,17 @@ export type SkullMode = (typeof SKULL_MODES)[number];
 /** The skull modes as the Boss Creator names them (Texts.SkullsVanilla, SkullsEvenlySpaced, SkullsCustom) (#114) */
 export const SKULL_MODE_NAMES: Record<SkullMode, string> = { Vanilla: "Vanilla", EvenlySpaced: "Evenly Spaced", Custom: "Custom %" };
 
+/** The game's bosses, in the order of its BossType: the ones the Studio and Random offer */
 export const BOSSES = DATA.bosses;
+
+/**
+ * The mod's own bosses (#25). Codes with one are read and shown, but they aren't offered anywhere yet: in the mod they
+ * are behind a switch in the code until they are finished (Config/Experimental.cs).
+ */
+export const MOD_BOSSES = ["Gildebloon"] as const;
+
+/** Every boss a code can have (BossList.All) */
+export const KNOWN_BOSSES: readonly string[] = [...BOSSES, ...MOD_BOSSES];
 
 /**
  * Which rounds Boss Event Rounds play in CHIMPS (#139): the newest CHIMPS event's ("chimpsboss", Diamondback, 2026),
@@ -170,7 +180,7 @@ export function readOptions(json: JsonObject): RawOptions {
     return value;
   };
   return {
-    Boss: toEnum(get("Boss"), BOSSES, "Boss"),
+    Boss: toEnum(get("Boss"), KNOWN_BOSSES, "Boss"),
     Elite: boolean(get("Elite"), "Elite"),
     SkullMode: toEnum(get("SkullMode"), SKULL_MODES, "SkullMode"),
     SkullCount: toInt(get("SkullCount"), "SkullCount"),
@@ -260,9 +270,21 @@ export const entryOf = (options: BossOptions, tier: number): TierBoss =>
 /** The boss and Elite of a tier; a Random tier has the setup's boss until the game starts (BossOptions.BossOf) */
 export function bossOf(options: BossOptions, tier: number): { boss: string; elite: boolean } {
   const entry = entryOf(options, tier);
-  return entry.boss === null || entry.boss === "Random" || !BOSSES.includes(entry.boss)
+  return entry.boss === null || entry.boss === "Random" || !KNOWN_BOSSES.includes(entry.boss)
     ? { boss: options.Boss, elite: options.Elite }
     : { boss: entry.boss, elite: entry.elite };
+}
+
+/**
+ * Whether the setup has the mod's own Gildebloon (#25) for itself or one of its tiers (BossOptions.UsesGildebloon); its
+ * codes are version 6
+ */
+export function usesGildebloon(options: BossOptions): boolean {
+  if (options.Boss === "Gildebloon") return true;
+  for (let tier = 1; tier <= clampTiers(options.Tiers); tier++) {
+    if (bossOf(options, tier).boss === "Gildebloon") return true;
+  }
+  return false;
 }
 
 /** The boss a tier has in Advanced Mode, e.g. "Elite Lych" or "Random" */

@@ -24,6 +24,8 @@ const VALUE_STEP = 10;
 export const TIER_BOSSES = ["Bloonarius", "Lych", "Vortex", "Dreadbloon", "Phayze", "Blastapopoulos", "Diamondback"];
 /** What a tier can be stepped through: every boss, then Random (TierBossMath.Choices) */
 export const CHOICES = [...TIER_BOSSES, RANDOM];
+/** Every name a tier's token can have: the mod's own Gildebloon too, which nothing offers yet (#25) */
+const KNOWN_CHOICES = [...TIER_BOSSES, "Gildebloon", RANDOM];
 
 export interface TierBoss {
   /** A boss, Random, or null when the tier follows the setup's boss */
@@ -112,7 +114,7 @@ function parseToken(token: string): TierBoss {
   // OrdinalIgnoreCase against ASCII names, so only A-Z fold (#174)
   const elite = toLowerAscii(trimmed).endsWith(toLowerAscii(ELITE));
   const name = toLowerAscii(elite ? trimmed.slice(0, -ELITE.length) : trimmed);
-  const known = CHOICES.find((choice) => toLowerAscii(choice) === name);
+  const known = KNOWN_CHOICES.find((choice) => toLowerAscii(choice) === name);
   return { ...FOLLOWS, ...skulls, boss: known ?? null, elite: known !== undefined && elite, speed, health };
 }
 
