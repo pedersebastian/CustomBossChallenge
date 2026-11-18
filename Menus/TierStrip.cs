@@ -21,6 +21,9 @@ namespace CustomBossChallenge.Menus;
 /// <br/>
 /// In Advanced Mode, every card shows its tier's boss and how many skulls it has, and is a button that opens the
 /// <see cref="TierBossPicker"/>.
+/// <br/>
+/// The pause screen's Rules panel shows a read-only strip (#147): no buttons, no warnings, and a boss picked at random
+/// stays a secret until it arrives.
 /// </summary>
 public sealed class TierStrip
 {
@@ -95,6 +98,14 @@ public sealed class TierStrip
     private readonly ModHelperPanel strip;
 
     /// <summary>
+    /// A strip that only shows the tiers, like in the Rules panel: its cards are no buttons and it has no warnings
+    /// </summary>
+    public bool ReadOnly { get; }
+
+    /// <summary>The strip's panel, which a read-only strip's owner may move</summary>
+    public ModHelperPanel Panel => strip;
+
+    /// <summary>
     /// A card was clicked while the tiers can have bosses of their own, with its tier
     /// </summary>
     public Action<int>? CardClicked { get; set; }
@@ -109,9 +120,10 @@ public sealed class TierStrip
         public ModHelperText Health = null!;
 
         /// <summary>
-        /// Opens the tier's boss picker; only usable while the tiers can have bosses of their own
+        /// Opens the tier's boss picker; only usable while the tiers can have bosses of their own. None on a read-only
+        /// strip.
         /// </summary>
-        public Button Button = null!;
+        public Button? Button;
 
         /// <summary>
         /// The small pencil in the corner that shows the card can be clicked
@@ -126,9 +138,10 @@ public sealed class TierStrip
         public ModHelperText SkullCount = null!;
     }
 
-    public TierStrip(GameObject row)
+    public TierStrip(GameObject row, bool readOnly = false)
     {
         Row = row;
+        ReadOnly = readOnly;
         var rect = row.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(rect.sizeDelta.x, Height);
 
@@ -180,14 +193,19 @@ public sealed class TierStrip
             }
 
             var cardTier = tier;
-            card.Button = card.Panel.gameObject.AddComponent<Button>();
-            card.Button.targetGraphic = card.Panel.GetComponent<Image>();
-            card.Button.onClick.AddListener(new Action(() => CardClicked?.Invoke(cardTier)));
+            if (!readOnly)
+            {
+                var button = card.Panel.gameObject.AddComponent<Button>();
+                button.targetGraphic = card.Panel.GetComponent<Image>();
+                button.onClick.AddListener(new Action(() => CardClicked?.Invoke(cardTier)));
+                card.Button = button;
+            }
             card.Edit = card.Panel.AddImage(new Info(EditMarker, -6, -6, 64, 64)
             {
                 Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 1)
             }, VanillaSprites.EditBtn);
             card.Edit.Image.raycastTarget = false;
+            card.Edit.gameObject.SetActive(!readOnly);
 
             card.Skulls = card.Panel.AddPanel(new Info(SkullsMarker, 6, -8, 56, 104)
             {
@@ -295,7 +313,11 @@ public sealed class TierStrip
     /// Shows the tiers <paramref name="options"/> asks for, with the boss multipliers from <paramref name="dcm"/>.
     /// Returns whether the row changed height, so the section must be laid out again.
     /// </summary>
-    public bool Show(BossOptions options, DailyChallengeModel? dcm)
+    /// <param name="secret">
+    /// Whether a tier's boss is still a secret, like a boss picked at random that has not arrived yet: its card shows
+    /// the die and no health or skulls, which would give the boss away
+    /// </param>
+    public bool Show(BossOptions options, DailyChallengeModel? dcm, Func<int, bool>? secret = null)
     {
         Shows++;
         var height = Row.GetComponent<RectTransform>().sizeDelta.y;
@@ -314,18 +336,20 @@ public sealed class TierStrip
             var value = values[i];
             var entry = options.EntryOf(i + 1);
             var (boss, elite) = options.BossOf(i + 1);
-            card.Portrait.Image.SetSprite(entry.IsRandom ? VanillaSprites.RandomIcon : BossEditorSection.Portrait(boss, elite));
+            var hidden = secret?.Invoke(i + 1) ?? false;
+            card.Portrait.Image.SetSprite(entry.IsRandom || hidden ? VanillaSprites.RandomIcon : BossEditorSection.Portrait(boss, elite));
             BossEditorSection.ShowEliteGlow(card.Portrait, entry.IsRandom && entry.Elite);
-            card.Button.interactable = options.Mixed;
-            card.Edit.gameObject.SetActive(options.Mixed);
+            if (card.Button != null) card.Button.interactable = options.Mixed;
+            card.Edit.gameObject.SetActive(options.Mixed && !ReadOnly);
             card.Skulls.gameObject.SetActive(options.Mixed);
-            card.SkullCount.SetText(value.Skulls?.ToString(CultureInfo.InvariantCulture) ?? "?");
+            card.SkullCount.SetText(hidden ? "?" : value.Skulls?.ToString(CultureInfo.InvariantCulture) ?? "?");
             card.Round.SetText($"R{value.Round}");
             Paint(card.Speed, $"×{value.Speed.ToString("0.##", CultureInfo.InvariantCulture)}", value.Speed);
-            Paint(card.Health, value.Shown, value.HealthFactor);
+            Paint(card.Health, hidden ? "?" : value.Shown, hidden ? 1 : value.HealthFactor);
         }
 
-        Warnings = SetupWarnings.Check(facts);
+        // The warnings are for the Boss Creator, before Play
+        Warnings = ReadOnly ? new List<Warning>() : SetupWarnings.Check(facts);
         for (var i = 0; i < Warnings.Count && i < Notes.Count; i++) EditorRows.SetText(Notes[i].Text, Texts.Warning(Warnings[i]));
         LayOut(tiers, Math.Min(Warnings.Count, Notes.Count));
         return !Mathf.Approximately(height, Row.GetComponent<RectTransform>().sizeDelta.y);

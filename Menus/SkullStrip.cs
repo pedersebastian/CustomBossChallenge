@@ -54,6 +54,9 @@ public sealed class SkullStrip
 
     public ModHelperPanel Bar { get; }
 
+    /// <summary>The strip around the bar, which the Rules panel moves (#147)</summary>
+    public ModHelperPanel Panel { get; }
+
     public sealed class Marker
     {
         public ModHelperPanel Panel = null!;
@@ -71,6 +74,7 @@ public sealed class SkullStrip
         var strip = ModHelperPanel.Create(EditorRows.ControlInfo("SkullStrip", EditorRows.ControlWidth, Height - 10),
             VanillaSprites.BlueInsertPanelRound);
         strip.transform.SetParent(row.transform, false);
+        Panel = strip;
 
         // The bar sits a little above the middle, leaving room for the percentages below it
         Bar = strip.AddPanel(new Info("Bar", 0, 34, BarWidth, BarHeight));

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
@@ -16,9 +17,10 @@ using static CustomBossChallenge.Tests.TestUtils;
 namespace CustomBossChallenge.Tests;
 
 /// <summary>
-/// The pause screen's Rules panel of a custom game lists the boss options in Standard Mode (#141): the sliders as rows
-/// of the Modifiers list after the game's own, the rest in the Rules box, once however often it is opened, and only the
-/// boss with a no-changes line for a setup with nothing changed
+/// The pause screen's Rules panel of a custom game in Standard Mode (#141, #147): the sliders as rows of the Modifiers
+/// list after the game's own, the boss and Boss Event Rounds as tiles after the game's own rule tiles, the spawn rounds
+/// as tier cards and the skulls on a bar; once however often it is opened, and for a setup with nothing changed only
+/// the boss and a No changes tile
 /// </summary>
 public class RulesPanelTest : RulesPanelTestBase
 {
@@ -27,29 +29,34 @@ public class RulesPanelTest : RulesPanelTestBase
         var options = new BossOptions
         {
             Boss = BossType.Vortex, Elite = true, Tiers = 6, SpawnRounds = "40, 50, 60, 70, 80, 90", SpeedPerTier = 10,
-            HealthPerTier = -5, SkullMode = SkullMode.EvenlySpaced, SkullCount = 4
+            HealthPerTier = -5, SkullMode = SkullMode.EvenlySpaced, SkullCount = 4, BossEventRounds = true
         };
         var dcm = BaseDcm();
         dcm.bloonModifiers.healthMultipliers.boss = 3.69f;
         dcm.bloonModifiers.bossSpeedMultiplier = 1.3f;
+        // Two of the game's own rule tiles, which keep their place first
+        dcm.disableSelling = true;
+        dcm.disableMK = true;
         yield return Play(options, dcm);
         yield return OpenRules();
-        AssertLines(options, "changed setup");
+        AssertView(options, "changed setup", fitsView: false, gameTiles: 2);
+        AssertEquals(string.Join(",", RulesPanel.Tiles(RulesSummary.View(options)).Select(tile => tile.Label)),
+            $"{Visuals.BossHud.Name(BossType.Vortex, true)},{Texts.BossEventRounds.T()}", "Tiles");
 
         var folder = System.Environment.GetEnvironmentVariable("CBC_SCREENSHOTS");
         if (!string.IsNullOrWhiteSpace(folder)) yield return ScreenshotTour.Capture(folder, "rules-panel");
 
-        // Opened again: the lines are made again, not added a second time
+        // Opened again: everything is made again, not added a second time
         yield return CloseRules();
         yield return OpenRules();
-        AssertLines(options, "reopened");
+        AssertView(options, "reopened", fitsView: false, gameTiles: 2);
         yield return CloseRules();
 
         var plain = new BossOptions();
         yield return Play(plain);
         yield return OpenRules();
-        AssertLines(plain, "default setup");
-        Assert(RulesPanel.Lines(plain, 0).Last() == Texts.RulesNoChanges.T(), "The default setup has the no-changes line");
+        AssertView(plain, "default setup");
+        AssertEquals(RulesPanel.Tiles(RulesSummary.View(plain)).Last().Label, Texts.RulesNoChanges.T(), "The default setup has the No changes tile");
         yield return CloseRules();
 
         yield return ToMainMenu();
@@ -57,8 +64,8 @@ public class RulesPanelTest : RulesPanelTestBase
 }
 
 /// <summary>
-/// The Rules panel in Advanced Mode (#142): a line per tier with its round, boss and what differs from it, a boss picked
-/// at random kept a secret until it arrives, and a 10-tier line-up that the Rules box scrolls to
+/// The Rules panel in Advanced Mode (#142, #147): a card per tier with its round and boss, a boss picked at random kept
+/// a secret until it arrives, and a 10-tier line-up that fits across and scrolls at every screen format
 /// </summary>
 public class RulesPanelAdvancedTest : RulesPanelTestBase
 {
@@ -74,12 +81,12 @@ public class RulesPanelAdvancedTest : RulesPanelTestBase
         Assert(options.WasRandom(3) && options.WasRandom(9), $"Tiers 3 and 9 were Random: {options.RandomTiers}");
 
         yield return OpenRules();
-        AssertLines(options, "before any boss", 0, fitsView: false);
-        var lines = RulesPanel.Lines(options, 0);
-        Assert(lines.Any(line => line.StartsWith(Texts.RulesTier.T(3, 80, Texts.RandomBoss.T()))), "Tier 3 is still a secret");
-        Assert(lines.Any(line => line.StartsWith(Texts.RulesTier.T(2, 60, ""))) &&
-               lines.Single(line => line.StartsWith(Texts.RulesTier.T(2, 60, ""))).Contains(Texts.RulesTierSpeed.T(120)),
-            "Tier 2 shows its own speed");
+        AssertView(options, "before any boss", 0, fitsView: false);
+        AssertSecret(3, true, "before any boss");
+        AssertSecret(9, true, "before any boss");
+        AssertSecret(2, false, "before any boss");
+        var tiers = AssertNotNull(RulesPanel.Tiers, "Tier cards")!;
+        AssertEquals(tiers.Cards[3].SkullCount.Text.text, "4", "Tier 4's own skulls");
 
         var folder = System.Environment.GetEnvironmentVariable("CBC_SCREENSHOTS");
         if (!string.IsNullOrWhiteSpace(folder)) yield return ScreenshotTour.Capture(folder, "rules-panel-advanced");
@@ -91,14 +98,49 @@ public class RulesPanelAdvancedTest : RulesPanelTestBase
         yield return new WaitForSecondsRealtime(1.5f);
         AssertEquals(RulesPanel.ArrivedTier(), 3, "Arrived tier");
         yield return OpenRules();
-        AssertLines(options, "tier 3 arrived", 3, fitsView: false);
-        var (boss, elite) = options.BossOf(3);
-        var after = RulesPanel.Lines(options, 3);
-        Assert(after.Any(line => line.StartsWith(Texts.RulesTier.T(3, 80, Visuals.BossHud.Name(boss, elite)))), "Tier 3 shows its boss");
-        Assert(after.Any(line => line.StartsWith(Texts.RulesTier.T(9, 200, Texts.RandomBoss.T()))), "Tier 9 is still a secret");
+        AssertView(options, "tier 3 arrived", 3, fitsView: false);
+        AssertSecret(3, false, "tier 3 arrived");
+        AssertSecret(9, true, "tier 3 arrived");
         yield return CloseRules();
 
+        // Every screen format the layout test checks: the cards fit across and the box scrolls to them
+        var (width, height, mode) = (UnityEngine.Screen.width, UnityEngine.Screen.height, UnityEngine.Screen.fullScreenMode);
+        try
+        {
+            foreach (var format in LayoutTest.Formats)
+            {
+                yield return SetResolution(format.Width, format.Height);
+                yield return OpenRules();
+                AssertView(options, format.Name, 3, fitsView: false);
+                yield return CloseRules();
+            }
+        }
+        finally
+        {
+            UnityEngine.Screen.SetResolution(width, height, mode);
+        }
+        yield return SetResolution(width, height);
+
         yield return ToMainMenu();
+    }
+
+    private void AssertSecret(int tier, bool secret, string when)
+    {
+        var card = AssertNotNull(RulesPanel.Tiers, $"Tier cards ({when})")!.Cards[tier - 1];
+        AssertEquals(card.Health.Text.text == "?" && card.SkullCount.Text.text == "?", secret,
+            $"Tier {tier} is {(secret ? "" : "not ")}a secret ({when}): health {card.Health.Text.text}, skulls {card.SkullCount.Text.text}");
+    }
+
+    private IEnumerator SetResolution(int width, int height)
+    {
+        UnityEngine.Screen.SetResolution(width, height, FullScreenMode.Windowed);
+        var start = Time.realtimeSinceStartup;
+        while ((UnityEngine.Screen.width != width || UnityEngine.Screen.height != height) && Time.realtimeSinceStartup - start < 5)
+        {
+            yield return null;
+        }
+        AssertEquals($"{UnityEngine.Screen.width}x{UnityEngine.Screen.height}", $"{width}x{height}", "Screen size");
+        yield return new WaitForSecondsRealtime(1);
     }
 }
 
@@ -108,38 +150,89 @@ public class RulesPanelAdvancedTest : RulesPanelTestBase
 public abstract class RulesPanelTestBase : CustomBossTest
 {
     /// <param name="arrivedTier">The highest tier whose boss has arrived</param>
-    /// <param name="fitsView">Whether the text must fit without scrolling; else the box must scroll to all of it</param>
-    protected void AssertLines(BossOptions options, string when, int arrivedTier = 0, bool fitsView = true)
+    /// <param name="fitsView">Whether everything must fit without scrolling; else the box must scroll to all of it</param>
+    /// <param name="gameTiles">How many rule tiles of the game's own the Rules box has at least</param>
+    protected void AssertView(BossOptions options, string when, int arrivedTier = 0, bool fitsView = true, int gameTiles = 0)
     {
         var screen = AssertNotNull(Screen(), $"Rules panel open ({when})")!;
+        var view = RulesSummary.View(options, arrivedTier);
         var content = screen.gameRuleContent;
-        var ours = Enumerable.Range(0, content.childCount).Select(i => content.GetChild(i))
-            .Where(child => child.name == RulesPanel.Name).ToList();
-        AssertEquals(ours.Count, 1, $"Boss rules in the Rules box ({when})");
-        var text = ours[0].GetComponent<TMP_Text>();
-        AssertEquals(text.text, string.Join("\n", RulesPanel.Lines(options, arrivedTier)), $"Boss rules ({when})");
-        Assert(ours[0].gameObject.activeInHierarchy, $"Boss rules shown ({when})");
-        Log($"{when}: {text.text.Replace("\n", " | ")}");
+        var children = Enumerable.Range(0, content.childCount).Select(i => content.GetChild(i)).ToList();
 
-        // In the box the game shows, without scrolling: a Standard setup has at most 8 lines
-        var scroll = content.GetComponentInParent<UnityEngine.UI.ScrollRect>();
-        var view = scroll != null && scroll.viewport != null ? scroll.viewport : content.parent.Cast<RectTransform>();
-        var rect = text.rectTransform;
-        var textBottom = view.InverseTransformPoint(rect.TransformPoint(new Vector3(rect.rect.xMin, rect.rect.yMin))).y;
-        var textRight = view.InverseTransformPoint(rect.TransformPoint(new Vector3(rect.rect.xMax, rect.rect.yMin))).x;
-        Log($"{when}: text bottom {textBottom:0}, right {textRight:0}, view {view.rect.xMin:0}..{view.rect.xMax:0} x " +
-            $"{view.rect.yMin:0}..{view.rect.yMax:0}, content height {content.Cast<RectTransform>().rect.height:0}");
-        Assert(textRight <= view.rect.xMax + 1, $"Boss rules fit across the Rules box ({when})");
-        if (fitsView) Assert(textBottom >= view.rect.yMin - 1, $"Boss rules fit in the Rules box ({when})");
-        else
+        // The tiles: after the game's own, with the label and no value, like the game's own
+        var ours = children.Where(child => child.name == RulesPanel.TileName).ToList();
+        var expected = RulesPanel.Tiles(view);
+        AssertEquals(ours.Count, expected.Count, $"Boss tiles in the Rules box ({when})");
+        for (var i = 0; i < expected.Count; i++)
         {
-            var box = content.Cast<RectTransform>();
-            var inContent = box.InverseTransformPoint(rect.TransformPoint(new Vector3(rect.rect.xMin, rect.rect.yMin))).y;
-            Assert(scroll != null && scroll.vertical, $"The Rules box scrolls ({when})");
-            Assert(inContent >= box.rect.yMin - 1, $"The Rules box scrolls to all the boss rules ({when})");
+            AssertEquals(ours[i].Find("Layout/Lbl").GetComponent<TMP_Text>().text, expected[i].Label, $"Tile {i + 1} ({when})");
+            Assert(ours[i].gameObject.activeInHierarchy, $"Tile {i + 1} shown ({when})");
+            Assert(ours[i].GetComponentsInChildren<UnityEngine.UI.Button>().All(button => !button.enabled), $"Tile {i + 1} takes no focus ({when})");
+        }
+        var game = children.Where(child => child.name is not RulesPanel.TileName and not RulesPanel.Name && child.gameObject.activeSelf).ToList();
+        Assert(game.Count >= gameTiles, $"The game's own {gameTiles} rule tiles are there ({when}): {game.Count}");
+        if (game.Count > 0 && ours.Count > 0)
+            Assert(ours[0].GetSiblingIndex() > game[^1].GetSiblingIndex(), $"Boss tiles after the game's ({when})");
+
+        // No plain text lines: the part under the grid only holds the cards and the skull bar
+        var parts = children.Where(child => child.name == RulesPanel.Name).ToList();
+        var hasStrips = view.TierStrip || view.Skulls != null;
+        AssertEquals(parts.Count, hasStrips ? 1 : 0, $"Cards and skull bar under the grid ({when})");
+        AssertEquals(RulesPanel.Tiers != null, view.TierStrip, $"Tier cards ({when})");
+        AssertEquals(RulesPanel.Skulls != null, view.Skulls != null, $"Skull bar ({when})");
+
+        if (RulesPanel.Tiers is { } strip)
+        {
+            var tiers = TierMath.ClampTiers(options.Tiers);
+            var rounds = options.EffectiveSpawnRounds;
+            AssertEquals(strip.Cards.Count(card => card.Panel.gameObject.activeSelf), tiers, $"A card per tier ({when})");
+            for (var tier = 1; tier <= tiers; tier++)
+                AssertEquals(strip.Cards[tier - 1].Round.Text.text, $"R{rounds[tier - 1]}", $"Tier {tier}'s round ({when})");
+            Assert(strip.Cards.All(card => card.Button == null && !card.Edit.gameObject.activeInHierarchy), $"The cards are no buttons ({when})");
+            Assert(strip.Notes.All(note => !note.gameObject.activeSelf), $"No warnings under the cards ({when})");
+        }
+        if (RulesPanel.Skulls is { } skulls)
+        {
+            var percents = options.SkullPercents ?? System.Array.Empty<float>();
+            AssertEquals(skulls.Markers.Count(marker => marker.Panel.gameObject.activeSelf), percents.Length, $"Skulls on the bar ({when})");
         }
 
-        // The sliders: rows after the game's own Boss Health and Boss Speed, like them, and the game's own kept
+        // Everything fits across the box, and in it or as far as it scrolls
+        var scroll = content.GetComponentInParent<UnityEngine.UI.ScrollRect>();
+        var viewRect = scroll != null && scroll.viewport != null ? scroll.viewport : content.parent.Cast<RectTransform>();
+        var box = content.Cast<RectTransform>();
+        var shown = ours.Select(tile => tile.Cast<RectTransform>()).ToList();
+        if (parts.Count > 0)
+        {
+            shown.Add(parts[0].Cast<RectTransform>());
+            foreach (var panel in new[] {RulesPanel.Tiers?.Panel, RulesPanel.Skulls?.Panel})
+                if (panel != null) shown.Add(panel.RectTransform);
+            foreach (var card in RulesPanel.Tiers?.Cards.Where(card => card.Panel.gameObject.activeSelf) ?? Enumerable.Empty<TierStrip.Card>())
+                shown.Add(card.Panel.RectTransform);
+        }
+        foreach (var rect in shown)
+        {
+            var corners = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector3>(4);
+            rect.GetWorldCorners(corners);
+            var inView = corners.Select(corner => viewRect.InverseTransformPoint(corner)).ToList();
+            var inBox = corners.Select(corner => box.InverseTransformPoint(corner)).ToList();
+            Assert(inView.Min(p => p.x) >= viewRect.rect.xMin - 1 && inView.Max(p => p.x) <= viewRect.rect.xMax + 1,
+                $"{rect.name} fits across the Rules box ({when}): {inView.Min(p => p.x):0}..{inView.Max(p => p.x):0} in " +
+                $"{viewRect.rect.xMin:0}..{viewRect.rect.xMax:0}");
+            if (fitsView) Assert(inView.Min(p => p.y) >= viewRect.rect.yMin - 1, $"{rect.name} fits in the Rules box ({when})");
+            else Assert(inBox.Min(p => p.y) >= box.rect.yMin - 1, $"The Rules box scrolls to all of {rect.name} ({when})");
+        }
+        if (!fitsView) Assert(scroll != null && scroll.vertical, $"The Rules box scrolls ({when})");
+        Log($"{when}: tiles [{string.Join(", ", expected.Select(tile => tile.Label))}], cards {view.TierStrip}, skulls " +
+            $"{view.Skulls != null}, secret [{string.Join(",", view.SecretTiers)}], box {box.rect.width:0}x{box.rect.height:0}, " +
+            $"view {viewRect.rect.width:0}x{viewRect.rect.height:0}");
+
+        AssertModifiers(screen, options, when);
+    }
+
+    /// <summary>The sliders: rows after the game's own Boss Health and Boss Speed, like them, and the game's own kept</summary>
+    private void AssertModifiers(ChallengeRulesScreen screen, BossOptions options, string when)
+    {
         var modifiers = screen.modifierContent;
         var rows = Enumerable.Range(0, modifiers.childCount).Select(i => modifiers.GetChild(i)).ToList();
         var ourRows = rows.Where(row => row.name == RulesPanel.ModifierName).ToList();
@@ -155,15 +248,10 @@ public abstract class RulesPanelTestBase : CustomBossTest
         var gameRows = rows.Where(row => row.name != RulesPanel.ModifierName && row.gameObject.activeSelf).ToList();
         if (ourRows.Count > 0 && gameRows.Count > 0)
             Assert(ourRows[0].GetSiblingIndex() > gameRows[^1].GetSiblingIndex(), $"Boss Creator rows after the game's ({when})");
-        var gameLabels = string.Join(", ", gameRows.Select(row => row.Find("Layout/Lbl")?.GetComponent<TMP_Text>()?.text));
-        Log($"{when}: game modifiers [{gameLabels}], ours [{string.Join(", ", expected.Select(r => $"{r.Label} {r.Value}"))}]");
 
         // More rows than fit scroll, like the game's own list
         var modifierScroll = modifiers.GetComponentInParent<UnityEngine.UI.ScrollRect>();
-        var modifierView = modifierScroll != null && modifierScroll.viewport != null ? modifierScroll.viewport : null;
-        Log($"{when}: modifiers scroll {modifierScroll != null}, content height {modifiers.Cast<RectTransform>().rect.height:0}, " +
-            $"view height {(modifierView != null ? modifierView.rect.height : 0):0}");
-        if (modifierView == null || modifierScroll == null || !modifierScroll.vertical)
+        if (modifierScroll == null || modifierScroll.viewport == null || !modifierScroll.vertical)
         {
             foreach (var row in ourRows)
             {
