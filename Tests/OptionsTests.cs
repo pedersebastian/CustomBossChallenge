@@ -190,7 +190,8 @@ public class BossRandomizerTest : CustomBossTest
 
         Log($"default speed {defaultSpeed}, default health {defaultHealth}, elite {elite}, 5 tiers {defaultTiers}, " +
             $"paragon limit {limited} of {Runs}, tiers 1-10 {string.Join(", ", tierCounts.Skip(1))}");
-        AssertEquals(bosses.Count, System.Enum.GetValues<BossType>().Length, "Every boss can come up");
+        // The game's bosses, and Gildebloon when it is switched on (#25)
+        AssertEquals(bosses.Count, Config.BossList.Available.Count(), "Every boss can come up");
         Log($"speed and health just above normal {nearNormal}, at 300 % or more {extreme}");
         Assert(extreme > 0, "Speed and health up to 400 % can come up");
         Assert(nearNormal > extreme * 5, $"Values near 100 % must be far more likely than extreme ones: {nearNormal} vs {extreme}");

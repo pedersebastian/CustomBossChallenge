@@ -87,7 +87,8 @@ public class BossCreatorTest : CustomBossTest
         var reset = LayoutChecks.ScreenRect(editor!.transform.Find("Reset")!.GetComponentInChildren<Button>());
         Assert(!LayoutChecks.Overlap(play, reset),
             $"Play ({LayoutChecks.Describe(play)}) overlaps Reset ({LayoutChecks.Describe(reset)})");
-        AssertEquals(section.BossButtons.Count, Enum.GetValues<BossType>().Length, "Boss buttons");
+        // The game's bosses, and Gildebloon when it is switched on (#25)
+        AssertEquals(section.BossButtons.Count, Config.BossList.Available.Count(), "Boss buttons");
         AssertEquals(editor!.chalName.text, BossMode.DefaultName(BossType.Bloonarius), "Default challenge name");
         // The end round always follows the last tier, so the editor's own field is hidden
         Assert(!editor.endRound.gameObject.activeSelf, "The Boss Creator shows the End Round field");

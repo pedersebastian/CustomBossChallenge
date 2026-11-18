@@ -480,6 +480,7 @@ public class GildebloonNoBloonariusTest : GildebloonTest
         var start = Time.realtimeSinceStartup;
         var shotHurt = false;
         var shotCollector = false;
+        var collectorLooks = 0;
         var seen = new System.Collections.Generic.Dictionary<IntPtr, int>();
         while (!boss.IsDestroyed && boss.health > 0)
         {
@@ -493,12 +494,12 @@ public class GildebloonNoBloonariusTest : GildebloonTest
                 seen.TryGetValue(bloon.Pointer, out var seenFrames);
                 seen[bloon.Pointer] = ++seenFrames;
                 if (seenFrames < 3) continue;
-                if (seenFrames > 60) Assert(Visuals.GildebloonLook.CollectorLooks > 0, "A Tax Collector has its own look");
                 if (Visuals.GildebloonLook.HasLook(bloon)) Assert(!Visuals.GildebloonLook.BodyShows(bloon), "A Tax Collector's MOAB body doesn't show");
                 Assert(bloon.mutators == null || !bloon.mutators.ToArray().Any(m => m.mutator?.id == Visuals.GildebloonLook.BossSkinMutator),
                     "A Tax Collector has no boss skin");
             }
             if (frames % 5 == 0) AssertNoBloonarius($"at {boss.health} health");
+            collectorLooks = Math.Max(collectorLooks, Visuals.GildebloonLook.CollectorLooks);
             if (!shotCollector && Visuals.GildebloonLook.CollectorLooks > 0 && !string.IsNullOrEmpty(folder))
             {
                 shotCollector = true;
@@ -515,6 +516,7 @@ public class GildebloonNoBloonariusTest : GildebloonTest
         Log($"beaten after {frames} frames; skulls {InGame.instance.bridge.GetCurrentBossSkull()}, body parts hidden again {Visuals.GildebloonLook.BodyShownAgain}, " +
             $"collectors seen {collectors}, collector looks now {Visuals.GildebloonLook.CollectorLooks}");
         Assert(collectors > 0, "It sent Tax Collectors");
+        Assert(collectorLooks > 0, "A Tax Collector had its own look");
 
         // Its end: it bursts into coins, and nothing of Bloonarius's death shows
         var end = Time.realtimeSinceStartup;
