@@ -242,7 +242,7 @@ setup, so they are usually a few hundred characters. A new, unchanged setup give
 CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA
 ```
 
-And this is Vortex Elite with 7 tiers, +20 % speed and +50 % health per tier, so it is a `CBC2:` code:
+And this is Elite Vortex with 7 tiers, +20 % speed and +50 % health per tier, so it is a `CBC2:` code:
 
 ```
 CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJSsjAx0lDxSE3NKMuBCpga1OkrJQBNrawE

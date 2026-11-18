@@ -91,9 +91,9 @@ public static class BossHud
     };
 
     /// <summary>
-    /// A boss's name for the banner, e.g. "Lych Elite"
+    /// A boss's name for the banner, e.g. "Elite Lych", like the game names its Elite bosses
     /// </summary>
-    public static string Name(BossType boss, bool elite) => elite ? $"{boss} {Texts.Elite.T()}" : boss.ToString();
+    public static string Name(BossType boss, bool elite) => elite ? $"{Texts.Elite.T()} {boss}" : boss.ToString();
 
     private static BossOptions? MixedOptions =>
         CustomBossState.IsActive && CustomBossState.ActiveOptions is {Mixed: true} options ? options : null;

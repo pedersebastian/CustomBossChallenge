@@ -1053,10 +1053,10 @@ public sealed class BossEditorSection
     }
 
     /// <summary>
-    /// A setup in one line for the log, e.g. "'Custom Vortex', Vortex Elite, 7 tiers, Logs, Hard, Standard"
+    /// A setup in one line for the log, e.g. "'Custom Vortex', Elite Vortex, 7 tiers, Logs, Hard, Standard"
     /// </summary>
     public static string Describe(BossOptions options, DailyChallengeModel dcm) =>
-        $"'{dcm.name}', {options.Boss}{(options.Elite ? " Elite" : "")}, {options.Tiers} tiers" +
+        $"'{dcm.name}', {(options.Elite ? "Elite " : "")}{options.Boss}, {options.Tiers} tiers" +
         (options.Mixed ? $" ({options.TierBosses})" : "") +
         (options.UsesBossEventRounds ? $", boss event rounds {options.BaseEventRoundSetIn(dcm.mode)}" : "") +
         $", {dcm.map}, {dcm.difficulty}, {dcm.mode}";
@@ -1067,7 +1067,7 @@ public sealed class BossEditorSection
     public static string Summary(BossOptions options, DailyChallengeModel dcm)
     {
         var boss = options.Mixed ? Texts.DifferentBosses.T()
-            : options.Elite ? $"{options.Boss} {Texts.Elite.T()}" : options.Boss.ToString();
+            : Visuals.BossHud.Name(options.Boss, options.Elite);
         var rounds = !options.UsesBossEventRounds ? ""
             : dcm.mode == BossOptions.ChimpsMode ? $", {Texts.BossEventRounds.T()} ({ChimpsEntry(options).T()})"
             : $", {Texts.BossEventRounds.T()}";

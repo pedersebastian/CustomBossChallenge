@@ -130,7 +130,7 @@ describe("CHIMPS event rounds (#139)", () => {
 });
 
 describe("Advanced Mode (#95)", () => {
-  /** Lych Elite at 150 % speed, 80 % health and 4 skulls in Standard */
+  /** Elite Lych at 150 % speed, 80 % health and 4 skulls in Standard */
   const standard = () =>
     [
       (s: edit.StudioSetup) => edit.setBoss(s, "Lych"),
