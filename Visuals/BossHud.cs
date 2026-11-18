@@ -107,7 +107,10 @@ public static class BossHud
     /// </summary>
     public static void ShowPortraits(BossUI ui)
     {
-        var options = MixedOptions;
+        // Also a game with only Gildebloon, which the game's panel would show as the boss it is made from (#25)
+        var options = CustomBossState.IsActive && CustomBossState.ActiveOptions is { } active && MixedBosses.SetsType(active)
+            ? active
+            : null;
         var manager = Manager;
         if (options == null || manager == null) return;
 

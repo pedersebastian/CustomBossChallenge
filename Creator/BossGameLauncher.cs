@@ -27,7 +27,9 @@ public static class BossGameLauncher
         data.selectedDifficulty = dcm.difficulty;
         // With a different boss per tier the game starts as the first tier's boss; MixedBosses switches it per tier
         var (boss, elite) = options.BossOf(1);
-        data.SetupBossChallenge("", boss, elite, false, dcm, LeaderboardScoringType.GameTime);
+        // The game's boss data only knows its own bosses: a mod boss starts as the one it is made from, and
+        // MixedBosses gives the game its own type before it spawns (#25)
+        data.SetupBossChallenge("", BossList.Host(boss), elite, false, dcm, LeaderboardScoringType.GameTime);
         return data;
     }
 

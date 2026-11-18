@@ -26,8 +26,15 @@ public static class MixedBosses
     /// <summary>The options of the custom game with a boss per tier being played, or null</summary>
     internal static BossOptions? Options => MixedOptions;
 
+    /// <summary>
+    /// The options of a custom game whose boss type has to be set before each tier: one with a boss per tier, or with
+    /// the mod's own Gildebloon, which the game only spawns when the type says so (#25)
+    /// </summary>
     private static BossOptions? MixedOptions =>
-        CustomBossState.IsActive && CustomBossState.ActiveOptions is {Mixed: true} options ? options : null;
+        CustomBossState.IsActive && CustomBossState.ActiveOptions is { } options && SetsType(options) ? options : null;
+
+    /// <summary>Whether the game's boss type is set per tier for these options</summary>
+    public static bool SetsType(BossOptions options) => options.Mixed || options.UsesGildebloon;
 
     /// <summary>
     /// The tier whose boss the game should show now: the one alive, or else the next one to come
@@ -78,19 +85,20 @@ public static class MixedBosses
     /// </summary>
     public static void SetType(GameModel? model, BossOptions options, int tier)
     {
-        if (!options.Mixed) return;
+        if (!SetsType(options)) return;
 
         var (boss, elite) = options.BossOf(tier);
         if (model != null)
         {
-            model.bossBloonType = boss.ToString();
+            model.bossBloonType = BossList.Name(boss);
             model.bossEliteMode = elite;
         }
 
+        // The game's boss data only knows its own bosses; a mod boss is played as the game boss it is made from
         var data = InGameData.CurrentGame?.bossData;
         if (data != null)
         {
-            data.bossBloon = boss;
+            data.bossBloon = BossList.Host(boss);
             data.bossEliteMode = elite;
         }
     }

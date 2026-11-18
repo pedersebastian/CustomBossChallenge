@@ -31,3 +31,18 @@ The game's `BossType` enum can't get a value. The mod uses `(BossType) 100` with
 (`Config.BossList`), writes it by name in files and codes (`Persistence.BossNameConverter`) and routes every
 boss name through `BossList.Name`. The game itself only ever sees the string `bossBloonType` and model ids
 `Gildebloon1`..`Gildebloon5`, `GildebloonElite1`..`GildebloonElite5`.
+
+## How it is built
+
+- `Config/Gildebloon.cs` makes the models: `Gildebloon1..5` and `GildebloonElite1..5` from Bloonarius's models
+  (Bloonarius's spew, spawns and bleed taken out), and the Tax Collectors `GildebloonCollector` (a gold MOAB) and
+  `GildebloonCollectorElite` (a gold BFB). They are added to the game's model at the main menu, and to each custom
+  match's model, only while `Experimental.Gildebloon` is on.
+- From the game: the skull trigger (Repossession: 3 s invulnerable with Blastapopoulos's own invulnerability actions,
+  Tax Collectors sent), Skittish (`DamageTakenTriggerModel` + `DashForwardsActionModel`) and Tarnish (+50 % acid
+  damage, `IncreaseDamageFromTypeModel`).
+- `Config/GildebloonBrain.cs` runs each simulation frame (`BossBloonManager.Process`): Toll, Vault (an armour
+  layer `GildeVault`), Interest (Elite), seizing Banana Farms at a skull, Tax Collector leaks and the Payout.
+- `Patches/MixedBosses.cs` sets the game's boss type to "Gildebloon" before each of its tiers spawns, also when the
+  whole setup is Gildebloon; `bossData.bossBloon` gets Bloonarius (`BossList.Host`).
+- `Visuals/GildebloonHud.cs` shows the Vault under the boss panel.

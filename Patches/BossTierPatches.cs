@@ -40,6 +40,7 @@ internal static class BossBloonManager_Init
 
         // A restart makes a new simulation but reuses the game model, so this is where every match starts
         if (CustomBossState.IsActive) CustomBossState.OnMatchStart();
+        Config.GildebloonBrain.Reset();
         MixedBosses.Sync(__instance);
     }
 }

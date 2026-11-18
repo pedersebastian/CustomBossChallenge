@@ -44,6 +44,9 @@ public static class BossPresentation
     /// </summary>
     public static void ShowMapEffects(BossType boss)
     {
+        // A mod boss has no map effects of its own yet; the map keeps the ones it has (#25)
+        if (Config.BossList.IsModBoss(boss)) return;
+
         try
         {
             var loader = UI.instance?.mapLoader;

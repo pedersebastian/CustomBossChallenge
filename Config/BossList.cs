@@ -27,6 +27,12 @@ public static class BossList
     /// <summary>The bosses that can be picked and played now: the game's, and Gildebloon when it is on</summary>
     public static BossType[] Available => Experimental.GildebloonAvailable ? All : Vanilla;
 
+    /// <summary>
+    /// The game boss that stands in for a mod boss wherever the game needs one of its own: its boss data, the boss
+    /// event rounds. Gildebloon is made from Bloonarius, which has no boss panel of its own.
+    /// </summary>
+    public static BossType Host(BossType boss) => boss == Gildebloon ? BossType.Bloonarius : boss;
+
     /// <summary>Whether the boss is the mod's own instead of one of the game's</summary>
     public static bool IsModBoss(BossType boss) => boss == Gildebloon;
 

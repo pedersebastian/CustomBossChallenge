@@ -32,6 +32,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         _ = Patches.PatchCheck.AllInPlace;
         Patches.ConflictReport.LogOnce();
         Visuals.TierLookApplier.Prepare();
+        Config.Gildebloon.Register(Il2CppAssets.Scripts.Unity.Game.instance.model);
         Persistence.PastEvents.Start();
     }
 
@@ -48,6 +49,7 @@ public class CustomBossChallenge : BloonsTD6Mod
             Visuals.BossHud.Update();
         });
         Guarded("ranked timer", () => Visuals.RankedHud.Update());
+        Guarded("Gildebloon vault", Visuals.GildebloonHud.Update);
         if (Time.realtimeSinceStartup >= nextPresentationCheck)
         {
             nextPresentationCheck = Time.realtimeSinceStartup + Visuals.BossPresentation.CheckInterval;
@@ -103,6 +105,7 @@ public class CustomBossChallenge : BloonsTD6Mod
 
         CustomBossState.OnMatchStart();
         var options = CustomBossState.ActiveOptions!;
+        Config.Gildebloon.Register(result);
         var tiers = ExtraTiers.Add(result, options);
         // All Camo, All Regrow and All Fortified also for the bloons the bosses spawn, extra tiers included (#90)
         var spawned = SpawnedBloonModifiers.Apply(result, InGameData.CurrentGame?.dcModel?.bloonModifiers);

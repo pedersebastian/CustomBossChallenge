@@ -85,7 +85,7 @@ public sealed record BossOptions
     /// <summary>
     /// The name of a boss's own round set in the game's mergeable round sets, the same for Elite, e.g. "bloonarius"
     /// </summary>
-    public static string BossEventRoundSet(BossType boss) => BossList.Name(boss).ToLowerInvariant();
+    public static string BossEventRoundSet(BossType boss) => BossList.Name(BossList.Host(boss)).ToLowerInvariant();
 
     /// <summary>The game mode of CHIMPS in the game's challenge models</summary>
     public const string ChimpsMode = "Clicks";
