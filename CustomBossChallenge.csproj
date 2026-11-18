@@ -31,6 +31,8 @@
         <EmbeddedResource Include="Config\RoundSets\gildebloon.json" LogicalName="CustomBossChallenge.gildebloon.json" />
         <!-- How Gildebloon's parts sit together, made with Bundles/gildebloon.bundle by UnityProject (#25) -->
         <EmbeddedResource Include="Bundles\gildebloon.layout.json" LogicalName="CustomBossChallenge.gildebloon.layout.json" />
+        <!-- Gildebloon's pile of money, modelled in Blender: tools/blender/build-pile.py (#25) -->
+        <EmbeddedResource Include="Bundles\gildebloon-pile.mesh.gz" LogicalName="CustomBossChallenge.gildebloon-pile.mesh.gz" />
     </ItemGroup>
 
     <!-- The website is its own project. Only the data it gets from the game is built in, so WebDataTest can check it,

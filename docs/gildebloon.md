@@ -77,6 +77,10 @@ What could still show of Bloonarius, and how each is handled:
 - **Its map effects.** The game puts Bloonarius's slime (`BloonariusTrackFx`, `BloonariusAmbientMapFx`) on the map
   for the boss it is launched as. While Gildebloon is shown they are hidden, and `Visuals/GildebloonMapLook.cs` puts a
   pile of coins and money bags where the slime lay. A game boss in Advanced Mode gets its effects back.
+  The pile is modelled in Blender (`tools/blender/gildebloon-pile.py`) in the game's cartoon style: toon bands and
+  dark outlines (inverted shells). `tools/blender/build-pile.py` writes it to `Bundles/gildebloon-pile.mesh.gz`, with
+  the bands baked into UVs on a ramp texture that `Visuals/GildebloonPileMesh.cs` makes, since a model can't come from
+  an asset bundle. Without the file the mod builds a simple pile itself.
 - **Its body as it takes damage.** The game's damage-state animation turns the body's parts back on every frame
   (setting `Renderer.enabled`), so turning them off didn't hold: after a skull the Elite's damaged parts drew through.
   They are now kept from drawing with `Renderer.forceRenderingOff`, which the animations leave alone, checked every

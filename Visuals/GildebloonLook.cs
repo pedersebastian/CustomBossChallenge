@@ -629,6 +629,7 @@ public static class GildebloonLook
         try
         {
             ReadLayouts();
+            GildebloonPileMesh.Load();
             foreach (var name in TextureNames)
             {
                 var texture = BTD_Mod_Helper.Api.ModContent.GetTexture<CustomBossChallenge>($"Gildebloon{name}Texture");

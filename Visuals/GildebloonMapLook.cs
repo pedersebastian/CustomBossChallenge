@@ -10,8 +10,9 @@ namespace CustomBossChallenge.Visuals;
 /// <summary>
 /// The map's boss effects while Gildebloon is the boss shown (#25). Gildebloon is played as Bloonarius, so the game puts
 /// Bloonarius's slime on the map; it is hidden, and where its slime lay at the track's start there is a pile of money
-/// instead: coins and money bags, made like Gildebloon's own look (<see cref="GildebloonLook"/>). When a game boss is
-/// shown again (Advanced Mode), its effects come back.
+/// instead: the one modelled in Blender (<see cref="GildebloonPileMesh"/>), or, without it, coins and money bags made
+/// like Gildebloon's own look (<see cref="GildebloonLook"/>). When a game boss is shown again (Advanced Mode), its
+/// effects come back.
 /// </summary>
 public static class GildebloonMapLook
 {
@@ -25,6 +26,10 @@ public static class GildebloonMapLook
 
     private static GameObject? pile;
     private static readonly List<(Transform Coin, float Phase)> Glints = new();
+    private static readonly List<(Transform Sparkle, float Size, float Phase)> Sparkles = new();
+
+    /// <summary>Whether the pile on the map is the modelled one, for tests</summary>
+    public static bool Modelled { get; private set; }
 
     /// <summary>The pile of money on the map now, for tests</summary>
     public static GameObject? Pile => pile != null ? pile : null;
@@ -65,6 +70,8 @@ public static class GildebloonMapLook
         if (pile != null) Object.Destroy(pile);
         pile = null;
         Glints.Clear();
+        Sparkles.Clear();
+        Modelled = false;
     }
 
     /// <summary>Called every frame: a few coins on top turn slowly, catching the light</summary>
@@ -73,10 +80,21 @@ public static class GildebloonMapLook
         if (pile == null)
         {
             Glints.Clear();
+            Sparkles.Clear();
             return;
         }
 
         var time = Time.time;
+        // The sparkles face the camera and twinkle, one after another
+        var camera = Camera.main;
+        foreach (var (sparkle, size, phase) in Sparkles)
+        {
+            if (sparkle == null) continue;
+            if (camera != null) sparkle.rotation = Quaternion.FromToRotation(Vector3.up, -camera.transform.forward) * Quaternion.Euler(0, time * 30, 0);
+            var twinkle = Mathf.Max(0, Mathf.Sin(time * 2.2f + phase));
+            sparkle.localScale = Vector3.one * (size * (0.2f + 0.8f * twinkle));
+        }
+
         foreach (var (coin, phase) in Glints)
         {
             if (coin == null) continue;
@@ -91,6 +109,8 @@ public static class GildebloonMapLook
         root.transform.position = position;
         root.transform.rotation = Quaternion.identity;
         root.transform.localScale = Vector3.one * (PileWidth / 2f / Math.Max(0.0001f, root.transform.parent.lossyScale.x));
+
+        if (GildebloonPileMesh.Ready) return BuildModelled(root);
 
         var template = Template(map);
         var gold = GildebloonLook.MaterialFor("Gold", template);
@@ -120,6 +140,26 @@ public static class GildebloonMapLook
                 new Vector3(0.32f, 0.38f, 0.32f) * size);
         }
 
+        return root;
+    }
+
+    /// <summary>The pile modelled in Blender: one mesh, and its sparkles</summary>
+    private static GameObject BuildModelled(GameObject root)
+    {
+        var material = GildebloonPileMesh.Material!;
+        Part(root.transform, "Model", GildebloonPileMesh.Pile!, material, Vector3.zero, Quaternion.identity, Vector3.one);
+        if (GildebloonPileMesh.Sparkle != null)
+        {
+            var i = 0;
+            foreach (var (position, size) in GildebloonPileMesh.Sparkles)
+            {
+                var sparkle = Part(root.transform, "Sparkle", GildebloonPileMesh.Sparkle, material, position, Quaternion.identity,
+                    Vector3.one * size);
+                Sparkles.Add((sparkle, size, i++ * 1.7f));
+            }
+        }
+
+        Modelled = true;
         return root;
     }
 
