@@ -19,7 +19,10 @@ public sealed class SafeFileTests : IDisposable
 
     public void Dispose()
     {
-        if (Directory.Exists(directory)) Directory.Delete(directory, true);
+        if (!Directory.Exists(directory)) return;
+        foreach (var file in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
+            File.SetAttributes(file, FileAttributes.Normal);
+        Directory.Delete(directory, true);
     }
 
     [Fact]
@@ -85,6 +88,24 @@ public sealed class SafeFileTests : IDisposable
         {
             var error = Record.Exception(() => SafeFile.WriteAllText(FilePath, "new"));
             Assert.True(error is IOException or UnauthorizedAccessException, $"Got {error?.GetType().Name ?? "no error"}");
+        }
+
+        Assert.Equal("old", File.ReadAllText(FilePath));
+    }
+
+    [Fact]
+    public void A_read_only_file_keeps_its_old_contents_and_no_temporary_file_is_left()
+    {
+        // Only Windows stops a read only file from being replaced
+        Assert.SkipUnless(OperatingSystem.IsWindows(), "Read only files can be replaced on this system");
+        SafeFile.WriteAllText(FilePath, "old");
+        File.SetAttributes(FilePath, FileAttributes.ReadOnly);
+
+        for (var i = 0; i < 2; i++)
+        {
+            var error = Record.Exception(() => SafeFile.WriteAllText(FilePath, "new"));
+            Assert.True(error is IOException or UnauthorizedAccessException, $"Got {error?.GetType().Name ?? "no error"}");
+            Assert.False(File.Exists(FilePath + ".tmp"), "The temporary file was left behind (#230)");
         }
 
         Assert.Equal("old", File.ReadAllText(FilePath));
