@@ -39,7 +39,22 @@ public static class CustomBossRetries
     {
         // The round the last tier is defeated on ends after the win, which leaves nothing to retry or continue
         if (CustomBossState.AllTiersDefeated) return;
+        Snapshot(game, highestCompletedRound);
+    }
 
+    /// <summary>
+    /// The first round played has no round before it to take a snapshot after, so it gets one as it starts, with the
+    /// towers placed before it; Retry Last Round then works when it is lost too (#231)
+    /// </summary>
+    public static void OnRoundStarting(InGame game)
+    {
+        if (Saves.Count > 0 || CustomBossState.AllTiersDefeated || game.bridge == null) return;
+        // The round before it counts as completed, so the snapshot resumes on the round about to start
+        Snapshot(game, game.bridge.GetCurrentRound() - 1);
+    }
+
+    private static void Snapshot(InGame game, int highestCompletedRound)
+    {
         var options = CustomBossState.ActiveOptions;
         var save = game.CreateCurrentMapSave(highestCompletedRound, SaveId);
         if (options == null || save == null) return;
