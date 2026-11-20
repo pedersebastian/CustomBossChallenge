@@ -15,7 +15,7 @@ namespace CustomBossChallenge.Tests;
 
 /// <summary>
 /// The bloons a boss spawns get All Camo, All Regrow and All Fortified in custom games (#90), for every boss, Elite or
-/// not, and the extra tiers; the game's own Boss Challenge is left as it is
+/// not, and the extra tiers, without an error in the log (#228); the game's own Boss Challenge is left as it is
 /// </summary>
 public class SpawnedBloonModelTest : CustomBossTest
 {
@@ -26,10 +26,22 @@ public class SpawnedBloonModelTest : CustomBossTest
         var originalIds = SpawnedBloonModifiers.SpawnedIds(original);
         AssertEquals(originalIds.Contains("Ceramic"), true, $"Bloonarius spawns Ceramics: {string.Join(", ", originalIds)}");
 
-        // Every modifier on, with extra tiers
+        // Every modifier on, with extra tiers. Looking for variants the game doesn't have, like a fortified undead MOAB
+        // of Lych, logs no error, whichever boss is played (#228).
         var dcm = BaseDcm();
         dcm.bloonModifiers.allCamo = dcm.bloonModifiers.allRegen = dcm.bloonModifiers.allFortified = true;
-        yield return Play(dcm, new BossOptions {Boss = BossType.Bloonarius, Tiers = 7});
+        var errors = new List<string>();
+        void Logged(string section, string message) => errors.Add($"{section}: {message.Split('\n')[0]}");
+        MelonLoader.MelonLogger.ErrorCallbackHandler += Logged;
+        try
+        {
+            yield return Play(dcm, new BossOptions {Boss = BossType.Bloonarius, Tiers = 7});
+        }
+        finally
+        {
+            MelonLoader.MelonLogger.ErrorCallbackHandler -= Logged;
+        }
+        AssertEquals(string.Join(" | ", errors), "", "Errors logged while the game with every modifier loaded");
         var match = InGame.instance.GetGameModel();
         var bosses = match.bloons.Where(bloon => bloon.isBoss).ToList();
         foreach (var boss in bosses)
@@ -37,7 +49,7 @@ public class SpawnedBloonModelTest : CustomBossTest
             foreach (var id in SpawnedBloonModifiers.SpawnedIds(boss))
             {
                 var further = DailyChallengeModel.AddCamoRegenToBloonString(id, true, true, true);
-                Assert(further == id || match.GetBloon(further) == null,
+                Assert(further == id || !match.DoesBloonExist(further),
                     $"{boss.id} spawns {id}, though {further} exists");
             }
         }

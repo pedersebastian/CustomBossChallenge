@@ -22,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instead of "Tier 1: Bloonarius Elite", while French, Spanish, Italian, Portuguese and Arabic keep it after the boss,
   like "Bloonarius Élite". The Rules panel's boss tile and a shared setup's summary follow the same order.
 
+### Fixed
+
+- **No more errors in the log with All Fortified** (#228): every custom game with All Fortified on logged three
+  `KeyNotFoundException` errors per Lych tier while it loaded, whichever boss was played, because the mod looked for
+  fortified undead MOABs the game doesn't have. The game played the same, but the log no longer fills with them.
+
 ## [2.13.0] - 2026-11-17
 
 ### Changed
