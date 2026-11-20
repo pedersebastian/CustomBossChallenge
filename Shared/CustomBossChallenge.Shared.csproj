@@ -45,6 +45,7 @@
         <Compile Include="..\Persistence\PastEventsFormat.cs" Link="Mod\PastEventsFormat.cs" />
         <Compile Include="..\Persistence\PastEventsStore.cs" Link="Mod\PastEventsStore.cs" />
         <Compile Include="..\Persistence\SafeFile.cs" Link="Mod\SafeFile.cs" />
+        <Compile Include="..\Persistence\SavedSetupsFile.cs" Link="Mod\SavedSetupsFile.cs" />
         <Compile Include="..\Persistence\SavedSetupsFormat.cs" Link="Mod\SavedSetupsFormat.cs" />
     </ItemGroup>
     <ItemGroup>

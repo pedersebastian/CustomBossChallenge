@@ -170,6 +170,14 @@ public static class TierMath
     /// </summary>
     public static int EndRound(int[] rounds) => (rounds.Length > 0 ? rounds[^1] : FirstSpawnRound) + RoundsBetweenTiers;
 
+    /// <summary>
+    /// Whether a game that starts on <paramref name="startRound"/> (as the player counts rounds, -1 for the default)
+    /// would skip the first tier. Starting on the first tier's round itself is fine: the boss comes on the round the
+    /// game starts on, as in the Diamondback 6 event (#232).
+    /// </summary>
+    public static bool SkipsFirstTier(int startRound, int[] spawnRounds) =>
+        startRound > (spawnRounds.Length > 0 ? spawnRounds[0] : FirstSpawnRound);
+
     private static int[] WithEndRound(int[] rounds) => rounds.Append(EndRound(rounds)).ToArray();
 
     /// <summary>

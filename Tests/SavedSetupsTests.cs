@@ -81,6 +81,11 @@ public class SavedSetupsStoreTest : CustomBossTest
             Assert(!store.TryLoad("Broken", out _, out _, out var broken), "A broken code must not load");
             AssertEquals(broken, CodeProblem.Invalid, "Problem of a broken code");
             Assert(!store.TryLoad("Future", out _, out _, out var future), "A code from a newer version must not load");
+            // The next save writes only the readable entries, so the file with the damaged ones is kept aside (#230)
+            var damagedCopies = Directory.GetFiles(Path.GetDirectoryName(store.FilePath)!, "*.broken");
+            AssertEquals(damagedCopies.Length, 1, "A copy of the file with damaged entries");
+            Assert(File.ReadAllText(damagedCopies[0]).Contains("not a code"), "The copy has the damaged entries");
+            File.Delete(damagedCopies[0]);
             AssertEquals(future, CodeProblem.TooNew, "Problem of a newer code");
             Assert(store.TryLoad("Wild", out var wild, out _, out _), "A code with values out of range loads");
             AssertEquals(wild.Tiers, TierMath.MaxTiers, "Tiers brought into range");

@@ -688,14 +688,14 @@ public class BossCreatorTest : CustomBossTest
         editor.dcm.mode = mode;
         AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "Playing the setup");
 
-        // A start round on or after the first tier's round would skip it
+        // A start round after the first tier's round would skip it; on it, the boss comes on the first round (#232)
         var startRound = editor.dcm.startRules.round;
         var firstSpawn = BossMode.Options.EffectiveSpawnRounds[0];
+        editor.dcm.startRules.round = firstSpawn + 1;
+        AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), Texts.StartRoundAfterBoss.T(firstSpawn + 1, firstSpawn),
+            "Starting after the first tier's round");
         editor.dcm.startRules.round = firstSpawn;
-        AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), Texts.StartRoundAfterBoss.T(firstSpawn, firstSpawn),
-            "Starting on the first tier's round");
-        editor.dcm.startRules.round = firstSpawn - 1;
-        AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "Starting the round before the first tier");
+        AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "Starting on the first tier's round");
         editor.dcm.startRules.round = startRound;
 
         // The unsupported modes the editor offers for this difficulty, through the real mode dropdown

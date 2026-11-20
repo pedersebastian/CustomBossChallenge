@@ -65,7 +65,7 @@ public sealed class ModeTabs
         var button = tab.gameObject.AddComponent<Button>();
         button.targetGraphic = hit;
         button.transition = Selectable.Transition.None;
-        button.onClick.AddListener(new Action(click));
+        button.onClick.AddListener(Listeners.Wrap(click));
 
         var text = tab.AddText(new Info("Label", 0, LineHeight, width - 40, Height - LineHeight * 2), label, 80);
         text.Text.enableAutoSizing = true;

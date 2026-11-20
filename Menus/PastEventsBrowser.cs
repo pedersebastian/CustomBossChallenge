@@ -118,8 +118,14 @@ public sealed class PastEventsBrowser
     /// <summary>The stop with the keyboard frame, or -1; see <see cref="Stops"/></summary>
     public int Focused { get; private set; } = -1;
 
+    /// <summary>The window's listeners, let go when it closes (#235)</summary>
+    private readonly Listeners listeners = new();
+
     private PastEventsBrowser(BossEditorSection section)
     {
+        // Mod Helper leaves an empty text asset behind for every component (#235)
+        using var leftovers = new ModHelperLeftovers();
+        using var building = listeners.Build();
         this.section = section;
         Query = lastQuery;
 
@@ -131,19 +137,21 @@ public sealed class PastEventsBrowser
         Root.AddComponent<Image>().color = new Color(0, 0, 0, 0.6f);
         var closeOutside = Root.AddComponent<Button>();
         closeOutside.transition = Selectable.Transition.None;
-        closeOutside.onClick.AddListener(new Action(Hide));
+        closeOutside.onClick.AddListener(Listeners.Wrap(Hide));
 
         Panel = shade.AddPanel(new Info("Panel", 0, 0, Width, Height), VanillaSprites.MainBGPanelBlue);
         Panel.gameObject.AddComponent<Button>().transition = Selectable.Transition.None;
 
-        Panel.AddText(new Info("Title", 0, -40, Width - 400, 110)
+        var title = Panel.AddText(new Info("Title", 0, -40, Width - 400, 110)
         {
             Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
         }, Texts.PastEventsTitle.T(), 80);
+        // Fonts with tall lines, like Japanese, would otherwise not fit the title's height and show nothing (#234)
+        BossEditorSection.ShrinkToFit(title.Text, 80, 48);
         Close = Panel.AddButton(new Info("Close", -40, -40, 130, 130)
         {
             Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 1)
-        }, VanillaSprites.CloseBtn, new Action(Hide));
+        }, VanillaSprites.CloseBtn, Listeners.Wrap(Hide));
 
         // The filter line: search, boss, year, mode, and how many events are shown
         var x = -Width / 2 + Margin;
@@ -155,13 +163,15 @@ public sealed class PastEventsBrowser
         }
 
         Search = ModHelperInputField.Create(FilterInfo("Search", 900), Query.Text, VanillaSprites.BlueInsertPanelRound,
-            new Action<string>(text =>
+            Listeners.Wrap<string>(text =>
             {
                 if (!refreshing && built) SetQuery(Query with {Text = text});
             }), 60, TMP_InputField.CharacterValidation.None, TextAlignmentOptions.Left, Texts.PastEventsSearch.T(), 60);
         Search.transform.SetParent(Panel.transform, false);
+        // The hint stays on one line in every language, a little smaller where it's long or its font tall (#234)
+        if (Search.InputField.placeholder?.TryCast<TMP_Text>() is { } hint) BossEditorSection.ShrinkToFit(hint, 60, 34);
         Search.InputField.onValidateInput = new Func<string, int, char, char>((_, _, added) => added == '\t' ? '\0' : added);
-        Search.InputField.onSubmit.AddListener(new Action<string>(_ => FocusFirstEvent()));
+        Search.InputField.onSubmit.AddListener(Listeners.Wrap<string>(_ => FocusFirstEvent()));
 
         BossFilter = Filter(FilterInfo("BossFilter", 470), index => SetQuery(Query with {Boss = bossChoices[index]}));
         YearFilter = Filter(FilterInfo("YearFilter", 360), index => SetQuery(Query with {Year = yearChoices[index]}));
@@ -194,7 +204,7 @@ public sealed class PastEventsBrowser
         content.anchorMax = new Vector2(1, 1);
         content.pivot = new Vector2(0.5f, 1);
         content.anchoredPosition = Vector2.zero;
-        List.ScrollRect.onValueChanged.AddListener(new Action<Vector2>(_ => ShowRows()));
+        List.ScrollRect.onValueChanged.AddListener(Listeners.Wrap<Vector2>(_ => ShowRows()));
 
         // Enough rows for a full window and one more above and below while it scrolls
         for (var i = 0; i < Mathf.CeilToInt(ListHeight / RowStep) + 2; i++) rows.Add(BuildRow(i));
@@ -239,6 +249,7 @@ public sealed class PastEventsBrowser
         if (Root != null) Object.Destroy(Root);
         if (current == this) current = null;
         FocusFrame.Hide();
+        listeners.Release();
     }
 
     /// <summary>The filter whose list is open, which then has the arrows, Enter and Esc to itself</summary>
@@ -258,7 +269,7 @@ public sealed class PastEventsBrowser
     private ModHelperDropdown Filter(Info info, Action<int> picked)
     {
         var filter = ModHelperDropdown.Create(info, new Il2CppSystem.Collections.Generic.List<string>(), 900,
-            new Action<int>(index =>
+            Listeners.Wrap<int>(index =>
             {
                 if (!refreshing) picked(index);
             }), VanillaSprites.BlueInsertPanelRound, 56);
@@ -370,7 +381,7 @@ public sealed class PastEventsBrowser
         var button = row.AddButton(new Info(name, x, 0, ChoiceWidth, ChoiceHeight)
         {
             Anchor = new Vector2(1, 0.5f)
-        }, name == "Elite" ? VanillaSprites.BlueBtnLong : VanillaSprites.GreenBtnLong, pressed);
+        }, name == "Elite" ? VanillaSprites.BlueBtnLong : VanillaSprites.GreenBtnLong, Listeners.Wrap(pressed));
         var text = button.AddText(new Info("Label", InfoPreset.FillParent), "", 60);
         ShowAsIs(text.Text, label);
         text.Text.enableAutoSizing = true;
@@ -698,7 +709,7 @@ public sealed class PastEventsBrowser
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
             Texts.PastEvents.T(), text,
-            new Action(() =>
+            listeners.Of(() =>
             {
                 BossMode.Replace(section.Editor, options, dcm);
                 ModHelper.Msg<CustomBossChallenge>($"Opened the past event {pastEvent.Id}{(elite ? " (Elite)" : "")}: " +

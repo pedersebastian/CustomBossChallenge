@@ -84,7 +84,7 @@ public sealed class SliderRow
         slider.maxValue = max;
 
         var result = new SliderRow(row, slider, valueText, step, defaultValue, format, changed);
-        slider.onValueChanged.AddListener(new Action<float>(value =>
+        slider.onValueChanged.AddListener(Listeners.Wrap<float>(value =>
         {
             // Dragging lands on the step too, like the arrows, Random and the share codes (#171)
             var snapped = Mathf.Clamp(min + Mathf.Round((value - min) / step) * step, min, max);
@@ -94,11 +94,11 @@ public sealed class SliderRow
         }));
 
         left.onClick = new Button.ButtonClickedEvent();
-        left.onClick.AddListener(new Action(() => result.Set(result.Value - step)));
+        left.onClick.AddListener(Listeners.Wrap(() => result.Set(result.Value - step)));
         right.onClick = new Button.ButtonClickedEvent();
-        right.onClick.AddListener(new Action(() => result.Set(result.Value + step)));
+        right.onClick.AddListener(Listeners.Wrap(() => result.Set(result.Value + step)));
         reset.onClick = new Button.ButtonClickedEvent();
-        reset.onClick.AddListener(new Action(result.Reset));
+        reset.onClick.AddListener(Listeners.Wrap(result.Reset));
 
         if (notch != null)
         {
@@ -133,7 +133,7 @@ public static class EditorRows
         var button = ModHelperButton.Create(new Info(name, -132, 0, 180, 180)
         {
             Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
-        }, VanillaSprites.RestartBtn, action);
+        }, VanillaSprites.RestartBtn, Listeners.Wrap(action));
         button.transform.SetParent(row.transform, false);
         return button;
     }
@@ -199,7 +199,7 @@ public static class EditorRows
     /// </summary>
     public static ModHelperButton AddInfo(GameObject row, string titleKey, string textKey)
     {
-        var action = new Action(() => ShowInfo(titleKey, textKey));
+        var action = Listeners.Wrap(() => ShowInfo(titleKey, textKey));
         var icon = row.transform.Find("Image");
         var button = ModHelperButton.Create(new Info(InfoName, 0, 0, 100, 100)
         {
@@ -235,7 +235,7 @@ public static class EditorRows
         var button = ModHelperButton.Create(new Info(name, x, 0, ChoiceInfoSize, ChoiceInfoSize)
         {
             Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
-        }, VanillaSprites.InfoBtn2, new Action(() => ShowInfo(titleKey, textKey)));
+        }, VanillaSprites.InfoBtn2, Listeners.Wrap(() => ShowInfo(titleKey, textKey)));
         button.transform.SetParent(row.transform, false);
         return button;
     }

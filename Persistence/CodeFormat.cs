@@ -86,7 +86,8 @@ public static class CodeFormat
     private static string LinkedCode(string? text)
     {
         var trimmed = (text ?? "").Trim();
-        if (trimmed.StartsWith('<') && trimmed.EndsWith('>')) trimmed = trimmed[1..^1].Trim();
+        // Every layer, so the result has none left and looking again finds the same
+        while (trimmed.Length >= 2 && trimmed.StartsWith('<') && trimmed.EndsWith('>')) trimmed = trimmed[1..^1].Trim();
         var hash = trimmed.LastIndexOf('#');
         if (hash < 0) return trimmed;
 

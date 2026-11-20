@@ -102,8 +102,14 @@ public sealed class TierBossPicker
     private readonly GameObject eliteLabel;
     private bool refreshing;
 
+    /// <summary>The picker's listeners, let go when it closes (#235)</summary>
+    private readonly Listeners listeners = new();
+
     private TierBossPicker(BossEditorSection section, int tier)
     {
+        // Mod Helper leaves an empty text asset behind for every component (#235)
+        using var leftovers = new ModHelperLeftovers();
+        using var building = listeners.Build();
         this.section = section;
         Tier = tier;
 
@@ -116,7 +122,7 @@ public sealed class TierBossPicker
         dim.color = new Color(0, 0, 0, 0.6f);
         var closeOutside = Root.AddComponent<Button>();
         closeOutside.transition = Selectable.Transition.None;
-        closeOutside.onClick.AddListener(new Action(Hide));
+        closeOutside.onClick.AddListener(Listeners.Wrap(Hide));
 
         Panel = shade.AddPanel(new Info("Panel", 0, 0, Width, RowsTop), VanillaSprites.MainBGPanelBlue);
         // The panel takes clicks itself, so clicking between its buttons doesn't close it
@@ -126,10 +132,12 @@ public sealed class TierBossPicker
         {
             Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
         }, Texts.TierBossTitle.T(tier), 80);
+        // Fonts with tall lines, like Japanese, would otherwise not fit the title's height and show nothing (#234)
+        BossEditorSection.ShrinkToFit(Title.Text, 80, 48);
         Close = Panel.AddButton(new Info("Close", -40, -40, 130, 130)
         {
             Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 1)
-        }, VanillaSprites.CloseBtn, new Action(Hide));
+        }, VanillaSprites.CloseBtn, Listeners.Wrap(Hide));
 
         var x = -(TierBossMath.Choices.Length - 1) * (ChoiceSize + ChoiceGap) / 2;
         foreach (var choice in TierBossMath.Choices)
@@ -138,7 +146,7 @@ public sealed class TierBossPicker
             var button = Panel.AddButton(new Info($"Choice{choice}", x, -ChoicesTop, ChoiceSize, ChoiceSize)
             {
                 Anchor = new Vector2(0.5f, 1)
-            }, VanillaSprites.RandomIcon, new Action(() => Pick(name)));
+            }, VanillaSprites.RandomIcon, Listeners.Wrap(() => Pick(name)));
             var marker = button.AddImage(new Info(BossEditorSection.SelectedMarker, 0, 0, 110, 110)
             {
                 Anchor = new Vector2(1, 0), Pivot = new Vector2(0.75f, 0.25f)
@@ -171,7 +179,7 @@ public sealed class TierBossPicker
         modes.Add(Texts.SkullsEvenlySpaced.T());
         modes.Add(Texts.SkullsCustom.T());
         SkullMode = ModHelperDropdown.Create(EditorRows.ControlInfo("SkullMode", 900, 150), modes, 500,
-            new Action<int>(index => SetValues(Shown() with {Skulls = (Config.SkullMode) index}, "SkullMode")),
+            Listeners.Wrap<int>(index => SetValues(Shown() with {Skulls = (Config.SkullMode) index}, "SkullMode")),
             VanillaSprites.BlueInsertPanelRound, 70);
         SkullMode.transform.SetParent(skullModeRow.transform, false);
         EditorRows.FrameList(SkullMode);
@@ -190,7 +198,7 @@ public sealed class TierBossPicker
             VanillaSprites.BlueInsertPanelRound, null, 70, TMP_InputField.CharacterValidation.None,
             TextAlignmentOptions.Center, SkullMath.DefaultCustom, 10);
         CustomSkulls.transform.SetParent(customSkullsRow.transform, false);
-        CustomSkulls.InputField.onEndEdit.AddListener(new Action<string>(text =>
+        CustomSkulls.InputField.onEndEdit.AddListener(Listeners.Wrap<string>(text =>
         {
             // Show what was understood; a list without any valid percentage keeps the previous skulls
             var shown = Shown();
@@ -204,8 +212,10 @@ public sealed class TierBossPicker
             VanillaSprites.CrossboneSkull)));
 
         Elite = Panel.AddCheckbox(new Info("Elite", -110, 0, 140, 140), false, VanillaSprites.BlueInsertPanelRound,
-            new Action<bool>(SetElite), VanillaSprites.TickGreenIcon, 20);
-        eliteLabel = Panel.AddText(new Info("EliteLabel", 110, 0, 280, 140), Texts.Elite.T(), 70, TextAlignmentOptions.Left).gameObject;
+            Listeners.Wrap<bool>(SetElite), VanillaSprites.TickGreenIcon, 20);
+        var elite = Panel.AddText(new Info("EliteLabel", 110, 0, 280, 140), Texts.Elite.T(), 70, TextAlignmentOptions.Left);
+        BossEditorSection.ShrinkToFit(elite.Text, 70, 36);
+        eliteLabel = elite.gameObject;
 
         Stops = Choices.Values.Select(button => button.gameObject)
             .Concat(new[]
@@ -371,6 +381,7 @@ public sealed class TierBossPicker
         if (current == this) current = null;
         FocusFrame.Hide();
         section.OnPickerClosed(Tier, ReturnFocus);
+        listeners.Release();
     }
 
     /// <summary>

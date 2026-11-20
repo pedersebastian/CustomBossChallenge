@@ -31,6 +31,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   an example or a Past Event, played and then quit, lost or won, left the player in the game's plain Challenge Editor
   with the setup from before. Back from there logged an error, and after several such games the game could crash.
   Now every setup comes back to the Boss Creator as it was played.
+- **Damaged saved setups are no longer lost when another is saved** (#230): when some setups in `SavedSetups.json`
+  couldn't be read, saving a setup wrote the file without them and kept no copy. Now the file is kept as
+  `SavedSetups.json.<time>.broken` first, like a file that can't be read at all. A file that couldn't be replaced, for
+  example a read only one, also no longer leaves a `.tmp` file next to it.
+- **Retry Last Round when the first round played is lost** (#231): losing the round a custom game starts on showed
+  no retry at all, because the mod only kept a snapshot after a round was played. The first round now gets one as it
+  starts, with the towers placed before it, so Retry Last Round is offered for free there too.
+- **Past Event Diamondback 6 can be played** (#232): it starts on round 40 with its first tier on round 40, which
+  the Boss Creator refused as if the tier would be skipped. The boss comes on the round a game starts on, so a start
+  round equal to the first tier's round is now allowed; only a later one is refused.
+- **The Boss Creator no longer keeps its old windows in memory** (#235): every time the Boss Creator, a tier
+  picker or Past Events was opened, the game kept the one before, about 3.4 MB for a visit with all three, because
+  the game never lets go of a button's listener. Their listeners now let go of the window when it closes, which
+  leaves about a third of that, from Mod Helper's own parts. The empty text assets Mod Helper leaves behind are
+  cleaned up too.
+- **Texts fit in every language** (#234): "Reset Boss Options" in German and Swedish, Elite in Japanese and Undo and
+  Redo in Dutch and Finnish shrink to fit instead of being cut off with "…". In Arabic, Chinese, Japanese, Korean and
+  Thai the tier picker's and Past Events' titles and the skull count on the Tier Preview's cards showed nothing, as
+  those fonts' lines were taller than their boxes; the skull percentages and the Past Events search hint now fit too.
+  A tier card's lines are a little further apart.
+- **Text in several layers of `<...>` is read the same each time**: Paste and the website took off only the outer
+  `<` and `>`, so pasting what they found gave a different result again. Every layer comes off now.
 
 ## [2.13.0] - 2026-11-17
 
