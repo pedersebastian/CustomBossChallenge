@@ -136,6 +136,30 @@ public class PastEventsTests : IDisposable
     }
 
     [Fact]
+    public void Every_event_that_opens_can_be_played()
+    {
+        // #232: Diamondback 6 starts on round 40 with its first tier on round 40, which Play refused
+        var opened = 0;
+        foreach (var pastEvent in PastEventsFormat.Read(Bundle()).Value!.Events)
+        {
+            foreach (var elite in new[] {false, true})
+            {
+                var setup = Map(pastEvent, elite);
+                if (setup.Problem != PastEventProblem.None) continue;
+                opened++;
+                var start = (int?) setup.Challenge["startRules"]?["round"] ?? -1;
+                Assert.False(TierMath.SkipsFirstTier(start, setup.Options.EffectiveSpawnRounds),
+                    $"{pastEvent.Id}{(elite ? " Elite" : "")} starts on round {start}, after its first tier on {setup.Options.EffectiveSpawnRounds[0]}");
+            }
+        }
+        Assert.True(opened >= 2 * 284, $"Events that open: {opened}");
+
+        var diamondback = Map(Event("Diamondback6_mrea6zh0"), false);
+        Assert.Equal(40, (int) diamondback.Challenge["startRules"]!["round"]!);
+        Assert.Equal(40, diamondback.Options.EffectiveSpawnRounds[0]);
+    }
+
+    [Fact]
     public void Zero_max_towers_and_lives_are_the_games_default()
     {
         // Diamondback 6's placeholder metadata has 0 for both, which would leave the player no towers and one life
