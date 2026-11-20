@@ -233,7 +233,7 @@ public static class BossCreatorKeys
         if (PastEventsBrowser.Current is { } browser && EscapePressed())
         {
             // Esc while typing a search only ends the edit
-            if (FocusedField() is { } searchField) searchField.DeactivateInputField();
+            if (FocusedField() is { } searchField) EndEdit(searchField);
             else if (Time.frameCount - fieldFocusedFrame > 1) browser.Hide();
             return true;
         }
@@ -241,7 +241,7 @@ public static class BossCreatorKeys
         if (TierBossPicker.Current is { } picker && EscapePressed())
         {
             // Esc while typing the skull list only ends the edit
-            if (FocusedField() is { } field) field.DeactivateInputField();
+            if (FocusedField() is { } field) EndEdit(field);
             else if (Time.frameCount - fieldFocusedFrame > 1) picker.Hide();
             return true;
         }
@@ -253,6 +253,27 @@ public static class BossCreatorKeys
 
         ClearFocus();
         return true;
+    }
+
+    /// <summary>
+    /// Ends the edit of a text field, and lets go of it if the game still has it selected. Enter and Space go to the
+    /// selected object, so an ended field that stayed selected started its edit again, and Esc in Past Events or the
+    /// tier picker only ever ended that edit instead of closing the window (#233).
+    /// </summary>
+    public static void EndEdit(TMP_InputField field)
+    {
+        if (field.isFocused) field.DeactivateInputField();
+        Deselect(field);
+    }
+
+    /// <summary>
+    /// Lets go of <paramref name="field"/> if it is still selected, e.g. once its edit ended; a field clicked instead
+    /// keeps the selection
+    /// </summary>
+    public static void Deselect(TMP_InputField field)
+    {
+        var selected = EventSystem.current?.currentSelectedGameObject;
+        if (selected != null && selected.Pointer == field.gameObject.Pointer) EventSystem.current!.SetSelectedGameObject(null);
     }
 
     private static void Show(FocusStop? stop)

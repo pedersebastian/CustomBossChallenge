@@ -44,6 +44,7 @@ public class KeyboardTest : CustomBossTest
             yield return TabAndEnter();
             yield return Controls();
             yield return EscapeCancelsTheEdit();
+            yield return EscapeAfterTyping();
             yield return DropdownsAndPicker();
             yield return NormalEditorIgnoresKeys();
         }
@@ -408,6 +409,63 @@ public class KeyboardTest : CustomBossTest
         yield return WaitFor(() => !BossMode.Active, "Esc leaving the Boss Creator");
         BossCreatorKeys.EscapePressed = () => Input.GetKeyDown(KeyCode.Escape);
         yield return ToMainMenu();
+    }
+
+    /// <summary>
+    /// Esc in the Past Events search or the tier picker's skull list only ends the edit; once the keyboard has moved on,
+    /// Esc closes the window (#233). Enter and Space reach whatever the game still has selected, so an ended field
+    /// that stayed selected started its edit again, and Esc never got past ending it.
+    /// </summary>
+    private IEnumerator EscapeAfterTyping()
+    {
+        BossMode.Enter();
+        yield return WaitForEditor();
+        var section = BossEditorSection.Current!;
+
+        var browser = section.OpenPastEvents();
+        yield return null;
+        yield return Focus(browser.Search.InputField);
+        yield return EscapeEndsTheEditThenCloses("the Past Events search", browser.Search.InputField,
+            () => browser.Handle(ShortcutKey.Down), () => PastEventsBrowser.Current == null);
+
+        section.SetAdvanced(true);
+        yield return null;
+        var picker = AssertNotNull(section.OpenPicker(1), "The tier picker didn't open")!;
+        // The skull list is shown for custom skulls
+        picker.SkullMode.Dropdown.value = (int) SkullMode.Custom;
+        yield return null;
+        Assert(picker.CustomSkulls.gameObject.activeInHierarchy, "The tier picker's skull list must show for custom skulls");
+        yield return Focus(picker.CustomSkulls.InputField);
+        yield return EscapeEndsTheEditThenCloses("the tier picker's skull list", picker.CustomSkulls.InputField,
+            () => picker.Handle(ShortcutKey.Up), () => TierBossPicker.Current == null);
+        section.SetAdvanced(false);
+
+        yield return Leave();
+        BossMode.Options = BossMode.Options with {TierBosses = null};
+    }
+
+    private IEnumerator EscapeEndsTheEditThenCloses(string what, TMP_InputField field, Action move, Func<bool> closed)
+    {
+        BossCreatorKeys.EscapePressed = () => true;
+        Assert(BossCreatorKeys.EscapeEndsFocus(), $"Esc in {what}");
+        BossCreatorKeys.EscapePressed = () => Input.GetKeyDown(KeyCode.Escape);
+        for (var i = 0; i < 3; i++) yield return null;
+        Assert(!field.isFocused, $"Esc must end the edit of {what}");
+        Assert(!closed(), $"The first Esc in {what} must only end the edit");
+
+        // Enter on an event, or Space, goes to what the game has selected, like a real key press would
+        var selected = EventSystem.current.currentSelectedGameObject;
+        Assert(selected != field.gameObject, $"{what} is still selected after its edit ended");
+        selected?.GetComponent<TMP_InputField>()?.OnSubmit(new BaseEventData(EventSystem.current));
+        move();
+        for (var i = 0; i < 3; i++) yield return null;
+        Assert(!field.isFocused, $"Enter must not start the edit of {what} again");
+
+        BossCreatorKeys.EscapePressed = () => true;
+        Assert(BossCreatorKeys.EscapeEndsFocus(), $"The second Esc after {what}");
+        BossCreatorKeys.EscapePressed = () => Input.GetKeyDown(KeyCode.Escape);
+        yield return null;
+        Assert(closed(), $"The second Esc after {what} must close the window");
     }
 
     private IEnumerator NormalEditorIgnoresKeys()
