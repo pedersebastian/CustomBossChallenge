@@ -21,6 +21,7 @@ namespace CustomBossChallenge.Tests;
 /// them again and again, or playing custom games, doesn't make the game's memory keep growing (#235). Il2CppInterop
 /// never frees a delegate handed to the game, so a listener that held a window kept all of it.
 /// </summary>
+[FullSuiteOnly("many visits and games to measure memory (about 1.5 min)")]
 public class LeakTest : RulesPanelTestBase
 {
     private const int Visits = 8;

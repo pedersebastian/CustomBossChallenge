@@ -17,6 +17,7 @@ namespace CustomBossChallenge.Tests;
 /// The bloons a boss spawns get All Camo, All Regrow and All Fortified in custom games (#90), for every boss, Elite or
 /// not, and the extra tiers, without an error in the log (#228); the game's own Boss Challenge is left as it is
 /// </summary>
+[FullSuiteOnly("every boss's spawned bloons (about 30 s)")]
 public class SpawnedBloonModelTest : CustomBossTest
 {
     protected override IEnumerator Run()

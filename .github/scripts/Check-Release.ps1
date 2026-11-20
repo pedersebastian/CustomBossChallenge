@@ -49,6 +49,11 @@ if (-not (Test-Path $reportPath)) {
     if ($failed.Count -gt 0) {
         Report $reportFile "$($failed.Count) in-game test(s) failed: $($failed -join ', ')"
     }
+    # The quick suite (CBC_SUITE=quick) or chosen tests (CBC_TESTS) are for PRs; a release needs the full suite (#246).
+    # Receipts from before the suite was recorded were full runs if nothing was skipped, which is checked below.
+    if ($report.suite -and $report.suite -ne "full") {
+        Report $reportFile "the in-game tests were a $($report.suite) run, not the full suite: run them without CBC_SUITE and CBC_TESTS and commit $reportFile with the version"
+    }
     $skipped = @($report.skipped.PSObject.Properties | ForEach-Object { "$($_.Name) ($($_.Value))" })
     if ($skipped.Count -gt 0) {
         Report $reportFile "$($skipped.Count) in-game test(s) skipped, so this wasn't a full run: $($skipped -join ', ')"

@@ -78,13 +78,15 @@ internal static class TierLookScene
             yield return new WaitForSecondsRealtime(0.25f);
         }
 
-        // Diamondback's segments come out one after another; wait for all of them, then move the whole body along
+        // Diamondback's segments come out one after another; wait for all of them, then move the whole body along.
+        // The other bosses are one bloon, there as soon as they spawn (#246: the waits made this test 8 minutes).
+        var settled = options.Boss == BossType.Diamondback ? 4 : 1;
         var count = 0;
         for (var i = 0; i < 40; i++)
         {
             yield return new WaitForSecondsRealtime(0.25f);
             var now = BossBloons().Count;
-            if (now == count && i >= 4) break;
+            if (now == count && i >= settled) break;
             count = now;
         }
 
@@ -104,7 +106,8 @@ internal static class TierLookScene
             bloon.SetPath(bloon.path, bloon.DistanceTraveled + shift, true);
             bloon.stopMovementUntilPop = true;
         }
-        yield return new WaitForSecondsRealtime(1);
+        // A frame or two to show the bodies where they were moved to; the checks wait for the look on their own
+        yield return new WaitForSecondsRealtime(0.25f);
         spawned(boss);
     }
 
@@ -163,6 +166,7 @@ internal static class TierLookScene
 /// Tiers above 5 get the look of their boss's theme, stronger per tier; tier 5 and the displays the game reuses keep
 /// the game's look, and the look doesn't make new materials while the boss is alive
 /// </summary>
+[FullSuiteOnly("every boss and Elite in a game of its own, tiers 5-10 (about 4.5 min)")]
 public class TierLookTest : CustomBossTest
 {
     protected override IEnumerator Run()
@@ -308,6 +312,7 @@ public class TierLookTour : CustomBossTest
 /// The boss panel shows tiers above 5, a restart takes the look off the old boss and gives it to the new one, and a
 /// normal Boss Challenge never gets the look or the tier number
 /// </summary>
+[FullSuiteOnly("the tier look over a game's life (about 30 s)")]
 public class TierLookLifecycleTest : CustomBossTest
 {
     protected override IEnumerator Run()

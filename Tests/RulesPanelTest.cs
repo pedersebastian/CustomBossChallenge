@@ -67,6 +67,7 @@ public class RulesPanelTest : RulesPanelTestBase
 /// The Rules panel in Advanced Mode (#142, #147): a card per tier with its round and boss, a boss picked at random kept
 /// a secret until it arrives, and a 10-tier line-up that fits across and scrolls at every screen format
 /// </summary>
+[FullSuiteOnly("the Rules panel in Advanced Mode games (about 30 s)")]
 public class RulesPanelAdvancedTest : RulesPanelTestBase
 {
     protected override IEnumerator Run()

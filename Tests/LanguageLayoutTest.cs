@@ -24,6 +24,7 @@ namespace CustomBossChallenge.Tests;
 /// its box or into the text next to it (#234). Fonts differ: Arabic, Chinese, Japanese, Korean, Russian and Thai have
 /// taller lines than the Latin font, and German, Swedish and Polish have longer words.
 /// </summary>
+[FullSuiteOnly("every language the game has (about 2 min)")]
 public class LanguageLayoutTest : CustomBossTest
 {
     /// <summary>

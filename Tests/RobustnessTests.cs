@@ -80,6 +80,7 @@ public class TierStarsTest : CustomBossTest
 /// <summary>
 /// A round whose snapshot can't be written doesn't stop the later rounds from being saved for Continue (#112)
 /// </summary>
+[FullSuiteOnly("plays rounds whose saves fail (about 30 s)")]
 public class FailedSnapshotTest : ContinueTestBase
 {
     protected override IEnumerator Run()
@@ -135,6 +136,7 @@ public class LimitTiersTest : CustomBossTest
 /// In Advanced Mode with Boss Event Rounds, each tier's own boss round is merged over the match's own round set, so
 /// AlternateBloonsRounds is used for every tier, not only the first one's (#112)
 /// </summary>
+[FullSuiteOnly("games on alternate rounds (about 30 s)")]
 public class AlternateRoundsTest : CustomBossTest
 {
     protected override IEnumerator Run()
