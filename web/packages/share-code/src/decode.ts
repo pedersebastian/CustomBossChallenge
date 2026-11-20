@@ -324,7 +324,8 @@ function characterBefore(text: string, index: number): string {
 
 function linkedCode(text: string | null | undefined): string {
   let trimmed = netTrim(text ?? "");
-  if (trimmed.startsWith("<") && trimmed.endsWith(">")) trimmed = netTrim(trimmed.slice(1, -1));
+  // Every layer, so the result has none left and looking again finds the same
+  while (trimmed.length >= 2 && trimmed.startsWith("<") && trimmed.endsWith(">")) trimmed = netTrim(trimmed.slice(1, -1));
   const hash = trimmed.lastIndexOf("#");
   if (hash < 0) return trimmed;
 
