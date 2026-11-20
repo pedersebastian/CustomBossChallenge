@@ -191,6 +191,8 @@ public static class BossHud
 
     private static void BuildLineup(RectTransform canvas, int tiers)
     {
+        // Mod Helper leaves an empty text asset behind for every component (#235)
+        using var leftovers = new ModHelperLeftovers();
         if (Lineup != null) Object.Destroy(Lineup.gameObject);
         Cells.Clear();
         lineupTiers = tiers;
@@ -284,6 +286,8 @@ public static class BossHud
 
     private static void BuildBanner(RectTransform canvas)
     {
+        // Mod Helper leaves an empty text asset behind for every component (#235)
+        using var leftovers = new ModHelperLeftovers();
         var height = canvas.rect.height * 0.1f;
         var width = height * 7;
         banner = ModHelperPanel.Create(new Info(BannerName, 0, -canvas.rect.height * 0.24f, width, height)
