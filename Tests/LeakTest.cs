@@ -120,7 +120,6 @@ public class LeakTest : RulesPanelTestBase
             GC.Collect();
             GC.WaitForPendingFinalizers();
             Il2CppSystem.GC.Collect();
-            Il2CppSystem.GC.WaitForPendingFinalizers();
             yield return null;
         }
 
