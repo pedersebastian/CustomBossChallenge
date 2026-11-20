@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Retry Last Round when the first round played is lost** (#231): losing the round a custom game starts on showed
   no retry at all, because the mod only kept a snapshot after a round was played. The first round now gets one as it
   starts, with the towers placed before it, so Retry Last Round is offered for free there too.
+- **Text in several layers of `<...>` is read the same each time**: Paste and the website took off only the outer
+  `<` and `>`, so pasting what they found gave a different result again. Every layer comes off now.
 
 ## [2.13.0] - 2026-11-17
 
