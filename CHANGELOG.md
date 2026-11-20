@@ -41,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Past Event Diamondback 6 can be played** (#232): it starts on round 40 with its first tier on round 40, which
   the Boss Creator refused as if the tier would be skipped. The boss comes on the round a game starts on, so a start
   round equal to the first tier's round is now allowed; only a later one is refused.
+- **Text in several layers of `<...>` is read the same each time**: Paste and the website took off only the outer
+  `<` and `>`, so pasting what they found gave a different result again. Every layer comes off now.
 
 ## [2.13.0] - 2026-11-17
 
