@@ -136,10 +136,12 @@ public sealed class PastEventsBrowser
         Panel = shade.AddPanel(new Info("Panel", 0, 0, Width, Height), VanillaSprites.MainBGPanelBlue);
         Panel.gameObject.AddComponent<Button>().transition = Selectable.Transition.None;
 
-        Panel.AddText(new Info("Title", 0, -40, Width - 400, 110)
+        var title = Panel.AddText(new Info("Title", 0, -40, Width - 400, 110)
         {
             Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
         }, Texts.PastEventsTitle.T(), 80);
+        // Fonts with tall lines, like Japanese, would otherwise not fit the title's height and show nothing (#234)
+        BossEditorSection.ShrinkToFit(title.Text, 80, 48);
         Close = Panel.AddButton(new Info("Close", -40, -40, 130, 130)
         {
             Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 1)
@@ -160,6 +162,8 @@ public sealed class PastEventsBrowser
                 if (!refreshing && built) SetQuery(Query with {Text = text});
             }), 60, TMP_InputField.CharacterValidation.None, TextAlignmentOptions.Left, Texts.PastEventsSearch.T(), 60);
         Search.transform.SetParent(Panel.transform, false);
+        // The hint stays on one line in every language, a little smaller where it's long or its font tall (#234)
+        if (Search.InputField.placeholder?.TryCast<TMP_Text>() is { } hint) BossEditorSection.ShrinkToFit(hint, 60, 34);
         Search.InputField.onValidateInput = new Func<string, int, char, char>((_, _, added) => added == '\t' ? '\0' : added);
         Search.InputField.onSubmit.AddListener(new Action<string>(_ => FocusFirstEvent()));
 

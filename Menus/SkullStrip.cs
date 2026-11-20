@@ -84,8 +84,9 @@ public sealed class SkullStrip
             Anchor = new Vector2(0, 0.5f), Pivot = new Vector2(0, 0.5f)
         }, VanillaSprites.SmallSquareWhiteGradient), Health);
 
-        OneLine(strip.AddText(new Info("Full", -(BarWidth / 2 + 115), 34, 210, 80), "100%", 60));
-        OneLine(strip.AddText(new Info("None", BarWidth / 2 + 85, 34, 150, 80), "0%", 60));
+        // The boxes are taller than the text, as some fonts' lines are taller than the Latin font's (#234)
+        OneLine(strip.AddText(new Info("Full", -(BarWidth / 2 + 115), 34, 210, 100), "100%", 60));
+        OneLine(strip.AddText(new Info("None", BarWidth / 2 + 85, 34, 150, 100), "0%", 60));
 
         for (var i = 0; i < SkullMath.MaxSkulls; i++)
         {
@@ -99,7 +100,7 @@ public sealed class SkullStrip
             marker.Line = Solid(marker.Panel.AddImage(new Info("Line", 0, 0, 8, BarHeight + 28),
                 VanillaSprites.SmallSquareWhiteGradient), Color.white);
             marker.Icon = marker.Panel.AddImage(new Info("Icon", 0, 84, 116, 116), VanillaSprites.CrossboneSkull);
-            marker.Percent = OneLine(marker.Panel.AddText(new Info("Percent", 0, TextY, MarkerWidth, 70), "", 62));
+            marker.Percent = OneLine(marker.Panel.AddText(new Info("Percent", 0, TextY, MarkerWidth + 60, 96), "", 62));
             Markers.Add(marker);
         }
 

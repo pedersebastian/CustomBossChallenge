@@ -90,6 +90,17 @@ public class RulesPanelAdvancedTest : RulesPanelTestBase
 
         var folder = System.Environment.GetEnvironmentVariable("CBC_SCREENSHOTS");
         if (!string.IsNullOrWhiteSpace(folder)) yield return ScreenshotTour.Capture(folder, "rules-panel-advanced");
+
+        // The cards are smaller here than in the Boss Creator, still a card's lines don't run into each other (#234)
+        foreach (var card in AssertNotNull(RulesPanel.Tiers, "Tier cards")!.Cards.Where(card => card.Panel.gameObject.activeInHierarchy))
+        {
+            var lines = new[] {card.Tier, card.Round, card.Speed, card.Health}.Select(line => LayoutChecks.InkRect(line.Text)).ToList();
+            for (var i = 0; i + 1 < lines.Count; i++)
+            {
+                Assert(!LayoutChecks.Overlap(lines[i], lines[i + 1]),
+                    $"{card.Panel.name}: line {i + 1} ({LayoutChecks.Describe(lines[i])}) runs into line {i + 2} ({LayoutChecks.Describe(lines[i + 1])})");
+            }
+        }
         yield return CloseRules();
 
         // Tier 3 arrives: its boss is shown from then on, tier 9's is still a secret

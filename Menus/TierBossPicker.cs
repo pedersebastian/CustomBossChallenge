@@ -126,6 +126,8 @@ public sealed class TierBossPicker
         {
             Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
         }, Texts.TierBossTitle.T(tier), 80);
+        // Fonts with tall lines, like Japanese, would otherwise not fit the title's height and show nothing (#234)
+        BossEditorSection.ShrinkToFit(Title.Text, 80, 48);
         Close = Panel.AddButton(new Info("Close", -40, -40, 130, 130)
         {
             Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 1)
@@ -205,7 +207,9 @@ public sealed class TierBossPicker
 
         Elite = Panel.AddCheckbox(new Info("Elite", -110, 0, 140, 140), false, VanillaSprites.BlueInsertPanelRound,
             new Action<bool>(SetElite), VanillaSprites.TickGreenIcon, 20);
-        eliteLabel = Panel.AddText(new Info("EliteLabel", 110, 0, 280, 140), Texts.Elite.T(), 70, TextAlignmentOptions.Left).gameObject;
+        var elite = Panel.AddText(new Info("EliteLabel", 110, 0, 280, 140), Texts.Elite.T(), 70, TextAlignmentOptions.Left);
+        BossEditorSection.ShrinkToFit(elite.Text, 70, 36);
+        eliteLabel = elite.gameObject;
 
         Stops = Choices.Values.Select(button => button.gameObject)
             .Concat(new[]
