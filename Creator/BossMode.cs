@@ -144,6 +144,10 @@ public static class BossMode
         Options = options;
         Dcm = dcm;
         editor.dcm = dcm;
+        // After a game the game reopens the editor with the model it was opened with. That must be this one, or the
+        // editor comes back as the plain Challenge Editor with the setup from before (#229).
+        if (MenuManager.instance != null && MenuManager.instance.IsMenuOnStack(SceneNames.ChallengeEditor))
+            MenuManager.instance.SetMenuData(SceneNames.ChallengeEditor, dcm);
         editor.ApplyDcmSettingsToUI();
         Save();
     }

@@ -32,7 +32,9 @@ public static class SpawnedBloonModifiers
             if (string.IsNullOrEmpty(id)) return id;
             var modified = DailyChallengeModel.AddCamoRegenToBloonString(id, modifiers.allCamo, modifiers.allRegen,
                 modifiers.allFortified);
-            return modified != id && gameModel.GetBloon(modified) != null ? modified : id;
+            // GetBloon throws for an id the game doesn't have (Lych's undead MOABs have no fortified ones), it never
+            // returns null, and Il2CppInterop logs every throw as an error (#228)
+            return modified != id && gameModel.DoesBloonExist(modified) ? modified : id;
         }
 
         var changed = 0;
