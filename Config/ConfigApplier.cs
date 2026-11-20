@@ -42,9 +42,9 @@ public static class ConfigApplier
         var rules = dcm.startRules ??= new StartRules();
         rules.endRound = TierMath.EndRound(options.EffectiveSpawnRounds);
 
-        // Starting on or after a tier's round skips it. Play refuses such a start round; this is the backstop for
-        // any other way in, with the same rule as Play and the Random button.
-        if (rules.round >= options.EffectiveSpawnRounds[0]) rules.round = -1;
+        // Starting after the first tier's round skips it. Play refuses such a start round; this is the backstop for
+        // any other way in, with the same rule as Play (#232).
+        if (TierMath.SkipsFirstTier(rules.round, options.EffectiveSpawnRounds)) rules.round = -1;
 
         // Custom games never overwrite the player's Boss Challenge save and are never treated as a custom map
         dcm.disableSaves = true;

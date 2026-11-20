@@ -1861,10 +1861,10 @@ public sealed class BossEditorSection
     {
         if (UnsupportedModes.Contains(dcm.mode)) return Texts.UnsupportedMode.T(dcm.mode);
 
-        // Starting on or after a tier's round skips it, the same rule the Random button keeps to
+        // Starting after the first tier's round skips it; starting on it is fine (#232)
         var start = dcm.startRules?.round ?? -1;
-        var firstSpawn = options.EffectiveSpawnRounds[0];
-        if (start >= firstSpawn) return Texts.StartRoundAfterBoss.T(start, firstSpawn);
+        var spawnRounds = options.EffectiveSpawnRounds;
+        if (TierMath.SkipsFirstTier(start, spawnRounds)) return Texts.StartRoundAfterBoss.T(start, spawnRounds[0]);
 
         var missing = ExtraTiers.MissingVanillaTier(Il2CppAssets.Scripts.Unity.Game.instance.model, options);
         if (missing == null) return null;

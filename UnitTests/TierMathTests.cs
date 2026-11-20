@@ -250,4 +250,16 @@ public class TierMathTests
         Assert.Equal(expected, TierMath.ClampSpeedPerTier(percent));
 
     private static string Show(int[] rounds) => TierMath.FormatRounds(rounds);
+
+    [Theory]
+    [InlineData(-1, false)]
+    [InlineData(1, false)]
+    [InlineData(39, false)]
+    [InlineData(40, false)]
+    [InlineData(41, true)]
+    public void A_start_round_after_the_first_tier_skips_it(int start, bool skips)
+    {
+        Assert.Equal(skips, TierMath.SkipsFirstTier(start, [40, 43]));
+        Assert.Equal(skips, TierMath.SkipsFirstTier(start, []));
+    }
 }
