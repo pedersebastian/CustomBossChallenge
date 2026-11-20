@@ -25,20 +25,15 @@ public sealed class SavedSetupsStore
     public static readonly SavedSetupsStore Default =
         new(Path.Combine(MelonEnvironment.UserDataDirectory, "CustomBossChallenge", "SavedSetups.json"));
 
-    public string FilePath { get; }
+    public string FilePath => file.FilePath;
 
     /// <summary>
-    /// A file from a newer version stays in place; say so in the log only once
+    /// The file itself; a damaged one is copied before it is written over (#182, #230)
     /// </summary>
-    private bool toldTooNew;
+    private readonly SavedSetupsFile file;
 
-    /// <summary>
-    /// An unreadable file is read again each time the list is shown or a name checked; it's logged and copied once for
-    /// each version of it (#182)
-    /// </summary>
-    private readonly FileChange broken = new();
-
-    public SavedSetupsStore(string filePath) => FilePath = filePath;
+    public SavedSetupsStore(string filePath) =>
+        file = new SavedSetupsFile(filePath, message => ModHelper.Warning<CustomBossChallenge>(message));
 
     public enum SaveResult
     {
@@ -112,53 +107,7 @@ public sealed class SavedSetupsStore
         return true;
     }
 
-    private (List<SavedSetup> Setups, bool TooNew) Read()
-    {
-        if (!File.Exists(FilePath)) return ([], false);
+    private (List<SavedSetup> Setups, bool TooNew) Read() => file.Read();
 
-        FormatRead<List<SavedSetup>> read;
-        try
-        {
-            read = SavedSetupsFormat.Read(File.ReadAllText(FilePath));
-        }
-        catch (Exception e)
-        {
-            read = FormatRead<List<SavedSetup>>.Invalid(e.Message);
-        }
-
-        switch (read.Problem)
-        {
-            case FormatProblem.TooNew:
-                if (!toldTooNew) ModHelper.Warning<CustomBossChallenge>($"Keeping {FilePath} from a newer version of the mod");
-                toldTooNew = true;
-                return ([], true);
-            case FormatProblem.Invalid:
-                KeepBroken(read.Error);
-                return ([], false);
-        }
-
-        foreach (var _ in read.Changes) ModHelper.Warning<CustomBossChallenge>($"Ignoring a damaged saved setup in {FilePath}");
-        return (read.Value!, false);
-    }
-
-    /// <summary>
-    /// Keeps the unreadable file, so saving a new setup doesn't throw away the player's old ones for good. The copy is
-    /// named by the broken file's time, so a later, different breakage doesn't replace it.
-    /// </summary>
-    private void KeepBroken(string error)
-    {
-        if (!broken.IsNew(FilePath)) return;
-        ModHelper.Warning<CustomBossChallenge>($"Ignoring unreadable saved setups {FilePath}: {error}");
-        try
-        {
-            var time = File.GetLastWriteTimeUtc(FilePath).ToString("yyyyMMdd-HHmmss");
-            File.Copy(FilePath, $"{FilePath}.{time}.broken", true);
-        }
-        catch (Exception)
-        {
-            // Nothing more can be done about a file that can't be copied either
-        }
-    }
-
-    private void Write(List<SavedSetup> setups) => SafeFile.WriteAllText(FilePath, SavedSetupsFormat.Write(setups));
+    private void Write(List<SavedSetup> setups) => file.Write(setups);
 }

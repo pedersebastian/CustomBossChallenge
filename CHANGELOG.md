@@ -31,6 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   an example or a Past Event, played and then quit, lost or won, left the player in the game's plain Challenge Editor
   with the setup from before. Back from there logged an error, and after several such games the game could crash.
   Now every setup comes back to the Boss Creator as it was played.
+- **Damaged saved setups are no longer lost when another is saved** (#230): when some setups in `SavedSetups.json`
+  couldn't be read, saving a setup wrote the file without them and kept no copy. Now the file is kept as
+  `SavedSetups.json.<time>.broken` first, like a file that can't be read at all. A file that couldn't be replaced, for
+  example a read only one, also no longer leaves a `.tmp` file next to it.
 
 ## [2.13.0] - 2026-11-17
 
