@@ -236,7 +236,9 @@ public sealed class BossEditorSection
             Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 0.5f)
         }, VanillaSprites.BlueBtnLong, new Action(OnResetAll));
         ResetAllButton.transform.SetParent(Section.transform, false);
-        ResetAllButton.AddText(new Info("Label", InfoPreset.FillParent), Texts.ResetBossOptions.T(), 52);
+        var resetLabel = ResetAllButton.AddText(new Info("Label", 0, 0, 740 - 60, 104), Texts.ResetBossOptions.T(), 52);
+        // German and Swedish need more room than English: the text shrinks instead of being cut off (#234)
+        ShrinkToFit(resetLabel.Text, 52, 34);
 
         // Left of it, Undo and Redo for the mouse and touch screens, one step like Ctrl+Z and Ctrl+Y (#185)
         RedoButton = HistoryButton("Redo", -60 - 740 - HistoryGap, VanillaSprites.NextArrowSmall, Texts.RedoButton.T(),
@@ -312,6 +314,7 @@ public sealed class BossEditorSection
         {
             Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
         }, Texts.Elite.T(), 80, TextAlignmentOptions.Left);
+        ShrinkToFit(eliteLabel.Text, 80, 40);
         eliteLabel.transform.SetParent(bossRow.transform, false);
         ResetBossButton = EditorRows.ResetButton(bossRow, "ResetBoss", ResetBoss);
 
@@ -580,12 +583,22 @@ public sealed class BossEditorSection
         var text = button.AddText(new Info("Label", HistoryIconSize / 2 + 15, 0, HistoryWidth - HistoryIconSize - 90, 104),
             label, 52);
         // Some languages' words are long: they shrink to fit instead of running out of the button
-        text.Text.enableAutoSizing = true;
-        text.Text.fontSizeMax = 52;
-        text.Text.fontSizeMin = 30;
-        text.Text.textWrappingMode = TextWrappingModes.NoWrap;
+        // Dutch and Finnish need the smallest size
+        ShrinkToFit(text.Text, 52, 24);
         text.Text.raycastTarget = false;
         return button;
+    }
+
+    /// <summary>
+    /// One line of text that shrinks, down to <paramref name="min"/>, when a language's words or font need more room
+    /// than its box has, instead of being cut off with "…" (#234)
+    /// </summary>
+    public static void ShrinkToFit(TMP_Text text, float max, float min)
+    {
+        text.enableAutoSizing = true;
+        text.fontSizeMax = max;
+        text.fontSizeMin = min;
+        text.textWrappingMode = TextWrappingModes.NoWrap;
     }
 
     /// <summary>

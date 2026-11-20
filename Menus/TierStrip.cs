@@ -166,7 +166,7 @@ public sealed class TierStrip
             {
                 Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
             }, $"T{tier}", 52, TextAlignmentOptions.Top);
-            card.Round = card.Panel.AddText(new Info("Round", 0, -56, MaxCardWidth, 60)
+            card.Round = card.Panel.AddText(new Info("Round", 0, -58, MaxCardWidth, 60)
             {
                 Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
             }, "", 40, TextAlignmentOptions.Top);
@@ -181,9 +181,10 @@ public sealed class TierStrip
             // Later tiers get a slightly bigger portrait, so the strip reads as a climb
             var size = 84 + tier * 6;
             card.Portrait = card.Panel.AddImage(new Info("Portrait", 0, -3, size, size), VanillaSprites.BossTiersIconSmall);
-            // Taller than the font like the tier and round, so auto-sizing only shrinks them for width
-            card.Speed = card.Panel.AddText(new Info("Speed", 0, -87, 300, 80), "", 54);
-            card.Health = card.Panel.AddText(new Info("Health", 0, -137, 300, 80), "", 54);
+            // Taller than the font like the tier and round, so auto-sizing only shrinks them for width. The lines are a
+            // little apart even in fonts with tall letters, and with ▲ (#234)
+            card.Speed = card.Panel.AddText(new Info("Speed", 0, -85, 300, 80), "", 54);
+            card.Health = card.Panel.AddText(new Info("Health", 0, -139, 300, 80), "", 54);
             foreach (var text in new[] { card.Speed, card.Health })
             {
                 text.Text.enableAutoSizing = true;
@@ -212,7 +213,10 @@ public sealed class TierStrip
                 Anchor = new Vector2(0, 0.5f), Pivot = new Vector2(0, 0.5f)
             });
             card.Skulls.AddImage(new Info("Icon", 0, 26, 50, 50), VanillaSprites.CrossboneSkull).Image.raycastTarget = false;
-            card.SkullCount = card.Skulls.AddText(new Info("Count", 0, -26, 56, 54), "", 44);
+            // Taller than the font, so a font with tall lines still shows the number (#234)
+            card.SkullCount = card.Skulls.AddText(new Info("Count", 0, -26, 56, 70), "", 44);
+            card.SkullCount.Text.textWrappingMode = TextWrappingModes.NoWrap;
+            card.SkullCount.Text.overflowMode = TextOverflowModes.Overflow;
             card.SkullCount.Text.raycastTarget = false;
 
             Cards.Add(card);

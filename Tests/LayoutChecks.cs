@@ -47,6 +47,37 @@ internal static class LayoutChecks
         return Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
     }
 
+    /// <summary>
+    /// Where the letters of <paramref name="text"/> are drawn on the screen. Unlike <see cref="LettersRect"/> it leaves
+    /// out the room TextMesh Pro keeps around each glyph for the material's outline and shadow, which in some fonts,
+    /// like the Japanese one, is much bigger than the outline that shows: lines that look well apart would count as
+    /// running into each other.
+    /// </summary>
+    public static Rect InkRect(Il2CppTMPro.TMP_Text text)
+    {
+        text.ForceMeshUpdate();
+        var info = text.textInfo;
+        var padding = text.GetPaddingForMaterial();
+        var (left, bottom, right, top) = (float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
+        for (var i = 0; i < info.characterCount; i++)
+        {
+            var character = info.characterInfo[i];
+            if (!character.isVisible) continue;
+            var room = padding * character.scale;
+            left = Mathf.Min(left, Mathf.Min(character.bottomLeft.x, character.topLeft.x) + room);
+            right = Mathf.Max(right, Mathf.Max(character.topRight.x, character.bottomRight.x) - room);
+            top = Mathf.Max(top, Mathf.Max(character.topLeft.y, character.topRight.y) - room);
+            bottom = Mathf.Min(bottom, Mathf.Min(character.bottomLeft.y, character.bottomRight.y) + room);
+        }
+
+        if (left > right || bottom > top) return Rect.zero;
+        var canvas = text.GetComponentInParent<Canvas>()?.rootCanvas;
+        var camera = canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+        var a = RectTransformUtility.WorldToScreenPoint(camera, text.transform.TransformPoint(new Vector3(left, bottom)));
+        var b = RectTransformUtility.WorldToScreenPoint(camera, text.transform.TransformPoint(new Vector3(right, top)));
+        return Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
+    }
+
     public static Rect Screen => new(0, 0, UnityEngine.Screen.width, UnityEngine.Screen.height);
 
     public static bool Overlap(Rect a, Rect b) =>
