@@ -204,6 +204,8 @@ public sealed class TierBossPicker
             var shown = Shown();
             SetValues(shown with {CustomSkulls = SkullMath.NormalizeCustom(text, shown.CustomSkulls)}, "CustomSkulls");
             Show();
+            // However the edit ends, Enter and Space go to the picker, not to the list again (#233)
+            BossCreatorKeys.Deselect(CustomSkulls.InputField);
         }));
         ResetCustomSkulls = EditorRows.ResetButton(customSkullsRow, "ResetCustomSkulls",
             () => SetValues(Shown() with {CustomSkulls = SkullMath.DefaultCustom}, "ResetCustomSkulls"));

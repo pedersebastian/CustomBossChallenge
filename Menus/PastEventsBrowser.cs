@@ -172,6 +172,8 @@ public sealed class PastEventsBrowser
         if (Search.InputField.placeholder?.TryCast<TMP_Text>() is { } hint) BossEditorSection.ShrinkToFit(hint, 60, 34);
         Search.InputField.onValidateInput = new Func<string, int, char, char>((_, _, added) => added == '\t' ? '\0' : added);
         Search.InputField.onSubmit.AddListener(Listeners.Wrap<string>(_ => FocusFirstEvent()));
+        // However the edit ends, Enter and Space go to the events, not to the search again (#233)
+        Search.InputField.onEndEdit.AddListener(Listeners.Wrap<string>(_ => BossCreatorKeys.Deselect(Search.InputField)));
 
         BossFilter = Filter(FilterInfo("BossFilter", 470), index => SetQuery(Query with {Boss = bossChoices[index]}));
         YearFilter = Filter(FilterInfo("YearFilter", 360), index => SetQuery(Query with {Year = yearChoices[index]}));
@@ -802,7 +804,7 @@ public sealed class PastEventsBrowser
     /// <summary>Enter in the search field goes to the first event shown</summary>
     private void FocusFirstEvent()
     {
-        Search.InputField.DeactivateInputField();
+        BossCreatorKeys.EndEdit(Search.InputField);
         var stops = Stops.ToList();
         var first = stops.FindIndex(stop => stop.EventIndex >= 0);
         if (first < 0) return;
