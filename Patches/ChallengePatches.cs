@@ -224,6 +224,12 @@ internal static class InGame_RoundEnd
 [HarmonyPatch(typeof(InGame), nameof(InGame.RoundStart))]
 internal static class InGame_RoundStart
 {
+    [HarmonyPrefix]
+    internal static void Prefix(InGame __instance)
+    {
+        if (CustomBossState.IsActive) CustomBossRetries.OnRoundStarting(__instance);
+    }
+
     [HarmonyPostfix]
     internal static void Postfix()
     {

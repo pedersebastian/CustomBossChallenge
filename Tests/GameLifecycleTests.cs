@@ -188,6 +188,43 @@ public class RetryTest : CustomBossTest
 }
 
 /// <summary>
+/// Losing the first round played offers Retry Last Round, which goes back to that round's start (#231)
+/// </summary>
+public class RetryFirstRoundTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        var options = new BossOptions {Tiers = 1, SpawnRounds = "40"};
+        var dcm = BaseDcm();
+        dcm.startRules.round = 39;
+        dcm.startRules.lives = dcm.startRules.maxLives = 1;
+        yield return LoadIntoGame(SetupBossChallenge(CustomBossState.Prepare(dcm, options), options.Boss));
+        var firstRound = InGame.instance.bridge.GetCurrentRound() + 1;
+        Log($"first round {firstRound}");
+
+        BossDefeatScreen? screen = null;
+        yield return LoseAndOpenDefeatScreen(found => screen = found);
+        var lostRound = InGame.instance.bridge.GetCurrentRound() + 1;
+        AssertEquals(lostRound, firstRound, "Lost on the first round played");
+        Assert(screen!.retryButton.gameObject.activeSelf, "Retry Last Round is offered on the first round played");
+        AssertEquals(screen.retryCostTxt.text, Texts.Free.T(), "Retry Last Round cost");
+
+        screen.retryButton.onClick.Invoke();
+        yield return WaitForResume();
+        var bridge = InGame.instance.bridge;
+        AssertEquals(bridge.GetCurrentRound() + 1, firstRound, "Round after Retry Last Round");
+        Assert(!bridge.Simulation.GameOver, "The game goes on after the retry");
+        Assert(CustomBossState.IsActive, "A retried custom game stays custom");
+        Assert(!bridge.AreRoundsActive(), "The round waits to be started again");
+
+        // Lost again, the retry is still there
+        yield return LoseAndOpenDefeatScreen(found => screen = found);
+        Assert(screen!.retryButton.gameObject.activeSelf, "Retry Last Round is offered again");
+        yield return ToMainMenu();
+    }
+}
+
+/// <summary>
 /// A custom game keeps the player's own unfinished Boss Challenge of the same boss: the game removes it when a new
 /// Boss Challenge of that boss starts, and a custom Bloonarius game threw the player's Bloonarius game away
 /// </summary>

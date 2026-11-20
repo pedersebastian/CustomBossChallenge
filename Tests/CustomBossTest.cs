@@ -89,6 +89,34 @@ public abstract class CustomBossTest : ModTest
     protected void Log(string message) => ModHelper.Msg<CustomBossChallenge>($"{Name}: {message}");
 
     /// <summary>
+    /// How long loading a game may take. Mod Helper allows 10 seconds, which the 14th 10-tier game of TierLookTest
+    /// went over late in a full run, when loading has become slower after many games (#231, #235).
+    /// </summary>
+    public const float LoadTimeout = 60;
+
+    private static readonly System.Reflection.MethodInfo SetupBridge =
+        HarmonyLib.AccessTools.Method(typeof(ModTest), "SetupBridge") ??
+        throw new MissingMethodException(nameof(ModTest), "SetupBridge");
+
+    /// <summary>
+    /// Mod Helper's <see cref="ModTest.LoadIntoGame"/>, with <see cref="LoadTimeout"/> instead of its 10 seconds
+    /// </summary>
+    protected new IEnumerator LoadIntoGame(InGameData inGameData)
+    {
+        InGameData._editableInstance = inGameData;
+        var data = InGameData.Editable;
+        if (string.IsNullOrEmpty(data.selectedMap)) data.selectedMap = DefaultMap;
+        if (string.IsNullOrEmpty(data.selectedDifficulty)) data.selectedDifficulty = DefaultDifficulty;
+        if (string.IsNullOrEmpty(data.selectedMode)) data.selectedMode = DefaultMode;
+
+        var start = Time.realtimeSinceStartup;
+        yield return Timeout(Il2CppAssets.Scripts.Unity.UI_New.UI.instance.LoadGameEnumerator(null, null, null, false, false, false),
+            LoadTimeout);
+        Log($"game loaded in {Time.realtimeSinceStartup - start:0.0}s");
+        SetupBridge.Invoke(null, [InGame.instance?.bridge]);
+    }
+
+    /// <summary>
     /// The test passes without checking what it normally checks, so the run doesn't count for a release
     /// (<see cref="TestRunReport"/>)
     /// </summary>
