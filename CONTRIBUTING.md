@@ -137,7 +137,37 @@ Run them from Visual Studio / Rider with the **BloonsTD6 (Tests)** launch profil
 BloonsTD6.exe moddingDev -batchmode --modhelper.offline --modhelper.only='CustomBossChallenge;' --modhelper.noaudio --modhelper.run -q test mod CustomBossChallenge
 ```
 
-The result is written to `MelonLoader/Latest.log`, e.g. `Ran 25 test(s), 25 succeeded, 0 failed`.
+The result is written to `MelonLoader/Latest.log`, e.g. `Ran 25 test(s), 25 succeeded, 0 failed`. Each test logs
+`starting` and `done in Ns`, so the log shows which tests take the time.
+
+#### Which tests to run
+
+The in-game tests come in two suites (#246):
+
+- **Quick suite**, about 8 minutes: start the game with `CBC_SUITE=quick`. It runs every test except the slow ones
+  marked `[FullSuiteOnly("...")]`, which play long games, every boss, every language or measure memory. It includes the
+  core: the Boss Creator (`BossCreatorTest`), a custom game with a retry (`RetryTest`), Continue (`ContinueTest`),
+  the Rules panel, the layout, the keyboard, share codes and saved setups. Add the slow tests of the area you changed
+  with `CBC_TESTS`, e.g. `CBC_SUITE=quick` and `CBC_TESTS=TierLookTest,TierLookLifecycleTest` for the tier look.
+- **Full suite**, about 38 minutes: start the game without `CBC_SUITE` and `CBC_TESTS`. Only its receipt counts
+  for a release.
+- `CBC_TESTS` alone runs only the tests it names, e.g. while working on them.
+
+A new test is in the quick suite. If it takes more than about 20 seconds, mark it `[FullSuiteOnly]`, with the reason,
+so the quick suite stays under 15 minutes. `Tests/TestSuite.cs` has the rules.
+
+What a change needs before its PR:
+
+| Change | In-game tests |
+|---|---|
+| C# (the mod or its tests) | The quick suite, plus the slow tests of the area that changed |
+| `Localization/*.json` | `Check-Localization.ps1` (see Translations); the quick suite if a text got longer, and `LanguageLayoutTest` |
+| Only `web/`, `docs/`, `tools/`, `UnitTests/`, `PropertyTests/` or `.github/` | None: their own tests run on GitHub |
+| A release | The full suite, with its receipt committed (below) |
+
+- **A failure is fixed, then the whole suite runs again**, not only the test that failed: a fix can break another test.
+- **The full suite also runs between releases**, about after every third merged C# PR, so a failure only has a few PRs
+  to come from. If it fails, go through the PRs merged since the last green full run to find which one broke it.
 
 On a Debug build, a run of every test also writes `TestResults/ingame.json` in the repo when the game quits
 (`TestRunReport`): the mod and game version, the commit, which tests failed or were skipped, and `sourceHash`, a
@@ -148,7 +178,8 @@ builds in as an `EmbeddedResource` by name, `Bundles/*.bundle`, the `.png` files
 plus `global.json`. It leaves out `CHANGELOG.md` and `LICENSE` (the release rotates the CHANGELOG after the tests ran), and
 `UnitTests/`, `PropertyTests/`, `web/`, `docs/`, `tools/` and `.github/`, so changing only those doesn't need a new
 run. A test is skipped when it passes without
-checking what it normally checks (`Skip`), e.g. tests left out by `CBC_TESTS`, or `WebDataTest` writing its files.
+checking what it normally checks (`Skip`), e.g. tests left out by `CBC_SUITE=quick` or `CBC_TESTS`, or `WebDataTest`
+writing its files. `suite` says which kind of run it was: `full`, `quick` or `selected`; a release needs `full`.
 `ContinueAfterCrashTest` needs two starts of the game (`CBC_CRASH_PHASE`, `CBC_CRASH_FOLDER`), so a normal run lists it
 under `onRequest` instead: not passed, but not keeping the run from counting for a release.
 
@@ -161,7 +192,8 @@ are internal, only tests set them, and `CustomBossTest` resets them before every
 A release needs this report (see **Release version** below), so before tagging:
 
 1. Bump `Version` (and `WorksOnVersion`) in `ModHelperData.cs`.
-2. Build Debug (`dotnet build -c Debug`) and run all in-game tests.
+2. Build Debug (`dotnet build -c Debug`) and run the full suite of in-game tests (without `CBC_SUITE` and
+   `CBC_TESTS`).
 3. Commit `TestResults/ingame.json` with the version bump.
 4. Run `Check-Release.ps1` (below), then tag.
 
@@ -213,8 +245,8 @@ guards (`[GuardPatch]`), so a bug report's `Latest.log` shows it.
   `Menus/Texts.cs` must exist in English. Every translation must be made from the English text as it is now, as
   recorded in `Localization/english-sources.txt` (see Translations below).
 - **Release version** (releases only): the tag must match `Version` in `ModHelperData.cs`, which Mod Helper uses to tell
-  players about updates, and `CHANGELOG.md` must have notes for it. `TestResults/ingame.json` must show a run of
-  every in-game test on that version, with none failed or skipped, and its `sourceHash` must match the tagged code,
+  players about updates, and `CHANGELOG.md` must have notes for it. `TestResults/ingame.json` must show a full
+  suite run (not `CBC_SUITE=quick`) on that version, with none failed or skipped, and its `sourceHash` must match the tagged code,
   so changing the mod's code after the tests ran means running them again. Run it before tagging.
 - **Unit tests**: `dotnet test --project UnitTests`, see above. The in-game tests can't run on GitHub and still have
   to be run locally; the release check only sees their report.

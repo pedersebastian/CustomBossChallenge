@@ -23,11 +23,11 @@ public abstract class CustomBossTest : ModTest
     {
         TestRunReport.Watch();
 
-        // CBC_TESTS=RetryTest,ContinueTest runs only those tests, the others pass right away
-        var only = System.Environment.GetEnvironmentVariable("CBC_TESTS");
-        if (!string.IsNullOrWhiteSpace(only) && !only.Split(',').Select(name => name.Trim()).Contains(GetType().Name))
+        // CBC_SUITE=quick leaves out the slow tests, CBC_TESTS=RetryTest,ContinueTest picks tests; the tests left out
+        // pass right away (TestSuite)
+        if (TestSuite.SkipReason(GetType()) is { } reason)
         {
-            TestRunReport.Skip(Name, "not in CBC_TESTS");
+            TestRunReport.Skip(Name, reason);
             yield break;
         }
 

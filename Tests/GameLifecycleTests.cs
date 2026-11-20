@@ -53,6 +53,7 @@ public class RestartTest : CustomBossTest
 /// <summary>
 /// A boss that isn't defeated in time loses the game, and a custom game never turns that into a win
 /// </summary>
+[FullSuiteOnly("loses games to bosses (about 30 s)")]
 public class BossNotDefeatedTest : CustomBossTest
 {
     public const float TimeoutSeconds = 240;
@@ -190,6 +191,7 @@ public class RetryTest : CustomBossTest
 /// <summary>
 /// Losing the first round played offers Retry Last Round, which goes back to that round's start (#231)
 /// </summary>
+[FullSuiteOnly("loses and retries a game twice (about 25 s)")]
 public class RetryFirstRoundTest : CustomBossTest
 {
     protected override IEnumerator Run()
@@ -228,6 +230,7 @@ public class RetryFirstRoundTest : CustomBossTest
 /// A custom game keeps the player's own unfinished Boss Challenge of the same boss: the game removes it when a new
 /// Boss Challenge of that boss starts, and a custom Bloonarius game threw the player's Bloonarius game away
 /// </summary>
+[FullSuiteOnly("plays games around the player's own saves (about 1.5 min)")]
 public class PlayerSaveKeptTest : CustomBossTest
 {
     private const string Key = "BCBloonarius";

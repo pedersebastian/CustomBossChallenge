@@ -19,6 +19,7 @@ namespace CustomBossChallenge.Tests;
 /// Boss Event Rounds (#80): the boss events' own rounds, moved to the tiers' Spawn Rounds, and in Advanced Mode (#84)
 /// every tier's round from its own boss; the game's own round sets stay as they are
 /// </summary>
+[FullSuiteOnly("plays games on the boss events' rounds (about 1 min)")]
 public class BossEventRoundsGameTest : CustomBossTest
 {
     protected override IEnumerator Run()
@@ -156,6 +157,7 @@ public class BossEventRoundsGameTest : CustomBossTest
 /// Boss Event Rounds in CHIMPS play the CHIMPS boss events' own rounds, the same for every boss, which the game itself
 /// doesn't have (#139). They move with the tiers like the boss sets, and games past round 140 go on into freeplay.
 /// </summary>
+[FullSuiteOnly("plays CHIMPS games on the boss events' rounds (about 1 min)")]
 public class BossEventRoundsChimpsTest : CustomBossTest
 {
     protected override IEnumerator Run()
@@ -311,6 +313,7 @@ public class BossEventRoundsChimpsTest : CustomBossTest
 /// A game with Boss Event Rounds is continued with them, from a file older versions of the mod leave alone, and saving
 /// the setup again doesn't keep the round set in the challenge
 /// </summary>
+[FullSuiteOnly("continues games on the boss events' rounds (about 1 min)")]
 public class BossEventRoundsContinueTest : ContinueTestBase
 {
     protected override IEnumerator Run()

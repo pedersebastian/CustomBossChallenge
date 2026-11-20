@@ -78,6 +78,8 @@ public static class TestRunReport
                 ["commit"] = metadata.GetValueOrDefault("CBC.Commit", ""),
                 ["dirty"] = metadata.GetValueOrDefault("CBC.Dirty", "") == "true",
                 ["sourceHash"] = metadata.GetValueOrDefault("CBC.SourceHash", ""),
+                // Only a full run counts for a release, not the quick suite (#246)
+                ["suite"] = TestSuite.Name,
                 ["passed"] = tests.Count(test => test.Suceeded && !Skipped.ContainsKey(test.Name) && !NeedsOwnRun.ContainsKey(test.Name)),
                 ["failed"] = new JArray(tests.Where(test => test.Failed).Select(test => (object) test.Name)),
                 ["skipped"] = new JObject(Skipped.Select(skip => new JProperty(skip.Key, skip.Value))),

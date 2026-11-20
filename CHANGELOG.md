@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Two suites of in-game tests** (#246, for contributors): a quick suite of about 8 minutes for every PR, and the full
+  suite of about 38 minutes before a release, which the release check now asks for by name. `TierLookTest` is about a
+  third faster. CONTRIBUTING.md says which tests a change needs.
 - **The Rules panel shows the boss setup as pictures** (#147): the pause screen's Rules box no longer lists the boss
   options as lines of text. The boss is a tile with its portrait (Elite's own when Elite), and Boss Event Rounds and
   "No other changes" are tiles too, after the game's own rules like No Selling. Custom spawn rounds and Advanced Mode
