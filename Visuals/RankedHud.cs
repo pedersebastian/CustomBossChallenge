@@ -248,6 +248,8 @@ public static class RankedHud
 
     private static void Build(RectTransform hud)
     {
+        // Mod Helper leaves an empty text asset behind for every component (#235)
+        using var leftovers = new ModHelperLeftovers();
         var canvas = Canvas(hud);
         var lineHeight = canvas.rect.height * 0.034f;
         var width = lineHeight * 9f;
@@ -346,6 +348,8 @@ public static class RankedHud
     /// </summary>
     public static void ShowSummary(BossVictoryScreen screen)
     {
+        // Mod Helper leaves an empty text asset behind for every component (#235)
+        using var leftovers = new ModHelperLeftovers();
         if (!Visible || TotalTime is not { } total) return;
 
         if (Summary != null) Object.Destroy(Summary.gameObject);

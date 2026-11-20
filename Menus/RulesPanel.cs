@@ -190,6 +190,8 @@ public static class RulesPanel
     /// </summary>
     private static void ShowStrips(ChallengeRulesScreen screen, BossOptions options, RulesView view)
     {
+        // Mod Helper leaves an empty text asset behind for every component (#235)
+        using var leftovers = new ModHelperLeftovers();
         if (!view.TierStrip && view.Skulls == null) return;
 
         var content = screen.gameRuleContent;

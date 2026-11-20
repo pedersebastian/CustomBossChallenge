@@ -97,6 +97,8 @@ public static class MainMenuButton
 
     private static GameObject? Build(MainMenu mainMenu)
     {
+        // Mod Helper leaves an empty text asset behind for every component (#235)
+        using var leftovers = new ModHelperLeftovers();
         // Copy a native round main menu button so the press animation and shadow match the rest of the menu
         var template = mainMenu.trophyStoreBtn != null ? mainMenu.trophyStoreBtn.transform.parent : null;
         if (template == null) return null;

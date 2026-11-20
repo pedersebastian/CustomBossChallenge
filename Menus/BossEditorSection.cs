@@ -47,6 +47,9 @@ public sealed class BossEditorSection
         private set => current = value;
     }
 
+    /// <summary>The section's listeners, let go once its editor is gone (#235)</summary>
+    private readonly Listeners listeners = new();
+
     public ChallengeEditor Editor { get; }
     public GameObject Section { get; }
     public GameObject Play { get; }
@@ -195,6 +198,9 @@ public sealed class BossEditorSection
 
     private BossEditorSection(ChallengeEditor editor)
     {
+        // Mod Helper leaves an empty text asset behind for every component (#235)
+        using var leftovers = new ModHelperLeftovers();
+        using var building = listeners.Build();
         Editor = editor;
         var sliders = editor.sliderSettings;
         var area = sliders.transform.parent;
@@ -234,7 +240,7 @@ public sealed class BossEditorSection
         ResetAllButton = ModHelperButton.Create(new Info("ResetBossOptions", -60, -50, 740, 104)
         {
             Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 0.5f)
-        }, VanillaSprites.BlueBtnLong, new Action(OnResetAll));
+        }, VanillaSprites.BlueBtnLong, Listeners.Wrap(OnResetAll));
         ResetAllButton.transform.SetParent(Section.transform, false);
         var resetLabel = ResetAllButton.AddText(new Info("Label", 0, 0, 740 - 60, 104), Texts.ResetBossOptions.T(), 52);
         // German and Swedish need more room than English: the text shrinks instead of being cut off (#234)
@@ -290,7 +296,7 @@ public sealed class BossEditorSection
             var button = ModHelperButton.Create(new Info($"Boss{type}", left + BossRowMath.ButtonX(i, bosses.Length, EditorRows.ControlWidth), 0, size, size)
             {
                 Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
-            }, Portrait(type, false), new Action(() => SelectBoss(type)));
+            }, Portrait(type, false), Listeners.Wrap(() => SelectBoss(type)));
             button.transform.SetParent(bossRow.transform, false);
             BossButtons[type] = button;
 
@@ -307,7 +313,7 @@ public sealed class BossEditorSection
         Elite = ModHelperCheckbox.Create(new Info("Elite", left + BossRowMath.EliteTickX(bosses.Length, EditorRows.ControlWidth), 0, 150, 150)
         {
             Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
-        }, false, VanillaSprites.BlueInsertPanelRound, new Action<bool>(SetElite), VanillaSprites.TickGreenIcon, 20);
+        }, false, VanillaSprites.BlueInsertPanelRound, Listeners.Wrap<bool>(SetElite), VanillaSprites.TickGreenIcon, 20);
         Elite.transform.SetParent(bossRow.transform, false);
         var eliteLabel = ModHelperText.Create(new Info("EliteLabel", left + BossRowMath.EliteLabelX(bosses.Length, EditorRows.ControlWidth), 0,
             BossRowMath.LabelWidth, 150)
@@ -364,7 +370,7 @@ public sealed class BossEditorSection
             null, 70, TMP_InputField.CharacterValidation.None, TextAlignmentOptions.Center, "40, 60, 80, ...", 10);
         SpawnRounds.transform.SetParent(roundsRow.transform, false);
         FollowKeyboard(SpawnRounds);
-        SpawnRounds.InputField.onEndEdit.AddListener(new Action<string>(text =>
+        SpawnRounds.InputField.onEndEdit.AddListener(Listeners.Wrap<string>(text =>
         {
             // Rounds that come out the same, however they are typed, keep the rounds as they are, following the
             // defaults if they did, so retyping them adds no step for Undo (#171)
@@ -386,7 +392,7 @@ public sealed class BossEditorSection
             VanillaSprites.BossChallenge);
         BossEventRounds = ModHelperCheckbox.Create(EditorRows.ControlInfo("BossEventRounds", 150, 150),
             false, VanillaSprites.BlueInsertPanelRound,
-            new Action<bool>(on => UpdateOptions("BossEventRounds", o => o with {BossEventRounds = on})),
+            Listeners.Wrap<bool>(on => UpdateOptions("BossEventRounds", o => o with {BossEventRounds = on})),
             VanillaSprites.TickGreenIcon, 20);
         BossEventRounds.transform.SetParent(BossEventRoundsRow.transform, false);
         var chimpsEntries = new Il2CppSystem.Collections.Generic.List<string>();
@@ -396,7 +402,7 @@ public sealed class BossEditorSection
         chimpsEntries.Add(Texts.ChimpsRoundsOwn.T());
         // The opened list has room for every entry, so none of them is cut off or needs scrolling
         ChimpsEventRounds = ModHelperDropdown.Create(EditorRows.ControlInfo("ChimpsEventRounds", ChimpsDropdownWidth, ChimpsItemHeight),
-            chimpsEntries, chimpsEntries.Count * ChimpsItemHeight, new Action<int>(index => UpdateOptions("ChimpsEventRounds", o => o with
+            chimpsEntries, chimpsEntries.Count * ChimpsItemHeight, Listeners.Wrap<int>(index => UpdateOptions("ChimpsEventRounds", o => o with
             {
                 BossEventRounds = index > 0,
                 ChimpsRounds = index switch
@@ -435,7 +441,7 @@ public sealed class BossEditorSection
         modes.Add(Texts.SkullsEvenlySpaced.T());
         modes.Add(Texts.SkullsCustom.T());
         SkullMode = ModHelperDropdown.Create(EditorRows.ControlInfo("SkullMode", 900, 150),
-            modes, 500, new Action<int>(index =>
+            modes, 500, Listeners.Wrap<int>(index =>
             {
                 UpdateOptions("SkullMode", o => o with {SkullMode = (Config.SkullMode) index});
             }), VanillaSprites.BlueInsertPanelRound, 70);
@@ -453,7 +459,7 @@ public sealed class BossEditorSection
         CustomSkulls.transform.SetParent(customSkullsRow.transform, false);
         ResetCustomSkullsButton = EditorRows.ResetButton(customSkullsRow, "ResetCustomSkulls", ResetCustomSkulls);
         FollowKeyboard(CustomSkulls);
-        CustomSkulls.InputField.onEndEdit.AddListener(new Action<string>(text =>
+        CustomSkulls.InputField.onEndEdit.AddListener(Listeners.Wrap<string>(text =>
         {
             // Show what was understood; a list without any valid percentage keeps the previous skulls
             var skulls = SkullMath.NormalizeCustom(text, ShownSkulls(BossMode.Options));
@@ -468,7 +474,7 @@ public sealed class BossEditorSection
         // Saved setups and sharing the setup as a text code, after all the boss options
         var savedRow = EditorRows.LabelRow(template, rows, "SavedSetupsRow", Texts.SavedSetups.T(), VanillaSprites.FavouriteHeartIcon);
         SavedList = ModHelperDropdown.Create(EditorRows.ControlInfo("SavedList", SavedListWidth, 150),
-            new Il2CppSystem.Collections.Generic.List<string>(), SavedListHeight, new Action<int>(index =>
+            new Il2CppSystem.Collections.Generic.List<string>(), SavedListHeight, Listeners.Wrap<int>(index =>
             {
                 if (index >= 0 && index < savedNames.Count + Examples.Count) Select(index);
             }), VanillaSprites.BlueInsertPanelRound, 60);
@@ -569,7 +575,7 @@ public sealed class BossEditorSection
         var button = ModHelperButton.Create(new Info(name, x, -50, HistoryWidth, 104)
         {
             Anchor = new Vector2(1, 1), Pivot = new Vector2(1, 0.5f)
-        }, VanillaSprites.BlueBtnLong, new Action(() =>
+        }, VanillaSprites.BlueBtnLong, Listeners.Wrap(() =>
         {
             step();
             ShowHistory();
@@ -631,7 +637,7 @@ public sealed class BossEditorSection
         var button = ModHelperButton.Create(new Info(name, x, 0, width, 170)
         {
             Anchor = new Vector2(1, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
-        }, VanillaSprites.BlueBtnLong, action);
+        }, VanillaSprites.BlueBtnLong, Listeners.Wrap(action));
         button.transform.SetParent(row.transform, false);
         button.AddText(new Info("Label", InfoPreset.FillParent), label, 70);
         return button;
@@ -770,7 +776,7 @@ public sealed class BossEditorSection
     private void FollowKeyboard(ModHelperInputField field)
     {
         field.InputField.onValidateInput = new Func<string, int, char, char>((_, _, added) => added == '\t' ? '\0' : added);
-        field.InputField.onSubmit.AddListener(new Action<string>(_ => BossCreatorKeys.Submitted(this, field.InputField)));
+        field.InputField.onSubmit.AddListener(Listeners.Wrap<string>(_ => BossCreatorKeys.Submitted(this, field.InputField)));
         // onEndEdit applies the value; Esc restores the text from before the edit first, so it is applied unchanged
         field.InputField.restoreOriginalTextOnEscape = true;
     }
@@ -783,7 +789,7 @@ public sealed class BossEditorSection
         ModHelper.Msg<CustomBossChallenge>(
             $"Copied a share code ({code.Length} characters): {Describe(BossMode.Options, Editor.dcm)}");
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.ShareCode.T(),
-            Texts.CodeCopied.T(code.Length), null, Texts.Ok.T(), new Action(CopyLink), Texts.CopyLink.T(),
+            Texts.CodeCopied.T(code.Length), null, Texts.Ok.T(), listeners.Of(CopyLink), Texts.CopyLink.T(),
             Popup.TransitionAnim.Scale));
     }
 
@@ -812,7 +818,7 @@ public sealed class BossEditorSection
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.ShareCode.T(),
             $"{Texts.LoadCodeQuestion.T()}\n\n{Summary(options, dcm)}",
-            new Action(() =>
+            listeners.Of(() =>
             {
                 BossMode.Replace(Editor, options, dcm);
                 ModHelper.Msg<CustomBossChallenge>($"Loaded a share code: {Describe(options, dcm)}");
@@ -954,7 +960,7 @@ public sealed class BossEditorSection
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
             Texts.SavedSetups.T(), Texts.OverwriteSetupQuestion.T($"<b>{PlainText(name)}</b>"),
-            new Action(() => SaveAs(name, options, dcm)), Texts.SaveSetup.T(),
+            listeners.Of(() => SaveAs(name, options, dcm)), Texts.SaveSetup.T(),
             null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
     }
 
@@ -1018,7 +1024,7 @@ public sealed class BossEditorSection
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.SavedSetups.T(),
             $"{Texts.LoadSetupQuestion.T()}\n\n{Summary(options, dcm)}",
-            new Action(() =>
+            listeners.Of(() =>
             {
                 BossMode.Replace(Editor, options, dcm);
                 ModHelper.Msg<CustomBossChallenge>($"Loaded a saved setup: {Describe(options, dcm)}");
@@ -1032,7 +1038,7 @@ public sealed class BossEditorSection
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
             Texts.ExampleSetups.T(),
             $"{Texts.LoadExampleQuestion.T()}\n\n<i>{PlainText(example.Description)}</i>\n\n{Summary(options, dcm)}",
-            new Action(() =>
+            listeners.Of(() =>
             {
                 BossMode.Replace(Editor, options, dcm);
                 ModHelper.Msg<CustomBossChallenge>($"Loaded an example setup: {Describe(options, dcm)}");
@@ -1047,7 +1053,7 @@ public sealed class BossEditorSection
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
             Texts.SavedSetups.T(), Texts.DeleteSetupQuestion.T($"<b>{PlainText(name)}</b>"),
-            new Action(() =>
+            listeners.Of(() =>
             {
                 try
                 {
@@ -1136,7 +1142,7 @@ public sealed class BossEditorSection
             play.transform.SetSiblingIndex(template.GetSiblingIndex() + 1);
             var button = play.GetComponentInChildren<Button>(true);
             button.onClick = new Button.ButtonClickedEvent();
-            button.onClick.AddListener(new Action(OnPlay));
+            button.onClick.AddListener(Listeners.Wrap(OnPlay));
             EditorRows.SetText(play.GetComponentInChildren<TMP_Text>(true), Texts.Play.T());
         }
         else
@@ -1144,7 +1150,7 @@ public sealed class BossEditorSection
             var button = ModHelperButton.Create(new Info(PlayName, 1051, -47, 590, 212)
             {
                 Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 1)
-            }, VanillaSprites.GreenBtnLong, new Action(OnPlay));
+            }, VanillaSprites.GreenBtnLong, Listeners.Wrap(OnPlay));
             button.transform.SetParent(Editor.transform, false);
             button.AddText(new Info("Label", InfoPreset.FillParent), Texts.Play.T(), 90);
             play = button.gameObject;
@@ -1169,6 +1175,8 @@ public sealed class BossEditorSection
 
         if (!show) return null;
 
+        // The editor of the section before is gone by now: what its listeners hold can go too (#235)
+        if (current != null && (current.Editor == null || current.Section == null)) current.listeners.Release();
         Current = new BossEditorSection(editor);
         Current.SetVisible(true);
         return Current;
@@ -1532,7 +1540,7 @@ public sealed class BossEditorSection
     /// </summary>
     private void OnResetAll() =>
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
-            Texts.ResetBossOptions.T(), Texts.ResetBossOptionsQuestion.T(), new Action(ResetAll), Texts.Reset.T(),
+            Texts.ResetBossOptions.T(), Texts.ResetBossOptionsQuestion.T(), listeners.Of(ResetAll), Texts.Reset.T(),
             null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
 
     /// <summary>
@@ -1635,13 +1643,13 @@ public sealed class BossEditorSection
         foreach (var field in new TMP_InputField?[] {Editor.round, Editor.lives, Editor.cash, Editor.maxTowers})
         {
             // Added after the editor's own listeners, so the model already has the new value
-            field?.onEndEdit.AddListener(new Action<string>(_ => RulesChanged()));
+            field?.onEndEdit.AddListener(Listeners.Wrap<string>(_ => RulesChanged()));
         }
 
         foreach (var (panel, set) in RuleSliders)
         {
             var slider = RuleSlider(Editor, panel);
-            slider?.onValueChanged.AddListener(new Action<float>(value =>
+            slider?.onValueChanged.AddListener(Listeners.Wrap<float>(value =>
             {
                 if (!BossMode.Active || refreshing || Editor.dcm == null) return;
                 Editor.dcm.bloonModifiers ??= new BloonModifiers();
@@ -1651,7 +1659,7 @@ public sealed class BossEditorSection
             }));
         }
 
-        Editor.gameModeDropdown?.onValueChanged.AddListener(new Action<int>(_ => RulesChanged()));
+        Editor.gameModeDropdown?.onValueChanged.AddListener(Listeners.Wrap<int>(_ => RulesChanged()));
     }
 
     /// <summary>

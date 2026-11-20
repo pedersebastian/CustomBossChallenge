@@ -41,6 +41,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Past Event Diamondback 6 can be played** (#232): it starts on round 40 with its first tier on round 40, which
   the Boss Creator refused as if the tier would be skipped. The boss comes on the round a game starts on, so a start
   round equal to the first tier's round is now allowed; only a later one is refused.
+- **The Boss Creator no longer keeps its old windows in memory** (#235): every time the Boss Creator, a tier
+  picker or Past Events was opened, the game kept the one before, about 3.4 MB for a visit with all three, because
+  the game never lets go of a button's listener. Their listeners now let go of the window when it closes, which
+  leaves about a third of that, from Mod Helper's own parts. The empty text assets Mod Helper leaves behind are
+  cleaned up too.
 - **Texts fit in every language** (#234): "Reset Boss Options" in German and Swedish, Elite in Japanese and Undo and
   Redo in Dutch and Finnish shrink to fit instead of being cut off with "…". In Arabic, Chinese, Japanese, Korean and
   Thai the tier picker's and Past Events' titles and the skull count on the Tier Preview's cards showed nothing, as

@@ -198,7 +198,7 @@ public sealed class TierStrip
             {
                 var button = card.Panel.gameObject.AddComponent<Button>();
                 button.targetGraphic = card.Panel.GetComponent<Image>();
-                button.onClick.AddListener(new Action(() => CardClicked?.Invoke(cardTier)));
+                button.onClick.AddListener(Listeners.Wrap(() => CardClicked?.Invoke(cardTier)));
                 card.Button = button;
             }
             card.Edit = card.Panel.AddImage(new Info(EditMarker, -6, -6, 64, 64)
