@@ -24,16 +24,24 @@ def lin(hexstr):
     return (*c, 1.0)
 
 
-# ---- clean up an earlier run and the default cube
+# ---- in an open Blender its own scene, so nothing else in the file is touched; in a background build the default
+# scene (the exporter evaluates the modifiers through the context's scene)
+if bpy.context.window is not None:
+    scene = bpy.data.scenes.get("Gildebloon Pile") or bpy.data.scenes.new("Gildebloon Pile")
+    bpy.context.window.scene = scene
+else:
+    scene = bpy.context.scene
+    for o in list(scene.objects):
+        if o.name == "Cube":
+            bpy.data.objects.remove(o, do_unlink=True)
 for o in list(bpy.data.objects):
-    if o.name == "Cube" or o.get("gilde"):
+    if o.get("gilde") or (o.get("stage") and o.name in scene.objects):
         bpy.data.objects.remove(o, do_unlink=True)
 for coll in (bpy.data.meshes, bpy.data.materials, bpy.data.curves):
     for d in list(coll):
         if d.users == 0:
             coll.remove(d)
 
-scene = bpy.context.scene
 col = bpy.data.collections.get(PILE) or bpy.data.collections.new(PILE)
 if col.name not in scene.collection.children:
     scene.collection.children.link(col)
@@ -173,11 +181,11 @@ def coin_mesh():
 
 def mound_mesh():
     bm = bmesh.new()
-    bmesh.ops.create_uvsphere(bm, u_segments=40, v_segments=20, radius=0.9)
+    bmesh.ops.create_uvsphere(bm, u_segments=40, v_segments=20, radius=0.78)
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < -0.01], context="VERTS")
     for v in bm.verts:
         a = math.atan2(v.co.y, v.co.x)
-        v.co.z *= 0.5 / 0.9 * (1 + 0.05 * math.sin(a * 5) + 0.04 * math.sin(a * 9 + 1))
+        v.co.z *= 0.3 / 0.78 * (1 + 0.05 * math.sin(a * 5) + 0.04 * math.sin(a * 9 + 1))
         v.co.x *= 0.98
     me = bpy.data.meshes.new("Gilde_Mound")
     bm.to_mesh(me)
@@ -288,20 +296,25 @@ def part(name, me, loc, rot=(0, 0, 0), scale=1.0, line=None):
     return o
 
 
+HEAP_H = 0.46  # how high the coins pile up in the middle; the mound under them is lower, only filler
+
+
 def mound_z(x, y):
+    """The top of the heap of coins (not of the mound under it)"""
     r2 = x * x + y * y
-    return 0.5 * math.sqrt(max(0.0, 1 - r2))
+    return HEAP_H * math.sqrt(max(0.0, 1 - r2)) ** 1.3
 
 
 part("Mound", mound_mesh(), (0, 0, 0), line=0.02)
 
 coin = coin_mesh()
 up = Vector((0, 0, 1))
-for i in range(240):
-    d = (math.sqrt(rng.random()) * 0.97) if i < 170 else rng.uniform(0.8, 1.0)
+for i in range(420):
+    d = (math.sqrt(rng.random()) * 0.97) if i < 330 else rng.uniform(0.8, 1.0)
     a = rng.random() * math.tau
     x, y = math.cos(a) * d, math.sin(a) * d
-    z = mound_z(x, y)
+    # in layers through the heap, not only on its skin, so it is coins all the way down
+    z = mound_z(x, y) * (1 if i % 3 == 0 else rng.uniform(0.55, 1.0))
     n = Vector((x, y, z / 0.25)).normalized()
     q = up.rotation_difference(n)
     tilt = Euler((rng.uniform(-0.5, 0.5), rng.uniform(-0.5, 0.5), rng.uniform(0, math.tau)))
@@ -322,7 +335,8 @@ for i in range(26):
     part(f"LooseCoin.{i:02}", coin, (x, y, z), rot, line=0.007)
 
 # little stacks of coins
-for s, (sx, sy, count) in enumerate(((1.05, -0.75, 5), (1.25, -0.45, 3), (-1.15, -0.7, 4))):
+for s, (sx, sy, count) in enumerate(((1.05, -0.75, 5), (1.25, -0.45, 3), (-1.15, -0.7, 4), (0.55, -1.12, 6),
+                                     (-0.75, 1.05, 4), (1.2, 0.55, 5))):
     for k in range(count):
         part(f"Stack{s}.{k}", coin, (sx + rng.uniform(-0.012, 0.012), sy + rng.uniform(-0.012, 0.012), 0.017 + k * 0.036),
              (0, 0, rng.uniform(0, math.tau)), line=0.007)
@@ -338,6 +352,37 @@ for name, loc, rz in (("Bar.0", (-0.55, -1.05, 0), 0.35), ("Bar.1", (-0.25, -1.1
     o.modifiers.move(len(o.modifiers) - 1, 0)
 
 CAM_AZ = math.radians(-90)  # the $ on the bags faces the bottom of the game's screen (-Y here)
+# bundles of banknotes with a paper band, on and round the heap
+bill = bpy.data.meshes.new("Gilde_Bills")
+bbm = bmesh.new()
+bmesh.ops.create_cube(bbm, size=1)
+bmesh.ops.scale(bbm, vec=(0.38, 0.18, 0.07), verts=bbm.verts)
+for f in bbm.faces:
+    f.material_index = 0
+band = bmesh.ops.create_cube(bbm, size=1)["verts"]
+bmesh.ops.scale(bbm, vec=(0.07, 0.19, 0.075), verts=band)
+for f in bbm.faces:
+    if all(v in band for v in f.verts):
+        f.material_index = 1
+bbm.to_mesh(bill)
+bbm.free()
+bill.materials.append(GREEN)
+bill.materials.append(SACK)
+bill_dollar = text_mesh("$", 0.12, 0.004)
+bill_dollar.materials.append(SACK)
+for i, (x, y, rz, stack) in enumerate(((0.25, -0.35, 0.4, 2), (-0.35, 0.05, -0.5, 1), (0.05, 0.38, 1.2, 2),
+                                       (-0.5, -0.62, 0.9, 3), (0.82, -0.25, -0.2, 1), (-0.95, 0.35, 0.3, 2),
+                                       (0.42, 0.85, -0.9, 1))):
+    on_heap = math.hypot(x, y) < 0.95
+    z = mound_z(x, y) if on_heap else 0.0
+    n = Vector((x, y, z / 0.18 if on_heap else 1)).normalized() if on_heap else up
+    q = up.rotation_difference(n)
+    for k in range(stack):
+        rot = (q.to_matrix() @ Euler((0, 0, rz + rng.uniform(-0.25, 0.25))).to_matrix()).to_euler()
+        b = part(f"Bills.{i}.{k}", bill, Vector((x, y, z + 0.035)) + n * (0.072 * k + 0.01), rot, line=0.008)
+        t = part(f"BillDollar.{i}.{k}", bill_dollar, (0.11, 0, 0.037), (0, 0, math.pi / 2), 1.0)
+        t.parent = b
+
 # money bags leaning on the heap
 sack, rope = sack_mesh(), rope_mesh()
 dollar = text_mesh("$", 0.42, 0.02)
@@ -376,20 +421,18 @@ ground = bpy.data.objects.new("Ground", gm)
 ground["stage"] = True
 scene.collection.objects.link(ground)
 
-light = bpy.data.objects.get("Light")
-if light is None or light.type != "LIGHT":
-    light = bpy.data.objects.new("Light", bpy.data.lights.new("Light", "SUN"))
-    scene.collection.objects.link(light)
+light = bpy.data.objects.new("PileSun", bpy.data.lights.new("Gilde_PileSun", "SUN"))
+light["stage"] = True
+scene.collection.objects.link(light)
 light.data.type = "SUN"
 light.data.energy = 3.2
 light.data.angle = math.radians(3)
 light.rotation_euler = Euler((math.radians(42), 0, math.radians(-35)))
 light.location = (0, 0, 6)
 
-cam = bpy.data.objects.get("Camera")
-if cam is None or cam.type != "CAMERA":
-    cam = bpy.data.objects.new("Camera", bpy.data.cameras.new("Camera"))
-    scene.collection.objects.link(cam)
+cam = bpy.data.objects.new("PileCamera", bpy.data.cameras.new("Gilde_PileCam"))
+cam["stage"] = True
+scene.collection.objects.link(cam)
 cam.data.type = "ORTHO"
 cam.data.ortho_scale = 4.6
 el, az, dist = math.radians(48), math.radians(-62), 14

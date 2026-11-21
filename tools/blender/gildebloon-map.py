@@ -43,13 +43,13 @@ bpy.context.window.scene = scene
 col = scene.collection
 
 # the body's materials, made by the boss script
-GOLD = bpy.data.materials["Gilde_Gold"]
+GOLD = bpy.data.materials["Gilde_BossGold"]
 GOLD_DARK = bpy.data.materials["Gilde_GoldInner"]
 GOLD_FACE = bpy.data.materials["Gilde_GoldFace"]
 GRASS = bpy.data.materials["Gilde_Grass"]
 LINE = bpy.data.materials["Gilde_Outline"]
 SHINE = bpy.data.materials["Gilde_Shine"]
-COIN = bpy.data.meshes["Gilde_Coin"]
+COIN = bpy.data.objects["RingCoin0"].data  # the body's coin (the pile has one by the same name)
 
 
 def toon(name, shade, base, light, cuts=(0.42, 0.93)):
@@ -300,7 +300,7 @@ start_p, start_d = track_at(0.06)
 pile_root = next(o for o in pile_col.objects if o.parent is None)
 pile_on_map = bpy.data.objects.new("PileOnMap", None)
 pile_on_map.location = start_p + Vector((0.9, 0, 0.01))
-pile_on_map.scale = (0.5,) * 3  # 26 of the game's units, about half as wide as Gildebloon
+pile_on_map.scale = (1.0,) * 3  # the boss scene sizes the pile next to Gildebloon already
 col.objects.link(pile_on_map)
 copies = {}
 originals = [pile_root] + list(pile_root.children_recursive)  # before copying: a copy starts as the parent's child too

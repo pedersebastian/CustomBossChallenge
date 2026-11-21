@@ -139,7 +139,7 @@ def glass(name, colour, alpha):
     return m
 
 
-GOLD = toon("Gilde_Gold", "#e58e00", "#ffcf26", "#fff6b8", cuts=(0.3, 0.82))
+GOLD = toon("Gilde_BossGold", "#e58e00", "#ffcf26", "#fff6b8", cuts=(0.3, 0.82))
 GOLD_DARK = toon("Gilde_GoldInner", "#b86e00", "#e9a10e", None)
 GOLD_FACE = toon("Gilde_GoldFace", "#e59a00", "#ffd23d", "#fff6c0")
 IRON = toon("Gilde_Iron", "#3a3f48", "#6b7380", "#aab2bd")
@@ -401,9 +401,18 @@ mound = bmesh.new()
 bmesh.ops.create_uvsphere(mound, u_segments=32, v_segments=16, radius=1)
 bmesh.ops.delete(mound, geom=[v for v in mound.verts if v.co.z < -0.01], context="VERTS")
 bmesh.ops.scale(mound, vec=(1.7, 1.7, 0.55), verts=mound.verts)
-pile = obj("SpawnPile", finish(mound, "Gilde_Mound", [GOLD_DARK]), line=0.02)
+REAL_PILE = bpy.data.collections.get("GildebloonMoneyPile")
 pile_coins = []
-for i in range(70):
+if REAL_PILE is not None:
+    # as wide next to Gildebloon as in the game: 26 of the game's units against its 45
+    pile = empty("SpawnPile")
+    pile.instance_type = "COLLECTION"
+    pile.instance_collection = REAL_PILE
+    pile.scale = (0.6,) * 3
+    mound.free()
+else:
+    pile = obj("SpawnPile", finish(mound, "Gilde_Mound", [GOLD_DARK]), line=0.02)
+for i in range(70 if REAL_PILE is None else 0):
     a, d = rng.uniform(0, 2 * math.pi), math.sqrt(rng.random()) * 1.6
     x, y = d * math.cos(a), d * math.sin(a)
     z = 0.55 * math.sqrt(max(0.0, 1 - (x / 1.7) ** 2 - (y / 1.7) ** 2))
@@ -538,11 +547,12 @@ key(shadow, 1, scale=0)
 key(shadow, 38, scale=0)
 key(shadow, 50, scale=SHADOW_SIZE)
 eyes_to(1, 0.05)
+PS = pile.scale.x  # the pile's own size; its trembling is relative to it
 for f in range(1, 31, 3):
-    key(pile, f, scale=(1, 1, 1 + 0.06 * math.sin(f * 1.7) * f / 30))
-key(pile, 33, scale=(1.05, 1.05, 1.15))
-key(pile, 40, scale=(1, 1, 0.9))
-key(pile, 48, scale=1)
+    key(pile, f, scale=(PS, PS, PS * (1 + 0.06 * math.sin(f * 1.7) * f / 30)))
+key(pile, 33, scale=(PS * 1.05, PS * 1.05, PS * 1.15))
+key(pile, 40, scale=(PS, PS, PS * 0.9))
+key(pile, 48, scale=PS)
 key(root, 30, (0, 0, -1.1))
 key(root, 46, (0, 0, HOVER + 0.55))
 key(hull, 46, scale=(0.9, 0.9, 1.15))
