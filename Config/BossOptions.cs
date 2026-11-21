@@ -1,3 +1,4 @@
+using System.Linq;
 using Il2CppAssets.Scripts.Data.Boss;
 using Newtonsoft.Json;
 
@@ -182,9 +183,28 @@ public sealed record BossOptions
             ExtraTierHealth = null,
             SpawnRounds = TierMath.NormalizeRounds(SpawnRounds),
             TierBosses = TierBossMath.Normalize(TierBosses),
-            RandomTiers = TierBossMath.ParseTierList(RandomTiers) is {Length: > 0} random ? string.Join(",", random) : null
+            RandomTiers = SanitizedRandomTiers()
         };
     }
+
+    /// <summary>
+    /// <see cref="RandomTiers"/> in order without duplicates and tiers past <see cref="Tiers"/>, or null in Standard
+    /// Mode or when none are left
+    /// </summary>
+    private string? SanitizedRandomTiers()
+    {
+        if (TierBossMath.Normalize(TierBosses) == null) return null;
+        var tiers = TierMath.ClampTiers(Tiers);
+        var random = TierBossMath.ParseTierList(RandomTiers).Where(tier => tier <= tiers).Distinct().OrderBy(tier => tier)
+            .ToArray();
+        return random.Length > 0 ? string.Join(",", random) : null;
+    }
+
+    /// <summary>
+    /// A copy for options read from a share code: <see cref="Sanitized"/>, and without <see cref="RandomTiers"/>, which
+    /// only a game that started fills in (#236). The website reads codes the same way.
+    /// </summary>
+    public BossOptions SanitizedFromCode() => (this with {RandomTiers = null}).Sanitized();
 
     /// <summary>
     /// What the given tier was set to: the setup's boss, a boss of its own, or Random

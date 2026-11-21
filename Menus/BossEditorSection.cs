@@ -824,7 +824,7 @@ public sealed class BossEditorSection
         }
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.ShareCode.T(),
-            $"{Texts.LoadCodeQuestion.T()}\n\n{Summary(options, dcm)}",
+            LanguageText.ForGameText($"{Texts.LoadCodeQuestion.T()}\n\n{Summary(options, dcm)}"),
             listeners.Of(() =>
             {
                 BossMode.Replace(Editor, options, dcm);
@@ -925,8 +925,8 @@ public sealed class BossEditorSection
             : 0;
 
         var shown = new Il2CppSystem.Collections.Generic.List<string>();
-        foreach (var name in names) shown.Add(PlainText(name));
-        foreach (var example in Examples) shown.Add(ExampleLine(example));
+        foreach (var name in names) shown.Add(LanguageText.ForGameText(PlainText(name)));
+        foreach (var example in Examples) shown.Add(LanguageText.ForGameText(ExampleLine(example)));
 
         var dropdown = SavedList.Dropdown;
         dropdown.ClearOptions();
@@ -966,7 +966,7 @@ public sealed class BossEditorSection
         }
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
-            Texts.SavedSetups.T(), Texts.OverwriteSetupQuestion.T($"<b>{PlainText(name)}</b>"),
+            Texts.SavedSetups.T(), LanguageText.ForGameText(Texts.OverwriteSetupQuestion.T($"<b>{PlainText(name)}</b>")),
             listeners.Of(() => SaveAs(name, options, dcm)), Texts.SaveSetup.T(),
             null, Texts.Cancel.T(), Popup.TransitionAnim.Scale));
     }
@@ -1001,7 +1001,7 @@ public sealed class BossEditorSection
         ModHelper.Msg<CustomBossChallenge>($"{(result == SavedSetupsStore.SaveResult.Replaced ? "Replaced" : "Saved")} the saved setup {Describe(options, dcm)}");
         SelectedSetup = name;
         ShowSavedSetups();
-        PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.SetupSaved.T($"<b>{PlainText(name)}</b>"), null));
+        PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(LanguageText.ForGameText(Texts.SetupSaved.T($"<b>{PlainText(name)}</b>")), null));
     }
 
     /// <summary>
@@ -1037,7 +1037,7 @@ public sealed class BossEditorSection
         }
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.SavedSetups.T(),
-            $"{Texts.LoadSetupQuestion.T()}\n\n{Summary(options, dcm)}",
+            LanguageText.ForGameText($"{Texts.LoadSetupQuestion.T()}\n\n{Summary(options, dcm)}"),
             listeners.Of(() =>
             {
                 BossMode.Replace(Editor, options, dcm);
@@ -1051,7 +1051,7 @@ public sealed class BossEditorSection
         var (options, dcm) = Creator.ExampleSetups.Build(example);
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
             Texts.ExampleSetups.T(),
-            $"{Texts.LoadExampleQuestion.T()}\n\n<i>{PlainText(example.Description)}</i>\n\n{Summary(options, dcm)}",
+            LanguageText.ForGameText($"{Texts.LoadExampleQuestion.T()}\n\n<i>{PlainText(example.Description)}</i>\n\n{Summary(options, dcm)}"),
             listeners.Of(() =>
             {
                 BossMode.Replace(Editor, options, dcm);
@@ -1066,7 +1066,7 @@ public sealed class BossEditorSection
         if (name == null) return;
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
-            Texts.SavedSetups.T(), Texts.DeleteSetupQuestion.T($"<b>{PlainText(name)}</b>"),
+            Texts.SavedSetups.T(), LanguageText.ForGameText(Texts.DeleteSetupQuestion.T($"<b>{PlainText(name)}</b>")),
             listeners.Of(() =>
             {
                 try
@@ -1882,7 +1882,7 @@ public sealed class BossEditorSection
         var problem = PlayProblem(dcm, BossMode.Options);
         if (problem != null)
         {
-            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(problem, null));
+            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(LanguageText.ForGameText(problem), null));
             return;
         }
 

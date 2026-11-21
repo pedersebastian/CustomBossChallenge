@@ -52,15 +52,14 @@ public class CodeFormatTests
         Converters = {new BossNameConverter()}
     });
 
-    /// <summary>The options as SetupCode.TryDecode reads them, without RandomTiers, which only the game fills in</summary>
-    private static JObject Read(JObject diff) =>
-        JObject.FromObject(ReadOptions(diff) with {RandomTiers = null}, OptionsSerializer);
+    /// <summary>The options as SetupCode.TryDecode reads them</summary>
+    private static JObject Read(JObject diff) => JObject.FromObject(ReadOptions(diff), OptionsSerializer);
 
     private static BossOptions ReadOptions(JObject diff)
     {
         var json = JObject.FromObject(new BossOptions(), OptionsSerializer);
         CodeFormat.Apply(json, CodeFormat.TypedOptions(diff));
-        return json.ToObject<BossOptions>(OptionsSerializer)!.Sanitized();
+        return json.ToObject<BossOptions>(OptionsSerializer)!.SanitizedFromCode();
     }
 
     /// <summary>

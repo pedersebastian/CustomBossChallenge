@@ -162,7 +162,7 @@ public static class MainMenuButton
 
         // New Game keeps the unfinished game until a new one is actually played
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
-            Texts.UnfinishedGame.T(), UnfinishedGameText(game),
+            Texts.UnfinishedGame.T(), LanguageText.ForGameText(UnfinishedGameText(game)),
             new System.Action(() => BossGameLauncher.Continue(game)), Texts.ContinueGame.T(),
             new System.Action(BossMode.Enter), Texts.NewGame.T(), Popup.TransitionAnim.Scale));
     }
@@ -182,7 +182,7 @@ public static class MainMenuButton
         }
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
-            Texts.UnfinishedGame.T(), UnusableGameText(lost),
+            Texts.UnfinishedGame.T(), LanguageText.ForGameText(UnusableGameText(lost)),
             new System.Action(() => BossMode.Enter(lost.Options, ConfigApplier.Unprepare(lost.Dcm))), Texts.LoadGameSetup.T(),
             new System.Action(BossMode.Enter), Texts.NewGame.T(), Popup.TransitionAnim.Scale));
     }

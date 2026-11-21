@@ -27,6 +27,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Arabic, Chinese, Japanese and Korean show properly** (#244): many of the mod's texts showed boxes in place of
+  letters, because the game only swaps in a language's font for texts it translates itself. They now get the
+  language's font. In Arabic the mod's texts also showed backwards with loose letters, and tags like `<noparse>` and
+  `<color=…>` showed as text: they are now joined, right to left and coloured like the game's own, with brackets the
+  right way round. The language fonts only have the letters the game needs, so a few Chinese, Japanese and Korean
+  translations use other words now, and a test checks every translation against its fonts.
+- **Share codes read the same in the mod and on the website** (#236): a code with the tiers a game picked at random
+  kept that list in the mod, while the website drops it. The mod now drops it too, and a saved game keeps only tiers
+  that exist, each once. Nothing played differently, since a game works the list out again when it starts.
 - **No more errors in the log with All Fortified** (#228): every custom game with All Fortified on logged three
   `KeyNotFoundException` errors per Lych tier while it loaded, whichever boss was played, because the mod looked for
   fortified undead MOABs the game doesn't have. The game played the same, but the log no longer fills with them.

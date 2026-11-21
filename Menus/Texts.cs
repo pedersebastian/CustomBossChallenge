@@ -1,3 +1,4 @@
+using System.Linq;
 using BTD_Mod_Helper.Api;
 
 namespace CustomBossChallenge.Menus;
@@ -363,12 +364,23 @@ public static class Texts
     /// <summary>
     /// A date the way the player's language writes it, e.g. "17 Oct 2026" or "17. okt. 2026"
     /// </summary>
-    public static string Date(System.DateTime date) => Config.PastEventDates.Format(date, DateFormat.T(), DateMonths.T());
+    public static string Date(System.DateTime date)
+    {
+        // In Arabic each month is shaped on its own, as shaping the list would turn its order around too
+        var months = string.Join(",", BTD_Mod_Helper.Extensions.StringExt.Localize(DateMonths).Split(',')
+            .Select(month => LanguageText.Shape(month.Trim())));
+        return Config.PastEventDates.Format(date, DateFormat.T(), months);
+    }
 
     /// <summary>
-    /// The text for a key in the player's language
+    /// The text for a key in the player's language. The mod's own texts are shaped for Arabic like the game's (#244),
+    /// which keeps its translations that way already.
     /// </summary>
-    public static string T(this string key) => BTD_Mod_Helper.Extensions.StringExt.Localize(key);
+    public static string T(this string key)
+    {
+        var text = BTD_Mod_Helper.Extensions.StringExt.Localize(key);
+        return key.StartsWith(KeyPrefix, System.StringComparison.Ordinal) ? LanguageText.Shape(text) : text;
+    }
 
     public static string T(this string key, object arg) => string.Format(key.T(), arg);
 
