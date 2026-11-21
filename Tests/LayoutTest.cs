@@ -232,12 +232,15 @@ public class LayoutTest : CustomBossTest
         var spawnRounds = BossMode.Options.SpawnRounds;
         var eventRounds = BossMode.Options.BossEventRounds;
         var mode = editor.dcm.mode;
+        var noInstas = editor.dcm.disableInstas;
+        var firstPower = editor.dcm.powers[0];
+        var firstPowerMax = firstPower.max;
         var (tiers, bossHealth, healthPerTier, speedPerTier) =
             (section.Tiers.Slider.value, section.BossHealth.Slider.value, section.HealthPerTier.Slider.value, section.SpeedPerTier.Slider.value);
         try
         {
             // Every kind of warning at once (#170): health limit, tiers at the limits, close tiers, a close start round,
-            // the CHIMPS boss events' rounds and a very hard setup
+            // the CHIMPS boss events' rounds, a very hard setup, and a past event's rules with the longest line (#212)
             section.Tiers.Slider.value = 10;
             BossMode.Options = BossMode.Options with {SpawnRounds = "40, 41", BossEventRounds = true};
             editor.dcm.mode = BossOptions.ChimpsMode;
@@ -246,6 +249,8 @@ public class LayoutTest : CustomBossTest
             section.SpeedPerTier.Slider.value = section.SpeedPerTier.Slider.maxValue;
             editor.dcm.startRules.round = BossMode.Options.EffectiveSpawnRounds[0] - 2;
             editor.dcm.startRules.lives = 1;
+            editor.dcm.disableInstas = true;
+            firstPower.max = 1;
             section.RulesChanged();
             Canvas.ForceUpdateCanvases();
 
@@ -274,6 +279,8 @@ public class LayoutTest : CustomBossTest
             editor.dcm.startRules.lives = lives;
             BossMode.Options = BossMode.Options with {SpawnRounds = spawnRounds, BossEventRounds = eventRounds};
             editor.dcm.mode = mode;
+            editor.dcm.disableInstas = noInstas;
+            firstPower.max = firstPowerMax;
             section.Tiers.Slider.value = tiers;
             section.BossHealth.Slider.value = bossHealth;
             section.HealthPerTier.Slider.value = healthPerTier;

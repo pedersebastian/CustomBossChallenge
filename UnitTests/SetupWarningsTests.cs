@@ -54,6 +54,25 @@ public class SetupWarningsTests
     public void StartRoundClose_warns_within_five_rounds_before_the_first_boss(int start, string expected) =>
         Assert.Equal(expected, Kinds(new SetupFacts {StartRound = start}));
 
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public void A_past_events_rules_Copy_and_Save_leave_out_are_named(bool noInstas, bool limitedPowers)
+    {
+        var warnings = SetupWarnings.Check(new SetupFacts {NoInstas = noInstas, LimitedPowers = limitedPowers});
+        if (!noInstas && !limitedPowers)
+        {
+            Assert.Empty(warnings);
+            return;
+        }
+
+        var warning = Assert.Single(warnings);
+        Assert.Equal(SetupWarning.EventRules, warning.Kind);
+        Assert.Equal([noInstas, limitedPowers], warning.Args);
+    }
+
     [Fact]
     public void StartRoundClose_says_how_many_rounds_are_left()
     {

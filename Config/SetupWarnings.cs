@@ -41,6 +41,15 @@ public sealed record SetupFacts
     public bool AllFortified { get; init; }
 
     /// <summary>
+    /// Insta Monkeys turned off, a rule only a past event sets (#212). A share code can't hold it, so the website
+    /// never has it.
+    /// </summary>
+    public bool NoInstas { get; init; }
+
+    /// <summary>Not every power allowed as often as the game allows, a rule only a past event sets (#212)</summary>
+    public bool LimitedPowers { get; init; }
+
+    /// <summary>
     /// Health and speed of the game's boss model each tier is made from (<see cref="BossOptions.SourceId"/>), by tier
     /// from 1; null where it isn't known, like for a Random tier or without the game
     /// </summary>
@@ -78,7 +87,13 @@ public enum SetupWarning
     ChimpsEventRounds,
 
     /// <summary>The rules together make a very hard challenge. No args.</summary>
-    HardSetup
+    HardSetup,
+
+    /// <summary>
+    /// A past event's rules that the Challenge Editor doesn't show and Copy and Save leave out (#212). Args: whether
+    /// Insta Monkeys are off, whether only some powers are allowed.
+    /// </summary>
+    EventRules
 }
 
 public readonly record struct Warning(SetupWarning Kind, params object[] Args);
@@ -132,6 +147,8 @@ public static class SetupWarnings
             warnings.Add(new Warning(SetupWarning.ChimpsEventRounds, options.ChimpsRounds));
 
         if (Difficulty(facts) >= HardThreshold) warnings.Add(new Warning(SetupWarning.HardSetup));
+        if (facts.NoInstas || facts.LimitedPowers)
+            warnings.Add(new Warning(SetupWarning.EventRules, facts.NoInstas, facts.LimitedPowers));
         return warnings;
     }
 

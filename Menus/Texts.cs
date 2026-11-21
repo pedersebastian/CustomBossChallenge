@@ -282,6 +282,14 @@ public static class Texts
         "Tiers {0} end up the same: their speed and health have reached the game's limits.");
     public static readonly string HardSetup = Key(nameof(HardSetup),
         "These rules together make a very hard challenge.");
+    /// <summary>The Tier Preview's line for a past event's rules the Challenge Editor doesn't show (#212)</summary>
+    public static readonly string EventNoInstas = Key(nameof(EventNoInstas),
+        "From the event: Insta Monkeys are off. Copy and Save leave this out.");
+    public static readonly string EventPowers = Key(nameof(EventPowers),
+        "From the event: only its powers are allowed. Copy and Save leave this out.");
+    public static readonly string EventNoInstasPowers = Key(nameof(EventNoInstasPowers),
+        "From the event: Insta Monkeys are off and only its powers are allowed. Copy and Save leave these out.");
+
     public static readonly string ChimpsEventRoundsNewest = Key(nameof(ChimpsEventRoundsNewest),
         "Boss Event Rounds in CHIMPS: much harder than the normal rounds, with no regrow but dense floods that test " +
         "your damage.");
@@ -348,6 +356,12 @@ public static class Texts
         Config.SetupWarning.ChimpsEventRounds => warning.Args is [Config.ChimpsRounds.Earlier]
             ? ChimpsEventRoundsEarlier.T()
             : ChimpsEventRoundsNewest.T(),
+        Config.SetupWarning.EventRules => warning.Args switch
+        {
+            [true, true] => EventNoInstasPowers.T(),
+            [true, _] => EventNoInstas.T(),
+            _ => EventPowers.T()
+        },
         _ => HardSetup.T()
     };
 

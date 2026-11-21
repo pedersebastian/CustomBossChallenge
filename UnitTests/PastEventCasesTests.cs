@@ -100,7 +100,8 @@ public class PastEventCasesTests
             var pastEvent = Read(e);
             foreach (var elite in new[] {false, true})
             {
-                var setup = PastEventRules.Map(pastEvent, elite, Defaults, Maps.Contains, UnsupportedModes);
+                // The website only makes codes, which can't hold the rules the mod sets on the model (#212)
+                var setup = PastEventRules.Map(pastEvent, elite, Defaults, Maps.Contains, UnsupportedModes, eventOnly: false);
                 var dropped = new List<string>();
                 var challenge = setup.Problem == PastEventProblem.None
                     ? CodeFormat.FilterChallenge(setup.Challenge, (JObject) Defaults.DeepClone(), dropped)
