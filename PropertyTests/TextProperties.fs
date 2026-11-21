@@ -34,17 +34,24 @@ let private anyInt =
 // ---- A tier's speed and health ----
 
 [<Fact>]
-let ``A tier's speed and health stay in their range, on their step, for any int (#168)`` () =
-    let ranges = [ TierBossMath.MinSpeed, TierBossMath.MaxSpeed; TierBossMath.MinHealth, TierBossMath.MaxHealth ]
-    Prop.forAll (Arb.fromGen (Gen.zip anyInt (Gen.elements ranges))) (fun (value, (min, max)) ->
-        let clamped = TierBossMath.ClampValue(value, min, max)
-        ((clamped >= min && clamped <= max) |@ $"{value} gave {clamped}, outside {min}-{max}")
-        .&. (clamped % TierBossMath.ValueStep = 0 |@ $"{value} gave {clamped}, not on the step")
+let ``A tier's speed and health stay in their range, on their step, for any int (#168, #250)`` () =
+    // Speed moves in steps of 10; health in steps of 5 up to 500 % and 10 above (HealthSteps)
+    let speed =
+        "speed", (fun value -> TierBossMath.ClampValue(value, TierBossMath.MinSpeed, TierBossMath.MaxSpeed)),
+        (fun clamped -> clamped % TierBossMath.ValueStep = 0), TierBossMath.MinSpeed, TierBossMath.MaxSpeed
+    let health =
+        "health", (fun (value: int) -> HealthSteps.Snap(float value)),
+        (fun clamped -> HealthSteps.ValueAt(HealthSteps.PositionOf(float clamped)) = clamped),
+        TierBossMath.MinHealth, TierBossMath.MaxHealth
+    Prop.forAll (Arb.fromGen (Gen.zip anyInt (Gen.elements [ speed; health ]))) (fun (value, (name, clamp, onStep, min, max)) ->
+        let clamped = clamp value
+        ((clamped >= min && clamped <= max) |@ $"{name} {value} gave {clamped}, outside {min}-{max}")
+        .&. (onStep clamped |@ $"{name} {value} gave {clamped}, not on the step")
         // Values in the range only move to the nearest step, and those outside it go to its nearer end, however far
         // out (an int overflow sent 2147483647 to the bottom, #168)
-        .&. ((value < min || value > max || abs (int64 clamped - int64 value) <= 5L) |@ $"{value} moved to {clamped}")
-        .&. ((value <= max || clamped = max) |@ $"{value} is above {max} but gave {clamped}")
-        .&. ((value >= min || clamped = min) |@ $"{value} is below {min} but gave {clamped}"))
+        .&. ((value < min || value > max || abs (int64 clamped - int64 value) <= 5L) |@ $"{name} {value} moved to {clamped}")
+        .&. ((value <= max || clamped = max) |@ $"{name} {value} is above {max} but gave {clamped}")
+        .&. ((value >= min || clamped = min) |@ $"{name} {value} is below {min} but gave {clamped}"))
     |> check
 
 /// Bosses per tier as players and old codes write them: names in any case, Elite, Random, values at int's limits,
