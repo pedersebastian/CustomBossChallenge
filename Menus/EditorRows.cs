@@ -174,7 +174,8 @@ public static class EditorRows
 
     /// <summary>
     /// Turns the game's localizer off for a text that is already translated: it would take the text for a key, change
-    /// it back or space out its letters ("CHIMPS", a colour like #C8D8FF)
+    /// it back or space out its letters ("CHIMPS", a colour like #C8D8FF). The text gets the language's font, which
+    /// the localizer would have given it (#244).
     /// </summary>
     public static void KeepAsIs(TMP_Text text)
     {
@@ -182,16 +183,19 @@ public static class EditorRows
         if (nkText == null) return;
         nkText.AutoLocalize = false;
         nkText.localizeKey = "";
+        LanguageText.UseLanguageFont(text);
     }
 
     /// <summary>
-    /// Sets the text of a (possibly localized) game text without the localizer changing it back
+    /// Sets the text of a (possibly localized) game text without the localizer changing it back, with its tags
+    /// working in Arabic too
     /// </summary>
     public static void SetText(TMP_Text? text, string value)
     {
         if (text == null) return;
         KeepAsIs(text);
         text.text = value;
+        LanguageText.FixTags(text, value);
     }
 
     /// <summary>
@@ -333,7 +337,7 @@ public static class EditorRows
 
     public static void ShowInfo(string titleKey, string textKey) =>
         PopupScreen.instance.SafelyQueue(screen =>
-            screen.ShowOkPopup($"<b>{titleKey.T()}</b>\n\n{textKey.T()}", null));
+            screen.ShowOkPopup(LanguageText.ForGameText($"<b>{titleKey.T()}</b>\n\n{textKey.T()}"), null));
 
     /// <summary>
     /// Info for a control placed where a row's slider would be

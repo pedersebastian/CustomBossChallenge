@@ -477,8 +477,10 @@ public sealed class PastEventsBrowser
         // range like "17-22 Oct 2026" only works for some languages
         var start = Texts.Date(pastEvent.StartDate);
         var end = Texts.Date(pastEvent.EndDate);
-        var dates = start == end ? start : $"{start} - {end}";
-        return pastEvent.DatesGuessed ? "~" + dates : dates;
+        // Arabic is read from the right, where the start date goes (#244)
+        var dates = start == end ? start : LanguageText.RightToLeft ? $"{end} - {start}" : $"{start} - {end}";
+        if (!pastEvent.DatesGuessed) return dates;
+        return LanguageText.RightToLeft ? dates + "~" : "~" + dates;
     }
 
     /// <summary>
@@ -694,7 +696,7 @@ public sealed class PastEventsBrowser
                 _ => Texts.PastEventOpenFailed.T()
             };
             ModHelper.Msg<CustomBossChallenge>($"Could not open the past event {pastEvent.Id}{(elite ? " (Elite)" : "")}: {setup.Problem}");
-            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(why, null));
+            PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(LanguageText.ForGameText(why), null));
             return;
         }
 
@@ -710,7 +712,7 @@ public sealed class PastEventsBrowser
         }
 
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
-            Texts.PastEvents.T(), text,
+            Texts.PastEvents.T(), LanguageText.ForGameText(text),
             listeners.Of(() =>
             {
                 BossMode.Replace(section.Editor, options, dcm);

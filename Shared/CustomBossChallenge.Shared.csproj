@@ -21,12 +21,15 @@
         <Compile Include="..\Config\PastEventDates.cs" Link="Mod\PastEventDates.cs" />
         <Compile Include="..\Config\PastEventFilter.cs" Link="Mod\PastEventFilter.cs" />
         <Compile Include="..\Config\PastEventRules.cs" Link="Mod\PastEventRules.cs" />
+        <Compile Include="..\Config\FormatPlaceholders.cs" Link="Mod\FormatPlaceholders.cs" />
         <Compile Include="..\Config\KeyboardShortcuts.cs" Link="Mod\KeyboardShortcuts.cs" />
         <Compile Include="..\Config\NameField.cs" Link="Mod\NameField.cs" />
         <Compile Include="..\Config\RandomNames.cs" Link="Mod\RandomNames.cs" />
         <Compile Include="..\Config\RankedTime.cs" Link="Mod\RankedTime.cs" />
+        <Compile Include="..\Config\RichText.cs" Link="Mod\RichText.cs" />
         <Compile Include="..\Config\RulesSummary.cs" Link="Mod\RulesSummary.cs" />
         <Compile Include="..\Config\SetupWarnings.cs" Link="Mod\SetupWarnings.cs" />
+        <Compile Include="..\Config\ShownBrackets.cs" Link="Mod\ShownBrackets.cs" />
         <Compile Include="..\Config\ShownNumber.cs" Link="Mod\ShownNumber.cs" />
         <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />
         <Compile Include="..\Config\TierLook.cs" Link="Mod\TierLook.cs" />
