@@ -436,8 +436,11 @@ public sealed class TierStrip
 
         var modifiers = dcm.bloonModifiers;
         var health = modifiers?.healthMultipliers;
+        var (noInstas, limitedPowers) = Creator.PastEventSetups.EventOnlyRules(dcm);
         return facts with
         {
+            NoInstas = noInstas,
+            LimitedPowers = limitedPowers,
             StartRound = dcm.startRules?.round ?? facts.StartRound,
             Difficulty = dcm.difficulty ?? facts.Difficulty,
             Mode = dcm.mode ?? facts.Mode,

@@ -18,6 +18,13 @@
 
     <Import Project="..\btd6.targets" />
 
+    <!-- Claude Code's worktrees are whole copies of the repository, Unity project included: never part of the build -->
+    <ItemGroup>
+        <Compile Remove=".claude\**" />
+        <EmbeddedResource Remove=".claude\**" />
+        <None Remove=".claude\**" />
+    </ItemGroup>
+
     <!-- README screenshots are not mod resources; the README itself is, so the tests can check its example codes -->
     <ItemGroup>
         <EmbeddedResource Remove="docs\**" />

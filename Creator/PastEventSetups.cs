@@ -4,6 +4,7 @@ using CustomBossChallenge.Config;
 using CustomBossChallenge.Menus;
 using CustomBossChallenge.Persistence;
 using Il2CppAssets.Scripts.Models.ServerEvents;
+using Newtonsoft.Json.Linq;
 
 namespace CustomBossChallenge.Creator;
 
@@ -33,8 +34,40 @@ public static class PastEventSetups
         dcm = SetupCode.Challenge(setup.Challenge, setup.Options, changes, ignored);
         if (dcm == null) return false;
 
+        if (setup.EventOnly != null) dcm = WithEventOnly(dcm, setup.EventOnly);
+        if (dcm == null) return false;
+
         ChallengeLimits.Report($"Past event {pastEvent.Id}{(elite ? " (Elite)" : "")}", changes);
         if (ignored.Count > 0) setup = setup with {Unsupported = setup.Unsupported.Concat(ignored).ToList()};
         return true;
+    }
+
+    /// <summary>
+    /// The model with the event's rules a share code can't hold (#212), like Insta Monkeys turned off or only some
+    /// powers allowed, set the way the game reads the model from JSON
+    /// </summary>
+    internal static DailyChallengeModel? WithEventOnly(DailyChallengeModel dcm, JObject eventOnly)
+    {
+        var json = SetupCode.ChallengeJson(dcm);
+        foreach (var (name, value) in eventOnly) json[name] = value?.DeepClone();
+        return DcmJson.Deserialize(json.ToString(Newtonsoft.Json.Formatting.None));
+    }
+
+    /// <summary>
+    /// Whether the model has rules only a past event sets (#212), which Copy and Save leave out: Insta Monkeys turned
+    /// off, or not every power allowed as often as the game's default
+    /// </summary>
+    public static (bool NoInstas, bool LimitedPowers) EventOnlyRules(DailyChallengeModel? dcm)
+    {
+        if (dcm == null) return (false, false);
+        var limited = false;
+        if (dcm.powers != null)
+        {
+            foreach (var power in dcm.powers)
+            {
+                if (power != null && power.max >= 0) limited = true;
+            }
+        }
+        return (dcm.disableInstas, limited);
     }
 }
