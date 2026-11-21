@@ -28,7 +28,10 @@ import ast, gzip, math, os, struct
 import bpy
 from mathutils import Vector, Quaternion, Euler
 
-OUT = os.path.join(REPO, "Bundles", "gildebloon-body.gba.gz")  # REPO is set by run-in-blender.py / build-boss.py
+# REPO is set by run-in-blender.py / build-boss.py. export-map.py sets EXPORT (scene, objects, file, animations) first
+# to write the map's gold the same way.
+EXPORT = globals().get("EXPORT") or {}
+OUT = EXPORT.get("out") or os.path.join(REPO, "Bundles", "gildebloon-body.gba.gz")
 LIGHT = Vector((-0.55, -0.35, 0.75)).normalized()  # the pile's: from the top left of the screen, towards the camera
 AMBIENT = 0.06
 # The bands are baked for this many ways Gildebloon can face, every 30 degrees, turning anticlockwise seen from above
@@ -36,15 +39,14 @@ AMBIENT = 0.06
 LIGHT_STEPS = 12
 TURNS = [Quaternion((0, 0, 1), 2 * math.pi * k / LIGHT_STEPS).to_matrix() for k in range(LIGHT_STEPS)]
 FLAT = ("Gilde_Outline", "Gilde_Shine", "Gilde_Slot", "Gilde_Pupil")
-REST_FRAME = 85  # Idle's first frame: everything at rest
-LOOPS = {"Idle", "Damaged66", "Damaged33", "Damaged10"}
+REST_FRAME = EXPORT.get("rest_frame", 85)  # Idle's first frame: everything at rest
+LOOPS = EXPORT.get("loops", {"Idle", "Damaged66", "Damaged33", "Damaged10"})
 # Not part of the body in the game: the mod draws the reach of a Repossession itself (GildebloonSeizeLook)
 LEAVE_OUT = {"Reach"}
 ELITE_PARTS = ("EliteBand", "EliteSpikes")
 
-scene = bpy.data.scenes["Gildebloon Boss"]
-body = bpy.data.collections["GildebloonBody"]
-anims = ast.literal_eval(scene["gildebloon_anims"])
+scene = bpy.data.scenes[EXPORT.get("scene", "Gildebloon Boss")]
+anims = EXPORT.get("anims") or ast.literal_eval(scene["gildebloon_anims"])
 
 
 def srgb(c):
@@ -77,7 +79,10 @@ def row_of(mat):
 
 
 # ---- the parts: the body's objects, parents before children
-objects = [o for o in body.objects if o.name not in LEAVE_OUT]
+if "objects" in EXPORT:
+    objects = EXPORT["objects"]()
+else:
+    objects = [o for o in bpy.data.collections["GildebloonBody"].objects if o.name not in LEAVE_OUT]
 names = {o.name for o in objects}
 order = []
 

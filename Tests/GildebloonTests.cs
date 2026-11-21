@@ -461,6 +461,8 @@ public class GildebloonNoBloonariusTest : GildebloonTest
         dcm.bloonModifiers.healthMultipliers.boss = 1;
         yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
         yield return WaitFor(() => Visuals.GildebloonMapLook.Pile != null, "The pile of money on the map", 10);
+        Assert(Visuals.GildebloonMapOoze.Shown != null, "The gold round the map is there");
+        Log($"gold round the map over {Visuals.GildebloonMapOoze.Area.size}");
         Assert(Visuals.GildebloonMapLook.Modelled, "The pile is the one modelled in Blender (gildebloon-pile.mesh.gz)");
         Assert(Visuals.BossPresentation.MapEffects.All(name => !name.Contains("Bloonarius") ||
                 UnityEngine.GameObject.Find(name) == null), $"Bloonarius's map effects are hidden: {string.Join(", ", Visuals.BossPresentation.MapEffects)}");

@@ -192,6 +192,20 @@ public class GildebloonBodyTests
     }
 
     [Fact]
+    public void TheGoldRoundTheMapLoopsAndHasOnlyTheEffect()
+    {
+        using var file = File.OpenRead(Path.Combine(Root, "Bundles", "gildebloon-map.gba.gz"));
+        var map = GildebloonBodyData.Read(file);
+        var ooze = Assert.Single(map.Clips.Values);
+        Assert.Equal("Ooze", ooze.Name);
+        Assert.True(ooze.Loops);
+        Assert.NotEmpty(ooze.Tracks);
+        // Only the effect: the stand-in map, its track, the pile and Gildebloon stay out
+        Assert.All(map.Parts, part => Assert.Matches("^(GoldOoze|Drop|MapCoin|MapBar|MapSpark)", part.Name));
+        Assert.Contains(map.Parts, part => part.Name.StartsWith("GoldOoze"));
+    }
+
+    [Fact]
     public void ALoopWrapsAround()
     {
         var idle = Body.Value.Clips["Idle"];

@@ -262,7 +262,7 @@ public static class GildebloonBody
         return true;
     }
 
-    private static Texture2D Ramp(GildebloonBodyData data)
+    internal static Texture2D Ramp(GildebloonBodyData data)
     {
         var texture = new Texture2D(RampWidth, data.Rows.Count * RowHeight, TextureFormat.RGBA32, false)
         {

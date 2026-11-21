@@ -35,6 +35,8 @@
         <EmbeddedResource Include="Bundles\gildebloon-pile.mesh.gz" LogicalName="CustomBossChallenge.gildebloon-pile.mesh.gz" />
         <!-- Gildebloon's body and animations, made in Blender: tools/blender/build-boss.py (#25) -->
         <EmbeddedResource Include="Bundles\gildebloon-body.gba.gz" LogicalName="CustomBossChallenge.gildebloon-body.gba.gz" />
+        <!-- The gold oozing in round the map's edges, Gildebloon's effect on the map: tools/blender/build-map.py (#25) -->
+        <EmbeddedResource Include="Bundles\gildebloon-map.gba.gz" LogicalName="CustomBossChallenge.gildebloon-map.gba.gz" />
     </ItemGroup>
 
     <!-- The website is its own project. Only the data it gets from the game is built in, so WebDataTest can check it,

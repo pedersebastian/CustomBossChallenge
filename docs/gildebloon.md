@@ -81,9 +81,14 @@ What could still show of Bloonarius, and how each is handled:
   dark outlines (inverted shells). `tools/blender/build-pile.py` writes it to `Bundles/gildebloon-pile.mesh.gz`, with
   the bands baked into UVs on a ramp texture that `Visuals/GildebloonPileMesh.cs` makes, since a model can't come from
   an asset bundle. Without the file the mod builds a simple pile itself.
-  The pile only takes the place of the track's slime: the ambient one round the map's edges is hidden with nothing in
-  its place, though every game boss has one. `tools/blender/gildebloon-map.py` is a proposal for it, not used yet:
-  molten gold oozing in from the edges with drips, coins and gold bars stuck in it and sparkles, slowly swelling.
+  The ambient effect round the map's edges gets Gildebloon's own (`Visuals/GildebloonMapOoze.cs`): molten gold oozing
+  in from the edges with drops, coins, gold bars and sparkles, slowly swelling, modelled in `tools/blender/gildebloon-map.py`
+  and written by `tools/blender/build-map.py` to `Bundles/gildebloon-map.gba.gz` in the body's format (one looping
+  animation, "Ooze"). It is stretched over the part of the map the camera shows (its view's corners brought down onto
+  the ground): the hidden effect's own bounds can't tell, its particles reach far outside (479 x 404 and 1117 x 489 in
+  one run).
+- **Its portraits** (`Images/Gildebloon.png`, `Images/GildebloonElite.png`: the boss panel by the skulls, the Boss
+  Creator, the banner and the victory screen) are rendered from the Blender body by `tools/blender/build-portraits.py`.
 - **Its own body and animations.** `tools/blender/gildebloon-boss.py` builds a body in the game's style (bold
   outlines, yellow gold with a bloon's shine, glints in the eyes, a soft round shadow instead of a cast one) that keeps
   the part names the mod moves, plus a face, and keys 21 animations, each from the same rest pose and held on its last

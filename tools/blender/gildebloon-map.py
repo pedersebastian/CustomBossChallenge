@@ -39,7 +39,8 @@ for coll in (bpy.data.meshes, bpy.data.curves):
     for d in list(coll):
         if d.users == 0:
             coll.remove(d)
-bpy.context.window.scene = scene
+if bpy.context.window is not None:
+    bpy.context.window.scene = scene
 col = scene.collection
 
 # the body's materials, made by the boss script
@@ -157,7 +158,7 @@ cu.dimensions = "3D"
 cu.resolution_u = 32
 tmp = bpy.data.objects.new("tmp", cu)
 col.objects.link(tmp)
-dg = bpy.context.evaluated_depsgraph_get()
+dg = scene.view_layers[0].depsgraph  # this scene's, also in a background build
 me = bpy.data.meshes.new_from_object(tmp.evaluated_get(dg))
 bpy.data.objects.remove(tmp)
 bpy.data.curves.remove(cu)
@@ -342,10 +343,10 @@ scene.render.resolution_x, scene.render.resolution_y = 1600, 1000
 # ---- it lives: the ooze swells, the drips stretch, coins rock, sparkles twinkle (a 2 s loop on Idle's frames)
 F0, F1 = 85, 132
 scene.frame_start, scene.frame_end = F0, F1
-for o in ooze:
+for side, o in enumerate(ooze):
     for f in range(F0, F1 + 1, 8):
         k = (f - F0) / (F1 - F0) * 2 * math.pi
-        o.scale = (1, 1, 1 + 0.12 * math.sin(k + o.name.__hash__() % 7))
+        o.scale = (1, 1, 1 + 0.12 * math.sin(k + side * 1.7))  # each side out of step, the same every build
         o.keyframe_insert("scale", frame=f)
 for o in [x for x in col.objects if x.get("drip")]:
     base = o.scale.copy()

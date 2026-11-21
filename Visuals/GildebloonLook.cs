@@ -857,6 +857,7 @@ public static class GildebloonLook
             ReadLayouts();
             GildebloonPileMesh.Load();
             GildebloonBody.Load();
+            GildebloonMapOoze.Load();
             if (!listening)
             {
                 listening = true;
