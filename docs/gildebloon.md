@@ -90,7 +90,9 @@ What could still show of Bloonarius, and how each is handled:
   frame so it plays on its own. `tools/blender/render-sheet.py` renders them as a contact sheet.
   `tools/blender/build-boss.py` (background Blender) writes `Bundles/gildebloon-body.gba.gz` through
   `tools/blender/export-boss.py`, which describes the format: every part is rigid, so an animation is a position,
-  rotation and scale per part and frame, and the toon bands are baked into a ramp like the pile's.
+  rotation and scale per part and frame, and the toon bands are baked into a ramp like the pile's, for 12 ways to face:
+  the mod gives the meshes the set nearest to how far the body is turned from facing the camera, so the light stays
+  where it is on the screen as Gildebloon turns.
   `Visuals/GildebloonBodyData.cs` reads it and holds the player (one animation over a base loop, a priority for what
   may cut in, a short blend; free of the game's types, so `UnitTests/GildebloonBodyTests.cs` checks both);
   `Visuals/GildebloonBody.cs` builds the game's meshes and poses them. The boss gets this body when the file loaded,
@@ -102,7 +104,7 @@ What could still show of Bloonarius, and how each is handled:
   | Spawn, EliteSpawn | up out of the pile; Elite's crown of spikes shoots up | the body attaching to a boss for the first time; Elite by its model id |
   | Idle, IdleCount, IdlePolish, IdleSmug | hovering; flips a coin; polishes its shine; smug | the base loop; every 9-15 s when nothing plays; after a Toll of $250 or more |
   | Damaged66, Damaged33, Damaged10 | dents; cracks, the door rattling, sweat; coins trickling out (loops) | its health share at or under 0.66, 0.33, 0.10 (they replace Idle) |
-  | Hit, TarnishHit | squash and squint; grey-green tarnish flashing on the gold | a drop in health (at most every 0.4 s); **nothing yet** for Tarnish: telling an Alchemist's or Glue Gunner's hit apart needs a hook in the game's damage, and `Bloon.Damage` can't be patched. The candidate is a postfix on `DamageModifierForTag.GetDamageMultiplier`, to try in the game |
+  | Hit, TarnishHit | squash and squint; grey-green tarnish flashing on the gold | a drop in health (at most every 0.4 s); TarnishHit when an acid tower's projectile (one carrying `Gildebloon.Tarnish`) was within 60 units of it in the last 0.3 s: the game's damage can't be hooked (`Bloon.Damage` crashes), so the look watches the projectiles instead (`GildebloonTarnishTest`) |
   | Toll, Interest, VaultUp, VaultBreak | coins into the slot; the Vault pulsing (Elite); the shield growing; the shield shattering | `GildebloonBrain.CashTaken` above 0 (a Toll or a Tax Collector's leak); `GildebloonBrain.InterestAdded`; the armour from 0 up; to 0 |
   | Repossession, Skittish, Dispatch | a skull; the dash ahead; a Tax Collector popping out of the door | a skull passed; `GildebloonBrain.Dashes` going up; a Tax Collector's look attaching |
   | Death, Escape, Payout | bursts into coins; grins and dives out; the coins streaming to the cash at the top right | gone with no health left; gone with health left (it leaked); `CashTaken` below 0 after Death |

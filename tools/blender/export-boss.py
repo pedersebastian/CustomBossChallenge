@@ -11,13 +11,15 @@ are baked: each corner gets a UV into a ramp texture the mod makes, x how lit it
 material's row. The outlines are the shells of the Solidify modifiers.
 
 Format, little-endian, gzipped:
-  "GBA1"
+  "GBA2"
+  light steps (byte): how many ways to face the toon bands are baked for, evenly round
   rows: int count; per row: kind (byte: 0 toon; see-through 1 fading out along x, 2 showing most at x's end), shade,
         base, light (3 x RGB bytes; light = base when
         there is none), cut, light cut (2 floats), alpha (float)
   parts: int count; per part: name (byte length + UTF-8), parent (int, -1 for the base under the body), flags (byte:
         1 Elite's, 2 see-through), rest position (3 floats), rotation (4 floats, x y z w), scale (3 floats), then its
-        mesh: vertex count (int, 0 for an empty), positions (3 floats each), UVs (2 floats), index count, indices
+        mesh: vertex count (int, 0 for an empty), positions (3 floats each), UVs (2 floats), how lit each corner is
+        for each way to face (light steps bytes per corner, 0-255: the UV's x), index count, indices
   clips: int count; per clip: name, frame count (int), frames per second (float), loops (byte), track count (int);
         per track its part (int), then per frame position (3), rotation (4), scale (3), as floats
 All in Unity's axes (x, z, y of Blender's, rotations mirrored to match), in Blender's units.
@@ -29,6 +31,11 @@ from mathutils import Vector, Quaternion, Euler
 OUT = os.path.join(REPO, "Bundles", "gildebloon-body.gba.gz")  # REPO is set by run-in-blender.py / build-boss.py
 LIGHT = Vector((-0.55, -0.35, 0.75)).normalized()  # the pile's: from the top left of the screen, towards the camera
 AMBIENT = 0.06
+# The bands are baked for this many ways Gildebloon can face, every 30 degrees, turning anticlockwise seen from above
+# from facing the camera; the mod picks the one nearest how it faces, so the light stays put on the screen
+LIGHT_STEPS = 12
+TURNS = [Quaternion((0, 0, 1), 2 * math.pi * k / LIGHT_STEPS).to_matrix() for k in range(LIGHT_STEPS)]
+FLAT = ("Gilde_Outline", "Gilde_Shine", "Gilde_Slot", "Gilde_Pupil")
 REST_FRAME = 85  # Idle's first frame: everything at rest
 LOOPS = {"Idle", "Damaged66", "Damaged33", "Damaged10"}
 # Not part of the body in the game: the mod draws the reach of a Repossession itself (GildebloonSeizeLook)
@@ -172,7 +179,7 @@ for o in order:
     me.calc_loop_triangles()
     normals = me.corner_normals
     rot = world_rotation(o, REST_FRAME)
-    verts, uvs, tris, seen = [], [], [], {}
+    verts, uvs, lights, tris, seen = [], [], [], [], {}
     see_through = False
     for tri in me.loop_triangles:
         mat = me.materials[tri.material_index] if me.materials else None
@@ -184,26 +191,28 @@ for o in order:
             co = me.vertices[me.loops[loop].vertex_index].co
             n = (rot @ normals[loop].vector).normalized()
             if rows[r][0] == 1:
-                lit = min(0.999, Vector((co.x, co.y)).length)  # a disc of radius 1: how far from its middle
+                lit = [min(0.999, Vector((co.x, co.y)).length)] * LIGHT_STEPS  # a disc of radius 1: from its middle
             elif rows[r][0] == 2:
-                lit = min(0.999, max(0.001, 1 - abs(n.z)))  # seen from above, the rim is where it turns sideways
-            elif mat and mat.name.startswith(("Gilde_Outline", "Gilde_Shine", "Gilde_Slot", "Gilde_Pupil")):
-                lit = 0.5
+                lit = [min(0.999, max(0.001, 1 - abs(n.z)))] * LIGHT_STEPS  # from above, the rim turns sideways
+            elif mat and mat.name.startswith(FLAT):
+                lit = [0.5] * LIGHT_STEPS
             else:
-                lit = min(0.999, max(0.001, AMBIENT + max(0.0, n.dot(LIGHT))))
+                # the light stays where it is on the screen as Gildebloon turns: baked for each way it can face
+                lit = [min(0.999, max(0.001, AMBIENT + max(0.0, (turn @ n).dot(LIGHT)))) for turn in TURNS]
             p = (co.x, co.z, co.y)
-            u = (round(lit, 3), r)
-            k = (round(p[0], 5), round(p[1], 5), round(p[2], 5), u)
+            u = (round(lit[0], 3), r)
+            k = (round(p[0], 5), round(p[1], 5), round(p[2], 5), r, tuple(round(x, 2) for x in lit))
             if k not in seen:
                 seen[k] = len(verts)
                 verts.append(p)
                 uvs.append(u)
+                lights.append(lit)
             ids.append(seen[k])
         # Unity's front faces turn clockwise; mirrored into Unity's axes, Blender's need turning round (as the pile's)
         a, b, c = ids
         tris.append((a, c, b))
     ev.to_mesh_clear()
-    meshes.append((verts, uvs, tris))
+    meshes.append((verts, uvs, tris, lights))
     flags.append(flag | (2 if see_through else 0))
 
 # the rows are known now: a UV's y is its row's middle
@@ -211,7 +220,7 @@ n_rows = len(rows)
 for m in meshes:
     if m is None:
         continue
-    verts, uvs, tris = m
+    verts, uvs, tris, _ = m
     for i, (x, r) in enumerate(uvs):
         uvs[i] = (x, (r + 0.5) / n_rows)
 
@@ -253,7 +262,8 @@ def write_name(f, text):
 
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 with gzip.open(OUT, "wb", compresslevel=9) as f:
-    f.write(b"GBA1")
+    f.write(b"GBA2")
+    f.write(struct.pack("<B", LIGHT_STEPS))
     f.write(struct.pack("<i", n_rows))
     for kind, shade, base, light, cut, light_cut, alpha in rows:
         f.write(struct.pack("<B", kind) + bytes(shade + base + light) + struct.pack("<3f", cut, light_cut, alpha))
@@ -268,10 +278,11 @@ with gzip.open(OUT, "wb", compresslevel=9) as f:
         if m is None:
             f.write(struct.pack("<i", 0))
             continue
-        verts, uvs, tris = m
+        verts, uvs, tris, lights = m
         f.write(struct.pack("<i", len(verts)))
         f.write(b"".join(struct.pack("<3f", *p) for p in verts))
         f.write(b"".join(struct.pack("<2f", *u) for u in uvs))
+        f.write(bytes(min(255, int(x * 256)) for lit in lights for x in lit))
         f.write(struct.pack("<i", len(tris) * 3))
         f.write(b"".join(struct.pack("<3i", *t) for t in tris))
     f.write(struct.pack("<i", len(clips)))

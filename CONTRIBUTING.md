@@ -168,7 +168,7 @@ The in-game tests come in two suites (#246):
   the Rules panel, the layout, the keyboard, share codes and saved setups. Add the slow tests of the area you changed
   with `CBC_TESTS`, e.g. `CBC_SUITE=quick` and `CBC_TESTS=TierLookTest,TierLookLifecycleTest` for the tier look.
   Gildebloon (#25) keeps a whole game to victory (`GildebloonGameTest`) and its quick checks in the quick suite; for
-  a change to it add `CBC_TESTS=GildebloonMixedTest,GildebloonBrainTest,GildebloonLookTest,GildebloonNoBloonariusTest,GildebloonRoundsTest`
+  a change to it add `CBC_TESTS=GildebloonMixedTest,GildebloonBrainTest,GildebloonLookTest,GildebloonNoBloonariusTest,GildebloonRoundsTest,GildebloonTarnishTest`
   (about 3 minutes).
 - **Full suite**, about 38 minutes: start the game without `CBC_SUITE` and `CBC_TESTS`. Only its receipt counts
   for a release.

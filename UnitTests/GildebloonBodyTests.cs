@@ -168,6 +168,29 @@ public class GildebloonBodyTests
         Assert.Equal(hit.Scale.X, player.PoseOf(hull).Scale.X, 3);
     }
 
+    [Theory]
+    [InlineData(0f, 0)]
+    [InlineData(30f, 11)]
+    [InlineData(-30f, 1)]
+    [InlineData(-90f, 3)]
+    [InlineData(180f, 6)]
+    [InlineData(359f, 0)]
+    [InlineData(14f, 0)]
+    [InlineData(16f, 11)]
+    public void TheLightStepTurnsAgainstTheBody(float clockwiseDegrees, int step) =>
+        Assert.Equal(step, Body.Value.LightStepFor(clockwiseDegrees));
+
+    [Fact]
+    public void EveryCornerHasItsLightForEveryWayToFace()
+    {
+        var body = Body.Value;
+        Assert.Equal(12, body.LightSteps);
+        Assert.All(body.Parts, part => Assert.Equal(part.VertexCount * body.LightSteps, part.Lights.Length));
+        // Turning changes the light on the hull: its bands aren't the same facing the camera and facing away
+        var hull = body.Parts[body.PartIndex("Hull")];
+        Assert.NotEqual(hull.UvsFor(0, body.LightSteps), hull.UvsFor(6, body.LightSteps));
+    }
+
     [Fact]
     public void ALoopWrapsAround()
     {

@@ -31,6 +31,12 @@ public static class GildebloonBody
 
     public static GildebloonBodyData? Data { get; private set; }
     private static Mesh?[] meshes = [];
+
+    /// <summary>Per part, its UVs for each way to face (see <see cref="GildebloonBodyData.LightSteps"/>)</summary>
+    private static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector2>[]?[] uvSets = [];
+
+    /// <summary>The light step the shared meshes have now</summary>
+    private static int shownStep;
     private static Material? opaque, seeThrough;
     private static bool loaded;
     private static int rootPart = -1;
@@ -64,6 +70,8 @@ public static class GildebloonBody
 
             var data = GildebloonBodyData.Read(stream);
             meshes = new Mesh?[data.Parts.Count];
+            uvSets = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector2>[]?[data.Parts.Count];
+            shownStep = 0;
             var vertices = 0;
             for (var i = 0; i < data.Parts.Count; i++)
             {
@@ -72,7 +80,14 @@ public static class GildebloonBody
                 var mesh = new Mesh {name = $"Gildebloon {part.Name}"};
                 if (part.VertexCount > 65000) mesh.indexFormat = IndexFormat.UInt32;
                 mesh.vertices = GildebloonPileMesh.ToIl2Cpp<Vector3>(part.Positions, part.VertexCount);
-                mesh.uv = GildebloonPileMesh.ToIl2Cpp<Vector2>(part.Uvs, part.VertexCount);
+                var sets = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector2>[data.LightSteps];
+                for (var step = 0; step < data.LightSteps; step++)
+                {
+                    sets[step] = GildebloonPileMesh.ToIl2Cpp<Vector2>(part.UvsFor(step, data.LightSteps), part.VertexCount);
+                }
+
+                uvSets[i] = sets;
+                mesh.uv = sets[0];
                 mesh.triangles = GildebloonPileMesh.ToIl2Cpp<int>(part.Indices, part.IndexCount);
                 mesh.RecalculateBounds();
                 mesh.hideFlags = HideFlags.DontUnloadUnusedAsset;
@@ -180,6 +195,7 @@ public static class GildebloonBody
     {
         var data = Data;
         if (data == null) return;
+        Relight(data, instance);
         for (var i = 0; i < instance.Parts.Length; i++)
         {
             var transform = instance.Parts[i];
@@ -196,6 +212,28 @@ public static class GildebloonBody
             transform.localPosition = new Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);
             transform.localRotation = new Quaternion(pose.Rotation.X, pose.Rotation.Y, pose.Rotation.Z, pose.Rotation.W);
             transform.localScale = new Vector3(scale.X, scale.Y, scale.Z);
+        }
+    }
+
+    /// <summary>
+    /// Keeps the light where it is on the screen as the body turns: the bands are baked for every 30 degrees, and the
+    /// meshes get the set nearest to how far the body is turned from facing the camera
+    /// </summary>
+    private static void Relight(GildebloonBodyData data, Instance instance)
+    {
+        var camera = Camera.main;
+        if (camera == null || instance.Root == null || data.LightSteps < 2) return;
+        var front = instance.Root.transform.TransformDirection(new Vector3(0, 0, -1)); // Blender's front, -Y
+        var toward = -camera.transform.forward;
+        front.y = 0;
+        toward.y = 0;
+        if (front.sqrMagnitude < 1e-6f || toward.sqrMagnitude < 1e-6f) return;
+        var step = data.LightStepFor(Vector3.SignedAngle(toward, front, Vector3.up));
+        if (step == shownStep) return;
+        shownStep = step;
+        for (var i = 0; i < meshes.Length; i++)
+        {
+            if (meshes[i] is { } mesh && uvSets[i] is { } sets) mesh.uv = sets[step];
         }
     }
 

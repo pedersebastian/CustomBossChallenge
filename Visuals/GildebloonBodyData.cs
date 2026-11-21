@@ -15,7 +15,7 @@ namespace CustomBossChallenge.Visuals;
 /// </summary>
 public sealed class GildebloonBodyData
 {
-    public const string Magic = "GBA1";
+    public const string Magic = "GBA2";
 
     /// <summary>A part's position, rotation and scale, in its parent's space (Unity's axes)</summary>
     public readonly record struct Pose(Vector3 Position, Quaternion Rotation, Vector3 Scale)
@@ -58,6 +58,25 @@ public sealed class GildebloonBodyData
 
         /// <summary>The mesh as the file has it, little-endian floats and ints, to copy into the game's arrays at once</summary>
         public byte[] Positions = [], Uvs = [], Indices = [];
+
+        /// <summary>How lit each corner is for each way to face (<see cref="LightSteps"/> bytes per corner, 0-255)</summary>
+        public byte[] Lights = [];
+
+        /// <summary>
+        /// The UVs for facing <paramref name="step"/>: x from <see cref="Lights"/>, y (the ramp row) as in
+        /// <see cref="Uvs"/>; as bytes, little-endian floats, to copy into the game's array at once
+        /// </summary>
+        public byte[] UvsFor(int step, int steps)
+        {
+            var bytes = (byte[]) Uvs.Clone();
+            for (var v = 0; v < VertexCount; v++)
+            {
+                var x = (Lights[v * steps + step] + 0.5f) / 256f;
+                BitConverter.TryWriteBytes(bytes.AsSpan(v * 8, 4), x);
+            }
+
+            return bytes;
+        }
     }
 
     public sealed class Clip
@@ -85,11 +104,25 @@ public sealed class GildebloonBodyData
         }
     }
 
+    /// <summary>How many ways to face the toon bands are baked for, evenly round, anticlockwise seen from above from
+    /// facing the camera</summary>
+    public int LightSteps { get; private set; } = 1;
+
     public List<Row> Rows { get; } = [];
     public List<Part> Parts { get; } = [];
     public Dictionary<string, Clip> Clips { get; } = new();
 
     public int PartIndex(string name) => Parts.FindIndex(part => part.Name == name);
+
+    /// <summary>
+    /// The light step for a body turned <paramref name="clockwiseDegrees"/> (seen from above, as the game's yaw turns)
+    /// away from facing the camera: the baked steps turn the other way round, anticlockwise
+    /// </summary>
+    public int LightStepFor(float clockwiseDegrees)
+    {
+        var step = (int) MathF.Round(-clockwiseDegrees / (360f / LightSteps));
+        return (step % LightSteps + LightSteps) % LightSteps;
+    }
 
     /// <summary>Reads a gzipped GBA1 file</summary>
     public static GildebloonBodyData Read(Stream gzipped)
@@ -100,7 +133,7 @@ public sealed class GildebloonBodyData
         memory.Position = 0;
         using var reader = new BinaryReader(memory);
         if (Encoding.ASCII.GetString(reader.ReadBytes(4)) != Magic) throw new InvalidDataException($"not a {Magic} body");
-        var data = new GildebloonBodyData();
+        var data = new GildebloonBodyData {LightSteps = Math.Max(1, (int) reader.ReadByte())};
 
         var rows = reader.ReadInt32();
         for (var i = 0; i < rows; i++)
@@ -126,6 +159,7 @@ public sealed class GildebloonBodyData
             {
                 part.Positions = ReadExactly(reader, part.VertexCount * 12);
                 part.Uvs = ReadExactly(reader, part.VertexCount * 8);
+                part.Lights = ReadExactly(reader, part.VertexCount * data.LightSteps);
                 part.IndexCount = reader.ReadInt32();
                 part.Indices = ReadExactly(reader, part.IndexCount * 4);
             }

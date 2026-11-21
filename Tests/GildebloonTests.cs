@@ -616,3 +616,32 @@ public class GildebloonRoundsTest : GildebloonTest
         yield return ToMainMenu();
     }
 }
+
+/// <summary>
+/// Tarnish shows (#25): an Alchemist's potions hitting Gildebloon make its modelled body play TarnishHit. The game's
+/// damage can't be hooked, so the look counts a hit right after an acid projectile was at it.
+/// </summary>
+[FullSuiteOnly("plays a game until an Alchemist has hit it (about 30 s)")]
+public class GildebloonTarnishTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        var options = new BossOptions {Boss = BossList.Gildebloon, Tiers = 1, SpawnRounds = "40"};
+        var dcm = WeakBossDcm();
+        dcm.startRules.cash = 20000;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+        Assert(Visuals.GildebloonBody.Ready, "The modelled body loaded");
+
+        var bridge = InGame.instance.bridge;
+        var manager = bridge.Simulation.map.spawner.bossBloonManager;
+        bridge.SetFastForward(true);
+        bridge.StartRound();
+        yield return WaitFor(() => manager.CurrentBoss != null, "Gildebloon arriving", 90);
+        var before = Visuals.GildebloonLook.TarnishHits;
+        var position = manager.CurrentBoss!.Position;
+        CreateTowerAt(bridge, new Vector2(position.X + 20, position.Y + 25), Game.instance.model.GetTowerFromId("Alchemist"), costOverride: 0);
+        yield return WaitFor(() => Visuals.GildebloonLook.TarnishHits > before, "An Alchemist's hit tarnishing it", 40);
+        Log($"tarnished {Visuals.GildebloonLook.TarnishHits - before} times, last animation {Visuals.GildebloonLook.LastAnimation}");
+        yield return ToMainMenu();
+    }
+}

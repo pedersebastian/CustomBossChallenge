@@ -80,7 +80,7 @@ public static class GildebloonLook
 
         /// <summary>The body modelled in Blender, when it is the one shown (<see cref="GildebloonBody"/>)</summary>
         public GildebloonBody.Instance? Body;
-        public float HealthShare = 1, LastHitTime = -100, NextIdle;
+        public float HealthShare = 1, LastHitTime = -100, NextIdle, LastAcidNear = -100;
         public int Dashes;
         public bool Armoured;
     }
@@ -119,6 +119,15 @@ public static class GildebloonLook
 
     /// <summary>A Toll at least this big makes it smug afterwards (<c>IdleSmug</c>)</summary>
     private const double SmugToll = 250;
+
+    /// <summary>How many times a hit tarnished it (TarnishHit played), for tests</summary>
+    public static int TarnishHits { get; private set; }
+
+    /// <summary>How near the boss an acid tower's projectile counts as hitting it, in the game's units</summary>
+    private const float AcidReach = 60;
+
+    /// <summary>Per projectile model, whether it carries Tarnish (<see cref="Gildebloon.Tarnish"/>)</summary>
+    private static readonly Dictionary<IntPtr, bool> AcidModels = new();
 
     /// <summary>The animation the boss's modelled body played last, for tests</summary>
     public static string? LastAnimation => Boss?.Body?.Player.LastPlayed;
@@ -499,6 +508,7 @@ public static class GildebloonLook
     private static void ClearAll()
     {
         Spawned.Clear();
+        AcidModels.Clear();
         pendingToll = 0;
         pendingInterest = 0;
         if (Looks.Count == 0 && Leaving.Count == 0 && Bursts.Count == 0) return;
@@ -664,6 +674,41 @@ public static class GildebloonLook
         }
     }
 
+    /// <summary>
+    /// Whether a projectile of the acid towers (Tarnish) is at the boss now. The game's damage can't be hooked
+    /// (patching <c>Bloon.Damage</c> crashes it), so a hit right after one is near counts as theirs.
+    /// </summary>
+    private static bool AcidNear(Bloon boss)
+    {
+        try
+        {
+            var position = boss.Position;
+            foreach (var projectile in InGame.instance.GetProjectiles())
+            {
+                var model = projectile?.projectileModel;
+                if (model == null || !IsAcid(model)) continue;
+                var dx = projectile!.Position.X - position.X;
+                var dy = projectile.Position.Y - position.Y;
+                if (dx * dx + dy * dy <= AcidReach * AcidReach) return true;
+            }
+        }
+        catch (Exception)
+        {
+            // a projectile went in the middle of the look
+        }
+
+        return false;
+    }
+
+    private static bool IsAcid(Il2CppAssets.Scripts.Models.Towers.Projectiles.ProjectileModel model)
+    {
+        if (AcidModels.TryGetValue(model.Pointer, out var acid)) return acid;
+        acid = model.GetBehaviors<Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors.DamageModifierForTagModel>()
+            .Any(modifier => modifier.name.EndsWith(Gildebloon.Tarnish));
+        AcidModels[model.Pointer] = acid;
+        return acid;
+    }
+
     private static float HealthShare(Bloon boss) =>
         boss.bloonModel.maxHealth > 0 ? Math.Clamp(boss.health / (float) boss.bloonModel.maxHealth, 0, 1) : 1;
 
@@ -677,12 +722,15 @@ public static class GildebloonLook
         var player = body.Player;
         var time = Time.time;
 
+        if (AcidNear(boss)) look.LastAcidNear = time;
         var share = HealthShare(boss);
         player.SetBase(GildebloonClipPlayer.BaseFor(share));
         if (share < look.HealthShare - 0.002f && time - look.LastHitTime > 0.4f)
         {
             look.LastHitTime = time;
-            player.Play("Hit");
+            // an Alchemist's potion or a Glue Gunner's glue at it just now: the hit tarnishes the gold
+            if (time - look.LastAcidNear < 0.3f && player.Play("TarnishHit")) TarnishHits++;
+            else player.Play("Hit");
         }
         look.HealthShare = share;
 

@@ -356,10 +356,10 @@ for i in range(3):
 obj("DialKnob", ellipsoid("Gilde_Knob", (0.07, 0.07, 0.05), GOLD_FACE, 12, 8), dial, loc=(0, 0, 0.07))
 
 # a face: two eyes and a coin slot for a mouth, on the front
-EYES_AT = (0, -1.02, 0.42)
+EYES_AT = (0, -0.8, 0.62)  # high on the front, just short of the door, so they show from above also sideways
 eyes = empty("Eyes", hull, loc=EYES_AT)
-eyes.rotation_euler = (-0.62, 0, 0)  # faces the game's camera, which looks down at 60 degrees
-eyes.scale = (1.25,) * 3
+eyes.rotation_euler = (-1.08, 0, 0)  # lying on the hull there, turned up towards the game's camera
+eyes.scale = (1.35,) * 3
 eye_me = ellipsoid("Gilde_Eye", (0.2, 0.09, 0.24), WHITE, 24, 12)
 pupil_me = ellipsoid("Gilde_PupilMesh", (0.085, 0.05, 0.1), BLACK, 16, 8)
 brow_me = box("Gilde_Brow", (0.32, 0.06, 0.09), BLACK)
@@ -479,14 +479,17 @@ obj("EliteBandRing", torus("Gilde_EliteBand", band_r * 1.01, 0.055, RED, squash=
     loc=(0, 0, band_z), line=0.012)
 elite_spikes = empty("EliteSpikes", hull)
 spike_bm = bmesh.new()
-bmesh.ops.create_cone(spike_bm, cap_ends=True, segments=10, radius1=0.13, radius2=0.0, depth=0.5)
-bmesh.ops.translate(spike_bm, vec=(0, 0, 0.25), verts=spike_bm.verts)  # its base at the origin
+bmesh.ops.create_cone(spike_bm, cap_ends=True, segments=10, radius1=0.14, radius2=0.0, depth=0.72)
+bmesh.ops.translate(spike_bm, vec=(0, 0, 0.36), verts=spike_bm.verts)  # its base at the origin
 spike_me = finish(spike_bm, "Gilde_Spike", [RED], smooth=False)
-for i in range(7):  # round the back and sides of the door; none over its face
-    a = math.radians(-35 + i * 250 / 6)
-    p_, n_ = on_hull(0.68 * math.cos(a), 0.68 * 1.1 * math.sin(a))
+tip_me = ellipsoid("Gilde_SpikeTip", (0.075, 0.075, 0.075), GOLD_FACE, 12, 8)
+for i, deg in enumerate((-20, 35, 90, 145, 200)):  # a crown of five round the back and sides; none over its face
+    a = math.radians(deg)
+    p_, n_ = on_hull(0.7 * math.cos(a), 0.7 * 1.1 * math.sin(a))
+    up = (n_ + Vector((0, 0, 1.2))).normalized()  # more upright than the hull, like a crown's points
     spk = obj(f"EliteSpike{i}", spike_me, elite_spikes, loc=p_ - n_ * 0.03, line=0.014)
-    spk.rotation_euler = n_.to_track_quat("Z", "Y").to_euler()
+    spk.rotation_euler = up.to_track_quat("Z", "Y").to_euler()
+    obj(f"EliteSpikeTip{i}", tip_me, spk, loc=(0, 0, 0.72), line=0.01)
 # Dispatch: a small gold MOAB, the Tax Collector, flying off on its own (not a child of the body)
 proxy = empty("CollectorProxy")
 obj("CollectorHull", ellipsoid("Gilde_CollectorHull", (0.34, 0.6, 0.28), GOLD, 24, 12), proxy, line=0.025)
@@ -602,7 +605,7 @@ def rest(f):
     key(root, f, (0, 0, HOVER), (0, 0, 0), 1)
     key(hull, f, (0, 0, 0), (0, 0, 0), 1)
     key(door, f, rot=(0, 0, 0))
-    key(eyes, f, EYES_AT, scale=1.25)
+    key(eyes, f, EYES_AT, scale=1.35)
     for side in ("Left", "Right"):
         key(bpy.data.objects[f"Eye{side}"], f, scale=1)
         key(bpy.data.objects[f"Pupil{side}"], f, scale=1)
