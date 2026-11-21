@@ -9,8 +9,8 @@ import { copyWithFeedback, h } from "../dom";
 import { GAME } from "../data/types";
 import { paragonsText, fromSlider } from "../math/paragons";
 import { MAX_SKULLS } from "@cbc/share-code/skulls";
+import { HEALTH_SLIDER_STEPS, MAX_HEALTH, MIN_HEALTH } from "@cbc/share-code/health-steps";
 import {
-  BOSS_HEALTH_SLIDER,
   BOSS_SPEED_SLIDER,
   MAX_FIRST_SPAWN_ROUND,
   MAX_HEALTH_PER_TIER,
@@ -35,6 +35,9 @@ import { setUpRulesSection } from "./rulesSection";
 import { randomizeSetup } from "./random";
 import { addInfo } from "./info";
 import { MOD_TEXTS, type ModText } from "../modTexts";
+
+/** The range of Boss Health, which its slider shows as the positions of HEALTH_SLIDER_STEPS (#250) */
+const HEALTH_RANGE = { min: MIN_HEALTH, max: MAX_HEALTH, step: 5 } as const;
 
 /** What Reset Boss Options asks first (Texts.ResetBossOptionsQuestion, without Undo, which the Studio doesn't have) */
 const RESET_BOSS_QUESTION =
@@ -154,7 +157,7 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
   const boss = setUpBossPicker(change, reset);
 
   const bossSpeed = slider("Boss Speed", BOSS_SPEED_SLIDER, edit.bossSpeed, (v) => `${v} %`, edit.setBossSpeed, 100);
-  const bossHealth = slider("Boss Health", BOSS_HEALTH_SLIDER, edit.bossHealth, (v) => `${v} %`, edit.setBossHealth, 100);
+  const bossHealth = slider("Boss Health", HEALTH_RANGE, edit.bossHealth, (v) => `${v} %`, edit.setBossHealth, 100, HEALTH_SLIDER_STEPS);
   const paragons = GAME.limits.paragons;
   const maxParagons = slider(
     "Max Paragons",

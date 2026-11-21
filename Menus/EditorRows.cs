@@ -13,38 +13,61 @@ namespace CustomBossChallenge.Menus;
 
 /// <summary>
 /// A copy of one of the Challenge Editor's slider rows, fully owned by this mod: the vanilla row component is removed
-/// and all events are replaced, so the copy never writes to the editor's own settings
+/// and all events are replaced, so the copy never writes to the editor's own settings.
+/// <br/>
+/// A row with <see cref="Steps"/> has steps of different sizes, like Boss Health (#250): the slider's position is the
+/// number of the step, and <see cref="Value"/> the value there.
 /// </summary>
 public sealed class SliderRow
 {
+    /// <summary>The values of a slider with steps of different sizes: the value at a position, and the nearest position</summary>
+    public sealed record Steps(Func<int, float> ValueAt, Func<float, int> PositionOf);
+
     public GameObject Row { get; }
     public Slider Slider { get; }
     public float Default { get; }
 
     private readonly TMP_Text valueText;
     private readonly float step;
+    private readonly Steps? steps;
     private readonly Func<float, string> format;
     private readonly Action<float> changed;
 
-    private SliderRow(GameObject row, Slider slider, TMP_Text valueText, float step, float defaultValue,
+    /// <summary>
+    /// The value shown, with <see cref="steps"/>. A value from elsewhere that isn't on a step, like 123 % from a share
+    /// code, stays as it is until the slider is moved.
+    /// </summary>
+    private float shown;
+
+    private SliderRow(GameObject row, Slider slider, TMP_Text valueText, float step, Steps? steps, float defaultValue,
         Func<float, string> format, Action<float> changed)
     {
         Row = row;
         Slider = slider;
         this.valueText = valueText;
         this.step = step;
+        this.steps = steps;
         Default = defaultValue;
         this.format = format;
         this.changed = changed;
     }
 
-    public float Value => Slider.value;
+    public float Value => steps == null ? Slider.value : shown;
 
     /// <summary>
     /// Shows a value without reporting it as a change
     /// </summary>
     public void Show(float value)
     {
+        if (steps != null)
+        {
+            var position = steps.PositionOf(value);
+            Slider.SetValueWithoutNotify(position);
+            shown = Mathf.Clamp(value, steps.ValueAt(0), steps.ValueAt((int) Slider.maxValue));
+            valueText.text = format(shown);
+            return;
+        }
+
         Slider.SetValueWithoutNotify(Mathf.Clamp(value, Slider.minValue, Slider.maxValue));
         valueText.text = format(Slider.value);
     }
@@ -52,7 +75,16 @@ public sealed class SliderRow
     /// <summary>
     /// Moves one step left or right, like the row's arrow buttons
     /// </summary>
-    public void Step(int direction) => Set(Value + direction * step);
+    public void Step(int direction)
+    {
+        if (steps == null) Set(Value + direction * step);
+        else SetPosition(PositionFrom(direction));
+    }
+
+    /// <summary>
+    /// Moves the slider to the step nearest <paramref name="value"/> as dragging it there would, for the tests
+    /// </summary>
+    public void DragTo(float value) => Slider.value = steps == null ? value : steps.PositionOf(value);
 
     /// <summary>
     /// Goes back to the default, like the row's reset button
@@ -62,11 +94,43 @@ public sealed class SliderRow
     private void Set(float value)
     {
         Show(value);
-        changed(Slider.value);
+        changed(Value);
+    }
+
+    /// <summary>
+    /// The position one step from the value shown. A value between two steps goes to the next one that way.
+    /// </summary>
+    private int PositionFrom(int direction)
+    {
+        var position = steps!.PositionOf(shown);
+        var at = steps.ValueAt(position);
+        if (direction > 0 ? at <= shown : at >= shown) position += direction;
+        return (int) Mathf.Clamp(position, Slider.minValue, Slider.maxValue);
+    }
+
+    private void SetPosition(int position)
+    {
+        Slider.SetValueWithoutNotify(position);
+        shown = steps!.ValueAt(position);
+        valueText.text = format(shown);
+        changed(shown);
     }
 
     public static SliderRow Clone(ChallengeEditorSliderPanel template, Transform parent, string name, string label,
         string icon, float min, float max, float step, float defaultValue, Func<float, string> format,
+        Action<float> changed) =>
+        Clone(template, parent, name, label, icon, min, max, step, null, defaultValue, format, changed);
+
+    /// <summary>
+    /// A row whose slider stops at <paramref name="steps"/>' values, from position 0 to <paramref name="lastPosition"/>
+    /// </summary>
+    public static SliderRow Clone(ChallengeEditorSliderPanel template, Transform parent, string name, string label,
+        string icon, int lastPosition, Steps steps, float defaultValue, Func<float, string> format,
+        Action<float> changed) =>
+        Clone(template, parent, name, label, icon, 0, lastPosition, 1, steps, defaultValue, format, changed);
+
+    private static SliderRow Clone(ChallengeEditorSliderPanel template, Transform parent, string name, string label,
+        string icon, float min, float max, float step, Steps? steps, float defaultValue, Func<float, string> format,
         Action<float> changed)
     {
         var row = EditorRows.CloneRow(template, parent, name, label, icon, out var panel);
@@ -83,9 +147,15 @@ public sealed class SliderRow
         slider.minValue = min;
         slider.maxValue = max;
 
-        var result = new SliderRow(row, slider, valueText, step, defaultValue, format, changed);
+        var result = new SliderRow(row, slider, valueText, step, steps, defaultValue, format, changed);
         slider.onValueChanged.AddListener(Listeners.Wrap<float>(value =>
         {
+            if (steps != null)
+            {
+                result.SetPosition((int) Mathf.Clamp(Mathf.Round(value), min, max));
+                return;
+            }
+
             // Dragging lands on the step too, like the arrows, Random and the share codes (#171)
             var snapped = Mathf.Clamp(min + Mathf.Round((value - min) / step) * step, min, max);
             if (!Mathf.Approximately(snapped, value)) slider.SetValueWithoutNotify(snapped);
@@ -94,16 +164,17 @@ public sealed class SliderRow
         }));
 
         left.onClick = new Button.ButtonClickedEvent();
-        left.onClick.AddListener(Listeners.Wrap(() => result.Set(result.Value - step)));
+        left.onClick.AddListener(Listeners.Wrap(() => result.Step(-1)));
         right.onClick = new Button.ButtonClickedEvent();
-        right.onClick.AddListener(Listeners.Wrap(() => result.Set(result.Value + step)));
+        right.onClick.AddListener(Listeners.Wrap(() => result.Step(1)));
         reset.onClick = new Button.ButtonClickedEvent();
         reset.onClick.AddListener(Listeners.Wrap(result.Reset));
 
         if (notch != null)
         {
             var notchRect = notch.GetComponent<RectTransform>();
-            var normalized = (defaultValue - min) / (max - min);
+            var at = steps == null ? defaultValue : steps.PositionOf(defaultValue);
+            var normalized = (at - min) / (max - min);
             notchRect.anchorMin = notchRect.anchorMax = new Vector2(normalized, 0.5f);
             notchRect.anchoredPosition = new Vector2(0, notchRect.anchoredPosition.y);
         }

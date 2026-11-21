@@ -75,7 +75,8 @@ public static class TierBossMath
     public const char SkullsMark = '#';
 
     /// <summary>
-    /// A tier's speed and health in percent, with the range and step of Boss Speed and Boss Health
+    /// A tier's speed and health in percent, with the range of Boss Speed and Boss Health. Speed moves in steps of
+    /// <see cref="ValueStep"/>, health in those of <see cref="HealthSteps"/>.
     /// </summary>
     public const int Normal = 100;
     public const int MinSpeed = (int) (ChallengeLimits.MinBossSpeed * Normal + 0.5f);
@@ -122,7 +123,7 @@ public static class TierBossMath
         {
             var values = token[(mark + 1)..].Split('/');
             speed = ParseValue(values[0], MinSpeed, MaxSpeed);
-            health = ParseValue(values.Length > 1 ? values[1] : "", MinHealth, MaxHealth);
+            health = ParseHealth(values.Length > 1 ? values[1] : "");
             token = token[..mark].Trim();
         }
 
@@ -169,6 +170,15 @@ public static class TierBossMath
         int.TryParse(text.Trim(), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture,
             out var value)
             ? ClampValue(value, min, max)
+            : Normal;
+
+    /// <summary>
+    /// A health in percent on one of the Boss Health slider's steps (<see cref="HealthSteps"/>); junk is the normal 100
+    /// </summary>
+    private static int ParseHealth(string text) =>
+        int.TryParse(text.Trim(), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture,
+            out var value)
+            ? HealthSteps.Snap(value)
             : Normal;
 
     /// <summary>
