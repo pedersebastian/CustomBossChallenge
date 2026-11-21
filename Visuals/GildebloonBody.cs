@@ -31,7 +31,7 @@ public static class GildebloonBody
 
     public static GildebloonBodyData? Data { get; private set; }
     private static Mesh?[] meshes = [];
-    private static Material? opaque, seeThrough;
+    private static Material? opaque;
     private static bool loaded;
     private static int rootPart = -1;
 
@@ -110,11 +110,14 @@ public static class GildebloonBody
             var made = new GameObject(part.Name);
             made.transform.SetParent(part.Parent >= 0 ? parts[part.Parent] : root.transform, false);
             parts[i] = made.transform;
-            if (meshes[i] is not { } mesh) continue;
+            // See-through parts (the Vault's shell, the shadow) aren't drawn: with the game's URP Unlit set to blend
+            // they came out as a dark, solid film (2026-11-21). The Vault shows in the HUD; its animations keep their
+            // coins and motion.
+            if (meshes[i] is not { } mesh || part.SeeThrough) continue;
             made.AddComponent<MeshFilter>().sharedMesh = mesh;
             var renderer = made.AddComponent<MeshRenderer>();
             renderer.shadowCastingMode = ShadowCastingMode.Off;
-            renderer.sharedMaterial = part.SeeThrough ? seeThrough : opaque;
+            renderer.sharedMaterial = opaque;
         }
 
         var scale = display.lossyScale.x;
@@ -155,31 +158,17 @@ public static class GildebloonBody
         }
     }
 
-    /// <summary>The opaque material with the ramp, and a see-through one for the Vault and the shadow</summary>
+    /// <summary>The material with the ramp</summary>
     private static bool Materials()
     {
-        if (opaque != null && seeThrough != null) return true;
+        if (opaque != null) return true;
         if (Data == null) return false;
         var shader = Shader.Find("Universal Render Pipeline/Unlit");
         if (shader == null) return false;
         var ramp = Ramp(Data);
-        opaque = new Material(shader) {name = "Gildebloon Body", hideFlags = HideFlags.DontUnloadUnusedAsset};
-        seeThrough = new Material(shader) {name = "Gildebloon Body See-through", hideFlags = HideFlags.DontUnloadUnusedAsset};
-        foreach (var material in new[] {opaque, seeThrough})
-        {
-            material.mainTexture = ramp;
-            if (material.HasProperty("_BaseMap")) material.SetTexture("_BaseMap", ramp);
-            if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", Color.white);
-        }
-
-        seeThrough.SetFloat("_Surface", 1);
-        seeThrough.SetFloat("_Blend", 0);
-        seeThrough.SetFloat("_SrcBlend", (float) BlendMode.SrcAlpha);
-        seeThrough.SetFloat("_DstBlend", (float) BlendMode.OneMinusSrcAlpha);
-        seeThrough.SetFloat("_ZWrite", 0);
-        seeThrough.SetOverrideTag("RenderType", "Transparent");
-        seeThrough.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-        seeThrough.renderQueue = (int) RenderQueue.Transparent;
+        opaque = new Material(shader) {name = "Gildebloon Body", hideFlags = HideFlags.DontUnloadUnusedAsset, mainTexture = ramp};
+        if (opaque.HasProperty("_BaseMap")) opaque.SetTexture("_BaseMap", ramp);
+        if (opaque.HasProperty("_BaseColor")) opaque.SetColor("_BaseColor", Color.white);
         return true;
     }
 

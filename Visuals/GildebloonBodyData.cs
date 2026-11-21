@@ -74,8 +74,11 @@ public sealed class GildebloonBodyData
     /// <summary>Reads a gzipped GBA1 file</summary>
     public static GildebloonBodyData Read(Stream gzipped)
     {
-        using var gzip = new GZipStream(gzipped, CompressionMode.Decompress);
-        using var reader = new BinaryReader(gzip);
+        // Unpacked whole first: read straight from the gzip stream, four bytes at a time, it took 6 s in the game
+        using var memory = new MemoryStream();
+        using (var gzip = new GZipStream(gzipped, CompressionMode.Decompress)) gzip.CopyTo(memory);
+        memory.Position = 0;
+        using var reader = new BinaryReader(memory);
         if (Encoding.ASCII.GetString(reader.ReadBytes(4)) != Magic) throw new InvalidDataException($"not a {Magic} body");
         var data = new GildebloonBodyData();
 

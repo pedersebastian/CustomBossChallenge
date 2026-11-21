@@ -107,9 +107,11 @@ What could still show of Bloonarius, and how each is handled:
   | Repossession, Skittish, Dispatch | a skull; the dash ahead; a Tax Collector popping out of the door | a skull passed; `GildebloonBrain.Dashes` going up; a Tax Collector's look attaching |
   | Death, Escape, Payout | bursts into coins; grins and dives out; the coins streaming to the cash at the top right | gone with no health left; gone with health left (it leaked); `CashTaken` below 0 after Death |
 
-  Not seen in the game yet (2026-11-21): which way it faces (`GildebloonBody.FacingYaw`), its size against
-  Bloonarius's (`GildebloonBody.ModelWidth`), how the see-through Vault and shadow draw, and the clips' timing at the
-  game's speeds.
+  Seen in the game (2026-11-21, the Gildebloon tests' screenshots): it faces along the track, is about Bloonarius's
+  size, rises out of the pile, and Elite's band, crown, dents and cracks show. Its see-through parts (the Vault's shell,
+  the shadow) aren't drawn: with the game's URP Unlit set to blend they came out as a dark, solid film. A glow like the
+  tier look's (`TierLookApplier`'s additive shader) would be the way to show the shell. Reading the file straight from
+  the gzip stream took 6 s at the main menu; unpacked into memory first, 50 ms.
 - **Its body as it takes damage.** The game's damage-state animation turns the body's parts back on every frame
   (setting `Renderer.enabled`), so turning them off didn't hold: after a skull the Elite's damaged parts drew through.
   They are now kept from drawing with `Renderer.forceRenderingOff`, which the animations leave alone, checked every
