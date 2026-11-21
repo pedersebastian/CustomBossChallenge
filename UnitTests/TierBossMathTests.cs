@@ -151,6 +151,21 @@ public class TierBossMathTests
         Assert.Empty(TierBossMath.ParseTierList(null));
     }
 
+    [Theory]
+    [InlineData("5,2,5", 5, "Lych,Vortex,Lych,Vortex,Lych", "2,5")]
+    [InlineData("2,5,7", 5, "Lych,Vortex,Lych,Vortex,Lych", "2,5")]
+    [InlineData("7", 5, "Lych,Vortex,Lych,Vortex,Lych", null)]
+    [InlineData("2", 3, null, null)]
+    public void Sanitized_keeps_only_the_tiers_that_could_have_been_Random(string randomTiers, int tiers,
+        string? tierBosses, string? expected) =>
+        Assert.Equal(expected,
+            new BossOptions {Tiers = tiers, TierBosses = tierBosses, RandomTiers = randomTiers}.Sanitized().RandomTiers);
+
+    [Fact]
+    public void Options_from_a_code_never_have_Random_tiers() =>
+        Assert.Null(new BossOptions {Tiers = 3, TierBosses = "Lych,Vortex,Phayze", RandomTiers = "2"}
+            .SanitizedFromCode().RandomTiers);
+
     [Fact]
     public void Each_tier_keeps_its_speed_and_health()
     {
