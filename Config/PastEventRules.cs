@@ -31,12 +31,18 @@ public enum PastEventProblem
 /// </summary>
 /// <param name="Unsupported">The event's rules the Boss Creator can't play, which are left out, for the player</param>
 /// <param name="Map">The event's map, also when it is missing</param>
+/// <param name="EventOnly">
+/// The event's rules that the game's model has but neither the Challenge Editor nor a share code can set (#212):
+/// fields of the challenge's JSON, like "disableInstas" and "powers", set on the model when the event is opened. They
+/// last as long as the model does (the last setup, Undo, Continue), but Copy and Save leave them out.
+/// </param>
 public sealed record PastEventSetup(
     PastEventProblem Problem,
     BossOptions Options,
     JObject Challenge,
     IReadOnlyList<string> Unsupported,
-    string? Map);
+    string? Map,
+    JObject? EventOnly = null);
 
 /// <summary>
 /// Maps the rules of an official boss event (#146), in the API's metadata shape (data/boss-events/README.md), onto
@@ -72,6 +78,14 @@ public static class PastEventRules
     ];
 
     /// <summary>
+    /// The API's fields that go to <see cref="PastEventSetup.EventOnly"/>: the model has them, a share code doesn't
+    /// </summary>
+    private static readonly HashSet<string> EventOnlyRules = ["disableInstas", "_powers"];
+
+    /// <summary>The most uses of one power an event can allow, like the most towers of one kind</summary>
+    public const int MaxPowerCount = 1000;
+
+    /// <summary>
     /// The round set the first Bloonarius events played (2021), the boss's own event rounds under their old name
     /// </summary>
     public const string OldBossRoundSet = "bossRounds";
@@ -81,10 +95,14 @@ public static class PastEventRules
     /// code sees it (<c>SetupCode.ChallengeJson</c>), whose tower list says which towers the game has;
     /// <paramref name="mapExists"/> says whether the game has a map, and <paramref name="unsupportedModes"/> are the
     /// modes the Boss Creator can't play (<c>BossEditorSection.UnsupportedModes</c>). <paramref name="date"/> and
-    /// <paramref name="eliteName"/> write the setup's name in the player's language (<see cref="SetupName"/>).
+    /// <paramref name="eliteName"/> write the setup's name in the player's language (<see cref="SetupName"/>). With
+    /// <paramref name="eventOnly"/> the rules a share code can't hold but the model can go to
+    /// <see cref="PastEventSetup.EventOnly"/> (#212); without it they are listed as unsupported, like on the website,
+    /// which only makes codes.
     /// </summary>
     public static PastEventSetup Map(PastEvent pastEvent, bool elite, JObject defaults, Func<string, bool> mapExists,
-        IReadOnlyCollection<string> unsupportedModes, Func<DateTime, string>? date = null, string eliteName = "Elite")
+        IReadOnlyCollection<string> unsupportedModes, Func<DateTime, string>? date = null, string eliteName = "Elite",
+        bool eventOnly = true)
     {
         var rules = pastEvent.Rules(elite);
         var options = new BossOptions {Elite = elite};
@@ -127,16 +145,19 @@ public static class PastEventRules
         }
 
         options = Rounds(options, rules["roundSets"] as JArray, mode, unsupported);
+        var modelOnly = eventOnly ? EventOnly(rules, defaults, unsupported) : new JObject();
 
         // Rules the API may add later, or that no player can set in the Challenge Editor: listed when they change
-        // anything (disableInstas, _powers)
+        // anything
         foreach (var (name, value) in rules)
         {
-            if (value == null || NotRules.Contains(name) || SameName.Contains(name) || StartRules.ContainsKey(name)) continue;
+            if (value == null || NotRules.Contains(name) || SameName.Contains(name) || StartRules.ContainsKey(name) ||
+                eventOnly && EventOnlyRules.Contains(name)) continue;
             if (!IsDefault(value)) unsupported.Add(name);
         }
 
-        return new PastEventSetup(PastEventProblem.None, options, challenge, unsupported, map);
+        return new PastEventSetup(PastEventProblem.None, options, challenge, unsupported, map,
+            modelOnly.HasValues ? modelOnly : null);
     }
 
     /// <summary>
@@ -209,6 +230,54 @@ public static class PastEventRules
         unsupported.AddRange(listed.Where(pair => !known.Contains(pair.Key) && (int?) pair.Value["max"] != 0)
             .Select(pair => $"tower {pair.Key}"));
         return result;
+    }
+
+    /// <summary>
+    /// The rules the model has but a share code doesn't (#212): Insta Monkeys turned off, and the powers the event
+    /// allows. An empty power list, as every event so far has, changes nothing: the game's own default allows them all.
+    /// </summary>
+    private static JObject EventOnly(JObject rules, JObject defaults, List<string> unsupported)
+    {
+        var result = new JObject();
+        if (rules["disableInstas"] is {Type: JTokenType.Boolean} instas && (bool) instas) result["disableInstas"] = true;
+
+        if (rules["_powers"] is JArray {HasValues: true} powers && Powers(powers, defaults, unsupported) is { } list)
+        {
+            result["powers"] = list;
+            // The game shows the allowed powers before the match, like the towers with displayIncludedTowers
+            result["displayIncludedPowers"] = true;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Every power of the game, as the model's whole list: a power the event doesn't list isn't allowed (max 0), like
+    /// a tower. A power the game doesn't have is listed as unsupported. Null when the event lists no power the game
+    /// has, so the default list stays.
+    /// </summary>
+    private static JArray? Powers(JArray powers, JObject defaults, List<string> unsupported)
+    {
+        var listed = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var token in powers)
+        {
+            if (token is not JObject power || power["power"] is not {Type: JTokenType.String} name) continue;
+            var max = power["max"] is {Type: JTokenType.Integer} value ? (long) value : -1;
+            listed[(string) name!] = max < 0 ? -1 : (int) Math.Min(max, MaxPowerCount);
+        }
+
+        var result = new JArray();
+        var known = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var token in defaults["powers"] as JArray ?? [])
+        {
+            if (token is not JObject standard || (string?) standard["power"] is not { } name) continue;
+            known.Add(name);
+            result.Add(new JObject {["power"] = name, ["max"] = listed.TryGetValue(name, out var max) ? max : 0});
+        }
+
+        unsupported.AddRange(listed.Where(pair => !known.Contains(pair.Key) && pair.Value != 0)
+            .Select(pair => $"power {pair.Key}"));
+        return listed.Keys.Any(known.Contains) ? result : null;
     }
 
     /// <summary>

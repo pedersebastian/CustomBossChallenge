@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Past events with Insta Monkeys off or only some powers** (#212): an event that turns off Insta Monkeys or allows
+  only some powers opens with those rules set, instead of listing them as left out. The Challenge Editor has no
+  control for them, so the Tier Preview says they are on, and that Copy and Save leave them out: share codes can't
+  hold them. The last setup, Undo and Continue keep them. No event so far has used them.
+
 ### Changed
 
 - **Two suites of in-game tests** (#246, for contributors): a quick suite of about 8 minutes for every PR, and the full

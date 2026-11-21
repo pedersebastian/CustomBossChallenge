@@ -268,13 +268,86 @@ public class PastEventsTests : IDisposable
         }), false);
 
         Assert.Equal(PastEventProblem.None, setup.Problem);
-        Assert.Contains("disableInstas", setup.Unsupported);
-        Assert.Contains("_powers", setup.Unsupported);
         Assert.Contains("someNewRule", setup.Unsupported);
         Assert.Contains("mode Deflation", setup.Unsupported);
         Assert.Contains("tower FutureMonkey", setup.Unsupported);
         Assert.Equal("Standard", (string?) setup.Challenge["mode"]);
         Assert.DoesNotContain("disableInstas", setup.Challenge.Properties().Select(p => p.Name));
+    }
+
+    private static PastEvent WithInstasAndPowers(JArray powers) => WithRules(rules =>
+    {
+        rules["disableInstas"] = true;
+        rules["_powers"] = powers;
+    });
+
+    [Fact]
+    public void Insta_Monkeys_off_and_the_events_powers_are_set_on_the_model_not_listed()
+    {
+        var setup = Map(WithInstasAndPowers(new JArray(
+            new JObject {["power"] = "MonkeyBoost", ["max"] = 1},
+            new JObject {["power"] = "CashDrop", ["max"] = -1},
+            new JObject {["power"] = "Thrive", ["max"] = 5000})), false);
+
+        Assert.Empty(setup.Unsupported);
+        var eventOnly = Assert.IsType<JObject>(setup.EventOnly);
+        Assert.True((bool) eventOnly["disableInstas"]!);
+        Assert.True((bool) eventOnly["displayIncludedPowers"]!);
+
+        // Every power of the game, like the towers: one the event doesn't list isn't allowed
+        var powers = ((JArray) eventOnly["powers"]!).Cast<JObject>().ToDictionary(p => (string) p["power"]!, p => (int) p["max"]!);
+        var all = ((JArray) Defaults["powers"]!).Select(p => (string) p["power"]!).ToList();
+        Assert.Equal(all, powers.Keys);
+        Assert.Equal(1, powers["MonkeyBoost"]);
+        Assert.Equal(-1, powers["CashDrop"]);
+        Assert.Equal(PastEventRules.MaxPowerCount, powers["Thrive"]);
+        Assert.Equal(0, powers["SuperMonkeyStorm"]);
+
+        // Neither is a share code's: the challenge doesn't have them
+        Assert.DoesNotContain("disableInstas", setup.Challenge.Properties().Select(p => p.Name));
+        Assert.DoesNotContain("powers", setup.Challenge.Properties().Select(p => p.Name));
+    }
+
+    [Fact]
+    public void A_power_the_game_doesnt_have_is_listed()
+    {
+        var setup = Map(WithInstasAndPowers(new JArray(
+            new JObject {["power"] = "MonkeyBoost", ["max"] = 2},
+            new JObject {["power"] = "FuturePower", ["max"] = 1},
+            new JObject {["power"] = "GonePower", ["max"] = 0})), false);
+
+        Assert.Equal(["power FuturePower"], setup.Unsupported);
+        Assert.Contains((JArray) setup.EventOnly!["powers"]!, p => (string?) p["power"] == "MonkeyBoost" && (int) p["max"]! == 2);
+    }
+
+    [Fact]
+    public void Only_powers_the_game_doesnt_have_keep_its_own_list()
+    {
+        var setup = Map(WithRules(rules => rules["_powers"] = new JArray(new JObject {["power"] = "FuturePower", ["max"] = 1})), false);
+        Assert.Equal(["power FuturePower"], setup.Unsupported);
+        Assert.Null(setup.EventOnly);
+    }
+
+    [Fact]
+    public void The_archives_events_set_nothing_on_the_model()
+    {
+        foreach (var pastEvent in PastEventsFormat.Read(Bundle()).Value!.Events)
+        {
+            foreach (var elite in new[] {false, true})
+            {
+                if (pastEvent.Rules(elite) == null) continue;
+                Assert.Null(Map(pastEvent, elite).EventOnly);
+            }
+        }
+    }
+
+    [Fact]
+    public void Without_the_model_the_rules_are_listed_like_on_the_website()
+    {
+        var setup = PastEventRules.Map(WithInstasAndPowers(new JArray(new JObject {["power"] = "MonkeyBoost", ["max"] = 1})),
+            false, Defaults, Maps.Contains, UnsupportedModes, eventOnly: false);
+        Assert.Equal(["_powers", "disableInstas"], setup.Unsupported.Order());
+        Assert.Null(setup.EventOnly);
     }
 
     [Fact]
