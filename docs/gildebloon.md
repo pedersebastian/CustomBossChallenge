@@ -85,12 +85,14 @@ What could still show of Bloonarius, and how each is handled:
   dark outlines (inverted shells). `tools/blender/build-pile.py` writes it to `Bundles/gildebloon-pile.mesh.gz`, with
   the bands baked into UVs on a ramp texture that `Visuals/GildebloonPileMesh.cs` makes, since a model can't come from
   an asset bundle. Without the file the mod builds a simple pile itself.
-  The ambient effect round the map's edges gets Gildebloon's own (`Visuals/GildebloonMapOoze.cs`): molten gold oozing
-  in from the edges with drops, coins, gold bars and sparkles, slowly swelling, modelled in `tools/blender/gildebloon-map.py`
+  The ambient effect round the map's edges gets Gildebloon's own (`Visuals/GildebloonMapOoze.cs`): a soft golden glow
+  coming in from the screen's edges and fading out inwards, with a few sparkles twinkling in it, subtle like the game
+  bosses' own (a band of molten gold with drips and coins was too much). Modelled in `tools/blender/gildebloon-map.py`
   and written by `tools/blender/build-map.py` to `Bundles/gildebloon-map.gba.gz` in the body's format (one looping
-  animation, "Ooze"): a thin, even band with a few drops and coins. It sits on the camera, facing it and as big as its
-  view, so it frames the screen: laid on the map's ground it went askew and hid under walls and raised ground, and
-  the hidden effect's own bounds can't size it (its particles reach far outside: 479 x 404 and 1117 x 489 in one run).
+  animation, "Ooze"; the glow's fade baked as a see-through ramp row of kind 3). It sits on the camera, facing it and
+  as big as its view: laid on the map's ground it went askew and hid under walls, and the hidden effect's own bounds
+  can't size it. The camera stays from match to match, so the glow goes with the map it was put round (and whenever
+  Gildebloon's effects aren't shown): `GildebloonOffTest` checks a normal Boss Challenge has none.
 - **Its portraits** (`Images/Gildebloon.png`, `Images/GildebloonElite.png`: the boss panel by the skulls, the Boss
   Creator, the banner and the victory screen) are rendered from the Blender body by `tools/blender/build-portraits.py`.
 - **Its own body and animations.** `tools/blender/gildebloon-boss.py` builds a body in the game's style (bold

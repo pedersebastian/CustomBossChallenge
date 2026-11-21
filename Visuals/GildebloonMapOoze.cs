@@ -23,7 +23,10 @@ public static class GildebloonMapOoze
 
     private static GildebloonBodyData? data;
     private static Mesh?[] meshes = [];
-    private static Material? material;
+    private static Material? material, seeThrough;
+
+    /// <summary>The map it was put round: when that map is gone (another match), so is the gold</summary>
+    private static Transform? forMap;
     private static bool loaded;
 
     private static GameObject? shown;
@@ -89,7 +92,7 @@ public static class GildebloonMapOoze
     /// view. On the map's ground it went askew and hid under walls and raised ground (2026-11-21); on the camera it is
     /// a frame that always fits the screen.
     /// </summary>
-    public static void Show(Camera camera)
+    public static void Show(Camera camera, Transform map)
     {
         if (shown != null || data == null || !Material() || !camera.orthographic) return;
         var height = camera.orthographicSize * 2;
@@ -109,14 +112,15 @@ public static class GildebloonMapOoze
             var made = new GameObject(part.Name);
             made.transform.SetParent(part.Parent >= 0 ? parts[part.Parent] : root.transform, false);
             parts[i] = made.transform;
-            if (meshes[i] is not { } mesh || part.SeeThrough) continue;
+            if (meshes[i] is not { } mesh || part.SeeThrough && seeThrough == null) continue;
             made.AddComponent<MeshFilter>().sharedMesh = mesh;
             var renderer = made.AddComponent<MeshRenderer>();
             renderer.shadowCastingMode = ShadowCastingMode.Off;
-            renderer.sharedMaterial = material;
+            renderer.sharedMaterial = part.SeeThrough ? seeThrough : material;
         }
 
         shown = root;
+        forMap = map;
         Area = new Bounds(Vector3.zero, new Vector3(width, 0, height));
         player = new GildebloonClipPlayer(data, "Ooze");
         Pose();
@@ -128,6 +132,7 @@ public static class GildebloonMapOoze
     {
         if (shown != null) Object.Destroy(shown);
         shown = null;
+        forMap = null;
         player = null;
         parts = [];
     }
@@ -136,6 +141,13 @@ public static class GildebloonMapOoze
     public static void Update()
     {
         if (shown == null || player == null) return;
+        // It is on the camera, which stays from match to match: it goes with the map it was put round
+        if (forMap == null || !GildebloonMapLook.Showing)
+        {
+            Hide();
+            return;
+        }
+
         player.Advance(Time.deltaTime);
         Pose();
     }
@@ -163,6 +175,15 @@ public static class GildebloonMapOoze
         material = new Material(shader) {name = "Gildebloon Map Ooze", hideFlags = HideFlags.DontUnloadUnusedAsset, mainTexture = ramp};
         if (material.HasProperty("_BaseMap")) material.SetTexture("_BaseMap", ramp);
         if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", Color.white);
+        // the glow is see-through: Unity's sprite shader blends by the ramp's alpha (as the body's Vault and shadow)
+        if (Shader.Find("Sprites/Default") is { } sprites)
+        {
+            seeThrough = new Material(sprites)
+            {
+                name = "Gildebloon Map Glow", hideFlags = HideFlags.DontUnloadUnusedAsset, mainTexture = ramp,
+                renderQueue = (int) RenderQueue.Transparent
+            };
+        }
         return true;
     }
 }

@@ -230,6 +230,8 @@ public class GildebloonOffTest : CustomBossTest
             yield return new WaitForSecondsRealtime(1);
             AssertEquals(InGame.instance.bridge.Simulation.model.bossBloonType, "Bloonarius", "Boss type of a normal Boss Challenge");
             AssertEquals(manager.CurrentBoss?.bloonModel.id, "Bloonarius1", "A normal Boss Challenge's boss");
+            // Gildebloon's glow sits on the camera, which stays from match to match: it must not come along
+            Assert(Visuals.GildebloonMapOoze.Shown == null, "No Gildebloon glow round a normal Boss Challenge's map");
             yield return ToMainMenu();
         }
         finally
@@ -562,11 +564,13 @@ public class GildebloonNoBloonariusTest : GildebloonTest
             if (tier == 2)
             {
                 AssertNotNull(Visuals.GildebloonMapLook.Pile, "Gildebloon's pile");
+                AssertNotNull(Visuals.GildebloonMapOoze.Shown, "Gildebloon's glow round the map");
                 AssertNoBloonarius("at Gildebloon's tier");
             }
             else
             {
                 Assert(Visuals.GildebloonMapLook.Pile == null, $"No pile at tier {tier}");
+                Assert(Visuals.GildebloonMapOoze.Shown == null, $"No Gildebloon glow round the map at tier {tier}, a game boss's");
                 Assert(effects.Length == 0 || active > 0, $"Lych's effects show at tier {tier}");
             }
             manager.CurrentBoss?.Destroy();

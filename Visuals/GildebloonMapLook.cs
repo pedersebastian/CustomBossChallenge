@@ -28,6 +28,9 @@ public static class GildebloonMapLook
     private static readonly List<(Transform Coin, float Phase)> Glints = new();
     private static readonly List<(Transform Sparkle, float Size, float Phase)> Sparkles = new();
 
+    /// <summary>Whether Gildebloon's effects are on the map now: the game's boss effects hidden for them</summary>
+    public static bool Showing => Hidden.Count > 0 || pile != null;
+
     /// <summary>Whether the pile on the map is the modelled one, for tests</summary>
     public static bool Modelled { get; private set; }
 
@@ -43,7 +46,7 @@ public static class GildebloonMapLook
         {
             try
             {
-                GildebloonMapOoze.Show(camera);
+                GildebloonMapOoze.Show(camera, map);
             }
             catch (Exception e)
             {

@@ -27,7 +27,8 @@ public sealed class GildebloonBodyData
 
     /// <summary>
     /// A ramp row: its kind (0 toon; see-through: 1 fading out along the ramp, a shadow; 2 showing most at its end, the
-    /// Vault's rim), shade, base and light colours (RGB bytes), where base and light start, how opaque
+    /// Vault's rim; 3 fading out from its start, the glow round the map), shade, base and light colours (RGB bytes),
+    /// where base and light start, how opaque
     /// </summary>
     public sealed record Row(byte Kind, byte[] Shade, byte[] Base, byte[] Light, float Cut, float LightCut, float Alpha)
     {
@@ -38,6 +39,7 @@ public sealed class GildebloonBodyData
         {
             1 => Alpha * (1 - SmoothStep(0.5f, 1, x)),
             2 => Alpha * (0.2f + 0.8f * x * x),
+            3 => Alpha * (1 - SmoothStep(0, 1, x)),
             _ => Alpha
         };
 

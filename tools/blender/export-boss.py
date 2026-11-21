@@ -13,7 +13,7 @@ material's row. The outlines are the shells of the Solidify modifiers.
 Format, little-endian, gzipped:
   "GBA2"
   light steps (byte): how many ways to face the toon bands are baked for, evenly round
-  rows: int count; per row: kind (byte: 0 toon; see-through 1 fading out along x, 2 showing most at x's end), shade,
+  rows: int count; per row: kind (byte: 0 toon; see-through 1 fading out along x, 2 showing most at x's end, 3 fading from x = 0), shade,
         base, light (3 x RGB bytes; light = base when
         there is none), cut, light cut (2 floats), alpha (float)
   parts: int count; per part: name (byte length + UTF-8), parent (int, -1 for the base under the body), flags (byte:
@@ -74,6 +74,8 @@ def row_of(mat):
         # the UV's x says how far out / how much rim
         if "Shadow" in mat.name:
             return (1, colour, colour, colour, 0.0, 1.0, 0.8)
+        if "Haze" in mat.name:  # the glow round the map: strongest at the screen's edge, fading inwards (kind 3)
+            return (3, colour, colour, colour, 0.0, 1.0, 0.45)
         return (2, colour, colour, colour, 0.0, 1.0, 0.55)
     return (0, colour, colour, colour, 0.0, 1.0, 1.0)
 
@@ -199,6 +201,9 @@ for o in order:
                 lit = [min(0.999, Vector((co.x, co.y)).length)] * LIGHT_STEPS  # a disc of radius 1: from its middle
             elif rows[r][0] == 2:
                 lit = [min(0.999, max(0.001, 1 - abs(n.z)))] * LIGHT_STEPS  # from above, the rim turns sideways
+            elif rows[r][0] == 3:
+                hw, hh, depth = o["haze"]  # how far in from the frame's edge, of how deep the glow comes
+                lit = [min(0.999, max(0.0, min(hw - abs(co.x), hh - abs(co.y)) / depth))] * LIGHT_STEPS
             elif mat and mat.name.startswith(FLAT):
                 lit = [0.5] * LIGHT_STEPS
             else:

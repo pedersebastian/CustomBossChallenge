@@ -206,41 +206,44 @@ sides = [  # start corner, direction along the side, inward normal, length
     (Vector((-W / 2, -H / 2, 0)), Vector((0, 1, 0)), Vector((1, 0, 0)), H),  # left
 ]
 ooze = []
-for side, (start, along, inward, length) in enumerate(sides):
-    bm = bmesh.new()
-    steps = int(length * 14)
-    rows = 5
-    grid = []
-    for i in range(steps + 1):
-        t = i / steps
-        depth = edge_depth(side, t)
-        # round off the corners so neighbouring sides meet in a curve
-        corner = min(t, 1 - t) * length
-        if corner < 0.5:  # round the corners off a little
-            depth = max(depth, 0.5 - corner + 0.2)
-        row = []
-        for j in range(rows + 1):
-            f = j / rows
-            # a rounded bead of gold: thick at the edge, thin where it runs in
-            z = 0.12 * math.sqrt(max(0.0, 1 - f ** 2)) + 0.01
-            row.append(bm.verts.new(start + along * (t * length) + inward * (depth * f) + Vector((0, 0, z))))
-        grid.append(row)
-    for i in range(steps):
-        for j in range(rows):
-            bm.faces.new((grid[i][j], grid[i][j + 1], grid[i + 1][j + 1], grid[i + 1][j]))
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    if bm.faces[0].normal.z < 0:
-        bmesh.ops.reverse_faces(bm, faces=bm.faces)
-    o = mesh_obj(f"GoldOoze{side}", bm, [MOLTEN], line=0.03)
-    ooze.append(o)
-    # a round bead at the end of each drip
-    for c, w, h in DRIPS[side]:
-        tip = start + along * (c * length) + inward * (edge_depth(side, c) - 0.05)
-        bm = bmesh.new()
-        bmesh.ops.create_uvsphere(bm, u_segments=20, v_segments=10, radius=1)
-        bmesh.ops.scale(bm, vec=(0.12, 0.12, 0.05), verts=bm.verts)
-        drop = mesh_obj(f"Drop{side}_{c:.2f}", bm, [MOLTEN], line=0.02, loc=tip + Vector((0, 0, 0.02)))
-        drop["drip"] = True
+# Subtle, like the game bosses' own (2026-11-21: a band of molten gold was too much): a soft golden glow coming in
+# from the screen's edges, fading out inwards, with a few sparkles twinkling in it. The mod draws it see-through; the
+# exporter bakes how far in each corner is (HAZE_DEPTH) for the fade.
+HAZE_DEPTH = 1.1
+haze_mat = bpy.data.materials.get("Gilde_Haze") or bpy.data.materials.new("Gilde_Haze")
+haze_mat.use_nodes = True
+_nt = haze_mat.node_tree
+_nt.nodes.clear()
+_out = _nt.nodes.new("ShaderNodeOutputMaterial")
+_em = _nt.nodes.new("ShaderNodeEmission")
+_em.inputs[0].default_value = lin("#ffd54a")
+_tr = _nt.nodes.new("ShaderNodeBsdfTransparent")
+_mix = _nt.nodes.new("ShaderNodeMixShader")
+_mix.inputs[0].default_value = 0.3
+_nt.links.new(_tr.outputs[0], _mix.inputs[1])
+_nt.links.new(_em.outputs[0], _mix.inputs[2])
+_nt.links.new(_mix.outputs[0], _out.inputs[0])
+if hasattr(haze_mat, "surface_render_method"):
+    haze_mat.surface_render_method = "BLENDED"
+bm = bmesh.new()
+rings = []
+for ring, inset in enumerate((0.0, HAZE_DEPTH * 0.35, HAZE_DEPTH * 0.7, HAZE_DEPTH)):
+    hw, hh = W / 2 - inset, H / 2 - inset
+    pts = []
+    for side, (a, b) in enumerate((((-hw, hh), (hw, hh)), ((hw, hh), (hw, -hh)), ((hw, -hh), (-hw, -hh)), ((-hw, -hh), (-hw, hh)))):
+        for k in range(12):
+            t = k / 12
+            pts.append(bm.verts.new((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, 0.005)))
+    rings.append(pts)
+for r in range(len(rings) - 1):
+    n = len(rings[r])
+    for k in range(n):
+        bm.faces.new((rings[r][k], rings[r][(k + 1) % n], rings[r + 1][(k + 1) % n], rings[r + 1][k]))
+bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+if bm.faces[0].normal.z < 0:
+    bmesh.ops.reverse_faces(bm, faces=bm.faces)
+haze = mesh_obj("GoldOozeHaze", bm, [haze_mat], smooth=False)
+haze["haze"] = (W / 2, H / 2, HAZE_DEPTH)  # for the exporter: the frame's half size and how deep the glow comes in
 
 # treasure stuck in the gold: coins, a few gold bars, sparkles
 bar_bm = bmesh.new()
@@ -267,7 +270,7 @@ spark_me.materials.append(SHINE)
 
 coins, sparks = [], []
 for side, (start, along, inward, length) in enumerate(sides):
-    for k in range(int(length * 0.35)):
+    for k in range(0):  # no coins: subtle
         t = rng.uniform(0.03, 0.97)
         d = edge_depth(side, t) * rng.uniform(0.15, 0.7)
         p = start + along * (t * length) + inward * d + Vector((0, 0, 0.1 * math.sqrt(max(0.0, 1 - (d / edge_depth(side, t)) ** 2)) + 0.03))
@@ -278,10 +281,10 @@ for side, (start, along, inward, length) in enumerate(sides):
         p = start + along * (t * length) + inward * 0.3 + Vector((0, 0, 0.16))
         place(f"MapBar{side}_{k}", bar_me, p, (rng.uniform(-0.3, 0.3), rng.uniform(-0.2, 0.2),
                                                 math.atan2(along.y, along.x) + rng.uniform(-0.6, 0.6)), 1.0, line=0.015)
-    for k in range(int(length * 0.3)):
-        t = rng.uniform(0.02, 0.98)
-        p = start + along * (t * length) + inward * rng.uniform(0.1, edge_depth(side, t)) + Vector((0, 0, 0.3))
-        s = place(f"MapSpark{side}_{k}", spark_me, p, scale=rng.uniform(0.7, 1.3))
+    for k in range(int(length * 0.35)):
+        t = rng.uniform(0.03, 0.97)
+        p = start + along * (t * length) + inward * rng.uniform(0.08, HAZE_DEPTH * 0.6) + Vector((0, 0, 0.02))
+        s = place(f"MapSpark{side}_{k}", spark_me, p, scale=rng.uniform(0.5, 0.9))
         s.visible_shadow = False
         sparks.append(s)
 
