@@ -158,7 +158,7 @@ def glass(name, colour, alpha):
     return m
 
 
-GOLD = toon("Gilde_BossGold", "#e58e00", "#ffcf26", "#fff6b8", cuts=(0.3, 0.82))
+GOLD = toon("Gilde_BossGold", "#e08600", "#ffc61a", "#fff3b0", cuts=(0.3, 0.95))  # the pale band only a shine
 GOLD_DARK = toon("Gilde_GoldInner", "#b86e00", "#e9a10e", None)
 GOLD_FACE = toon("Gilde_GoldFace", "#e59a00", "#ffd23d", "#fff6c0")
 IRON = toon("Gilde_Iron", "#3a3f48", "#6b7380", "#aab2bd")
@@ -206,6 +206,9 @@ LINE = flat("Gilde_Outline", "#2a1a06")
 LINE.use_backface_culling = True
 
 
+OUTLINE_SCALE = 2.0  # at the game's size the outlines must be twice what reads in Blender's close-ups
+
+
 def outline(obj, width):
     mats = obj.data.materials
     names = [m.name for m in mats if m]
@@ -216,7 +219,7 @@ def outline(obj, width):
         for _ in range(n):
             mats.append(LINE)
     mod = obj.modifiers.new("Outline", "SOLIDIFY")
-    mod.thickness = width
+    mod.thickness = width * OUTLINE_SCALE
     mod.offset = 1
     mod.use_flip_normals = True
     mod.use_rim = False
@@ -275,11 +278,11 @@ def box(name, size, mat):
 
 
 def coin_mesh():
-    r, t = 0.13, 0.034
+    r, t = 0.2, 0.05  # at the game's size smaller ones read as specks
     bm = bmesh.new()
     bmesh.ops.create_cone(bm, cap_ends=True, segments=20, radius1=r, radius2=r, depth=t)
     caps = [f for f in bm.faces if abs(f.normal.z) > 0.9]
-    bmesh.ops.inset_individual(bm, faces=caps, thickness=0.024, depth=-0.005)
+    bmesh.ops.inset_individual(bm, faces=caps, thickness=0.037, depth=-0.007)
     for f in caps:
         f.material_index = 1
     return finish(bm, "Gilde_Coin", [GOLD, GOLD_FACE], smooth=False)
@@ -381,7 +384,7 @@ gloss.rotation_euler = gloss_n.to_track_quat("Z", "Y").to_euler()
 gloss.rotation_euler.rotate_axis("Z", 0.7)
 
 # money bags on its sides, the $ towards the camera
-dollar = text_mesh("$", 0.5, 0.03, GREEN)
+dollar = text_mesh("$", 0.72, 0.04, GREEN)
 bag_body = ellipsoid("Gilde_Bag", (0.42, 0.4, 0.46), SACK, 24, 14)
 neck = bmesh.new()
 bmesh.ops.create_cone(neck, cap_ends=True, segments=16, radius1=0.12, radius2=0.2, depth=0.2)
@@ -392,13 +395,13 @@ for side, sx in (("Left", -1), ("Right", 1)):
     obj(f"Bag{side}Body", bag_body, b, line=0.03)
     obj(f"Bag{side}Neck", neck_me, b, loc=(0, 0, 0.5), line=0.01)
     obj(f"Bag{side}Rope", rope, b, loc=(0, 0, 0.43), line=0.008)
-    obj(f"Bag{side}Dollar", dollar, b, loc=(0.05 * sx, -0.4, 0.02), rot=(math.pi / 2 - 0.35, 0, 0), line=0.012)
+    obj(f"Bag{side}Dollar", dollar, b, loc=(0.05 * sx, -0.42, 0.04), rot=(math.pi / 2 - 0.35, 0, 0), line=0.012)
 
 # a ring of coins circling it
 coin = coin_mesh()
 ring = empty("CoinRing", root, loc=(0, 0, -0.15))
-for i in range(12):
-    a = 2 * math.pi * i / 12
+for i in range(8):
+    a = 2 * math.pi * i / 8
     obj(f"RingCoin{i}", coin, ring, loc=(1.6 * math.cos(a), 1.6 * 1.15 * math.sin(a), 0.08 * math.sin(3 * a)),
         rot=(math.pi / 2, 0, a + math.pi / 2), scale=1.15, line=0.008)
 
