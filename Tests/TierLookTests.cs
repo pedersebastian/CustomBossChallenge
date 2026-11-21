@@ -210,6 +210,11 @@ public class TierLookTest : CustomBossTest
             }
             else
             {
+                // The aura needs the boss's body on the screen, which some bosses only show a moment after their display
+                // exists (Bloonarius in the first game): it comes with the next check after that, so wait a few (#254)
+                yield return WaitFor(() => TierLookScene.Graphics().Any(graphic => TierLookScene.Aura(graphic) != null),
+                    $"{name} tier {tier} getting its aura", TierLookApplier.CheckInterval * 8);
+                graphics = TierLookScene.Graphics();
                 var glows = graphics.SelectMany(TierLookScene.Glows).ToList();
                 Assert(glows.Count > 0, $"{name} tier {tier} has no glow");
                 Assert(graphics.Any(graphic => TierLookScene.Aura(graphic) != null), $"{name} tier {tier} has no aura");
