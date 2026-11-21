@@ -37,13 +37,13 @@ public static class GildebloonMapLook
     /// <summary>Hides the game's boss effects on <paramref name="map"/> and puts the pile where the track's one was</summary>
     public static void Show(Transform map, GameObject[] effects, string trackSuffix)
     {
-        // The gold round the map goes where the game's effect round it was: measured before it is hidden
-        if (GildebloonMapOoze.Shown == null &&
-            effects.FirstOrDefault(effect => effect.activeSelf && effect.name.EndsWith(AmbientSuffix)) is { } ambient)
+        // The gold round the edges of the screen, in place of the game's effect round the map
+        if (GildebloonMapOoze.Shown == null && Camera.main is { } camera &&
+            effects.Any(effect => effect.activeSelf && effect.name.EndsWith(AmbientSuffix)))
         {
             try
             {
-                GildebloonMapOoze.Show(map, AreaOf(ambient, map));
+                GildebloonMapOoze.Show(camera);
             }
             catch (Exception e)
             {
@@ -74,42 +74,6 @@ public static class GildebloonMapLook
 
     /// <summary>The game's effect round the map, as the boss effects' names end</summary>
     private const string AmbientSuffix = "AmbientMapFx(Clone)";
-
-    /// <summary>The game's map, about this wide and deep, when the effect round it can't be measured</summary>
-    private static readonly Vector3 MapSize = new(300, 1, 235);
-
-    /// <summary>
-    /// The part of the map the camera shows: its view's corners brought down onto the map's ground. The game's own
-    /// effect can't tell (its particles reach far outside: it measured 479 x 404 and 1117 x 489 in one run), and the
-    /// gold belongs at the edges of what the player sees, as Bloonarius's slime is. The map's size round its centre
-    /// without a camera.
-    /// </summary>
-    private static Bounds AreaOf(GameObject ambient, Transform map)
-    {
-        var camera = Camera.main;
-        var ground = new Plane(Vector3.up, map.position);
-        if (camera != null)
-        {
-            Bounds? area = null;
-            foreach (var corner in new[] {new Vector3(0, 0), new Vector3(1, 0), new Vector3(0, 1), new Vector3(1, 1)})
-            {
-                var ray = camera.ViewportPointToRay(corner);
-                if (!ground.Raycast(ray, out var along)) continue;
-                var point = ray.GetPoint(along);
-                if (area is { } so)
-                {
-                    so.Encapsulate(point);
-                    area = so;
-                }
-                else area = new Bounds(point, Vector3.zero);
-            }
-
-            if (area is { } seen && seen.size.x > 10 && seen.size.z > 10) return seen;
-        }
-
-        ModHelper.Msg<CustomBossChallenge>($"No camera to measure the map by; the gold goes round {MapSize}");
-        return new Bounds(map.position, MapSize);
-    }
 
     /// <summary>Takes the pile away and gives the map its boss effects back</summary>
     public static void Hide()

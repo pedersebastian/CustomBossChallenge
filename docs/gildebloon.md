@@ -45,6 +45,10 @@ boss name through `BossList.Name`. The game itself only ever sees the string `bo
   Alchemist's and Glue Gunner's attacks get a `DamageModifierForTagModel` (x1.5) against the tag "Gildebloon" its
   models carry. Damage over time (the Glue Gunner's corrosive glue) isn't covered. A Harmony prefix on `Bloon.Damage`
   crashed the game natively at the first hit, so don't patch it.
+- **What it takes** is a share of the cash with no cap (2026-11-21; the old caps took $150 a theft at tier 1, 0.15 % of
+  $100,000): a Toll every 6 s takes 2 % (Elite 4 %), a skull 10 % (Elite 15 %), a leaking Tax Collector 5 % (Elite's
+  8 %). The Vault's shield is at most half the boss's health (`ShieldCapShare`), so a player with a lot of cash can
+  still beat it; the Payout pays back all it took, half again.
 - `Config/GildebloonBrain.cs` runs each simulation frame (`BossBloonManager.Process`): Toll, Vault (an armour
   layer `GildeVault`), Interest (Elite), seizing Banana Farms at a skull, Tax Collector leaks and the Payout.
 - `Patches/MixedBosses.cs` sets the game's boss type to "Gildebloon" before each of its tiers spawns, also when the
@@ -84,9 +88,9 @@ What could still show of Bloonarius, and how each is handled:
   The ambient effect round the map's edges gets Gildebloon's own (`Visuals/GildebloonMapOoze.cs`): molten gold oozing
   in from the edges with drops, coins, gold bars and sparkles, slowly swelling, modelled in `tools/blender/gildebloon-map.py`
   and written by `tools/blender/build-map.py` to `Bundles/gildebloon-map.gba.gz` in the body's format (one looping
-  animation, "Ooze"). It is stretched over the part of the map the camera shows (its view's corners brought down onto
-  the ground): the hidden effect's own bounds can't tell, its particles reach far outside (479 x 404 and 1117 x 489 in
-  one run).
+  animation, "Ooze"): a thin, even band with a few drops and coins. It sits on the camera, facing it and as big as its
+  view, so it frames the screen: laid on the map's ground it went askew and hid under walls and raised ground, and
+  the hidden effect's own bounds can't size it (its particles reach far outside: 479 x 404 and 1117 x 489 in one run).
 - **Its portraits** (`Images/Gildebloon.png`, `Images/GildebloonElite.png`: the boss panel by the skulls, the Boss
   Creator, the banner and the victory screen) are rendered from the Blender body by `tools/blender/build-portraits.py`.
 - **Its own body and animations.** `tools/blender/gildebloon-boss.py` builds a body in the game's style (bold

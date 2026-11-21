@@ -1,6 +1,6 @@
 """
 Renders Gildebloon's portraits from its Blender body (#25): Images/Gildebloon.png and Images/GildebloonElite.png,
-256 x 256 on a see-through background, for the boss panel's icon by the skulls, the Boss Creator and the tier banner.
+512 x 512 on a see-through background, for the boss panel's icon by the skulls, the Boss Creator and the tier banner.
 Run after the boss script:
 
     python tools/blender/run-in-blender.py tools/blender/gildebloon-boss.py
@@ -16,7 +16,7 @@ from mathutils import Vector
 
 scene = bpy.data.scenes["Gildebloon Boss"]
 PORTRAITS = [("Gildebloon", 100), ("GildebloonElite", 876)]
-SIZE = 256
+SIZE = 512  # the victory screen shows it big; 256 came out blurry there
 
 window_scene = bpy.context.window.scene if bpy.context.window else None
 if bpy.context.window:

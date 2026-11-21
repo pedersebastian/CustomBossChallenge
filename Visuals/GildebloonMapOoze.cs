@@ -33,7 +33,10 @@ public static class GildebloonMapOoze
     /// <summary>The effect on the map now, for tests</summary>
     public static GameObject? Shown => shown != null ? shown : null;
 
-    /// <summary>The area it covers now, in the world, for tests and the log</summary>
+    /// <summary>How far in front of the camera's near plane it sits: room for its bead to rise towards the camera</summary>
+    private const float Distance = 20;
+
+    /// <summary>The view it frames now (width and height in its size), for tests and the log</summary>
     public static Bounds Area { get; private set; }
 
     /// <summary>Reads the effect; at the main menu, with Gildebloon's look</summary>
@@ -81,17 +84,23 @@ public static class GildebloonMapOoze
         }
     }
 
-    /// <summary>Puts the gold round <paramref name="area"/> (in the world), under the map</summary>
-    public static void Show(Transform map, Bounds area)
+    /// <summary>
+    /// Puts the gold round the edges of what <paramref name="camera"/> shows: on the camera, facing it, as big as its
+    /// view. On the map's ground it went askew and hid under walls and raised ground (2026-11-21); on the camera it is
+    /// a frame that always fits the screen.
+    /// </summary>
+    public static void Show(Camera camera)
     {
-        if (shown != null || data == null || !Material()) return;
+        if (shown != null || data == null || !Material() || !camera.orthographic) return;
+        var height = camera.orthographicSize * 2;
+        var width = height * camera.aspect;
         var root = new GameObject(RootName);
-        root.transform.SetParent(map, true);
-        root.transform.position = new Vector3(area.center.x, map.position.y, area.center.z);
-        root.transform.rotation = Quaternion.identity;
-        var parent = map.lossyScale.x > 0 ? map.lossyScale.x : 1;
-        var across = area.size.x / ModelWidth;
-        root.transform.localScale = new Vector3(across, across, area.size.z / ModelDepth) / parent;
+        root.transform.SetParent(camera.transform, false);
+        // In front of the map, behind the HUD (a canvas of its own); its bead rises towards the camera
+        root.transform.localPosition = new Vector3(0, 0, camera.nearClipPlane + Distance);
+        // Its up (Unity's y, Blender's z) towards the camera, its top (Unity's z) to the top of the screen
+        root.transform.localRotation = Quaternion.Euler(-90, 0, 0);
+        root.transform.localScale = new Vector3(width / ModelWidth, width / ModelWidth, height / ModelDepth);
 
         parts = new Transform?[data.Parts.Count];
         for (var i = 0; i < data.Parts.Count; i++)
@@ -108,10 +117,10 @@ public static class GildebloonMapOoze
         }
 
         shown = root;
-        Area = area;
+        Area = new Bounds(Vector3.zero, new Vector3(width, 0, height));
         player = new GildebloonClipPlayer(data, "Ooze");
         Pose();
-        ModHelper.Msg<CustomBossChallenge>($"Gildebloon's gold round the map over {area.size.x:0} x {area.size.z:0} at {area.center}");
+        ModHelper.Msg<CustomBossChallenge>($"Gildebloon's gold round the screen: {width:0} x {height:0}");
     }
 
     /// <summary>Takes the gold away</summary>

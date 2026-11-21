@@ -31,11 +31,20 @@ public static class GildebloonBrain
     /// <summary>Seconds between thefts</summary>
     public const int TollSeconds = 6;
 
+    /// <summary>
+    /// The share of the cash each theft takes: a share of what the player has, with no cap, so sitting on cash costs
+    /// (2026-11-21: the old caps, $150 a theft at tier 1, took 0.15 % of $100,000). It all comes back, half again, as
+    /// the Payout when it is beaten.
+    /// </summary>
     public const double TollShare = 0.02;
-    public const double EliteTollShare = 0.03;
 
-    /// <summary>The most one theft takes, per tier 1-5; Elite takes twice as much</summary>
-    internal static readonly int[] TollCap = [150, 400, 1000, 2500, 6000];
+    public const double EliteTollShare = 0.04;
+
+    /// <summary>
+    /// The Vault's shield is at most this share of the boss's health: with no cap on what it takes, a shield of what it
+    /// took could make it unbeatable for a player with a lot of cash
+    /// </summary>
+    public const double ShieldCapShare = 0.5;
 
     /// <summary>Shield per stolen dollar</summary>
     public const double ShieldPerCash = 1;
@@ -50,8 +59,10 @@ public static class GildebloonBrain
     /// <summary>The Payout outside CHIMPS; in CHIMPS the player only gets the stolen cash back</summary>
     public const double PayoutFactor = 1.5;
 
-    /// <summary>A Tax Collector that leaks takes this share of the player's cash, up to twice the Toll's cap</summary>
+    /// <summary>A Tax Collector that leaks takes this share of the player's cash; Elite's (a BFB) more</summary>
     public const double CollectorShare = 0.05;
+
+    public const double EliteCollectorShare = 0.08;
 
     /// <summary>How far from Gildebloon towers are seized at a skull, per tier 1-5</summary>
     internal static readonly float[] SeizeRadii = [50, 55, 60, 65, 70];
@@ -65,10 +76,10 @@ public static class GildebloonBrain
     /// <summary>How long the other towers near it stop attacking at a skull</summary>
     public const int FreezeSeconds = 3;
 
-    /// <summary>At a skull it takes this share of the cash, up to <see cref="SkullCapTimes"/> times the Toll's cap</summary>
+    /// <summary>At a skull it takes this share of the cash, with no cap</summary>
     public const double SkullShare = 0.1;
 
-    public const int SkullCapTimes = 3;
+    public const double EliteSkullShare = 0.15;
 
     public const string VaultArmour = "GildeVault";
 
@@ -184,9 +195,7 @@ public static class GildebloonBrain
         if (frame >= current.NextToll)
         {
             current.NextToll = frame + TollSeconds * FramesPerSecond;
-            var share = current.Elite ? EliteTollShare : TollShare;
-            var cap = TollCap[Math.Clamp(current.Tier, 1, TollCap.Length) - 1] * (current.Elite ? 2 : 1);
-            Steal(sim, boss, current, Math.Min(Cash(sim) * share, cap));
+            Steal(sim, boss, current, Cash(sim) * (current.Elite ? EliteTollShare : TollShare));
         }
 
         if (current.Elite && frame >= current.NextInterest)
@@ -205,9 +214,8 @@ public static class GildebloonBrain
         if (skulls > current.Skulls)
         {
             current.Skulls = skulls;
-            var cap = TollCap[Math.Clamp(current.Tier, 1, TollCap.Length) - 1] * (current.Elite ? 2 : 1) * SkullCapTimes;
             var before = current.Stolen;
-            Steal(sim, boss, current, Math.Min(Cash(sim) * SkullShare, cap));
+            Steal(sim, boss, current, Cash(sim) * (current.Elite ? EliteSkullShare : SkullShare));
             var radius = SeizeRadiusFor(current.Tier);
             var (frozen, farms) = Repossess(sim, boss, frame, radius);
             Repossessed?.Invoke(new Repossession(current.Stolen - before, frozen, farms, radius, boss));
@@ -297,9 +305,7 @@ public static class GildebloonBrain
         if (sim == null) return;
 
         var elite = collector.bloonModel.id == Gildebloon.EliteCollectorId;
-        var tier = vault?.Tier ?? TierMath.VanillaTiers;
-        var cap = TollCap[Math.Clamp(tier, 1, TollCap.Length) - 1] * 2 * (elite ? 2 : 1);
-        var amount = Math.Floor(Math.Min(Cash(sim) * CollectorShare, cap));
+        var amount = Math.Floor(Cash(sim) * (elite ? EliteCollectorShare : CollectorShare));
         if (amount <= 0) return;
 
         sim.RemoveCash(amount, Simulation.CashType.Normal, CashIndex, Simulation.CashSource.Normal);
@@ -317,9 +323,13 @@ public static class GildebloonBrain
     /// <summary>What is left of the Vault, the boss's armour</summary>
     internal static float Armour(Bloon boss) => boss.HasArmour ? boss.CurrentArmourAmount : 0;
 
+    /// <summary>The most shield the Vault can hold on a boss: <see cref="ShieldCapShare"/> of its health</summary>
+    public static int ShieldCap(Bloon boss) => (int) Math.Ceiling(boss.bloonModel.maxHealth * ShieldCapShare);
+
     private static void AddShield(Bloon boss, Vault current, double cash)
     {
         var amount = (int) Math.Round(cash * (current.Elite ? EliteShieldPerCash : ShieldPerCash));
+        amount = Math.Min(amount, ShieldCap(boss) - (int) Math.Ceiling(Armour(boss)));
         if (amount <= 0) return;
 
         BloonArmour? layer = null;

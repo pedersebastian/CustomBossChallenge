@@ -188,7 +188,7 @@ def track_at(u):
 # ---- the ambient effect: molten gold oozing in from the edges
 def edge_depth(side, t):
     """How far the gold reaches in at a point along a side (t 0..1), with drips"""
-    d = 0.62 + 0.16 * math.sin(t * 17 + side * 2.1) + 0.08 * math.sin(t * 41 + side)
+    d = 0.4 + 0.05 * math.sin(t * 9 + side * 2.1)  # a thin, even band: it frames the map, it doesn't cover it
     for c, w, h in DRIPS[side]:
         d += h * math.exp(-((t - c) / w) ** 2)
     return d
@@ -196,8 +196,8 @@ def edge_depth(side, t):
 
 DRIPS = {}
 for side in range(4):
-    n = 5 if side % 2 == 0 else 4
-    DRIPS[side] = [(rng.uniform(0.08, 0.92), rng.uniform(0.012, 0.022), rng.uniform(0.35, 1.0)) for _ in range(n)]
+    n = 3 if side % 2 == 0 else 2
+    DRIPS[side] = [((k + 0.5) / n + rng.uniform(-0.1, 0.1), rng.uniform(0.016, 0.022), rng.uniform(0.35, 0.75)) for k in range(n)]
 
 sides = [  # start corner, direction along the side, inward normal, length
     (Vector((-W / 2, H / 2, 0)), Vector((1, 0, 0)), Vector((0, -1, 0)), W),   # top
@@ -216,13 +216,13 @@ for side, (start, along, inward, length) in enumerate(sides):
         depth = edge_depth(side, t)
         # round off the corners so neighbouring sides meet in a curve
         corner = min(t, 1 - t) * length
-        if corner < 1.2:
-            depth = max(depth, 1.2 - corner + 0.3)
+        if corner < 0.5:  # round the corners off a little
+            depth = max(depth, 0.5 - corner + 0.2)
         row = []
         for j in range(rows + 1):
             f = j / rows
             # a rounded bead of gold: thick at the edge, thin where it runs in
-            z = 0.22 * math.sqrt(max(0.0, 1 - f ** 2)) + 0.015
+            z = 0.12 * math.sqrt(max(0.0, 1 - f ** 2)) + 0.01
             row.append(bm.verts.new(start + along * (t * length) + inward * (depth * f) + Vector((0, 0, z))))
         grid.append(row)
     for i in range(steps):
@@ -238,7 +238,7 @@ for side, (start, along, inward, length) in enumerate(sides):
         tip = start + along * (c * length) + inward * (edge_depth(side, c) - 0.05)
         bm = bmesh.new()
         bmesh.ops.create_uvsphere(bm, u_segments=20, v_segments=10, radius=1)
-        bmesh.ops.scale(bm, vec=(0.16, 0.16, 0.07), verts=bm.verts)
+        bmesh.ops.scale(bm, vec=(0.12, 0.12, 0.05), verts=bm.verts)
         drop = mesh_obj(f"Drop{side}_{c:.2f}", bm, [MOLTEN], line=0.02, loc=tip + Vector((0, 0, 0.02)))
         drop["drip"] = True
 
@@ -267,18 +267,18 @@ spark_me.materials.append(SHINE)
 
 coins, sparks = [], []
 for side, (start, along, inward, length) in enumerate(sides):
-    for k in range(int(length * 1.6)):
+    for k in range(int(length * 0.35)):
         t = rng.uniform(0.03, 0.97)
         d = edge_depth(side, t) * rng.uniform(0.15, 0.7)
-        p = start + along * (t * length) + inward * d + Vector((0, 0, 0.2 * math.sqrt(max(0.0, 1 - (d / edge_depth(side, t)) ** 2)) + 0.05))
+        p = start + along * (t * length) + inward * d + Vector((0, 0, 0.1 * math.sqrt(max(0.0, 1 - (d / edge_depth(side, t)) ** 2)) + 0.03))
         coins.append(place(f"MapCoin{side}_{k}", COIN, p,
-                           (rng.uniform(-0.9, 0.9), rng.uniform(-0.9, 0.9), rng.uniform(0, 6.3)), 1.4, line=0.01))
-    for k in range(3 if side % 2 == 0 else 2):
+                           (rng.uniform(-0.4, 0.4), rng.uniform(-0.4, 0.4), rng.uniform(0, 6.3)), 0.75, line=0.01))
+    for k in range(0):  # no gold bars: simpler
         t = rng.uniform(0.15, 0.85)
         p = start + along * (t * length) + inward * 0.3 + Vector((0, 0, 0.16))
         place(f"MapBar{side}_{k}", bar_me, p, (rng.uniform(-0.3, 0.3), rng.uniform(-0.2, 0.2),
                                                 math.atan2(along.y, along.x) + rng.uniform(-0.6, 0.6)), 1.0, line=0.015)
-    for k in range(int(length * 0.9)):
+    for k in range(int(length * 0.3)):
         t = rng.uniform(0.02, 0.98)
         p = start + along * (t * length) + inward * rng.uniform(0.1, edge_depth(side, t)) + Vector((0, 0, 0.3))
         s = place(f"MapSpark{side}_{k}", spark_me, p, scale=rng.uniform(0.7, 1.3))

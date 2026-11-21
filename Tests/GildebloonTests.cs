@@ -264,13 +264,17 @@ public class GildebloonBrainTest : GildebloonTest
 
         // Toll: two thefts later the cash went down by what the Vault holds, and the shield holds the same
         var before = bridge.GetCash(-1);
-        yield return WaitFor(() => GildebloonBrain.TotalStolen >= 2 * 20000 * GildebloonBrain.TollShare * 0.9 ||
-                                   GildebloonBrain.TotalStolen >= 2 * 150, "Two thefts", 60);
+        yield return WaitFor(() => GildebloonBrain.TotalStolen >= 2 * 20000 * GildebloonBrain.TollShare * 0.9, "Two thefts", 60);
         var stolen = GildebloonBrain.Stolen;
         Log($"stolen {stolen}, cash {before} -> {bridge.GetCash(-1)}, shield {boss.CurrentArmourAmount}");
         Assert(stolen > 0, "It stole cash");
         Assert(bridge.GetCash(-1) <= before - stolen + 1, $"Cash went down by what it stole: {before} -> {bridge.GetCash(-1)}, stolen {stolen}");
-        Assert(boss.HasArmour && Math.Abs(boss.CurrentArmourAmount - stolen) < 2, $"Shield {boss.CurrentArmourAmount} for {stolen} stolen");
+        // A share of the cash, no cap: two thefts of 2 % of $20,000
+        Assert(stolen >= 2 * 20000 * GildebloonBrain.TollShare * 0.9, $"It took a share of the cash: {stolen}");
+        // The shield is what it took, up to half its health
+        var shield = Math.Min(stolen, GildebloonBrain.ShieldCap(boss));
+        Assert(boss.HasArmour && Math.Abs(boss.CurrentArmourAmount - shield) < 2,
+            $"Shield {boss.CurrentArmourAmount} for {stolen} stolen, at most {GildebloonBrain.ShieldCap(boss)}");
         AssertEquals(InGame.instance.bridge.Simulation.cashSpent.Value, 0.0, "Stealing isn't cash spent");
         yield return new WaitForSecondsRealtime(0.5f);
         AssertNotNull(Visuals.GildebloonHud.Panel, "The Vault is shown");
@@ -288,8 +292,8 @@ public class GildebloonBrainTest : GildebloonTest
         Assert(farm.IsAttackingDisabled, "The seized farm makes no money");
         Assert(farm.IsSellingBlocked, "The seized farm can't be sold");
         Log($"at the skull: vault {beforeSkull} -> {GildebloonBrain.Stolen}, cash {cashBefore} -> {bridge.GetCash(-1)}");
-        Assert(GildebloonBrain.Stolen >= beforeSkull + Math.Min(cashBefore * GildebloonBrain.SkullShare, 150 * GildebloonBrain.SkullCapTimes) - 1,
-            "It seized a share of the cash at the skull");
+        Assert(GildebloonBrain.Stolen >= beforeSkull + cashBefore * GildebloonBrain.SkullShare - 1,
+            "It seized a share of the cash at the skull, with no cap");
         yield return new WaitForSecondsRealtime(0.1f);
         var folderNow = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
         if (!string.IsNullOrEmpty(folderNow)) yield return ScreenshotTour.Capture(folderNow, "gildebloon-repossession-ring");
