@@ -16,6 +16,7 @@ namespace CustomBossChallenge.Tests;
 /// The boss music and the map's boss effects follow each tier's boss in Advanced Mode (#85), the same as the game shows
 /// for that boss on its own
 /// </summary>
+[FullSuiteOnly("every boss's arrival in a game (about 1 min)")]
 public class BossPresentationTest : CustomBossTest
 {
     protected override IEnumerator Run()

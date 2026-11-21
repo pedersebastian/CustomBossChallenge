@@ -105,6 +105,7 @@ public class MixedBossCodeTest : CustomBossTest
 /// A real game with a different boss per tier, an Elite one, one that follows the setup and extra tiers: each tier
 /// spawns its own boss, the game's boss type follows the tiers, and the game is won with the last one
 /// </summary>
+[FullSuiteOnly("plays a five-tier game to the end (about 3 min)")]
 public class MixedBossGameTest : CustomBossTest
 {
     public const float TimeoutSeconds = 420;

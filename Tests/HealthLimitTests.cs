@@ -17,6 +17,7 @@ namespace CustomBossChallenge.Tests;
 /// spawn with the expected health and take damage normally; health just above the game's limit is only logged, to
 /// notice if a game update moves it. Custom games with a tier far above the limit must hold it to the limit.
 /// </summary>
+[FullSuiteOnly("games at the health limit (about 40 s)")]
 public class BossHealthLimitTest : CustomBossTest
 {
     public const string BossId = "Bloonarius1";

@@ -73,6 +73,7 @@ public class ExtraTierModelTest : CustomBossTest
 /// Plays real custom games with a strong tower: the boss spawns on its own on the chosen rounds, and the game is
 /// won exactly when the last chosen tier is defeated - both with more and with fewer tiers than vanilla
 /// </summary>
+[FullSuiteOnly("plays games with extra tiers to victory (about 1.5 min)")]
 public class ExtraTierGameTest : CustomBossTest
 {
     public const float TimeoutSeconds = 240;

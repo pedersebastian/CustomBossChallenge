@@ -22,6 +22,7 @@ namespace CustomBossChallenge.Tests;
 /// game is quit, the player is back in the Boss Creator with the setup they played, and Back reaches the main menu
 /// without an error in the log (#229)
 /// </summary>
+[FullSuiteOnly("plays a game from every way into the Boss Creator (about 1.5 min)")]
 public class BackToCreatorTest : CustomBossTest
 {
     private static readonly string[] Entries = {"by hand", "pasted", "saved", "example", "random", "past event", "undo"};

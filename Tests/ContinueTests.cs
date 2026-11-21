@@ -433,6 +433,7 @@ public class ContinueTest : ContinueTestBase
 /// <summary>
 /// A lost game can be closed on the defeat screen and still be continued, and its free retries still work
 /// </summary>
+[FullSuiteOnly("retries in continued games (about 1.5 min)")]
 public class ContinueRetryTest : ContinueTestBase
 {
     protected override IEnumerator Run()
@@ -477,6 +478,7 @@ public class ContinueRetryTest : ContinueTestBase
 /// Restarting or starting another custom game replaces the unfinished one, other games never write it, and New Boss
 /// in the popup keeps it until a new game is played
 /// </summary>
+[FullSuiteOnly("several games saved and continued (about 2 min)")]
 public class ContinueLifecycleTest : ContinueTestBase
 {
     protected override IEnumerator Run()

@@ -22,6 +22,7 @@ namespace CustomBossChallenge.Tests;
 /// Ranked practice (#83): the Show Ranked Stats setting shows the ranked time and penalty with the upgrade tiers and cash used in
 /// custom games, the time survives a free retry and Continue, and the victory screen shows the time of every tier
 /// </summary>
+[FullSuiteOnly("plays ranked games against the timer (about 1 min)")]
 public class RankedTimerTest : ContinueTestBase
 {
     private const string ShowRankedStatsKey = Texts.KeyPrefix + "ShowRankedStats Setting Name";
@@ -223,6 +224,7 @@ public class RankedTimerTest : ContinueTestBase
 /// counts as penalty as in the ranked boss events. The game counts it in custom games too; it must reach the panel and
 /// the total, and stay right after a free retry and Continue.
 /// </summary>
+[FullSuiteOnly("plays ranked games with penalties (about 1 min)")]
 public class RankedPenaltyTest : ContinueTestBase
 {
     private static int Penalty => (int) Math.Round(RankedHud.PenaltyTime.TotalSeconds * RankedTime.FramesPerSecond);
