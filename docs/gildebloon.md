@@ -86,9 +86,20 @@ What could still show of Bloonarius, and how each is handled:
   molten gold oozing in from the edges with drips, coins and gold bars stuck in it and sparkles, slowly swelling.
 - **Its own body and animations (proposal).** `tools/blender/gildebloon-boss.py` builds a body in the game's style
   (bold outlines, yellow gold with a bloon's shine, glints in the eyes, a soft round shadow instead of a cast one)
-  that keeps the part names the mod moves, plus a face, and keys eight animations: Spawn (up out of the pile), Idle,
-  Hit, Toll, Repossession, Skittish, VaultBreak and Death. Its parts are rigid, so each animation could be exported as
-  a position, rotation and scale per part and frame for `GildebloonLook`. Not used yet.
+  that keeps the part names the mod moves, plus a face, and keys 21 animations, each from the same rest pose and held
+  on its last frame so it plays on its own. Its parts are rigid, so each could be exported as a position, rotation
+  and scale per part and frame for `GildebloonLook`. Not used yet. `tools/blender/render-sheet.py` renders them as a
+  contact sheet. What each is for, and what would start it in the game:
+
+  | Animation | What | Would start on |
+  |---|---|---|
+  | Spawn, EliteSpawn | up out of the pile; Elite's crown of spikes shoots up | the look attaching to the boss; Elite by its model id |
+  | Idle, IdleCount, IdlePolish, IdleSmug | hovering; flips a coin; polishes its shine; smug after a big Toll | the base loop; a timer; a Toll over a threshold |
+  | Damaged66, Damaged33, Damaged10 | dents; cracks, the door rattling, sweat; coins trickling out (loops) | its health share passing 0.66, 0.33, 0.10 |
+  | Hit, TarnishHit | squash and squint; grey-green tarnish flashing on the gold | a health drop; a hit from an Alchemist or Glue Gunner (needs a safe hook: `Bloon.Damage` can't be patched) |
+  | Toll, Interest, VaultUp, VaultBreak | coins into the slot; the Vault pulsing (Elite); the shield growing; the shield shattering | `GildebloonBrain.CashTaken`; a new Interest event; the armour from 0 up; to 0 |
+  | Repossession, Skittish, Dispatch | a skull; the dash ahead; a Tax Collector popping out of the door | `GildebloonBrain.Repossessed`; `Dashes` going up; a Tax Collector's look attaching |
+  | Death, Payout, Escape | bursts into coins; the coins streaming to the cash at the top right; grins and dives out | its health reaching 0; `CashTaken` below 0; it leaking |
 - **Its body as it takes damage.** The game's damage-state animation turns the body's parts back on every frame
   (setting `Renderer.enabled`), so turning them off didn't hold: after a skull the Elite's damaged parts drew through.
   They are now kept from drawing with `Renderer.forceRenderingOff`, which the animations leave alone, checked every
