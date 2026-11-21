@@ -1691,7 +1691,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 20,
         "SpawnRounds": null,
-        "TierBosses": "Bloonarius@150/50,LychElite@100/300,Random@80/100,@20/2000,Vortex@2500/10,,Diamondback@130/100",
+        "TierBosses": "Bloonarius@150/50,LychElite@100/300,Random@80/100,@20/2000,Vortex@2500/5,,Diamondback@130/100",
         "BossEventRounds": false
       },
       "challenge": {
@@ -1776,8 +1776,8 @@
         {
           "round": 120,
           "speed": 25.0,
-          "healthFactor": 0.27,
-          "health": "678k",
+          "healthFactor": 0.135,
+          "health": "339k",
           "capped": false,
           "skulls": 3
         },

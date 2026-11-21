@@ -202,7 +202,7 @@ public class MixedBossCreatorTest : CustomBossTest
         AssertEquals(picker3.Speed.Value, 100f, "A tier starts at 100 % speed");
         picker3.Speed.Step(1);
         picker3.Speed.Step(1);
-        picker3.Health.Slider.value = 250;
+        picker3.Health.DragTo(250);
         AssertEquals(BossMode.Options.EntryOf(3).Speed, 120, "The picker's speed is the tier's");
         AssertEquals(BossMode.Options.EntryOf(3).Health, 250, "The picker's health is the tier's");
         AssertEquals(section.Strip.Cards[2].Speed.Text.text.StartsWith("×1.2"), true,
@@ -221,7 +221,7 @@ public class MixedBossCreatorTest : CustomBossTest
         section.SetAdvanced(false);
         section.ResetAll();
         section.BossSpeed.Slider.value = 150;
-        section.BossHealth.Slider.value = 300;
+        section.BossHealth.DragTo(300);
         section.SkullMode.Dropdown.value = (int) SkullMode.EvenlySpaced;
         section.SkullCount.Slider.value = 5;
         section.SetAdvanced(true);

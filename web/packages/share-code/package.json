@@ -11,6 +11,7 @@
     "./tiers": "./src/math/tiers.ts",
     "./skulls": "./src/math/skulls.ts",
     "./tier-bosses": "./src/math/tierBosses.ts",
+    "./health-steps": "./src/math/healthSteps.ts",
     "./limits": "./src/math/limits.ts",
     "./warnings": "./src/math/warnings.ts",
     "./dotnet": "./src/math/dotnet.ts",

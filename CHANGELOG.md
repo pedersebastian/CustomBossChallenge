@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Boss Health goes from 5 % to 5000 %** (#250), up from 10–2000 %, for Boss Health and each tier's own health in
+  Advanced Mode. The slider moves in steps of 5 % up to 500 % and 10 % above, also with the arrows and the keyboard.
+  The game's health limit still holds every tier below about 2 billion.
 - **Two suites of in-game tests** (#246, for contributors): a quick suite of about 8 minutes for every PR, and the full
   suite of about 38 minutes before a release, which the release check now asks for by name. `TierLookTest` is about a
   third faster. CONTRIBUTING.md says which tests a change needs.

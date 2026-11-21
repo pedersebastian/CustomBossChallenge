@@ -335,7 +335,7 @@ public sealed class BossEditorSection
             TierBossMath.MinSpeed, TierBossMath.MaxSpeed, TierBossMath.ValueStep, TierBossMath.Normal, Percent, value => UpdateDcm("BossSpeed", dcm => dcm.bloonModifiers.bossSpeedMultiplier, value / 100f,
                 (dcm, speed) => dcm.bloonModifiers.bossSpeedMultiplier = speed));
         BossHealth = SliderRow.Clone(template, rows, "BossHealthRow", Texts.BossHealth.T(), VanillaSprites.BossBoostIcon,
-            TierBossMath.MinHealth, TierBossMath.MaxHealth, TierBossMath.ValueStep, TierBossMath.Normal, Percent, value => UpdateDcm("BossHealth", dcm => dcm.bloonModifiers.healthMultipliers.boss, value / 100f,
+            HealthSteps.LastPosition, HealthSliderSteps, TierBossMath.Normal, Percent, value => UpdateDcm("BossHealth", dcm => dcm.bloonModifiers.healthMultipliers.boss, value / 100f,
                 (dcm, health) => dcm.bloonModifiers.healthMultipliers.boss = health));
 
         // The last position means no limit
@@ -1895,6 +1895,10 @@ public sealed class BossEditorSection
     }
 
     private static string Percent(float value) => ShownNumber.Whole(value) + " %";
+
+    /// <summary>The steps of Boss Health and of a tier's own health (#250)</summary>
+    internal static readonly SliderRow.Steps HealthSliderSteps =
+        new(position => HealthSteps.ValueAt(position), value => HealthSteps.PositionOf(value));
 
     private static string PerTier(float value) => Texts.PerTier.T(ShownNumber.Signed(value));
 

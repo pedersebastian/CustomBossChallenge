@@ -20,9 +20,8 @@ export const MAX_GAME_HEALTH = 2_000_000_000;
 /** The Boss Creator's First Boss Round and Rounds Between Tiers sliders (TierMath.MaxFirstSpawnRound, MaxRoundsBetweenTiers) */
 export const MAX_FIRST_SPAWN_ROUND = 200;
 export const MAX_ROUNDS_BETWEEN_TIERS = 50;
-/** The Boss Creator's Boss Speed and Boss Health sliders, in percent (BossEditorSection.BuildRows) */
+/** The Boss Creator's Boss Speed slider, in percent (BossEditorSection.BuildRows); Boss Health's steps are in healthSteps.ts */
 export const BOSS_SPEED_SLIDER = { min: 10, max: 2500, step: 10 } as const;
-export const BOSS_HEALTH_SLIDER = { min: 10, max: 2000, step: 10 } as const;
 
 export const clampTiers = (tiers: number): number => clamp(tiers, MIN_TIERS, MAX_TIERS);
 export const clampSpeedPerTier = (percent: number): number => clamp(percent, MIN_SPEED_PER_TIER, MAX_SPEED_PER_TIER);

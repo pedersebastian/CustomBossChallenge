@@ -115,7 +115,7 @@ public class BossCreatorTest : CustomBossTest
         section.BossButtons[BossType.Vortex].Button.onClick.Invoke();
         section.Elite.SetChecked(true, true);
         section.BossSpeed.Slider.value = 150;
-        section.BossHealth.Slider.value = 300;
+        section.BossHealth.DragTo(300);
         // All Fortified is among the editor's own modifiers, first in the excluded list
         var modifiers = AssertNotNull(FortifiedModifier.Settings(editor), "No modifier settings")!;
         var fortified = AssertNotNull(FortifiedModifier.Find(modifiers), "No All Fortified modifier")!;
@@ -186,7 +186,7 @@ public class BossCreatorTest : CustomBossTest
         Assert(cards[0].Speed.Text.font.HasCharacter(TierStrip.HigherMark[0], true, false), "The tier preview's font has ▲");
 
         // A tier above the game's limit is held to it, with a line under the cards saying so
-        section.BossHealth.Slider.value = 2000;
+        section.BossHealth.DragTo(2000);
         section.HealthPerTier.Slider.value = 200;
         section.Tiers.Slider.value = 10;
         // The game's text may put a space before the unit
@@ -206,7 +206,7 @@ public class BossCreatorTest : CustomBossTest
                 Assert(shown <= cardWidth, $"Tier {i + 1}: '{text.Text.text}' is {shown:0} wide on a card {cardWidth:0} wide");
             }
         }
-        section.BossHealth.Slider.value = 300;
+        section.BossHealth.DragTo(300);
         section.HealthPerTier.Slider.value = 50;
         section.Tiers.Slider.value = 3;
         Assert(WarningLine(section, SetupWarning.HealthCapped) == null, "The cap line is hidden while no tier reaches the cap");
@@ -796,7 +796,7 @@ public class BossCreatorTest : CustomBossTest
         editor.lives.text = "1";
         editor.lives.onEndEdit.Invoke("1");
         var bossHealth = section.BossHealth.Slider.value;
-        section.BossHealth.Slider.value = 1000;
+        section.BossHealth.DragTo(1000);
         var ceramic = AssertNotNull(BossEditorSection.RuleSlider(editor, "CeramicHealthSlider"), "No bloon health slider")!;
         var ceramicValue = ceramic.value;
         ceramic.value = ceramic.maxValue;
@@ -1003,7 +1003,7 @@ public class BossCreatorTest : CustomBossTest
         section.BossHealth.Reset();
         section.MaxParagons.Reset();
         yield return new WaitForSecondsRealtime((float) UndoHistory<BossStep>.MergeWindow.TotalSeconds + 0.2f);
-        section.BossHealth.Slider.value = 1337;
+        section.BossHealth.DragTo(1337);
         AssertEquals(section.BossHealth.Value, 1340f, "A dragged slider lands on its step");
         Assert(Approximately(editor.dcm.bloonModifiers.healthMultipliers.boss, 13.4f), "The challenge gets the snapped value");
         BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
@@ -1020,6 +1020,24 @@ public class BossCreatorTest : CustomBossTest
         BossCreatorKeys.Handle(Ctrl(ShortcutKey.Y));
         AssertEquals(section.BossHealth.Value, 1340f, "Ctrl+Y redoes the drag");
         BossCreatorKeys.Handle(Ctrl(ShortcutKey.Z));
+
+        // Boss Health goes from 5 % to 5000 %: steps of 5 up to 500 %, then 10 (#250)
+        yield return new WaitForSecondsRealtime((float) UndoHistory<BossStep>.MergeWindow.TotalSeconds + 0.2f);
+        section.BossHealth.DragTo(123);
+        AssertEquals(section.BossHealth.Value, 125f, "Below 500 % Boss Health has steps of 5");
+        section.BossHealth.DragTo(500);
+        section.BossHealth.Step(1);
+        AssertEquals(section.BossHealth.Value, 510f, "Above 500 % Boss Health has steps of 10");
+        section.BossHealth.Step(-1);
+        section.BossHealth.Step(-1);
+        AssertEquals(section.BossHealth.Value, 495f, "Back below 500 % the steps are 5 again");
+        section.BossHealth.DragTo(0);
+        AssertEquals(section.BossHealth.Value, 5f, "Boss Health starts at 5 %");
+        section.BossHealth.Slider.value = section.BossHealth.Slider.maxValue;
+        AssertEquals(section.BossHealth.Value, 5000f, "Boss Health goes up to 5000 %");
+        Assert(Approximately(editor.dcm.bloonModifiers.healthMultipliers.boss, 50f), "The challenge gets 5000 %");
+        section.BossHealth.Reset();
+        yield return new WaitForSecondsRealtime((float) UndoHistory<BossStep>.MergeWindow.TotalSeconds + 0.2f);
 
         // A change to one of the editor's own rules is a step of its own, and undoing it leaves the boss options alone
         yield return new WaitForSecondsRealtime(0.2f);

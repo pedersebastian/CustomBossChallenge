@@ -4,6 +4,7 @@
 // their health percentages ("#75%;50%;25%").
 
 import { isNullOrWhiteSpace, netTrim, toLowerAscii } from "./dotnet";
+import { MAX_HEALTH, MIN_HEALTH, snapHealth } from "./healthSteps";
 import { DEFAULT_COUNT, DEFAULT_CUSTOM, MAX_SKULLS, evenlySpaced, formatCustom, formatPercent, parseCustom } from "./skulls";
 
 export const RANDOM = "Random";
@@ -12,12 +13,14 @@ const MAX_TIERS = 10;
 const VALUES_MARK = "@";
 const SKULLS_MARK = "#";
 
-/** A tier's speed and health in percent, with the range and step of Boss Speed and Boss Health */
+/**
+ * A tier's speed and health in percent, with the range of Boss Speed and Boss Health. Speed moves in steps of 10,
+ * health in those of healthSteps.ts (#250).
+ */
 export const NORMAL = 100;
 export const MIN_SPEED = 10;
 export const MAX_SPEED = 2500;
-export const MIN_HEALTH = 10;
-export const MAX_HEALTH = 2000;
+export { MAX_HEALTH, MIN_HEALTH };
 const VALUE_STEP = 10;
 
 /** The bosses in the order the Boss Creator shows them, which is the order of the game's BossType */
@@ -92,6 +95,12 @@ function parseValue(text: string, min: number, max: number): number {
   return value === null ? NORMAL : clampValue(value, min, max);
 }
 
+/** Like TierBossMath.ParseHealth: a whole number that fits an int, on a Boss Health step; junk is the normal 100 */
+function parseHealth(text: string): number {
+  const value = parseInt32(text);
+  return value === null ? NORMAL : snapHealth(value);
+}
+
 function parseToken(token: string): TierBoss {
   let trimmed = netTrim(token);
   let skulls: Pick<TierBoss, "skulls" | "skullCount" | "customSkulls"> = FOLLOWS;
@@ -106,7 +115,7 @@ function parseToken(token: string): TierBoss {
   if (mark >= 0) {
     const values = trimmed.slice(mark + 1).split("/");
     speed = parseValue(values[0], MIN_SPEED, MAX_SPEED);
-    health = parseValue(values.length > 1 ? values[1] : "", MIN_HEALTH, MAX_HEALTH);
+    health = parseHealth(values.length > 1 ? values[1] : "");
     trimmed = netTrim(trimmed.slice(0, mark));
   }
   // OrdinalIgnoreCase against ASCII names, so only A-Z fold (#174)
