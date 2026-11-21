@@ -185,6 +185,7 @@ public class GildebloonGameTest : GildebloonTest
 /// <summary>
 /// Gildebloon as one tier of a setup with a boss per tier: the game's boss type goes from Lych to Gildebloon and back
 /// </summary>
+[FullSuiteOnly("plays a three-tier game with Lych, Gildebloon and Bloonarius to victory (about 50 s)")]
 public class GildebloonMixedTest : GildebloonTest
 {
     protected override IEnumerator RunOn()
@@ -243,6 +244,7 @@ public class GildebloonOffTest : CustomBossTest
 /// Gildebloon's own abilities (#25): it steals cash into a shield, seizes a Banana Farm next to it at a skull, and
 /// pays back what it stole, with interest, when it is beaten
 /// </summary>
+[FullSuiteOnly("plays Toll, a Repossession and the Payout to victory (about 45 s)")]
 public class GildebloonBrainTest : GildebloonTest
 {
     protected override IEnumerator RunOn()
@@ -359,6 +361,7 @@ public class GildebloonBrainTest : GildebloonTest
 /// Gildebloon's own model from Bundles/gildebloon.bundle takes the place of its Bloonarius body, normal and Elite,
 /// and its portraits come from Images/ (#25). With CBC_SCREENSHOTS set it takes a screenshot of each.
 /// </summary>
+[FullSuiteOnly("hurts each tier's look down to no health (about 35 s)")]
 public class GildebloonLookTest : GildebloonTest
 {
     protected override IEnumerator RunOn()
@@ -441,6 +444,7 @@ public class GildebloonDefeatTest : GildebloonTest
 /// as the Elite is beaten down past every skull and dies, not its skin on the Tax Collectors. In Advanced Mode the
 /// map's effects follow the boss: a game boss's come back after Gildebloon's pile.
 /// </summary>
+[FullSuiteOnly("plays two games scanning every renderer for Bloonarius (about 30 s)")]
 public class GildebloonNoBloonariusTest : GildebloonTest
 {
     protected override IEnumerator RunOn()
@@ -568,6 +572,7 @@ public class GildebloonNoBloonariusTest : GildebloonTest
 /// mod brings them, and freeplay after; without, the default rounds; in CHIMPS the CHIMPS events' rounds, unless the
 /// setup picks the boss's own. In Advanced Mode a Gildebloon tier gets its own boss round.
 /// </summary>
+[FullSuiteOnly("compares Gold Rush's rounds with the game's in five games (about 25 s)")]
 public class GildebloonRoundsTest : GildebloonTest
 {
     protected override IEnumerator RunOn()
