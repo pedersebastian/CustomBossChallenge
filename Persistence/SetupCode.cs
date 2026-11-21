@@ -96,7 +96,7 @@ public static class SetupCode
             if (payload["o"] is JObject optionsDiff) CodeFormat.Apply(optionsJson, CodeFormat.TypedOptions(optionsDiff));
             var raw = optionsJson.ToObject<BossOptions>(OptionsSerializer);
             if (raw == null) return false;
-            var decoded = raw.Sanitized();
+            var decoded = raw.SanitizedFromCode();
 
             var changes = ChallengeLimits.OptionChanges(raw, decoded);
             var model = Challenge(payload["c"] as JObject, decoded, changes, new List<string>());

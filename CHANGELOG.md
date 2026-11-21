@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Share codes read the same in the mod and on the website** (#236): a code with the tiers a game picked at random
+  kept that list in the mod, while the website drops it. The mod now drops it too, and a saved game keeps only tiers
+  that exist, each once. Nothing played differently, since a game works the list out again when it starts.
 - **No more errors in the log with All Fortified** (#228): every custom game with All Fortified on logged three
   `KeyNotFoundException` errors per Lych tier while it loaded, whichever boss was played, because the mod looked for
   fortified undead MOABs the game doesn't have. The game played the same, but the log no longer fills with them.
