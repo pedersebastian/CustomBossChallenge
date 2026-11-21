@@ -77,6 +77,12 @@ public static class GildebloonLook
         public float BurstStart = -100;
         public readonly List<(Transform Coin, Vector3 Velocity)> Spray = new();
         public bool Tinted;
+
+        /// <summary>The body modelled in Blender, when it is the one shown (<see cref="GildebloonBody"/>)</summary>
+        public GildebloonBody.Instance? Body;
+        public float HealthShare = 1, LastHitTime = -100, NextIdle;
+        public int Dashes;
+        public bool Armoured;
     }
 
     /// <summary>The looks on the bloons alive, by the bloon</summary>
@@ -98,6 +104,24 @@ public static class GildebloonLook
     private static readonly List<Shown> Bursts = new();
 
     private const float BurstSeconds = 1.4f;
+
+    /// <summary>The longest a modelled body plays its end (Death or Escape, then Payout) after its bloon is gone</summary>
+    private const float BodyEndSeconds = 8;
+
+    /// <summary>Bosses whose Spawn has played, so a new display for the same bloon doesn't play it again</summary>
+    private static readonly HashSet<IntPtr> Spawned = new();
+
+    /// <summary>A Toll or a Tax Collector's leak not yet shown, how much; and when a payout came, for the body's end</summary>
+    private static double pendingToll;
+    private static float payoutAt = -100;
+    private static int pendingInterest;
+    private static bool listening;
+
+    /// <summary>A Toll at least this big makes it smug afterwards (<c>IdleSmug</c>)</summary>
+    private const double SmugToll = 250;
+
+    /// <summary>The animation the boss's modelled body played last, for tests</summary>
+    public static string? LastAnimation => Boss?.Body?.Player.LastPlayed;
 
     /// <summary>The look on the Gildebloon alive, for tests</summary>
     public static GameObject? Look => Boss?.Look;
@@ -169,6 +193,8 @@ public static class GildebloonLook
             // The game builds a new display over a few frames; the look waits until it has its parts
             if (!Attach(look, graphic.gameObject, bloon.bloonModel.id.Contains(TierBossMath.EliteSuffix))) return;
             Looks[bloon.Pointer] = look;
+            // after the skull's Repossession, which sends them
+            if (collector) Boss?.Body?.Player.Queue("Dispatch");
         }
 
         look.Frames++;
@@ -247,6 +273,20 @@ public static class GildebloonLook
         var renderers = graphic.GetComponentsInChildren<Renderer>(true).Where(r => !r.forceRenderingOff).ToList();
         if (renderers.Count == 0) return false;
         if (!loaded) Load();
+        if (!look.Collector && GildebloonBody.Ready && GildebloonBody.Build(graphic.transform, elite, MapWidth) is { } body)
+        {
+            look.Body = body;
+            look.Look = body.Root;
+            HideBody(look, graphic);
+            look.Skulls = SkullsPassed(look.Bloon);
+            look.Dashes = GildebloonBrain.Dashes;
+            look.Armoured = GildebloonBrain.Armour(look.Bloon) > 0;
+            look.HealthShare = HealthShare(look.Bloon);
+            look.NextIdle = Time.time + 8;
+            if (Spawned.Add(look.Bloon.Pointer)) body.Player.Play(elite ? "EliteSpawn" : "Spawn");
+            return true;
+        }
+
         // A Tax Collector is always the bright gold one, Elite's only bigger
         var layout = Layouts.TryGetValue(elite && !look.Collector ? "GildebloonElite" : "Gildebloon", out var own) ? own
             : Layouts.TryGetValue("Gildebloon", out var normal) ? normal : null;
@@ -316,7 +356,16 @@ public static class GildebloonLook
             if (look.Look != null)
             {
                 // Gone: it bursts where it was, on the map, also when the game put its display away at once
-                if (gone)
+                if (gone && look.Body != null)
+                {
+                    look.Look.transform.SetParent(BossPresentation.MapRoot(), true);
+                    look.BurstStart = Time.time;
+                    look.Body.Player.Play(Leaked(look.Bloon) ? "Escape" : "Death");
+                    Spawned.Remove(look.Bloon.Pointer);
+                    Bursts.Add(look);
+                    BurstCount++;
+                }
+                else if (gone)
                 {
                     look.Look.transform.SetParent(BossPresentation.MapRoot(), true);
                     look.BurstStart = Time.time;
@@ -384,6 +433,14 @@ public static class GildebloonLook
         {
             var look = Bursts[i];
             var age = Time.time - look.BurstStart;
+            if (look.Body != null && look.Look != null)
+            {
+                if (PlayEnd(look, age, delta)) continue;
+                Object.Destroy(look.Look);
+                Bursts.RemoveAt(i);
+                continue;
+            }
+
             if (look.Look == null || age > BurstSeconds)
             {
                 if (look.Look != null) Object.Destroy(look.Look);
@@ -400,6 +457,27 @@ public static class GildebloonLook
         }
     }
 
+    /// <summary>
+    /// Plays a gone modelled body's end: Death or Escape, and after Death the Payout once the brain paid out. False
+    /// once it has played (or took too long), to take it away.
+    /// </summary>
+    private static bool PlayEnd(Shown look, float age, float delta)
+    {
+        if (age > BodyEndSeconds) return false;
+        var player = look.Body!.Player;
+        if (player.LastPlayed == "Death" && payoutAt >= look.BurstStart - 1)
+        {
+            payoutAt = -100;
+            player.Queue("Payout");
+        }
+
+        player.Advance(delta);
+        GildebloonBody.Apply(look.Body);
+        if (!player.Finished) return true;
+        // After Death, a moment for a payout to come (it isn't paid when a lower tier was beaten before)
+        return player.LastPlayed == "Death" && age < 5f;
+    }
+
     private static void Restore(List<Renderer> hidden)
     {
         foreach (var renderer in hidden)
@@ -412,6 +490,9 @@ public static class GildebloonLook
     /// <summary>Takes every look off, at the end of a match</summary>
     private static void ClearAll()
     {
+        Spawned.Clear();
+        pendingToll = 0;
+        pendingInterest = 0;
         if (Looks.Count == 0 && Leaving.Count == 0 && Bursts.Count == 0) return;
         foreach (var look in Looks.Values) Finish(look, false);
         Looks.Clear();
@@ -522,6 +603,12 @@ public static class GildebloonLook
     private static void Animate(Shown look, Bloon boss)
     {
         if (look.Look == null) return;
+        if (look.Body != null)
+        {
+            AnimateBody(look, look.Body, boss);
+            return;
+        }
+
         var time = Time.time;
         var delta = Time.deltaTime * Math.Max(1, Time.timeScale);
         if (look.Dial != null) look.Dial.Rotate(0, 120 * delta, 0, Space.Self);
@@ -551,6 +638,89 @@ public static class GildebloonLook
         }
 
         MoveSpray(look, delta, 1.5f);
+    }
+
+    /// <summary>
+    /// Whether a gone boss leaked rather than was beaten: it still has health. Read from the bloon itself, not the
+    /// last frame's share, since the hit that beats it may come in the same frame it is gone.
+    /// </summary>
+    private static bool Leaked(Bloon boss)
+    {
+        try
+        {
+            return boss.health > 0;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private static float HealthShare(Bloon boss) =>
+        boss.bloonModel.maxHealth > 0 ? Math.Clamp(boss.health / (float) boss.bloonModel.maxHealth, 0, 1) : 1;
+
+    /// <summary>
+    /// Starts the modelled body's animations from what happened since the last frame, then poses it. Tarnish has an
+    /// animation but nothing starts it yet: telling an Alchemist's or Glue Gunner's hit apart needs a hook in the
+    /// game's damage, and patching <c>Bloon.Damage</c> crashes it (see docs/gildebloon.md).
+    /// </summary>
+    private static void AnimateBody(Shown look, GildebloonBody.Instance body, Bloon boss)
+    {
+        var player = body.Player;
+        var time = Time.time;
+
+        var share = HealthShare(boss);
+        player.SetBase(GildebloonClipPlayer.BaseFor(share));
+        if (share < look.HealthShare - 0.002f && time - look.LastHitTime > 0.4f)
+        {
+            look.LastHitTime = time;
+            player.Play("Hit");
+        }
+        look.HealthShare = share;
+
+        var skulls = SkullsPassed(boss);
+        if (skulls > look.Skulls)
+        {
+            look.Skulls = skulls;
+            player.Play("Repossession");
+        }
+
+        if (GildebloonBrain.Dashes > look.Dashes)
+        {
+            look.Dashes = GildebloonBrain.Dashes;
+            player.Play("Skittish");
+        }
+
+        var armoured = GildebloonBrain.Armour(boss) > 0;
+        if (armoured != look.Armoured)
+        {
+            player.Play(armoured ? "VaultUp" : "VaultBreak");
+            look.Armoured = armoured;
+        }
+
+        if (pendingInterest > 0)
+        {
+            pendingInterest = 0;
+            player.Play("Interest");
+        }
+
+        if (pendingToll > 0)
+        {
+            var toll = pendingToll;
+            pendingToll = 0;
+            if (player.Play("Toll") && toll >= SmugToll) player.Queue("IdleSmug");
+        }
+
+        // Now and then, when nothing else plays, one of its idles
+        if (player.Current != null) look.NextIdle = Math.Max(look.NextIdle, time + 6);
+        else if (time >= look.NextIdle && player.Base == "Idle")
+        {
+            player.Play(UnityEngine.Random.value < 0.5f ? "IdleCount" : "IdlePolish");
+            look.NextIdle = time + UnityEngine.Random.Range(9f, 15f);
+        }
+
+        player.Advance(Time.deltaTime * Math.Max(1, Time.timeScale));
+        GildebloonBody.Apply(body);
     }
 
     /// <summary>Throws <paramref name="count"/> coins out of the look's top</summary>
@@ -630,6 +800,17 @@ public static class GildebloonLook
         {
             ReadLayouts();
             GildebloonPileMesh.Load();
+            GildebloonBody.Load();
+            if (!listening)
+            {
+                listening = true;
+                GildebloonBrain.CashTaken += cash =>
+                {
+                    if (cash > 0) pendingToll += cash;
+                    else payoutAt = Time.time;
+                };
+                GildebloonBrain.InterestAdded += _ => pendingInterest++;
+            }
             foreach (var name in TextureNames)
             {
                 var texture = BTD_Mod_Helper.Api.ModContent.GetTexture<CustomBossChallenge>($"Gildebloon{name}Texture");

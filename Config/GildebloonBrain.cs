@@ -137,6 +137,9 @@ public static class GildebloonBrain
     /// <summary>A Gildebloon took cash, or paid it back (a negative amount); the HUD shows it</summary>
     public static event Action<double>? CashTaken;
 
+    /// <summary>Elite's Interest went into the Vault, with how much</summary>
+    public static event Action<double>? InterestAdded;
+
     /// <summary>Forgets the last match; a new or restarted match starts here</summary>
     public static void Reset()
     {
@@ -194,6 +197,7 @@ public static class GildebloonBrain
                 var interest = Math.Floor(current.Stolen * InterestShare);
                 current.Stolen += interest;
                 AddShield(boss, current, interest);
+                if (interest > 0) InterestAdded?.Invoke(interest);
             }
         }
 
@@ -310,7 +314,8 @@ public static class GildebloonBrain
         ModHelper.Msg<CustomBossChallenge>($"A Tax Collector leaked and took ${amount}");
     }
 
-    private static float Armour(Bloon boss) => boss.HasArmour ? boss.CurrentArmourAmount : 0;
+    /// <summary>What is left of the Vault, the boss's armour</summary>
+    internal static float Armour(Bloon boss) => boss.HasArmour ? boss.CurrentArmourAmount : 0;
 
     private static void AddShield(Bloon boss, Vault current, double cash)
     {

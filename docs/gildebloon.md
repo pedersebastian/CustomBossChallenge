@@ -84,22 +84,32 @@ What could still show of Bloonarius, and how each is handled:
   The pile only takes the place of the track's slime: the ambient one round the map's edges is hidden with nothing in
   its place, though every game boss has one. `tools/blender/gildebloon-map.py` is a proposal for it, not used yet:
   molten gold oozing in from the edges with drips, coins and gold bars stuck in it and sparkles, slowly swelling.
-- **Its own body and animations (proposal).** `tools/blender/gildebloon-boss.py` builds a body in the game's style
-  (bold outlines, yellow gold with a bloon's shine, glints in the eyes, a soft round shadow instead of a cast one)
-  that keeps the part names the mod moves, plus a face, and keys 21 animations, each from the same rest pose and held
-  on its last frame so it plays on its own. Its parts are rigid, so each could be exported as a position, rotation
-  and scale per part and frame for `GildebloonLook`. Not used yet. `tools/blender/render-sheet.py` renders them as a
-  contact sheet. What each is for, and what would start it in the game:
+- **Its own body and animations.** `tools/blender/gildebloon-boss.py` builds a body in the game's style (bold
+  outlines, yellow gold with a bloon's shine, glints in the eyes, a soft round shadow instead of a cast one) that keeps
+  the part names the mod moves, plus a face, and keys 21 animations, each from the same rest pose and held on its last
+  frame so it plays on its own. `tools/blender/render-sheet.py` renders them as a contact sheet.
+  `tools/blender/build-boss.py` (background Blender) writes `Bundles/gildebloon-body.gba.gz` through
+  `tools/blender/export-boss.py`, which describes the format: every part is rigid, so an animation is a position,
+  rotation and scale per part and frame, and the toon bands are baked into a ramp like the pile's.
+  `Visuals/GildebloonBodyData.cs` reads it and holds the player (one animation over a base loop, a priority for what
+  may cut in, a short blend; free of the game's types, so `UnitTests/GildebloonBodyTests.cs` checks both);
+  `Visuals/GildebloonBody.cs` builds the game's meshes and poses them. The boss gets this body when the file loaded,
+  else the older code-made one; Tax Collectors keep the code-made vault. What starts each animation
+  (`GildebloonLook.AnimateBody`, `Finish`, `PlayEnd`):
 
-  | Animation | What | Would start on |
+  | Animation | What | Starts on |
   |---|---|---|
-  | Spawn, EliteSpawn | up out of the pile; Elite's crown of spikes shoots up | the look attaching to the boss; Elite by its model id |
-  | Idle, IdleCount, IdlePolish, IdleSmug | hovering; flips a coin; polishes its shine; smug after a big Toll | the base loop; a timer; a Toll over a threshold |
-  | Damaged66, Damaged33, Damaged10 | dents; cracks, the door rattling, sweat; coins trickling out (loops) | its health share passing 0.66, 0.33, 0.10 |
-  | Hit, TarnishHit | squash and squint; grey-green tarnish flashing on the gold | a health drop; a hit from an Alchemist or Glue Gunner (needs a safe hook: `Bloon.Damage` can't be patched) |
-  | Toll, Interest, VaultUp, VaultBreak | coins into the slot; the Vault pulsing (Elite); the shield growing; the shield shattering | `GildebloonBrain.CashTaken`; a new Interest event; the armour from 0 up; to 0 |
-  | Repossession, Skittish, Dispatch | a skull; the dash ahead; a Tax Collector popping out of the door | `GildebloonBrain.Repossessed`; `Dashes` going up; a Tax Collector's look attaching |
-  | Death, Payout, Escape | bursts into coins; the coins streaming to the cash at the top right; grins and dives out | its health reaching 0; `CashTaken` below 0; it leaking |
+  | Spawn, EliteSpawn | up out of the pile; Elite's crown of spikes shoots up | the body attaching to a boss for the first time; Elite by its model id |
+  | Idle, IdleCount, IdlePolish, IdleSmug | hovering; flips a coin; polishes its shine; smug | the base loop; every 9-15 s when nothing plays; after a Toll of $250 or more |
+  | Damaged66, Damaged33, Damaged10 | dents; cracks, the door rattling, sweat; coins trickling out (loops) | its health share at or under 0.66, 0.33, 0.10 (they replace Idle) |
+  | Hit, TarnishHit | squash and squint; grey-green tarnish flashing on the gold | a drop in health (at most every 0.4 s); **nothing yet** for Tarnish: telling an Alchemist's or Glue Gunner's hit apart needs a hook in the game's damage, and `Bloon.Damage` can't be patched. The candidate is a postfix on `DamageModifierForTag.GetDamageMultiplier`, to try in the game |
+  | Toll, Interest, VaultUp, VaultBreak | coins into the slot; the Vault pulsing (Elite); the shield growing; the shield shattering | `GildebloonBrain.CashTaken` above 0 (a Toll or a Tax Collector's leak); `GildebloonBrain.InterestAdded`; the armour from 0 up; to 0 |
+  | Repossession, Skittish, Dispatch | a skull; the dash ahead; a Tax Collector popping out of the door | a skull passed; `GildebloonBrain.Dashes` going up; a Tax Collector's look attaching |
+  | Death, Escape, Payout | bursts into coins; grins and dives out; the coins streaming to the cash at the top right | gone with no health left; gone with health left (it leaked); `CashTaken` below 0 after Death |
+
+  Not seen in the game yet (2026-11-21): which way it faces (`GildebloonBody.FacingYaw`), its size against
+  Bloonarius's (`GildebloonBody.ModelWidth`), how the see-through Vault and shadow draw, and the clips' timing at the
+  game's speeds.
 - **Its body as it takes damage.** The game's damage-state animation turns the body's parts back on every frame
   (setting `Renderer.enabled`), so turning them off didn't hold: after a skull the Elite's damaged parts drew through.
   They are now kept from drawing with `Renderer.forceRenderingOff`, which the animations leave alone, checked every

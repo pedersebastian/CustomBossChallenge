@@ -111,7 +111,7 @@ public static class GildebloonPileMesh
     /// interop for each and took 17 s for the pile at the game's start (2026-11-18). An Il2Cpp array's elements start
     /// after its header of four pointers.
     /// </summary>
-    private static Il2CppStructArray<T> ToIl2Cpp<T>(byte[] bytes, int count) where T : unmanaged
+    internal static Il2CppStructArray<T> ToIl2Cpp<T>(byte[] bytes, int count) where T : unmanaged
     {
         if (bytes.Length != count * Marshal.SizeOf<T>()) throw new EndOfStreamException($"{bytes.Length} bytes for {count} {typeof(T).Name}");
         var array = new Il2CppStructArray<T>(count);

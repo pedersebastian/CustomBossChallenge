@@ -53,15 +53,21 @@ def lin(hexstr):
     return (*c, 1.0)
 
 
-# ---- its own scene, emptied on a rerun
-scene = bpy.data.scenes.get(SCENE) or bpy.data.scenes.new(SCENE)
+# ---- its own scene, emptied on a rerun; in a background build (no window) the context's scene, renamed, so what
+# evaluates through the context (the $ text, the exporter) sees it
+if bpy.context.window is not None:
+    scene = bpy.data.scenes.get(SCENE) or bpy.data.scenes.new(SCENE)
+else:
+    scene = bpy.context.scene
+    scene.name = SCENE
 for o in list(scene.collection.all_objects):
     bpy.data.objects.remove(o, do_unlink=True)
 for coll in (bpy.data.meshes, bpy.data.curves, bpy.data.actions):
     for d in list(coll):
         if d.users == 0:
             coll.remove(d)
-bpy.context.window.scene = scene
+if bpy.context.window is not None:
+    bpy.context.window.scene = scene
 scene.timeline_markers.clear()
 col = bpy.data.collections.get("GildebloonBody") or bpy.data.collections.new("GildebloonBody")
 if col.name not in scene.collection.children:
