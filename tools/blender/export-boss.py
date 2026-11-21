@@ -12,7 +12,8 @@ material's row. The outlines are the shells of the Solidify modifiers.
 
 Format, little-endian, gzipped:
   "GBA1"
-  rows: int count; per row: kind (byte: 0 toon, 1 see-through), shade, base, light (3 x RGB bytes; light = base when
+  rows: int count; per row: kind (byte: 0 toon; see-through 1 fading out along x, 2 showing most at x's end), shade,
+        base, light (3 x RGB bytes; light = base when
         there is none), cut, light cut (2 floats), alpha (float)
   parts: int count; per part: name (byte length + UTF-8), parent (int, -1 for the base under the body), flags (byte:
         1 Elite's, 2 see-through), rest position (3 floats), rotation (4 floats, x y z w), scale (3 floats), then its
@@ -60,8 +61,11 @@ def row_of(mat):
     em = next((n for n in nodes if n.type == "EMISSION"), None)
     colour = srgb(em.inputs[0].default_value) if em is not None else srgb(mat.diffuse_color)
     if any(n.type == "BSDF_TRANSPARENT" for n in nodes):
-        alpha = 0.45 if "Shadow" in mat.name else 0.3
-        return (1, colour, colour, colour, 0.0, 1.0, alpha)
+        # see-through: a shadow fades out from its middle (kind 1), the Vault's shell shows most at its rim (kind 2);
+        # the UV's x says how far out / how much rim
+        if "Shadow" in mat.name:
+            return (1, colour, colour, colour, 0.0, 1.0, 0.8)
+        return (2, colour, colour, colour, 0.0, 1.0, 0.55)
     return (0, colour, colour, colour, 0.0, 1.0, 1.0)
 
 
@@ -173,14 +177,20 @@ for o in order:
     for tri in me.loop_triangles:
         mat = me.materials[tri.material_index] if me.materials else None
         r = row_for(mat)
-        if rows[r][0] == 1:
+        if rows[r][0] != 0:
             see_through = True
         ids = []
         for loop in tri.loops:
             co = me.vertices[me.loops[loop].vertex_index].co
             n = (rot @ normals[loop].vector).normalized()
-            lit = 0.5 if rows[r][0] == 1 or (mat and mat.name.startswith(("Gilde_Outline", "Gilde_Shine", "Gilde_Slot", "Gilde_Pupil"))) \
-                else min(0.999, max(0.001, AMBIENT + max(0.0, n.dot(LIGHT))))
+            if rows[r][0] == 1:
+                lit = min(0.999, Vector((co.x, co.y)).length)  # a disc of radius 1: how far from its middle
+            elif rows[r][0] == 2:
+                lit = min(0.999, max(0.001, 1 - abs(n.z)))  # seen from above, the rim is where it turns sideways
+            elif mat and mat.name.startswith(("Gilde_Outline", "Gilde_Shine", "Gilde_Slot", "Gilde_Pupil")):
+                lit = 0.5
+            else:
+                lit = min(0.999, max(0.001, AMBIENT + max(0.0, n.dot(LIGHT))))
             p = (co.x, co.z, co.y)
             u = (round(lit, 3), r)
             k = (round(p[0], 5), round(p[1], 5), round(p[2], 5), u)

@@ -287,6 +287,14 @@ public static class GildebloonLook
             return true;
         }
 
+        // A Tax Collector: the gold MOAB Gildebloon sends out in Dispatch, when the modelled body loaded
+        if (look.Collector && GildebloonBody.BuildCollector(graphic.transform, elite ? EliteCollectorLength : CollectorLength) is { } collector)
+        {
+            look.Look = collector;
+            HideBody(look, graphic);
+            return true;
+        }
+
         // A Tax Collector is always the bright gold one, Elite's only bigger
         var layout = Layouts.TryGetValue(elite && !look.Collector ? "GildebloonElite" : "Gildebloon", out var own) ? own
             : Layouts.TryGetValue("Gildebloon", out var normal) ? normal : null;

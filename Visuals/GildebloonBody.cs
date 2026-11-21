@@ -31,7 +31,7 @@ public static class GildebloonBody
 
     public static GildebloonBodyData? Data { get; private set; }
     private static Mesh?[] meshes = [];
-    private static Material? opaque;
+    private static Material? opaque, seeThrough;
     private static bool loaded;
     private static int rootPart = -1;
 
@@ -110,14 +110,13 @@ public static class GildebloonBody
             var made = new GameObject(part.Name);
             made.transform.SetParent(part.Parent >= 0 ? parts[part.Parent] : root.transform, false);
             parts[i] = made.transform;
-            // See-through parts (the Vault's shell, the shadow) aren't drawn: with the game's URP Unlit set to blend
-            // they came out as a dark, solid film (2026-11-21). The Vault shows in the HUD; its animations keep their
-            // coins and motion.
-            if (meshes[i] is not { } mesh || part.SeeThrough) continue;
+            // See-through parts (the Vault's shell, the shadow) only with a material that blends: the game's URP
+            // Unlit set to blend came out as a dark, solid film (2026-11-21)
+            if (meshes[i] is not { } mesh || part.SeeThrough && seeThrough == null) continue;
             made.AddComponent<MeshFilter>().sharedMesh = mesh;
             var renderer = made.AddComponent<MeshRenderer>();
             renderer.shadowCastingMode = ShadowCastingMode.Off;
-            renderer.sharedMaterial = opaque;
+            renderer.sharedMaterial = part.SeeThrough ? seeThrough : opaque;
         }
 
         var scale = display.lossyScale.x;
@@ -131,6 +130,48 @@ public static class GildebloonBody
         var instance = new Instance {Root = root, Parts = parts, Player = new GildebloonClipPlayer(data), Elite = elite};
         Apply(instance);
         return instance;
+    }
+
+    /// <summary>How long the Tax Collector (the gold MOAB of Dispatch) is in the body's units, fins included</summary>
+    public const float CollectorModelLength = 1.3f;
+
+    /// <summary>
+    /// Builds a Tax Collector's look under its display: the gold MOAB Gildebloon sends out in Dispatch, the parts under
+    /// <c>CollectorProxy</c>, <paramref name="length"/> of the game's units long. Null without the body.
+    /// </summary>
+    public static GameObject? BuildCollector(Transform display, float length)
+    {
+        if (!Ready) return null;
+        var data = Data!;
+        var proxy = data.PartIndex("CollectorProxy");
+        if (proxy < 0) return null;
+        var root = new GameObject(GildebloonLook.RootName + "Collector");
+        root.transform.SetParent(display, false);
+        var made = new Transform?[data.Parts.Count];
+        made[proxy] = root.transform;
+        for (var i = proxy + 1; i < data.Parts.Count; i++)
+        {
+            var part = data.Parts[i];
+            if (part.Parent < 0 || made[part.Parent] == null) continue;
+            var go = new GameObject(part.Name);
+            go.transform.SetParent(made[part.Parent], false);
+            var rest = part.Rest;
+            go.transform.localPosition = new Vector3(rest.Position.X, rest.Position.Y, rest.Position.Z);
+            go.transform.localRotation = new Quaternion(rest.Rotation.X, rest.Rotation.Y, rest.Rotation.Z, rest.Rotation.W);
+            go.transform.localScale = new Vector3(rest.Scale.X, rest.Scale.Y, rest.Scale.Z);
+            made[i] = go.transform;
+            if (meshes[i] is not { } mesh || part.SeeThrough) continue;
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var renderer = go.AddComponent<MeshRenderer>();
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.sharedMaterial = opaque;
+        }
+
+        var scale = display.lossyScale.x;
+        root.transform.localScale = Vector3.one * (length / CollectorModelLength / (scale > 0 ? scale : 1));
+        root.transform.localRotation = Quaternion.Euler(0, FacingYaw, 0);
+        root.transform.localPosition = Vector3.zero;
+        return root;
     }
 
     /// <summary>Puts every part where the animation playing has it now. Elite's band and crown show on an Elite unless an
@@ -169,6 +210,17 @@ public static class GildebloonBody
         opaque = new Material(shader) {name = "Gildebloon Body", hideFlags = HideFlags.DontUnloadUnusedAsset, mainTexture = ramp};
         if (opaque.HasProperty("_BaseMap")) opaque.SetTexture("_BaseMap", ramp);
         if (opaque.HasProperty("_BaseColor")) opaque.SetColor("_BaseColor", Color.white);
+        // Unity's own sprite shader blends by the texture's alpha, as any game with sprites has it
+        var sprites = Shader.Find("Sprites/Default");
+        if (sprites != null)
+        {
+            seeThrough = new Material(sprites)
+            {
+                name = "Gildebloon Body See-through", hideFlags = HideFlags.DontUnloadUnusedAsset, mainTexture = ramp,
+                renderQueue = (int) RenderQueue.Transparent
+            };
+        }
+        else ModHelper.Warning<CustomBossChallenge>("Sprites/Default isn't there: Gildebloon's shadow and Vault aren't drawn");
         return true;
     }
 
@@ -188,7 +240,7 @@ public static class GildebloonBody
             {
                 var lit = (x + 0.5f) / RampWidth;
                 var rgb = lit >= r.LightCut ? r.Light : lit >= r.Cut ? r.Base : r.Shade;
-                var colour = new Color(rgb[0] / 255f, rgb[1] / 255f, rgb[2] / 255f, r.Alpha);
+                var colour = new Color(rgb[0] / 255f, rgb[1] / 255f, rgb[2] / 255f, r.AlphaAt(lit));
                 for (var y = 0; y < RowHeight; y++) texture.SetPixel(x, row * RowHeight + y, colour);
             }
         }

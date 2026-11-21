@@ -538,6 +538,8 @@ for o in col.objects:
     o.visible_shadow = False
 sbm2 = bmesh.new()
 bmesh.ops.create_circle(sbm2, cap_ends=True, segments=48, radius=1)
+# a vertex in the middle: the game's shadow fades by each corner's distance from it (export-boss.py)
+bmesh.ops.poke(sbm2, faces=list(sbm2.faces))
 SHADOW_SIZE = (1.55, 1.75, 1)
 shadow = obj("Shadow", finish(sbm2, "Gilde_ShadowDisc", [SHADOW], smooth=False), loc=(0, 0, 0.012),
              scale=SHADOW_SIZE)

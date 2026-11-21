@@ -25,8 +25,28 @@ public sealed class GildebloonBodyData
                 Vector3.Lerp(a.Scale, b.Scale, t));
     }
 
-    /// <summary>A ramp row: shade, base and light colours (RGB bytes), where base and light start, how opaque</summary>
-    public sealed record Row(bool SeeThrough, byte[] Shade, byte[] Base, byte[] Light, float Cut, float LightCut, float Alpha);
+    /// <summary>
+    /// A ramp row: its kind (0 toon; see-through: 1 fading out along the ramp, a shadow; 2 showing most at its end, the
+    /// Vault's rim), shade, base and light colours (RGB bytes), where base and light start, how opaque
+    /// </summary>
+    public sealed record Row(byte Kind, byte[] Shade, byte[] Base, byte[] Light, float Cut, float LightCut, float Alpha)
+    {
+        public bool SeeThrough => Kind != 0;
+
+        /// <summary>How opaque the ramp is at <paramref name="x"/> (0 to 1 along it)</summary>
+        public float AlphaAt(float x) => Kind switch
+        {
+            1 => Alpha * (1 - SmoothStep(0.5f, 1, x)),
+            2 => Alpha * (0.2f + 0.8f * x * x),
+            _ => Alpha
+        };
+
+        private static float SmoothStep(float from, float to, float x)
+        {
+            var t = Math.Clamp((x - from) / (to - from), 0, 1);
+            return t * t * (3 - 2 * t);
+        }
+    }
 
     public sealed class Part
     {
@@ -89,7 +109,7 @@ public sealed class GildebloonBodyData
             var shade = reader.ReadBytes(3);
             var @base = reader.ReadBytes(3);
             var light = reader.ReadBytes(3);
-            data.Rows.Add(new Row(kind == 1, shade, @base, light, reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
+            data.Rows.Add(new Row(kind, shade, @base, light, reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
         }
 
         var parts = reader.ReadInt32();
