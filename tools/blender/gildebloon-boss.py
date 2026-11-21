@@ -50,7 +50,19 @@ for coll in (bpy.data.meshes, bpy.data.curves, bpy.data.actions):
             coll.remove(d)
 bpy.context.window.scene = scene
 scene.timeline_markers.clear()
-col = scene.collection
+col = bpy.data.collections.get("GildebloonBody") or bpy.data.collections.new("GildebloonBody")
+if col.name not in scene.collection.children:
+    scene.collection.children.link(col)
+
+
+def to_stage(o):
+    """Moves a part of the stage (and its children) out of the body's collection"""
+    for x in [o] + list(o.children_recursive):
+        if x.name in col.objects:
+            col.objects.unlink(x)
+        if x.name not in scene.collection.objects:
+            scene.collection.objects.link(x)
+    return o
 
 
 def link(obj, parent=None):
@@ -127,7 +139,7 @@ def glass(name, colour, alpha):
     return m
 
 
-GOLD = toon("Gilde_Gold", "#d98a00", "#ffc21a", "#fff1a0")
+GOLD = toon("Gilde_Gold", "#e58e00", "#ffcf26", "#fff6b8", cuts=(0.3, 0.82))
 GOLD_DARK = toon("Gilde_GoldInner", "#b86e00", "#e9a10e", None)
 GOLD_FACE = toon("Gilde_GoldFace", "#e59a00", "#ffd23d", "#fff6c0")
 IRON = toon("Gilde_Iron", "#3a3f48", "#6b7380", "#aab2bd")
@@ -138,6 +150,37 @@ GRASS = toon("Gilde_Grass", "#5a9a2e", "#84c441", None, cuts=(0.42, 1))
 WHITE = toon("Gilde_EyeWhite", "#c9d2dc", "#ffffff", None, cuts=(0.3, 1))
 BLACK = flat("Gilde_Pupil", "#120a02")
 SLOT = flat("Gilde_Slot", "#2a1404")
+SHINE = flat("Gilde_Shine", "#ffffff")
+
+
+def blob_shadow(name):
+    """BTD6 bloons have a soft round shadow under them rather than a cast one"""
+    m = bpy.data.materials.get(name) or bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    gr = nt.nodes.new("ShaderNodeTexGradient")
+    gr.gradient_type = "SPHERICAL"
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    mr.inputs[4].default_value = 0.62
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs[0].default_value = lin("#1d3a0c")
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(tc.outputs["Object"], gr.inputs[0])
+    nt.links.new(gr.outputs[1], mr.inputs[0])
+    nt.links.new(mr.outputs[0], mix.inputs[0])
+    nt.links.new(tr.outputs[0], mix.inputs[1])
+    nt.links.new(em.outputs[0], mix.inputs[2])
+    nt.links.new(mix.outputs[0], out.inputs[0])
+    if hasattr(m, "surface_render_method"):
+        m.surface_render_method = "BLENDED"
+    return m
+
+
+SHADOW = blob_shadow("Gilde_BlobShadow")
 RING = flat("Gilde_Reach", "#ffe066")
 VAULT = glass("Gilde_Vault", "#ffd23d", 0.08)
 LINE = flat("Gilde_Outline", "#2a1a06")
@@ -261,13 +304,15 @@ def empty(name, parent=None, loc=(0, 0, 0)):
 HULL = Vector((1.0, 1.25, 0.8))
 HOVER = 1.25
 root = empty("Gildebloon", loc=(0, 0, HOVER))
-hull = obj("Hull", ellipsoid("Gilde_Hull", HULL, GOLD), root, line=0.035)
+hull = obj("Hull", ellipsoid("Gilde_Hull", HULL, GOLD), root, line=0.055)
 obj("Seam", torus("Gilde_Seam", 1.0, 0.045, GOLD_DARK, squash=(1.0, 1.25)), hull, line=0.012)
 merid = torus("Gilde_Meridian", 1.0, 0.035, GOLD_DARK, squash=(1.0, 0.8))
 obj("SeamMeridian", merid, hull, rot=(math.pi / 2, 0, math.pi / 2), scale=(1.0, 1.0, 1.25), line=0.01)
 rivet = ellipsoid("Gilde_Rivet", (0.05, 0.05, 0.05), IRON, 10, 6)
 for i in range(18):
     a = 2 * math.pi * (i + 0.5) / 18
+    if abs(a - 1.5 * math.pi) < 0.45:  # room for the coin slot on the band at the front
+        continue
     obj(f"Rivet{i}", rivet, hull, loc=(1.035 * math.cos(a), 1.035 * 1.25 * math.sin(a), 0.06))
     obj(f"RivetLow{i}", rivet, hull, loc=(1.035 * math.cos(a), 1.035 * 1.25 * math.sin(a), -0.06))
 
@@ -280,7 +325,7 @@ bmesh_tmp.from_mesh(door_me)
 bmesh.ops.translate(bmesh_tmp, vec=(0, -0.5, 0), verts=bmesh_tmp.verts)  # the hinge is the object's origin
 bmesh_tmp.to_mesh(door_me)
 bmesh_tmp.free()
-door = obj("VaultDoor", door_me, hull, loc=(0, 0.5, TOP + 0.03), line=0.015)
+door = obj("VaultDoor", door_me, hull, loc=(0, 0.5, TOP + 0.03), line=0.025)
 obj("DoorBolts", torus("Gilde_DoorBolts", 0.38, 0.025, IRON, seg=32, segr=6), door, loc=(0, -0.5, 0.05))
 dial = obj("Dial", disc("Gilde_Dial", 0.16, 0.08, IRON), door, loc=(0, -0.5, 0.09), line=0.01)
 spoke = box("Gilde_Spoke", (0.42, 0.045, 0.045), IRON)
@@ -295,19 +340,29 @@ eyes.rotation_euler = (-0.62, 0, 0)  # faces the game's camera, which looks down
 eyes.scale = (1.25,) * 3
 eye_me = ellipsoid("Gilde_Eye", (0.2, 0.09, 0.24), WHITE, 24, 12)
 pupil_me = ellipsoid("Gilde_PupilMesh", (0.085, 0.05, 0.1), BLACK, 16, 8)
-brow_me = box("Gilde_Brow", (0.3, 0.06, 0.07), BLACK)
+brow_me = box("Gilde_Brow", (0.32, 0.06, 0.09), BLACK)
+glint_me = ellipsoid("Gilde_Glint", (0.03, 0.012, 0.036), SHINE, 10, 6)
 x_me = box("Gilde_XBar", (0.42, 0.05, 0.1), BLACK)
 for side, sx in (("Left", -1), ("Right", 1)):
-    e = obj(f"Eye{side}", eye_me, eyes, loc=(0.34 * sx, 0, 0), rot=(0, 0, -0.12 * sx), line=0.012)
-    obj(f"Pupil{side}", pupil_me, e, loc=(-0.03 * sx, -0.07, -0.02))
+    e = obj(f"Eye{side}", eye_me, eyes, loc=(0.34 * sx, 0, 0), rot=(0, 0, -0.12 * sx), line=0.02)
+    pu = obj(f"Pupil{side}", pupil_me, e, loc=(-0.03 * sx, -0.07, -0.02))
+    obj(f"Glint{side}", glint_me, pu, loc=(0.03, -0.045, 0.045))
     obj(f"Brow{side}", brow_me, e, loc=(0.02 * sx, -0.05, 0.26), rot=(0, -0.38 * sx, 0))  # inner ends down: cross
     for k, r in enumerate((0.8, -0.8)):  # crossed eyes for its death, hidden until then
         obj(f"EyeX{side}{k}", x_me, e, loc=(0, -0.09, 0), rot=(0, r, 0))
-mouth = obj("Mouth", box("Gilde_SlotMesh", (0.5, 0.1, 0.09), SLOT), hull, loc=(0, -1.2, 0.14),
-            rot=(-0.25, 0, 0), line=0.012)
+mouth = obj("Mouth", box("Gilde_SlotMesh", (0.5, 0.1, 0.09), SLOT), hull, loc=(0, -1.29, 0.03),
+            rot=(-0.15, 0, 0))
+obj("MouthFrame", box("Gilde_SlotFrame", (0.66, 0.08, 0.2), IRON), mouth, loc=(0, 0.025, 0), line=0.015)
+
+# the shine every bloon has, up on the hull towards the light
+gloss_at = Vector((-0.62, -0.5, 0.8 * math.sqrt(1 - 0.62 ** 2 - (0.5 / 1.25) ** 2)))
+gloss_n = Vector((gloss_at.x, gloss_at.y / 1.25 ** 2, gloss_at.z / 0.8 ** 2)).normalized()
+gloss = obj("Gloss", ellipsoid("Gilde_Gloss", (0.2, 0.08, 0.012), SHINE, 20, 8), hull, loc=gloss_at + gloss_n * 0.005)
+gloss.rotation_euler = gloss_n.to_track_quat("Z", "Y").to_euler()
+gloss.rotation_euler.rotate_axis("Z", 0.7)
 
 # money bags on its sides, the $ towards the camera
-dollar = text_mesh("$", 0.36, 0.02, GREEN)
+dollar = text_mesh("$", 0.5, 0.03, GREEN)
 bag_body = ellipsoid("Gilde_Bag", (0.42, 0.4, 0.46), SACK, 24, 14)
 neck = bmesh.new()
 bmesh.ops.create_cone(neck, cap_ends=True, segments=16, radius1=0.12, radius2=0.2, depth=0.2)
@@ -315,10 +370,10 @@ neck_me = finish(neck, "Gilde_BagNeck", [SACK])
 rope = torus("Gilde_BagRope", 0.13, 0.035, ROPE, seg=20, segr=6)
 for side, sx in (("Left", -1), ("Right", 1)):
     b = empty(f"Bag{side}", hull, loc=(1.12 * sx, 0.05, -0.12))
-    obj(f"Bag{side}Body", bag_body, b, line=0.016)
+    obj(f"Bag{side}Body", bag_body, b, line=0.03)
     obj(f"Bag{side}Neck", neck_me, b, loc=(0, 0, 0.5), line=0.01)
     obj(f"Bag{side}Rope", rope, b, loc=(0, 0, 0.43), line=0.008)
-    obj(f"Bag{side}Dollar", dollar, b, loc=(0.05 * sx, -0.4, 0.02), rot=(math.pi / 2 - 0.15, 0, 0), line=0.008)
+    obj(f"Bag{side}Dollar", dollar, b, loc=(0.05 * sx, -0.4, 0.02), rot=(math.pi / 2 - 0.35, 0, 0), line=0.012)
 
 # a ring of coins circling it
 coin = coin_mesh()
@@ -341,7 +396,7 @@ shell.visible_shadow = False
 # ---- the stage: grass, the pile it rises from, its reach on the ground, sun, camera
 gbm = bmesh.new()
 bmesh.ops.create_circle(gbm, cap_ends=True, segments=64, radius=8)
-obj("Ground", finish(gbm, "Gilde_Ground", [GRASS], smooth=False))
+to_stage(obj("Ground", finish(gbm, "Gilde_Ground", [GRASS], smooth=False)))
 mound = bmesh.new()
 bmesh.ops.create_uvsphere(mound, u_segments=32, v_segments=16, radius=1)
 bmesh.ops.delete(mound, geom=[v for v in mound.verts if v.co.z < -0.01], context="VERTS")
@@ -354,14 +409,32 @@ for i in range(70):
     z = 0.55 * math.sqrt(max(0.0, 1 - (x / 1.7) ** 2 - (y / 1.7) ** 2))
     pile_coins.append(obj(f"PileCoin{i}", coin, pile, loc=(x, y, z / 0.55 * 1.0 * 0.55 + 0.01),
                           rot=(rng.uniform(-0.5, 0.5), rng.uniform(-0.5, 0.5), rng.uniform(0, 6.3)), line=0.006))
+# the pile in a collection of its own too, for the map scene (tools/blender/gildebloon-map.py)
+pile_col = bpy.data.collections.get("GildebloonPile") or bpy.data.collections.new("GildebloonPile")
+if pile_col.name not in scene.collection.children:
+    scene.collection.children.link(pile_col)
+for x in [pile] + list(pile.children_recursive):
+    col.objects.unlink(x)
+    pile_col.objects.link(x)
+for o in col.objects:
+    o.visible_shadow = False
+sbm2 = bmesh.new()
+bmesh.ops.create_circle(sbm2, cap_ends=True, segments=48, radius=1)
+SHADOW_SIZE = (1.55, 1.75, 1)
+shadow = obj("Shadow", finish(sbm2, "Gilde_ShadowDisc", [SHADOW], smooth=False), loc=(0, 0, 0.012),
+             scale=SHADOW_SIZE)
+shadow.visible_shadow = False
+follow = shadow.constraints.new("COPY_LOCATION")
+follow.target = root
+follow.use_z = False
 reach = obj("Reach", torus("Gilde_ReachRing", 1.0, 0.05, RING, seg=64, segr=6), loc=(0, 0, 0.03))
 reach.visible_shadow = False
 
-sun = link(bpy.data.objects.new("Sun", bpy.data.lights.new("Gilde_Sun", "SUN")))
+sun = to_stage(link(bpy.data.objects.new("Sun", bpy.data.lights.new("Gilde_Sun", "SUN"))))
 sun.data.energy = 3.2
 sun.data.angle = math.radians(3)
 sun.rotation_euler = Euler((math.radians(42), 0, math.radians(-35)))
-cam = link(bpy.data.objects.new("Camera", bpy.data.cameras.new("Gilde_Cam")))
+cam = to_stage(link(bpy.data.objects.new("Camera", bpy.data.cameras.new("Gilde_Cam"))))
 cam.data.type = "ORTHO"
 cam.data.ortho_scale = 7.2
 el, az, dist = math.radians(60), math.radians(-90), 20  # the game's camera looks down at 60 degrees
@@ -381,6 +454,8 @@ scene.render.resolution_x, scene.render.resolution_y = 960, 720
 
 # effect coins, hidden (scale 0) when not flying
 fx = [obj(f"FxCoin{i}", coin, scale=0.0, line=0.006) for i in range(28)]
+for c in fx:
+    c.visible_shadow = False
 
 # ---- keyframe helpers
 def key(o, f, loc=None, rot=None, scale=None, interp=None):
@@ -418,6 +493,7 @@ def rest(f):
     key(ring, f, scale=1)
     key(shell, f, scale=0)
     key(reach, f, scale=0)
+    key(shadow, f, scale=SHADOW_SIZE)
     for c in fx:
         key(c, f, scale=0)
 
@@ -458,6 +534,9 @@ for name, f0, f1, _ in ANIMS:
 
 # Spawn: under the pile -> the pile trembles -> it bursts up, coins fly off -> overshoot, squash, settle, eyes open
 key(root, 1, (0, 0, -1.3))
+key(shadow, 1, scale=0)
+key(shadow, 38, scale=0)
+key(shadow, 50, scale=SHADOW_SIZE)
 eyes_to(1, 0.05)
 for f in range(1, 31, 3):
     key(pile, f, scale=(1, 1, 1 + 0.06 * math.sin(f * 1.7) * f / 30))
@@ -624,6 +703,9 @@ key(hull, 376, scale=(1.15, 1.15, 0.9))
 key(hull, 392, scale=(0.55, 0.55, 0.3))
 key(root, 392, (0, 0, 0.35))
 key(hull, 402, scale=0.0)
+key(shadow, 376, scale=SHADOW_SIZE)
+key(shadow, 392, scale=(0.7, 0.8, 1))
+key(shadow, 402, scale=0)
 key(ring, 372, scale=1.0)
 key(ring, 380, scale=1.6)
 key(ring, 384, scale=0.0)

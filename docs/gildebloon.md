@@ -81,6 +81,14 @@ What could still show of Bloonarius, and how each is handled:
   dark outlines (inverted shells). `tools/blender/build-pile.py` writes it to `Bundles/gildebloon-pile.mesh.gz`, with
   the bands baked into UVs on a ramp texture that `Visuals/GildebloonPileMesh.cs` makes, since a model can't come from
   an asset bundle. Without the file the mod builds a simple pile itself.
+  The pile only takes the place of the track's slime: the ambient one round the map's edges is hidden with nothing in
+  its place, though every game boss has one. `tools/blender/gildebloon-map.py` is a proposal for it, not used yet:
+  molten gold oozing in from the edges with drips, coins and gold bars stuck in it and sparkles, slowly swelling.
+- **Its own body and animations (proposal).** `tools/blender/gildebloon-boss.py` builds a body in the game's style
+  (bold outlines, yellow gold with a bloon's shine, glints in the eyes, a soft round shadow instead of a cast one)
+  that keeps the part names the mod moves, plus a face, and keys eight animations: Spawn (up out of the pile), Idle,
+  Hit, Toll, Repossession, Skittish, VaultBreak and Death. Its parts are rigid, so each animation could be exported as
+  a position, rotation and scale per part and frame for `GildebloonLook`. Not used yet.
 - **Its body as it takes damage.** The game's damage-state animation turns the body's parts back on every frame
   (setting `Renderer.enabled`), so turning them off didn't hold: after a skull the Elite's damaged parts drew through.
   They are now kept from drawing with `Renderer.forceRenderingOff`, which the animations leave alone, checked every
