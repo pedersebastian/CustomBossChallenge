@@ -489,6 +489,8 @@ form; to change a file yourself:
    - Keep placeholders like `{0}`. The game puts a number or name there, e.g. `{0} tiers` becomes `7 tiers`.
    - Keep the quotes and the comma at the end of the line. Use `\"` for a quote inside a text.
    - Keep the game's own words where it has them, e.g. its names for Elite, tiers and the Challenge Editor.
+   - In Chinese, Japanese and Korean, the game's fonts only have the characters the game itself uses: another one
+     shows as a box. `LanguageLayoutTest` names any character a translation needs that the fonts lack (#244).
 3. Describe what you changed and propose the change. The **Translations** check above runs on the pull request and
    says if a key, placeholder or comma went missing.
 

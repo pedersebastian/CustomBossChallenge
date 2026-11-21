@@ -87,7 +87,14 @@ public class LanguageLayoutTest : CustomBossTest
         yield return new WaitForSecondsRealtime(1);
         var section = BossEditorSection.Current!;
         Canvas.ForceUpdateCanvases();
+        CheckFonts(section);
         CheckTexts(section.Section.transform, "Boss Creator, Advanced");
+        if (name == "Arabic")
+        {
+            // The mod's Arabic is shaped like the game's own: joined letters, in the order they show (#244)
+            var heading = section.Section.transform.Find("Heading").GetComponent<TMP_Text>().GetParsedText();
+            Expect(heading.Any(c => c is >= '\uFE70' and <= '\uFEFF'), $"Arabic: the heading '{heading}' isn't shaped");
+        }
         var card = section.Strip.Cards[1];
         Log($"{name}: tier 2's speed {Describe(InkRect(card.Speed.Text))} and health {Describe(InkRect(card.Health.Text))}, " +
             $"tier {Describe(InkRect(card.Tier.Text))} and round {Describe(InkRect(card.Round.Text))}");
@@ -133,6 +140,13 @@ public class LanguageLayoutTest : CustomBossTest
             var path = NamePath(text.transform, root);
             var shown = text.GetParsedText() ?? text.text;
             var quoted = shown.Length > 40 ? shown[..40] + "..." : shown;
+            // Every letter in the text's font: a missing one shows as a box (#244)
+            Expect(!shown.Contains('\u25A1') || text.text.Contains('\u25A1'),
+                $"{at}: {path} '{quoted}' shows boxes in its font {text.font?.name}");
+            // No tag shows as letters, also not turned around by right-to-left text
+            var turned = new string(shown.Reverse().ToArray());
+            Expect(!RichText.HasTags(shown) && !RichText.HasTags(turned) && !shown.Contains("noparse", StringComparison.OrdinalIgnoreCase) &&
+                   !shown.Contains("esrapon", StringComparison.OrdinalIgnoreCase), $"{at}: {path} '{quoted}' shows its tags");
             // A long setup name may end in "…" in the Saved Setups list, like in the game's own lists, and so may a
             // past event's details, which name the event that replaced it
             var mayEnd = text.GetComponentInParent<TMP_Dropdown>()?.captionText?.Pointer == text.Pointer || text.name == "Details";
@@ -165,6 +179,37 @@ public class LanguageLayoutTest : CustomBossTest
                 Expect(!Overlap(ra, rb),
                     $"{at}: {NamePath(a.transform, root)} '{a.GetParsedText()}' {Describe(ra)} runs into {NamePath(b.transform, root)} '{b.GetParsedText()}' {Describe(rb)}");
             }
+        }
+    }
+
+    /// <summary>
+    /// Every letter of the mod's texts in this language is in the language's title and body fonts, which only have
+    /// the letters the game needs: one they lack shows as a box (#244), wherever the text is shown
+    /// </summary>
+    private void CheckFonts(BossEditorSection section)
+    {
+        var title = section.Section.transform.Find("Heading").GetComponent<TMP_Text>().font;
+        var body = section.Section.GetComponentsInChildren<TMP_Text>(true)
+            .FirstOrDefault(text => text.font != null && text.font.name.Contains("Body"))?.font;
+        var table = LocalizationManager.Instance.textTable;
+        foreach (var font in new[] {title, body})
+        {
+            if (font == null) continue;
+            var missing = new SortedDictionary<char, string>();
+            foreach (var entry in table)
+            {
+                if (!entry.Key.StartsWith(Texts.KeyPrefix)) continue;
+                foreach (var letter in entry.Key.T())
+                {
+                    if (!char.IsWhiteSpace(letter) && !char.IsControl(letter) && !missing.ContainsKey(letter) &&
+                        !font.HasCharacter(letter, true, false))
+                    {
+                        missing[letter] = entry.Key[Texts.KeyPrefix.Length..];
+                    }
+                }
+            }
+            Expect(missing.Count == 0, $"{language}: {font.name} lacks " +
+                                       string.Join(", ", missing.Select(pair => $"'{pair.Key}' U+{(int) pair.Key:X4} ({pair.Value})")));
         }
     }
 
