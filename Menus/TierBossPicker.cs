@@ -170,7 +170,7 @@ public sealed class TierBossPicker
             TierBossMath.MinSpeed, TierBossMath.MaxSpeed, TierBossMath.ValueStep, TierBossMath.Normal, value => ShownNumber.Whole(value) + " %",
             value => SetValues(Shown() with {Speed = (int) value}, "Speed")));
         Health = Fit(SliderRow.Clone(template, Panel.transform, "Health", Texts.BossHealth.T(), VanillaSprites.BossBoostIcon,
-            TierBossMath.MinHealth, TierBossMath.MaxHealth, TierBossMath.ValueStep, TierBossMath.Normal, value => ShownNumber.Whole(value) + " %",
+            HealthSteps.LastPosition, BossEditorSection.HealthSliderSteps, TierBossMath.Normal, value => ShownNumber.Whole(value) + " %",
             value => SetValues(Shown() with {Health = (int) value}, "Health")));
 
         skullModeRow = Fit(EditorRows.LabelRow(template, Panel.transform, "SkullModeRow", Texts.Skulls.T(), VanillaSprites.CrossboneSkull));

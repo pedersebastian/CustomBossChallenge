@@ -263,7 +263,7 @@ CBC3:HY2xCsMwDER_pWjWUDK04DEESiFDh5BdSQQ2dSxjOdA05N9rd7u7B_cOEDAHDI6TgrnjP7WiyqV
 | Boss Type | 7 bosses | Bloonarius | Elite toggle next to it. |
 | Standard / Advanced | tabs | Standard | Hides the Boss Type, Boss Speed, Boss Health and the skulls; each tier's boss, speed, health and skulls are picked on its card in the Tier Preview: any boss, Elite or not, or Random. |
 | Boss Speed | 10–2500 % | 100 % | In Advanced, set per tier in its picker. |
-| Boss Health | 10–2000 % | 100 % | In Advanced, set per tier in its picker. |
+| Boss Health | 5–5000 % | 100 % | Steps of 5 % up to 500 %, then 10 %. In Advanced, set per tier in its picker. |
 | Max Paragons | 0 – Unlimited | Unlimited | How many paragons can be placed. 0 allows none; all the way to the right has no limit. |
 | Boss Tiers | 1–10 | 5 | The game is won when the last tier is defeated. |
 | Speed per Tier | −10 to +50 % | 0 % | This share of a tier's normal speed is added for every tier after the first: +20 % makes tier 3 ×1.4. Capped at ×5. |

@@ -12,12 +12,13 @@ public static partial class ChallengeLimits
 
     /// <summary>
     /// The boss's speed and health multipliers, the range of Boss Speed and Boss Health. 25× is the fastest boss
-    /// Ninja Kiwi has run (Bloonarius 61, #220).
+    /// Ninja Kiwi has run (Bloonarius 61, #220). 50× health takes even the weakest Elite tier 5 (Dreadbloon's) past
+    /// 500 million (#250); the game's health limit holds every tier below it (TierMath.MaxModelHealth).
     /// </summary>
     public const float MinBossSpeed = 0.1f;
     public const float MaxBossSpeed = 25;
-    public const float MinBossHealth = 0.1f;
-    public const float MaxBossHealth = 20;
+    public const float MinBossHealth = 0.05f;
+    public const float MaxBossHealth = 50;
 
     /// <summary>
     /// The boss options <see cref="BossOptions.Sanitized"/> changed, e.g. "Tiers 50 -> 10"

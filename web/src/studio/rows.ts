@@ -11,6 +11,12 @@ export interface Control {
   sync: (setup: StudioSetup) => void;
 }
 
+/** A slider whose position is the number of a step: the last position, the value at one, and the nearest one */
+export interface SliderSteps {
+  readonly last: number;
+  readonly valueAt: (position: number) => number;
+  readonly positionOf: (value: number) => number;
+}
 
 let ids = 0;
 export const nextId = (name: string): string => `studio-${name}-${++ids}`;
@@ -41,18 +47,21 @@ export function makeRows(change: (update: (current: StudioSetup) => StudioSetup)
     text: (value: number) => string,
     set: (s: StudioSetup, value: number) => StudioSetup,
     defaultValue?: number,
+    steps?: SliderSteps,
   ): Control & { input: HTMLInputElement } {
     const id = nextId("slider");
-    const input = h("input", { id, type: "range", min: String(range.min), max: String(range.max), step: String(range.step) });
+    // With steps of different sizes (Boss Health, #250) the position is the number of the step
+    const bounds = steps ? { min: 0, max: steps.last, step: 1 } : range;
+    const input = h("input", { id, type: "range", min: String(bounds.min), max: String(bounds.max), step: String(bounds.step) });
     const output = h("output", { for: id, class: "studio-value" });
-    input.addEventListener("input", () => change((s) => set(s, Number(input.value))));
+    input.addEventListener("input", () => change((s) => set(s, steps ? steps.valueAt(Number(input.value)) : Number(input.value))));
     const extra = defaultValue === undefined ? [] : [reset(label, () => change((s) => set(s, defaultValue)))];
     return {
       input,
       row: row(label, input, id, output, ...extra),
       sync: (s) => {
         const shown = value(s);
-        input.value = String(shown);
+        input.value = String(steps ? steps.positionOf(shown) : shown);
         output.textContent = text(shown);
         input.setAttribute("aria-valuetext", text(shown));
       },

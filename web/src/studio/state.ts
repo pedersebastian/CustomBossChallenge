@@ -6,9 +6,7 @@ import { GAME, type Json, type JsonObject } from "../data/types";
 import { defaultOptions, effectiveSpawnRounds, entryOf, isMixed, type BossOptions, type SkullMode } from "@cbc/share-code";
 import {
   FOLLOWS,
-  MAX_HEALTH,
   MAX_SPEED,
-  MIN_HEALTH,
   MIN_SPEED,
   clampValue,
   resolveTiers,
@@ -18,10 +16,10 @@ import {
 } from "@cbc/share-code/tier-bosses";
 import { DEFAULT_COUNT, DEFAULT_CUSTOM, MAX_SKULLS, normalizeCustom } from "@cbc/share-code/skulls";
 import { MAX_TIERS } from "@cbc/share-code/tiers";
+import { snapHealth } from "@cbc/share-code/health-steps";
 import { clamp } from "@cbc/share-code/dotnet";
 import { NO_LIMIT, fromSlider, toSlider } from "../math/paragons";
 import {
-  BOSS_HEALTH_SLIDER,
   BOSS_SPEED_SLIDER,
   MAX_FIRST_SPAWN_ROUND,
   MAX_ROUNDS_BETWEEN_TIERS,
@@ -100,7 +98,7 @@ export const setBossSpeed = (setup: StudioSetup, percent: number): StudioSetup =
 
 export const setBossHealth = (setup: StudioSetup, percent: number): StudioSetup =>
   withChallenge(setup, (challenge) => {
-    objectAt(objectAt(challenge, "bloonModifiers"), "healthMultipliers").boss = snap(percent, BOSS_HEALTH_SLIDER) / 100;
+    objectAt(objectAt(challenge, "bloonModifiers"), "healthMultipliers").boss = snapHealth(percent) / 100;
   });
 
 /** The Max Paragons slider's position: the last one is no limit */
@@ -227,7 +225,7 @@ export const setTierSpeed = (setup: StudioSetup, tier: number, percent: number):
   changeTier(setup, tier, { speed: clampValue(percent, MIN_SPEED, MAX_SPEED) });
 
 export const setTierHealth = (setup: StudioSetup, tier: number, percent: number): StudioSetup =>
-  changeTier(setup, tier, { health: clampValue(percent, MIN_HEALTH, MAX_HEALTH) });
+  changeTier(setup, tier, { health: snapHealth(percent) });
 
 export const setTierSkullMode = (setup: StudioSetup, tier: number, skulls: SkullMode): StudioSetup => changeTier(setup, tier, { skulls });
 

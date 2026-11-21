@@ -12,6 +12,7 @@ import { releaseSetup, renderSkulls } from "../preview/render";
 import { FOLLOWS, MAX_HEALTH, MAX_SPEED, MIN_HEALTH, MIN_SPEED, NORMAL, RANDOM } from "@cbc/share-code/tier-bosses";
 import { studioChoices } from "./experimental";
 import { MAX_SKULLS } from "@cbc/share-code/skulls";
+import { HEALTH_SLIDER_STEPS } from "@cbc/share-code/health-steps";
 import { MAX_TIERS } from "@cbc/share-code/tiers";
 import * as edit from "./state";
 import type { StudioSetup } from "./state";
@@ -146,6 +147,7 @@ export function setUpTierEditor(
     (v) => `${v} %`,
     (s, v) => edit.setTierHealth(s, selected, v),
     NORMAL,
+    HEALTH_SLIDER_STEPS,
   );
   const tierSkulls = select(
     "Skulls",
