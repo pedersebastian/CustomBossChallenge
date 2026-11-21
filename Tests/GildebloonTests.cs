@@ -385,7 +385,13 @@ public class GildebloonLookTest : GildebloonTest
             Log($"tier {tier}: {manager.CurrentBoss?.bloonModel.id} with {renderers} renderers");
             Assert(renderers > 10, "The model has its parts");
             yield return new WaitForSecondsRealtime(2);
-            if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, $"gildebloon-tier{tier}");
+            if (!string.IsNullOrEmpty(folder))
+            {
+                yield return ScreenshotTour.Capture(folder, $"gildebloon-tier{tier}");
+                // again once Spawn has played (3.5 s) and its eyes are open, going along the track
+                yield return new WaitForSecondsRealtime(2.5f);
+                yield return ScreenshotTour.Capture(folder, $"gildebloon-tier{tier}-awake");
+            }
 
             // Hurt, the game swaps the body's parts (Elite's damage states); the Bloonarius body may show for a moment
             // until the next check, but never longer
@@ -509,6 +515,9 @@ public class GildebloonNoBloonariusTest : GildebloonTest
             {
                 shotCollector = true;
                 yield return ScreenshotTour.Capture(folder, "gildebloon-collector");
+                // and once it has come out of the boss and gone ahead
+                yield return new WaitForSecondsRealtime(1.5f);
+                yield return ScreenshotTour.Capture(folder, "gildebloon-collector-out");
             }
             if (!shotHurt && boss.health < boss.bloonModel.maxHealth * 0.3f && !string.IsNullOrEmpty(folder))
             {
