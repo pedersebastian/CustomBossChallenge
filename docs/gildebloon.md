@@ -66,7 +66,9 @@ boss name through `BossList.Name`. The game itself only ever sees the string `bo
 - **Tax Collectors by tier** (2026-11-22; a MOAB was no threat from tier 3 on): MOAB at tiers 1-2, BFB at 3-4, ZOMG at
   5; Elite one step up and fortified from tier 4 (`Gildebloon.CollectorFor`). A bigger one takes more when it leaks:
   MOAB 5 %, BFB 8 %, ZOMG 10 %, fortified ZOMG 12 % (`Gildebloon.CollectorKinds`). Their look is the gold blimp of
-  Dispatch with a green $ on its back, as long as the bloon it replaces.
+  Dispatch with a green $ on its back, as long and as wide as the bloon it replaces (measured in the game: MOAB 25.9 x
+  42.4, BFB 43.6 x 60.1, ZOMG 49.1 x 75.9); at first about 60 % of a MOAB, it looked odd, and the game's effects on the
+  MOAB (glue) lay off it.
 - `Config/GildebloonBrain.cs` runs each simulation frame (`BossBloonManager.Process`): Toll, Vault (an armour
   layer `GildeVault`), Interest (Elite), seizing Banana Farms at a skull, Tax Collector leaks and the Payout.
 - `Patches/MixedBosses.cs` sets the game's boss type to "Gildebloon" before each of its tiers spawns, also when the
@@ -169,11 +171,14 @@ What could still show of Bloonarius, and how each is handled:
   tight on Gildebloon's round hull, so those are Gildebloon's own, modelled on its hull in
   `tools/blender/gildebloon-boss.py` (groups `Overlay<name>` under `Hull`, hidden in Blender's renders): glue in its four
   colours (yellow made lime to show on the gold, green, pink, pink with bubbles), goo bent onto the hull with wavy
-  edges, drips and a glob over the door; Unstable Concoction's purple acid spots with bubbles; fire as orange and
-  yellow cartoon flames; Laser Shock as pink lightning. `GildebloonLook.Coats` maps the game's overlay to the coat:
+  edges, drips and a glob over the door; Unstable Concoction's purple acid spots with bubbles; fire and Laser Shock
+  like the game's, flat on the hull without outlines: red-orange flame tongues with yellow hearts trailing back and red
+  flames licking up round its rim, and broad white lightning with a red edge round the door (cartoon flames standing out
+  as cones and thin pink lines didn't read as fire and laser shock, 2026-11-22). `GildebloonLook.Coats` maps the game's overlay to the coat:
   the coat shows while the game's is on, and the game's is kept from drawing. Sticky bombs, dynamite, drones, MOAB
   Maim and the Skywarden's are the game's own on the shrunk rig. `GildebloonOverlayTest` puts a Bloon Dissolver's
-  glue, a Wizard's fire and a sticky bomb on it. The body file grew to 1.3 MB (279 parts), loaded in about 100 ms.
+  glue, a Wizard's fire, a Dartling's Laser Shock and a sticky bomb on it. The body file grew to 1.3 MB (271 parts),
+  loaded in about 100 ms.
   What a boss shows, found by
   scanning every tower's models for an overlay type (game 57.4): glue (Glue Gunner: yellow for most, green from
   Bloon Dissolver 3-x-x, pink from 0-0-3, pink with bubbles at 0-0-5; also the Desperado's Sheriff), sticky bombs

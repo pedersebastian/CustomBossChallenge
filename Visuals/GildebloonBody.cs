@@ -160,14 +160,20 @@ public static class GildebloonBody
         return instance;
     }
 
-    /// <summary>How long the Tax Collector (the gold MOAB of Dispatch) is in the body's units, fins included</summary>
+    /// <summary>How long the Tax Collector (the gold MOAB of Dispatch) is in the body's units, fins included, and how
+    /// wide (measured in the game: 27.0 long and 15.6 wide when 26 was asked for)</summary>
     public const float CollectorModelLength = 1.3f;
+
+    public const float CollectorModelWidth = CollectorModelLength * 15.6f / 27.0f;
+
+    /// <summary>What the model's length comes out as for the length asked: 27.0 for 26</summary>
+    private const float CollectorLengthFix = 26f / 27.0f;
 
     /// <summary>
     /// Builds a Tax Collector's look under its display: the gold MOAB Gildebloon sends out in Dispatch, the parts under
     /// <c>CollectorProxy</c>, <paramref name="length"/> of the game's units long. Null without the body.
     /// </summary>
-    public static GameObject? BuildCollector(Transform display, float length)
+    public static GameObject? BuildCollector(Transform display, float length, float width, float middle)
     {
         if (!Ready) return null;
         var data = Data!;
@@ -196,9 +202,12 @@ public static class GildebloonBody
         }
 
         var scale = display.lossyScale.x;
-        root.transform.localScale = Vector3.one * (length / CollectorModelLength / (scale > 0 ? scale : 1));
+        // as long and as wide as the bloon it replaces: a BFB and a ZOMG are rounder than the MOAB it is made like
+        var along = length * CollectorLengthFix / CollectorModelLength / (scale > 0 ? scale : 1);
+        var across = width * CollectorLengthFix / CollectorModelWidth / (scale > 0 ? scale : 1);
+        root.transform.localScale = new Vector3(across, across, along);
         root.transform.localRotation = Quaternion.Euler(0, FacingYaw, 0);
-        root.transform.localPosition = Vector3.zero;
+        root.transform.localPosition = new Vector3(0, 0, middle / (scale > 0 ? scale : 1));
         return root;
     }
 

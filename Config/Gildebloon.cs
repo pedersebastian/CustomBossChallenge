@@ -33,14 +33,17 @@ public static class Gildebloon
     public const string ZomgCollectorId = "GildebloonCollectorZomg";
     public const string FortifiedZomgCollectorId = "GildebloonCollectorZomgFortified";
 
-    /// <summary>Every Tax Collector: its id, the game bloon it is made from, how long its look is on the map (about as
-    /// long as that bloon) and the share of the cash it takes when it leaks</summary>
-    public static readonly (string Id, string Source, float Length, double Share)[] CollectorKinds =
+    /// <summary>
+    /// Every Tax Collector: its id, the game bloon it is made from, the share of the cash it takes when it leaks, and
+    /// that bloon's size in its display (width, length and how far its middle is ahead, measured in the game
+    /// 2026-11-22): its look covers the bloon it replaces, so the game's effects on that bloon (glue...) lie on it
+    /// </summary>
+    public static readonly (string Id, string Source, double Share, float Width, float Length, float Middle)[] CollectorKinds =
     [
-        (CollectorId, "Moab", 26, 0.05),
-        (BfbCollectorId, "Bfb", 34, 0.08),
-        (ZomgCollectorId, "Zomg", 44, 0.1),
-        (FortifiedZomgCollectorId, "ZomgFortified", 44, 0.12)
+        (CollectorId, "Moab", 0.05, 25.9f, 42.4f, 0),
+        (BfbCollectorId, "Bfb", 0.08, 43.6f, 60.1f, -0.7f),
+        (ZomgCollectorId, "Zomg", 0.1, 49.1f, 75.9f, -6.4f),
+        (FortifiedZomgCollectorId, "ZomgFortified", 0.12, 49.1f, 75.9f, -6.4f)
     ];
 
     /// <summary>The Tax Collector each tier 1-5 sends: Elite one step up, fortified from tier 4</summary>
@@ -57,8 +60,8 @@ public static class Gildebloon
     }
 
     /// <summary>What kind of Tax Collector a bloon is, or null if it isn't one</summary>
-    public static (string Id, string Source, float Length, double Share)? CollectorKind(string? id) =>
-        CollectorKinds.Where(kind => kind.Id == id).Select(kind => ((string, string, float, double)?) kind).FirstOrDefault();
+    public static (string Id, string Source, double Share, float Width, float Length, float Middle)? CollectorKind(string? id) =>
+        CollectorKinds.Where(kind => kind.Id == id).Select(kind => ((string, string, double, float, float, float)?) kind).FirstOrDefault();
 
     // Health and speed of tiers 1-5; between Blastapopoulos and Dreadbloon, since the Vault adds to the health
     internal static readonly int[] Health = [12_000, 45_000, 200_000, 450_000, 1_900_000];

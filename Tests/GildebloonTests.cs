@@ -685,9 +685,10 @@ public class GildebloonTarnishTest : GildebloonTest
 /// What towers put on a boss shows on Gildebloon (#25): the game draws it in Bloonarius's overlays (Gildebloon's
 /// overlay class is Bloonarius's), which the look used to hide with Bloonarius's body. A Ninja's sticky bomb shows,
 /// on Bloonarius's rig shrunk onto Gildebloon; a Glue Gunner's green glue and a Wizard's fire show as Gildebloon's
-/// own coats in place of the game's, which are shaped for Bloonarius.
+/// own coats in place of the game's, which are shaped for Bloonarius, and so does a Dartling's Laser Shock. Tax
+/// Collectors are spawned for a look at their size.
 /// </summary>
-[FullSuiteOnly("plays a game until glue, fire and a sticky bomb are on it (about 30 s)")]
+[FullSuiteOnly("plays a game until glue, fire, laser shock and a sticky bomb are on it (about 35 s)")]
 public class GildebloonOverlayTest : GildebloonTest
 {
     protected override IEnumerator RunOn()
@@ -704,11 +705,26 @@ public class GildebloonOverlayTest : GildebloonTest
         var manager = bridge.Simulation.map.spawner.bossBloonManager;
         bridge.StartRound();
         yield return WaitFor(() => manager.CurrentBoss != null, "Gildebloon arriving", 90);
-        yield return new WaitForSecondsRealtime(2);
+        // Tax Collectors are as big as the MOAB or BFB they replace: a look at them before the towers come, without the
+        // round's own MOAB in the way
+        foreach (var other in InGame.instance.GetBloons().Where(bloon => !bloon.bloonModel.isBoss).ToList()) other.Destroy();
+        InGame.instance.SpawnBloons(Gildebloon.CollectorId, 1, 0);
+        InGame.instance.SpawnBloons(Gildebloon.BfbCollectorId, 1, 0);
+        yield return WaitFor(() => Visuals.GildebloonLook.CollectorLooks >= 2, "Two Tax Collectors with their look", 10);
+        for (var wait = 0f; wait < 4; wait += Time.unscaledDeltaTime)
+        {
+            foreach (var other in InGame.instance.GetBloons().Where(bloon => !bloon.bloonModel.isBoss && !Gildebloon.IsCollector(bloon.bloonModel.id)).ToList())
+                other.Destroy();
+            yield return null;
+        }
+        var shots = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
+        if (!string.IsNullOrEmpty(shots)) yield return ScreenshotTour.Capture(shots, "gildebloon-collectors-sized");
+
         var position = manager.CurrentBoss!.Position;
         CreateTowerAt(bridge, new Vector2(position.X + 22, position.Y + 22), Game.instance.model.GetTowerFromId("GlueGunner-300"), costOverride: 0);
         CreateTowerAt(bridge, new Vector2(position.X - 22, position.Y + 22), Game.instance.model.GetTowerFromId("NinjaMonkey-004"), costOverride: 0);
         CreateTowerAt(bridge, new Vector2(position.X, position.Y - 28), Game.instance.model.GetTowerFromId("WizardMonkey-030"), costOverride: 0);
+        CreateTowerAt(bridge, new Vector2(position.X + 30, position.Y - 10), Game.instance.model.GetTowerFromId("DartlingGunner-200"), costOverride: 0);
 
         Transform? Overlay(string name)
         {
@@ -723,7 +739,7 @@ public class GildebloonOverlayTest : GildebloonTest
         Assert(bomb.Count > 0 && bomb.All(r => !r.forceRenderingOff), "The sticky bomb is drawn on Gildebloon");
 
         // Glue and fire coat the whole boss: Gildebloon's own coat shows, the game's (Bloonarius-shaped) doesn't
-        foreach (var (name, coat) in new[] {("BloonariusGlueDissolve", "GlueDissolve"), ("BloonariusFire", "Fire")})
+        foreach (var (name, coat) in new[] {("BloonariusGlueDissolve", "GlueDissolve"), ("BloonariusFire", "Fire"), ("BloonariusLaserShockEffect", "LaserShock")})
         {
             yield return WaitFor(() => Overlay(name)?.gameObject.activeInHierarchy == true && Visuals.GildebloonLook.CoatsShown.Contains(coat),
                 $"{coat} on Gildebloon", 40);

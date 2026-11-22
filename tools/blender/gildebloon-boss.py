@@ -482,10 +482,6 @@ GLUE_GREEN = toon("Gilde_GlueGreen", "#3f8a17", "#86cf38", "#cdf284", cuts=(0.35
 GLUE_PINK = toon("Gilde_GluePink", "#b01f6c", "#ff5aad", "#ffb6da", cuts=(0.35, 0.9))
 ACID = toon("Gilde_Acid", "#3e1f57", "#7a3db0", "#b886ea", cuts=(0.35, 0.9))
 BUBBLE = toon("Gilde_Bubble", "#b9c7d6", "#f2f7ff", "#ffffff", cuts=(0.3, 0.85))
-FIRE_OUT = toon("Gilde_FireOuter", "#c2360b", "#ff6a1a", "#ffa23d", cuts=(0.3, 0.85))
-FIRE_IN = toon("Gilde_FireInner", "#f2a20f", "#ffd84a", "#fff4b3", cuts=(0.3, 0.85))
-SHOCK = flat("Gilde_Shock", "#ff4fe3")
-SHOCK_CORE = flat("Gilde_ShockCore", "#fff0fd")
 
 
 def hull_dir(v):
@@ -581,72 +577,98 @@ bubbles(acid, "Acid", [(0.2, 0.1, 1.0), (-0.45, -0.3, 0.8), (0.6, -0.5, 0.6), (-
 coat_groups["UnstableConcoction"] = acid
 
 
-def flame_mesh(name, mat, w, h, bend, seed):
-    """A cartoon flame: a teardrop that tapers to a bent tip, standing on +z"""
-    r_ = _random.Random(seed)
+def hug_poly(name, mat, centre, shape, size, toward, lift=0.012):
+    """A flat shape lying bent on the hull round the direction `centre`: `shape` is its outline, +y pointing `toward`
+    along the surface, fanned from its middle"""
+    c, n = hull_dir(Vector(centre))
+    d = Vector(toward)
+    tv = d - n * d.dot(n)
+    if tv.length < 1e-3:
+        tv = n.cross(Vector((1, 0, 0)))
+    tv.normalize()
+    tu = tv.cross(n).normalized()
     bm = bmesh.new()
-    rows = []
-    n_rows, seg = 10, 12
-    for i in range(n_rows + 1):
-        t = i / n_rows
-        rad = w * math.sin(math.pi * min(1.0, t * 0.92 + 0.08)) ** 0.7 * (1 - t) ** 0.35
-        off = bend * t ** 2
-        row = []
-        for j in range(seg):
-            a = 2 * math.pi * j / seg
-            row.append(bm.verts.new((math.cos(a) * rad + off, math.sin(a) * rad * 0.7, t * h)))
-        rows.append(row)
-    for i in range(n_rows):
-        for j in range(seg):
-            bm.faces.new((rows[i][j], rows[i][(j + 1) % seg], rows[i + 1][(j + 1) % seg], rows[i + 1][j]))
-    bm.faces.new(list(reversed(rows[0])))
+    mid = Vector((sum(p[0] for p in shape) / len(shape), sum(p[1] for p in shape) / len(shape)))
+
+    def put(x, y):
+        q = c + tu * (x * size) + tv * (y * size)
+        s, sn = hull_dir(q)
+        return bm.verts.new(s + sn * lift)
+
+    m = put(*mid)
+    ring = [put(x, y) for x, y in shape]
+    for i in range(len(ring)):
+        bm.faces.new((m, ring[i], ring[(i + 1) % len(ring)]))
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    return finish(bm, name, [mat])
+    me = finish(bm, name, [mat], smooth=False)
+    f = me.polygons[0]
+    if f.normal.dot(f.center) < 0:
+        for p in me.polygons:
+            p.flip()
+    return me
 
 
+# Fire: like the game's, flat flame tongues lying on it, orange with a yellow heart and no outline, trailing back
+# (+y, away from its face), and red flames licking up round its rim (2026-11-22: flames standing out of it as cones
+# didn't read as fire)
+FIRE_ORANGE = flat("Gilde_FireOrange", "#ff4d12")  # redder than the gold, to show on it
+FIRE_YELLOW = flat("Gilde_FireYellow", "#ffe85a")
+FIRE_RED = flat("Gilde_FireRed", "#e8321c")
+TONGUE = [(-0.45, -0.35), (-0.55, 0.15), (-0.32, 0.45), (-0.42, 0.95), (-0.12, 0.7), (-0.05, 1.35), (0.15, 0.75),
+          (0.38, 1.05), (0.33, 0.5), (0.55, 0.2), (0.42, -0.3), (0.0, -0.45)]
 fire = empty("OverlayFire", hull)
-FLAMES = [((0.35, 0.3, 1.0), 1.0), ((-0.4, 0.25, 1.0), 0.95), ((0.6, 0.4, 0.7), 0.9), ((-0.6, 0.45, 0.65), 0.95),
-          ((0.5, -0.65, 0.55), 0.8), ((-0.55, -0.6, 0.5), 0.85), ((0.95, -0.1, 0.25), 0.85), ((-0.95, 0.05, 0.25), 0.85),
-          ((0.1, 1.0, 0.35), 0.95), ((0.2, -1.0, 0.3), 0.7), ((0.75, 0.85, 0.3), 0.8), ((-0.7, 0.9, 0.3), 0.8),
-          ((0.0, 0.55, 0.9), 1.05)]
-for i, (d, size) in enumerate(FLAMES):
-    s, n = hull_dir(Vector(d))
-    up = (n + Vector((0, 0, 1.4))).normalized()  # flames lean up, the way fire goes
-    outer = obj(f"Flame{i}", flame_mesh(f"Gilde_Flame{i}", FIRE_OUT, 0.27 * size, 0.85 * size, 0.08 * (1 if i % 2 else -1), i),
-                fire, loc=s - n * 0.02, line=0.014)
-    outer.rotation_euler = up.to_track_quat("Z", "Y").to_euler()
-    # a smaller yellow one beside it: the core would hide inside the orange one
-    side = n.cross(Vector((0, 0, 1)))
-    side = (side if side.length > 1e-3 else Vector((1, 0, 0))).normalized() * (0.16 * size * (1 if i % 2 else -1))
-    s2, n2 = hull_dir(Vector(d) + side)
-    inner = obj(f"FlameCore{i}", flame_mesh(f"Gilde_FlameCore{i}", FIRE_IN, 0.17 * size, 0.55 * size, 0.05 * (-1 if i % 2 else 1), 50 + i),
-                fire, loc=s2 + n2 * 0.02, line=0.012)
-    inner.rotation_euler = (n2 + Vector((0, 0, 1.4))).normalized().to_track_quat("Z", "Y").to_euler()
+TONGUES = [((0.55, 0.15, 0.8), 0.78, 0.35), ((-0.55, 0.2, 0.8), 0.8, -0.35), ((0.05, 0.75, 0.65), 0.72, 0.0),
+           ((0.72, -0.5, 0.5), 0.6, 0.5), ((-0.74, -0.45, 0.5), 0.62, -0.5)]
+for i, (d, size, lean) in enumerate(TONGUES):
+    toward = (lean, 1.0, 0.25)  # back along it, leaning out to the side it is on
+    obj(f"FireTongue{i}", hug_poly(f"Gilde_FireTongue{i}", FIRE_ORANGE, d, TONGUE, size, toward, lift=0.022), fire)
+    obj(f"FireHeart{i}", hug_poly(f"Gilde_FireHeart{i}", FIRE_YELLOW, d, [(x * 0.55, y * 0.55 - 0.08) for x, y in TONGUE],
+                                  size, toward, lift=0.036), fire)
+for i in range(10):  # red flames licking up round its rim, not over its face (its front is -y)
+    a = math.radians(-115 + i * (230 / 9))
+    d = (math.sin(a), math.cos(a), -0.12)  # low on its side, licking up below the orange ones
+    obj(f"FireRim{i}", hug_poly(f"Gilde_FireRim{i}", FIRE_RED, d, TONGUE, 0.26 + 0.05 * (i % 3), (0, 0, 1), lift=0.01), fire)
 coat_groups["Fire"] = fire
 
-# Laser Shock: pink lightning crackling over it
-shock = empty("OverlayLaserShock", hull)
-BOLTS = [((-0.8, -0.5, 0.4), (0.7, 0.4, 0.6)), ((-0.3, 0.9, 0.4), (0.4, -0.85, 0.5)), ((0.9, -0.2, 0.3), (-0.1, 0.2, 1.0)),
-         ((-0.9, 0.2, 0.3), (-0.2, -0.3, 1.0))]
-_r = _random.Random(71)
-for i, (a, b) in enumerate(BOLTS):
-    pts = []
-    for k in range(9):
-        t = k / 8
-        d = Vector(a).lerp(Vector(b), t)
-        if 0 < k < 8:
-            d += Vector((_r.uniform(-0.18, 0.18), _r.uniform(-0.18, 0.18), _r.uniform(-0.05, 0.1)))
-        s, n = hull_dir(d)
-        pts.append(s + n * 0.05)
+# Laser Shock: like the game's, broad white lightning lying on it with a red edge
+SHOCK_RED = flat("Gilde_ShockRed", "#ff2a2a")
+SHOCK_WHITE = flat("Gilde_ShockWhite", "#ffffff")
+
+
+def ribbon(name, mat, pts, width, lift):
+    """A flat band along points on the hull"""
     bm = bmesh.new()
-    core = bmesh.new()
-    for (p, q) in zip(pts, pts[1:]):
-        for target, rad in ((bm, 0.035), (core, 0.015)):
-            res = bmesh.ops.create_cone(target, cap_ends=True, segments=6, radius1=rad, radius2=rad, depth=(q - p).length)
-            rot = (q - p).normalized().to_track_quat("Z", "Y").to_matrix().to_4x4()
-            bmesh.ops.transform(target, matrix=Matrix.Translation((p + q) / 2) @ rot, verts=res["verts"])
-    obj(f"Shock{i}", finish(bm, f"Gilde_Shock{i}", [SHOCK], smooth=False), shock)
-    obj(f"ShockCore{i}", finish(core, f"Gilde_ShockCore{i}", [SHOCK_CORE], smooth=False), shock)
+    rows = []
+    for i, p in enumerate(pts):
+        s, n = hull_dir(p)
+        a = pts[min(i + 1, len(pts) - 1)] - pts[max(i - 1, 0)]
+        side = a.cross(n).normalized() * (width / 2)
+        rows.append([bm.verts.new(hull_dir(s + side)[0] + n * lift), bm.verts.new(hull_dir(s - side)[0] + n * lift)])
+    for (a1, a2), (b1, b2) in zip(rows, rows[1:]):
+        bm.faces.new((a1, b1, b2, a2))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    me = finish(bm, name, [mat], smooth=False)
+    f = me.polygons[0]
+    if f.normal.dot(f.center) < 0:
+        for p in me.polygons:
+            p.flip()
+    return me
+
+
+shock = empty("OverlayLaserShock", hull)
+BOLTS = [  # round the door, which would cover them: down its left side, its right side and across its back
+    [(-0.55, -0.75, 0.45), (-0.8, -0.35, 0.5), (-0.5, -0.1, 0.8), (-0.85, 0.2, 0.5), (-0.55, 0.45, 0.7), (-0.7, 0.8, 0.35)],
+    [(0.6, -0.7, 0.45), (0.85, -0.3, 0.45), (0.55, 0.0, 0.8), (0.88, 0.25, 0.45), (0.6, 0.55, 0.65), (0.75, 0.85, 0.3)],
+    [(-0.45, 0.95, 0.45), (-0.15, 0.7, 0.75), (0.05, 1.05, 0.4), (0.3, 0.72, 0.75), (0.5, 0.95, 0.4)]]
+for i, path in enumerate(BOLTS):
+    # sharp corners: each corner gets its own short straight run
+    pts = []
+    for a, b in zip(path, path[1:]):
+        for k in range(4):
+            pts.append(Vector(a).lerp(Vector(b), k / 4))
+    pts.append(Vector(path[-1]))
+    obj(f"ShockEdge{i}", ribbon(f"Gilde_ShockEdge{i}", SHOCK_RED, pts, 0.3, 0.016), shock)
+    obj(f"ShockBolt{i}", ribbon(f"Gilde_ShockBolt{i}", SHOCK_WHITE, pts, 0.19, 0.024), shock)
 coat_groups["LaserShock"] = shock
 
 # Not in the renders of its body (the sheet, the portraits): the mod shows them
@@ -685,7 +707,8 @@ for i, (x, z) in enumerate(((0.0, 0.26), (0.0, -0.26), (0.26, 0.0), (-0.26, 0.0)
 obj("CollectorDoor", disc("Gilde_CollectorDoor", 0.14, 0.04, GOLD_FACE), proxy, loc=(0, -0.05, 0.27), line=0.01)
 # a big green $ on its back, so it reads as the thief it is from the game's camera above (2026-11-22: it read as a
 # gold MOAB), and a dark band round its middle like a MOAB's
-obj("CollectorDollar", text_mesh("$", 0.34, 0.03, GREEN), proxy, loc=(0, 0.27, 0.235), rot=(-0.45, 0, math.pi / 2), line=0.012)
+# on its back behind the door, lying on the hull (its surface there tilts about 15 degrees back) and standing out of it
+obj("CollectorDollar", text_mesh("$", 0.44, 0.035, GREEN), proxy, loc=(0, 0.31, 0.272), rot=(-0.26, 0, math.pi / 2), line=0.014)
 obj("CollectorBand", torus("Gilde_CollectorBand", 0.335, 0.022, GOLD_DARK, 32, 6, squash=(1, 0.83)), proxy,
     loc=(0, 0.12, 0), rot=(math.pi / 2, 0, 0), line=0.008)
 for o in [proxy] + list(proxy.children_recursive):

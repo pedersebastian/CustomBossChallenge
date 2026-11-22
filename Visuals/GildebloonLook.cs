@@ -38,7 +38,11 @@ public static class GildebloonLook
     private const float CollectorModelLength = 2.7f;
 
     /// <summary>How long a Tax Collector is on the map, about as long as the MOAB, BFB or ZOMG it replaces</summary>
-    private static float CollectorLength(Bloon bloon) => Gildebloon.CollectorKind(bloon.bloonModel?.id)?.Length ?? 26;
+    private static float CollectorLength(Bloon bloon) => Gildebloon.CollectorKind(bloon.bloonModel?.id)?.Length ?? 42.4f;
+
+    /// <summary>How wide a Tax Collector is on the map, and how far its middle is ahead: the bloon it replaces</summary>
+    private static (float Width, float Middle) CollectorShape(Bloon bloon) =>
+        Gildebloon.CollectorKind(bloon.bloonModel?.id) is { } kind ? (kind.Width, kind.Middle) : (25.9f, 0);
 
     /// <summary>The mutator the game gives bloons a boss sends, which dresses them in the boss's skin</summary>
     public const string BossSkinMutator = "BossSkinMutator";
@@ -391,7 +395,8 @@ public static class GildebloonLook
         }
 
         // A Tax Collector: the gold MOAB Gildebloon sends out in Dispatch, when the modelled body loaded
-        if (look.Collector && GildebloonBody.BuildCollector(graphic.transform, CollectorLength(look.Bloon)) is { } collector)
+        if (look.Collector && GildebloonBody.BuildCollector(graphic.transform, CollectorLength(look.Bloon), CollectorShape(look.Bloon).Width,
+                CollectorShape(look.Bloon).Middle) is { } collector)
         {
             look.Look = collector;
             HideBody(look, graphic);
