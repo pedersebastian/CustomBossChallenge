@@ -160,6 +160,20 @@ What could still show of Bloonarius, and how each is handled:
 - **Skulls.** The skull trigger now has `preventFallthrough` like the game's bosses, so no single hit takes it past a
   skull, and every Repossession happens.
 
+- **What towers put on it** (2026-11-22). The game draws towers' effects on a boss from its overlay class, and
+  Gildebloon's is Bloonarius's: they are children of Bloonarius's body under `BloonariusOverlays`, switched on and off
+  by the game. The look hid them with the rest of Bloonarius's body; now it leaves that group drawn
+  (`GildebloonLook.HideBody`) and shrinks Bloonarius's hidden rig onto Gildebloon (`OverlayScale`, `OverlayOffset`;
+  Bloonarius's body is about twice Gildebloon's), a little bigger than its hull, so the coats lie on the hull and not
+  in it. `GildebloonOverlayTest` puts a Bloon Dissolver's glue and a sticky bomb on it. What a boss shows, found by
+  scanning every tower's models for an overlay type (game 57.4): glue (Glue Gunner: yellow for most, green from
+  Bloon Dissolver 3-x-x, pink from 0-0-3, pink with bubbles at 0-0-5; also the Desperado's Sheriff), sticky bombs
+  (Ninja 0-0-4, Master Bomber 0-0-5, the Ninja Paragon's bomb tags), fire (Mortar, Wizard, Gwendolin, Buccaneer,
+  Desperado and more), Laser Shock (Dartling 2-x-x), MOAB Maim (Bomb Shooter 0-3-x, Sniper 4-x-x), Unstable
+  Concoction (Alchemist 0-3-x), the Skywarden's Chilled, Galvanised and Windlash, the Sheriff's dynamite and a kinetic
+  charge drone. Other overlays (acid, ice, pins, Ezili's hex, radiation, ink...) have no boss version, so no boss
+  shows them in the game either.
+
 `Tests.GildebloonNoBloonariusTest` scans every renderer drawing during an Elite match, through every skull and its
 death, for "Bloonarius" in its object, mesh or material.
 

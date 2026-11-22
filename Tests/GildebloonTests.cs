@@ -680,3 +680,54 @@ public class GildebloonTarnishTest : GildebloonTest
         yield return ToMainMenu();
     }
 }
+
+/// <summary>
+/// What towers put on a boss shows on Gildebloon (#25): the game draws it in Bloonarius's overlays (Gildebloon's
+/// overlay class is Bloonarius's), which the look used to hide with Bloonarius's body. A Glue Gunner's green glue and a
+/// Ninja's sticky bomb show, shrunk onto Gildebloon's body.
+/// </summary>
+[FullSuiteOnly("plays a game until glue and a sticky bomb are on it (about 30 s)")]
+public class GildebloonOverlayTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        var options = new BossOptions {Boss = BossList.Gildebloon, Tiers = 1, SpawnRounds = "40"};
+        var dcm = WeakBossDcm();
+        dcm.startRules.cash = 20000;
+        dcm.bloonModifiers.healthMultipliers.boss = 30;
+        dcm.bloonModifiers.bossSpeedMultiplier = 0.2f;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+        Assert(Visuals.GildebloonBody.Ready, "The modelled body loaded");
+
+        var bridge = InGame.instance.bridge;
+        var manager = bridge.Simulation.map.spawner.bossBloonManager;
+        bridge.StartRound();
+        yield return WaitFor(() => manager.CurrentBoss != null, "Gildebloon arriving", 90);
+        yield return new WaitForSecondsRealtime(2);
+        var position = manager.CurrentBoss!.Position;
+        CreateTowerAt(bridge, new Vector2(position.X + 22, position.Y + 22), Game.instance.model.GetTowerFromId("GlueGunner-300"), costOverride: 0);
+        CreateTowerAt(bridge, new Vector2(position.X - 22, position.Y + 22), Game.instance.model.GetTowerFromId("NinjaMonkey-004"), costOverride: 0);
+
+        Transform? Overlay(string name)
+        {
+            var display = manager.CurrentBoss?.GetUnityDisplayNode();
+            return display == null ? null
+                : display.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == name && t.parent?.name == Visuals.GildebloonLook.OverlaysName);
+        }
+
+        foreach (var name in new[] {"BloonariusGlueDissolve", "BloonariusStickyBomb"})
+        {
+            yield return WaitFor(() => Overlay(name)?.gameObject.activeInHierarchy == true, $"{name} on Gildebloon", 40);
+            var renderers = Overlay(name)!.GetComponentsInChildren<Renderer>().ToList();
+            Assert(renderers.Count > 0 && renderers.All(r => !r.forceRenderingOff), $"{name} is drawn on Gildebloon");
+        }
+
+        // On its body: the overlays' rig is shrunk onto it
+        var rig = Overlay("BloonariusGlueDissolve")!.parent.parent;
+        AssertEquals(rig.localScale, Visuals.GildebloonLook.OverlayScale, "Bloonarius's rig shrunk onto Gildebloon");
+        Assert(Visuals.GildebloonLook.OverlaysOn >= 2, $"Effects on it: {Visuals.GildebloonLook.OverlaysOn}");
+        var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
+        if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, "gildebloon-overlays");
+        yield return ToMainMenu();
+    }
+}

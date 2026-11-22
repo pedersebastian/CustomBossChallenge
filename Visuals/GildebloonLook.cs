@@ -81,6 +81,60 @@ public static class GildebloonLook
         public float HealthShare = 1, LastHitTime = -100, NextIdle, LastAcidNear = -100;
         public int Dashes;
         public bool Armoured;
+
+        /// <summary>The game's effects of towers on the boss under its display (Bloonarius's), once found</summary>
+        public Transform? Overlays;
+    }
+
+    /// <summary>The group the game shows towers' effects on a boss in (glue, sticky bombs, fire...)</summary>
+    public const string OverlaysName = "BloonariusOverlays";
+
+    /// <summary>
+    /// The game puts towers' effects on a boss by its overlay class, and Gildebloon's is Bloonarius's (made from it): a
+    /// glue coat, sticky bombs, fire, laser shock... shaped and placed for Bloonarius's body, which is about twice
+    /// Gildebloon's (measured 2026-11-22 in the display's space: 68.8 x 61.9 x 71.0 around (5.4, 2.8, 1.1), Gildebloon's
+    /// hull 31.2 x 25.6 x 38.2 around its middle). So Bloonarius's hidden rig, the effects with it, is shrunk onto
+    /// Gildebloon, a little bigger than its hull and its middle so its coats lie on the hull, not in it: shrunk to the
+    /// hull's size, the glue and the sticky bomb were inside the hull and didn't show.
+    /// </summary>
+    internal static readonly Vector3 OverlayScale = new(0.58f, 0.62f, 0.66f);
+
+    internal static readonly Vector3 OverlayOffset = new(-3.1f, 0f, -0.75f);
+
+    /// <summary>Shrinks Bloonarius's rig onto Gildebloon, every frame: the game may put it back</summary>
+    private static void FitOverlays(Shown look, GameObject graphic)
+    {
+        if (look.Body == null || Overlays(look, graphic)?.parent is not { } rig) return;
+        if (rig.localScale != OverlayScale) rig.localScale = OverlayScale;
+        if (rig.localPosition != OverlayOffset) rig.localPosition = OverlayOffset;
+    }
+
+    /// <summary>Whether Gildebloon shows the game's effects of towers on it now, and how many are on, for tests</summary>
+    public static int OverlaysOn
+    {
+        get
+        {
+            var overlays = Boss?.Overlays;
+            if (overlays == null) return 0;
+            var on = 0;
+            for (var i = 0; i < overlays.childCount; i++)
+            {
+                if (overlays.GetChild(i).gameObject.activeSelf) on++;
+            }
+            return on;
+        }
+    }
+
+    private static Transform? Overlays(Shown look, GameObject graphic)
+    {
+        if (look.Overlays != null) return look.Overlays;
+        foreach (var transform in graphic.GetComponentsInChildren<Transform>(true))
+        {
+            if (transform.name != OverlaysName) continue;
+            look.Overlays = transform;
+            break;
+        }
+        return look.Overlays;
     }
 
     /// <summary>The looks on the bloons alive, by the bloon</summary>
@@ -206,6 +260,7 @@ public static class GildebloonLook
 
         look.Frames++;
         if (look.Look != null) HideBody(look, graphic.gameObject);
+        FitOverlays(look, graphic.gameObject);
         if (!collector) Animate(look, bloon);
     }
 
@@ -216,9 +271,12 @@ public static class GildebloonLook
     private static void HideBody(Shown look, GameObject graphic)
     {
         var root = look.Look!.transform;
+        var overlays = look.Body != null ? Overlays(look, graphic) : null;
         foreach (var renderer in graphic.GetComponentsInChildren<Renderer>(true))
         {
             if (renderer.forceRenderingOff || renderer.transform.IsChildOf(root)) continue;
+            // what towers put on the boss (glue, sticky bombs, fire...) shows on Gildebloon too
+            if (overlays != null && renderer.transform.IsChildOf(overlays)) continue;
             renderer.forceRenderingOff = true;
             look.Hidden.Add(renderer);
             if (look.Frames > 1) BodyShownAgain++;
