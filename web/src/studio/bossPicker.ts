@@ -1,18 +1,20 @@
 // The Studio's boss row (#133), like the Boss Creator's: a button per boss with a tick on the chosen one, then Elite and
-// Reset. Each button is our own badge (the boss's first letter in the mod's own colour for that boss, from
-// Config/TierLook.cs), not a portrait from the game (#96). A radio group: one tab stop, and the arrow keys, Home and End
-// pick a boss, like the Boss Creator's arrows.
+// Reset. Each button shows the boss's portrait (#206), Elite on the chosen one when Elite is ticked, framed in the mod's
+// own colour for that boss (from Config/TierLook.cs); if a portrait doesn't load, the boss's first letter is shown on
+// that colour. A radio group: one tab stop, and the arrow keys, Home and End pick a boss, like the Boss Creator's
+// arrows.
 
 import { BOSSES } from "@cbc/share-code";
 import { h } from "../dom";
 import { TIER_LOOK } from "../data/types";
 import { icon } from "./icons";
 import { breakable } from "../preview/render";
+import { portrait, setPortrait } from "../preview/portrait";
 import { nextId, type Control } from "./rows";
 import * as edit from "./state";
 import type { StudioSetup } from "./state";
 
-/** The colour of a boss's badge: the first of its tier colours */
+/** The colour of a boss's badge, around its portrait: the first of its tier colours */
 export const bossColour = (boss: string): string => (TIER_LOOK.themes[boss] ?? TIER_LOOK.defaultTheme)[0];
 
 export function setUpBossPicker(
@@ -21,11 +23,14 @@ export function setUpBossPicker(
 ): Control & { buttons: HTMLButtonElement[]; elite: HTMLInputElement } {
   const labelId = nextId("boss-label");
 
+  const portraits = new Map<string, HTMLImageElement>();
   const buttons = BOSSES.map((boss) => {
+    const image = portrait(boss, false, 38);
+    portraits.set(boss, image);
     const button = h(
       "button",
       { class: "studio-boss", type: "button", role: "radio", "data-boss": boss, "aria-label": boss, title: boss },
-      h("span", { class: "studio-boss-badge", style: `--boss: ${bossColour(boss)}`, "aria-hidden": "true" }, boss.slice(0, 1)),
+      h("span", { class: "studio-boss-badge", style: `--boss: ${bossColour(boss)}`, "aria-hidden": "true" }, image),
       // Long names may break where their parts meet, "Blasta-popoulos", never cut off
       h("span", { class: "studio-boss-name", "aria-hidden": "true" }, breakable(boss)),
     );
@@ -75,6 +80,7 @@ export function setUpBossPicker(
         // One tab stop: the chosen boss
         button.tabIndex = chosen ? 0 : -1;
         button.classList.toggle("elite", chosen && s.options.Elite);
+        setPortrait(portraits.get(button.dataset.boss!)!, button.dataset.boss!, chosen && s.options.Elite);
       }
       elite.checked = s.options.Elite;
     },
