@@ -133,15 +133,32 @@ public static class WhatsNew
         PopupScreen.instance.SafelyQueue(screen =>
         {
             var before = Popups().Select(popup => popup.Pointer).ToHashSet();
+            // The game also cancels a popup with Esc, so cancelling only closes it: the button's own click turns the
+            // setting off (AddScroll)
             screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.WhatsNew.T(), body,
-                new Action(Restore), Texts.Ok.T(),
-                new Action(() =>
-                {
-                    Restore();
-                    TurnOff();
-                }), Texts.DontShowAgain.T(), Popup.TransitionAnim.Scale);
+                new Action(Restore), Texts.Ok.T(), new Action(Restore), Texts.DontShowAgain.T(),
+                Popup.TransitionAnim.Scale);
             MelonLoader.MelonCoroutines.Start(ScrollWhenShown(before));
         });
+
+    /// <summary>Don't Show Again's own button, and what its click does besides closing the popup</summary>
+    private static (Button Button, UnityEngine.Events.UnityAction Click)? dontShowAgain;
+
+    /// <summary>
+    /// Turns the setting off when Don't Show Again itself is clicked, not when the popup is cancelled with Esc
+    /// </summary>
+    private static void ListenToDontShowAgain(Popup popup)
+    {
+        var button = popup.cancelObj == null ? null : popup.cancelObj.GetComponent<Button>();
+        if (button == null)
+        {
+            ModHelper.Warning<CustomBossChallenge>("What's new has no Don't Show Again button to listen to");
+            return;
+        }
+        UnityEngine.Events.UnityAction click = new Action(() => TurnOff());
+        button.onClick.AddListener(click);
+        dontShowAgain = (button, click);
+    }
 
     /// <summary>The name of the list that scrolls, next to the popup's own text, which it stands in for</summary>
     public const string ScrollName = "CbcWhatsNewScroll";
@@ -270,6 +287,7 @@ public static class WhatsNew
         scroll.verticalNormalizedPosition = 1;
 
         body.enabled = false;
+        ListenToDontShowAgain(popup);
         return root;
     }
 
@@ -302,10 +320,18 @@ public static class WhatsNew
     }
 
     /// <summary>
-    /// The game uses its popups again for other texts, so the list goes and the popup's own text comes back
+    /// The game uses its popups again for other texts, so the list goes, the popup's own text comes back and its
+    /// button no longer turns the setting off
     /// </summary>
     private static void Restore()
     {
+        // The game uses the button again in other popups
+        if (dontShowAgain is { } listener)
+        {
+            dontShowAgain = null;
+            if (listener.Button != null) listener.Button.onClick.RemoveListener(listener.Click);
+        }
+
         var popup = scrolled;
         scrolled = null;
         if (popup == null || popup.body == null) return;

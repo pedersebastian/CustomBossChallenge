@@ -85,9 +85,22 @@ public class WhatsNewTest : ContinueTestBase
         WhatsNew.Store.Save(older.ToString(3));
         AssertEquals(WhatsNew.ShowIfNew(), true, "A popup after another update");
         yield return WaitForList(found => popup = found);
-        yield return ClosePopup(popup!, false);
-        AssertRestored(popup!);
+        // Its own button, as a player clicks it: cancelling the popup is also what Esc does
+        popup!.cancelObj.GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+        yield return new WaitForSecondsRealtime(1);
+        AssertRestored(popup);
         Assert(turnedOff, "Don't Show Again must turn Show What's New off");
+
+        // Esc (the game's back) only closes it: the setting stays on
+        turnedOff = false;
+        WhatsNew.Store.Save(older.ToString(3));
+        AssertEquals(WhatsNew.ShowIfNew(), true, "A popup after another update");
+        yield return WaitForList(found => popup = found);
+        Il2CppAssets.Scripts.Unity.Menu.MenuManager.instance.ProcessEscape();
+        yield return new WaitForSecondsRealtime(1);
+        Assert(!turnedOff, "Esc must not turn Show What's New off");
+        AssertEquals(PopupScreen.instance.GetFirstActivePopup(), null, "Esc must close What's new");
+        AssertRestored(popup!);
 
         // With the setting off nothing shows, but the version still counts as seen
         WhatsNew.EnabledOverride = false;
