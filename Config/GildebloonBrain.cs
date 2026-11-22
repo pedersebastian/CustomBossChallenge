@@ -13,11 +13,11 @@ namespace CustomBossChallenge.Config;
 /// <summary>
 /// What Gildebloon does that the game's boss behaviours can't (#25), run once per simulation frame while it is alive:
 /// <list type="bullet">
-/// <item><b>Toll</b>: every few seconds it steals a share of the player's cash, up to a cap per tier.</item>
-/// <item><b>Vault</b>: what it stole becomes a gold shield (armour) on top of its health.</item>
+/// <item><b>Toll</b>: every few seconds it steals a share of the player's cash into its Vault.</item>
 /// <item><b>Interest</b> (Elite): the Vault grows while nothing hits it.</item>
-/// <item><b>Repossession</b>: at each skull it seizes a bigger share of the cash, the towers near it stop attacking
-/// for a moment, and the Banana Farms near it stop making money for a while and can't be sold.</item>
+/// <item><b>Repossession</b>: at each skull it seizes a bigger share of the cash, which becomes a gold shield
+/// (armour) for a few seconds, while it moves at half speed; the towers near it stop attacking for a moment, and the
+/// Banana Farms near it stop making money for a while and can't be sold.</item>
 /// <item><b>Tax Collectors</b> that leak steal cash instead of lives.</item>
 /// <item><b>Payout</b>: when it is beaten the player gets what it stole back, with interest outside CHIMPS.</item>
 /// </list>
@@ -47,14 +47,22 @@ public static class GildebloonBrain
     public const double ShieldCapShare = 0.5;
 
     /// <summary>
-    /// The most shield one theft adds, as a share of the boss's health: a Toll, a Tax Collector's leak or Interest; a
-    /// skull's Repossession <see cref="MaxSkullShield"/>. Without it a player with a lot of cash had the Vault filled to
-    /// its cap at every Toll, faster than most towers could break it, and the boss stood still (2026-11-22: tier 2 with
-    /// $847,000, 23,700 shield every 6 s). So the Vault grows over a few thefts, and towers can wear it down.
+    /// The shield comes only at a skull, from the cash it seizes there, at most this share of its health; it lasts
+    /// <see cref="ShieldSeconds"/> and while it is up Gildebloon moves at <see cref="ShieldedSpeed"/>. A shield from every
+    /// Toll (2026-11-22) was rebuilt faster than a farming player's towers could break it: tier 3 stood at 195,001 of
+    /// 200,000 with 8,000 shield every 6 s. Now it always gets on between skulls, and the shield is a short race.
     /// </summary>
-    public const double MaxTheftShield = 0.04;
+    public const double SkullShield = 0.1;
 
-    public const double MaxSkullShield = 0.12;
+    public const double EliteSkullShield = 0.15;
+
+    /// <summary>How long the shield lasts if it isn't broken first, from when the skull's invulnerability ends</summary>
+    public const float ShieldSeconds = 8;
+
+    public const float EliteShieldSeconds = 10;
+
+    /// <summary>How fast it moves while the shield is up, of its own speed: time to break it</summary>
+    public const float ShieldedSpeed = 0.5f;
 
     /// <summary>
     /// Shield per stolen dollar, per tier 1-5. The boss's health grows faster from tier to tier than a player's cash
@@ -123,6 +131,11 @@ public static class GildebloonBrain
         public int Skulls;
         public readonly Queue<(long Frame, float Damage)> Hits = new();
         public long NextDash;
+
+        /// <summary>When the shield goes if it isn't broken, how much it had, and how far it had come last frame</summary>
+        public long ShieldUntil;
+        public float ShieldMax;
+        public float Distance;
     }
 
     /// <summary>How many times Gildebloon dashed this match, for tests</summary>
@@ -134,6 +147,13 @@ public static class GildebloonBrain
     private static long lastFrame;
 
     private static readonly List<(Tower Tower, long Until, bool Farm)> Seized = new();
+
+    /// <summary>How much of the shield is left, 0-1, or 0 without one; for the HUD</summary>
+    public static float ShieldLeft => vault is {ShieldMax: > 0} current ? Math.Clamp(current.Armour / current.ShieldMax, 0, 1) : 0;
+
+    /// <summary>The seconds until the shield goes, or 0; for the HUD</summary>
+    public static float ShieldSecondsLeft =>
+        vault is {Armour: > 0} current ? Math.Max(0, (current.ShieldUntil - lastFrame) / (float) FramesPerSecond) : 0;
 
     /// <summary>What the Gildebloon alive has stolen and not paid back yet, or 0</summary>
     public static double Stolen => vault?.Stolen ?? 0;
@@ -211,12 +231,14 @@ public static class GildebloonBrain
         if (boss.health < current.Health) current.Hits.Enqueue((frame, current.Health - boss.health));
         current.Health = boss.health;
         current.Armour = armour;
+        Shielded(boss, current, frame);
         Skittish(boss, current, frame);
+        current.Distance = boss.DistanceTraveled;
 
         if (frame >= current.NextToll)
         {
             current.NextToll = frame + TollSeconds * FramesPerSecond;
-            Steal(sim, boss, current, Cash(sim) * (current.Elite ? EliteTollShare : TollShare), MaxTheftShield);
+            Steal(sim, boss, current, Cash(sim) * (current.Elite ? EliteTollShare : TollShare), 0);
         }
 
         if (current.Elite && frame >= current.NextInterest)
@@ -226,7 +248,6 @@ public static class GildebloonBrain
             {
                 var interest = Math.Floor(current.Stolen * InterestShare);
                 current.Stolen += interest;
-                AddShield(boss, current, interest, MaxTheftShield);
                 if (interest > 0) Tell(InterestAdded, interest);
             }
         }
@@ -236,7 +257,14 @@ public static class GildebloonBrain
         {
             current.Skulls = skulls;
             var before = current.Stolen;
-            Steal(sim, boss, current, Cash(sim) * (current.Elite ? EliteSkullShare : SkullShare), MaxSkullShield);
+            Steal(sim, boss, current, Cash(sim) * (current.Elite ? EliteSkullShare : SkullShare),
+                current.Elite ? EliteSkullShield : SkullShield);
+            if (Armour(boss) > 0)
+            {
+                // counted from when it can be hurt again, after the skull's moment of invulnerability
+                current.ShieldUntil = frame + (long) ((Gildebloon.SkullSeconds + (current.Elite ? EliteShieldSeconds : ShieldSeconds)) * FramesPerSecond);
+                current.ShieldMax = Armour(boss);
+            }
             var radius = SeizeRadiusFor(current.Tier);
             var (frozen, farms) = Repossess(sim, boss, frame, radius);
             Tell(Repossessed, new Repossession(current.Stolen - before, frozen, farms, radius, boss));
@@ -260,6 +288,33 @@ public static class GildebloonBrain
         Dashes++;
     }
 
+    /// <summary>
+    /// While the shield is up it moves at <see cref="ShieldedSpeed"/>: what it moved this frame is cut back. When its
+    /// time is up the shield goes (the look plays VaultBreak as for a broken one).
+    /// </summary>
+    private static void Shielded(Bloon boss, Vault current, long frame)
+    {
+        if (current.Armour <= 0) return;
+        if (frame >= current.ShieldUntil)
+        {
+            ClearShield(boss);
+            current.Armour = Armour(boss);
+            return;
+        }
+
+        var moved = boss.DistanceTraveled - current.Distance;
+        if (moved > 0 && moved < 50) boss.SetPath(boss.path, current.Distance + moved * ShieldedSpeed, true);
+    }
+
+    private static void ClearShield(Bloon boss)
+    {
+        if (boss.armour == null) return;
+        foreach (var layer in boss.armour)
+        {
+            if (layer.id == VaultArmour) layer.amount = 0;
+        }
+    }
+
     private static Vault Start(Bloon boss, long frame)
     {
         var id = boss.bloonModel.id;
@@ -273,7 +328,8 @@ public static class GildebloonBrain
         {
             BossId = id, Elite = elite, Tier = tier, Stolen = Math.Floor(armour / factor),
             NextToll = frame + TollSeconds * FramesPerSecond, NextInterest = frame + FramesPerSecond, LastHit = frame,
-            Health = boss.health, Armour = armour, Skulls = SkullsPassed(boss)
+            Health = boss.health, Armour = armour, Skulls = SkullsPassed(boss), Distance = boss.DistanceTraveled,
+            ShieldMax = armour, ShieldUntil = frame + (long) ((elite ? EliteShieldSeconds : ShieldSeconds) * FramesPerSecond)
         };
     }
 
@@ -315,7 +371,7 @@ public static class GildebloonBrain
         sim.RemoveCash(amount, Simulation.CashType.Normal, CashIndex, Simulation.CashSource.Normal);
         current.Stolen += amount;
         TotalStolen += amount;
-        AddShield(boss, current, amount, maxShield);
+        if (maxShield > 0) AddShield(boss, current, amount, maxShield);
         Tell(CashTaken, amount);
     }
 
@@ -361,7 +417,6 @@ public static class GildebloonBrain
         if (vault != null && boss != null)
         {
             vault.Stolen += amount;
-            AddShield(boss, vault, amount, MaxTheftShield);
         }
         ModHelper.Msg<CustomBossChallenge>($"A Tax Collector leaked and took ${amount}");
     }

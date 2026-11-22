@@ -54,9 +54,15 @@ boss name through `BossList.Name`. The game itself only ever sees the string `bo
   one point a dollar the Vault was up to 40 % of its health at tier 1 and about 1 % at tier 5.
   `GildebloonBrain.ShieldPerCash` is 1, 1.4, 2.4, 2.7, 4.9 by tier (Elite 1.5, 3.3, 8.2, 17, 34), which keeps a theft
   of the same share of the cash about the same share of its health; tiers past 5 use tier 5's.
-  One theft adds at most 4 % of its health as shield (a skull's 12 %; `MaxTheftShield`, `MaxSkullShield`): with
-  $847,000 at tier 2 every Toll had filled the Vault to its cap, 23,700 shield every 6 s, and the boss stood still
-  (2026-11-22). The cash it takes is the same; only the shield grows over a few thefts.
+- **The shield comes only at a skull** (2026-11-22). From every Toll it was rebuilt faster than a farming player's
+  towers could break it: with $847,000 at tier 2 every Toll filled it to its cap, and capped at 4 % of its health a
+  Toll, tier 3 still stood at 195,001 of 200,000 with 8,000 shield every 6 s. Now Tolls, Tax Collectors and Interest
+  only fill the Vault (the cash paid back), and a skull's Repossession turns the cash it seizes into shield: at most
+  10 % of its health (Elite 15 %; `SkullShield`), lasting 8 s (Elite 10 s; `ShieldSeconds`) after the skull's
+  invulnerability, then it goes (VaultBreak). While it is up Gildebloon moves at half speed (`ShieldedSpeed`; the
+  brain cuts back what it moved each frame, since bosses ignore slows), and a gold bar under the Vault empties as the
+  towers hit it and blinks in its last two seconds. So it always gets on between skulls, and the shield is a short
+  race you can see.
 - **Tax Collectors by tier** (2026-11-22; a MOAB was no threat from tier 3 on): MOAB at tiers 1-2, BFB at 3-4, ZOMG at
   5; Elite one step up and fortified from tier 4 (`Gildebloon.CollectorFor`). A bigger one takes more when it leaks:
   MOAB 5 %, BFB 8 %, ZOMG 10 %, fortified ZOMG 12 % (`Gildebloon.CollectorKinds`). Their look is the gold blimp of

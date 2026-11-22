@@ -266,7 +266,7 @@ public class GildebloonBrainTest : GildebloonTest
         yield return WaitFor(() => manager.CurrentBoss != null, "Gildebloon arriving", 90);
         var boss = manager.CurrentBoss!;
 
-        // Toll: two thefts later the cash went down by what the Vault holds, and the shield holds the same
+        // Toll: two thefts later the cash went down by what the Vault holds; a Toll gives no shield
         var before = bridge.GetCash(-1);
         yield return WaitFor(() => GildebloonBrain.TotalStolen >= 2 * 20000 * GildebloonBrain.TollShare * 0.9, "Two thefts", 60);
         var stolen = GildebloonBrain.Stolen;
@@ -275,14 +275,7 @@ public class GildebloonBrainTest : GildebloonTest
         Assert(bridge.GetCash(-1) <= before - stolen + 1, $"Cash went down by what it stole: {before} -> {bridge.GetCash(-1)}, stolen {stolen}");
         // A share of the cash, no cap: two thefts of 2 % of $20,000
         Assert(stolen >= 2 * 20000 * GildebloonBrain.TollShare * 0.9, $"It took a share of the cash: {stolen}");
-        // The shield is what it took, times its tier's shield per dollar, up to half its health
-        var perCash = GildebloonBrain.ShieldPerCashFor(boss.bloonModel.id.Contains(TierBossMath.EliteSuffix), TierMath.TierOf(boss.bloonModel.id));
-        // and at most MaxTheftShield of its health from each theft
-        var shield = Math.Min(stolen * perCash, GildebloonBrain.ShieldCap(boss));
-        var perTheft = Math.Ceiling(boss.bloonModel.maxHealth * GildebloonBrain.MaxTheftShield);
-        Assert(boss.HasArmour && boss.CurrentArmourAmount <= shield + 2 * perCash &&
-               boss.CurrentArmourAmount >= Math.Min(shield, perTheft) - 2 * perCash,
-            $"Shield {boss.CurrentArmourAmount} for {stolen} stolen, at most {GildebloonBrain.ShieldCap(boss)}");
+        AssertEquals(GildebloonBrain.Armour(boss), 0f, "A Toll gives no shield");
         AssertEquals(InGame.instance.bridge.Simulation.cashSpent.Value, 0.0, "Stealing isn't cash spent");
         yield return new WaitForSecondsRealtime(0.5f);
         AssertNotNull(Visuals.GildebloonHud.Panel, "The Vault is shown");
@@ -302,6 +295,21 @@ public class GildebloonBrainTest : GildebloonTest
         Log($"at the skull: vault {beforeSkull} -> {GildebloonBrain.Stolen}, cash {cashBefore} -> {bridge.GetCash(-1)}");
         Assert(GildebloonBrain.Stolen >= beforeSkull + cashBefore * GildebloonBrain.SkullShare - 1,
             "It seized a share of the cash at the skull, with no cap");
+        // The skull's cash is its shield: times its tier's shield per dollar, at most SkullShield of its health
+        var perCash = GildebloonBrain.ShieldPerCashFor(false, TierMath.TierOf(boss.bloonModel.id));
+        var seized = GildebloonBrain.Stolen - beforeSkull;
+        var shield = Math.Min(seized * perCash, Math.Ceiling(boss.bloonModel.maxHealth * GildebloonBrain.SkullShield));
+        Log($"shield {GildebloonBrain.Armour(boss)} for {seized} seized, {GildebloonBrain.ShieldSecondsLeft:0.0} s left");
+        Assert(Math.Abs(GildebloonBrain.Armour(boss) - shield) < 2 * perCash, $"Shield {GildebloonBrain.Armour(boss)}, expected {shield}");
+        Assert(GildebloonBrain.ShieldSecondsLeft > GildebloonBrain.ShieldSeconds, "The shield lasts its seconds after the skull's invulnerability");
+        // While it is up it moves at half speed
+        var from = boss.DistanceTraveled;
+        var startedAt = bridge.Simulation.time.elapsed;
+        yield return new WaitForSecondsRealtime(0.5f);
+        var speed = (boss.DistanceTraveled - from) / Math.Max(1, bridge.Simulation.time.elapsed - startedAt);
+        Log($"shielded speed {speed:0.000} per frame, its own {boss.bloonModel.speedFrames:0.000}");
+        Assert(speed < boss.bloonModel.speedFrames * 0.75f, $"It is slowed while shielded: {speed} per frame");
+        Assert(Visuals.GildebloonHud.ShieldShown > 0.5f, $"The shield bar shows it: {Visuals.GildebloonHud.ShieldShown}");
         yield return new WaitForSecondsRealtime(0.1f);
         var folderNow = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
         if (!string.IsNullOrEmpty(folderNow)) yield return ScreenshotTour.Capture(folderNow, "gildebloon-repossession-ring");

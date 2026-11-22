@@ -39,6 +39,14 @@ public static class GildebloonHud
     private static ModHelperPanel? panel;
     private static ModHelperText? amount;
     private static ModHelperText? change;
+
+    /// <summary>The shield from a skull: a gold bar under the Vault that empties as it is hit, and how wide it is full</summary>
+    private static ModHelperImage? shieldBar, shieldFill;
+    private static float shieldWidth;
+
+    /// <summary>How full the shield bar shows, 0 when hidden, for tests</summary>
+    public static float ShieldShown => shieldBar != null && shieldBar.gameObject.activeSelf && shieldFill != null
+        ? shieldFill.RectTransform.sizeDelta.x / Math.Max(1, shieldWidth) : 0;
     private static float changeStart = -100;
     private static bool subscribed;
 
@@ -82,6 +90,17 @@ public static class GildebloonHud
         var selected = Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu.TowerSelectionMenu.instance?.selectedTower != null;
         Panel!.gameObject.SetActive(!selected);
         amount!.SetText($"${GildebloonBrain.Stolen:N0}");
+        var shield = GildebloonBrain.ShieldLeft;
+        shieldBar!.gameObject.SetActive(shield > 0 && GildebloonBrain.ShieldSecondsLeft > 0);
+        if (shield > 0)
+        {
+            var size = shieldFill!.RectTransform.sizeDelta;
+            shieldFill.RectTransform.sizeDelta = new Vector2(shieldWidth * shield, size.y);
+            // it blinks in its last two seconds
+            var left = GildebloonBrain.ShieldSecondsLeft;
+            shieldFill.Image.color = left < 2 && Mathf.Repeat(Time.unscaledTime * 4, 1) < 0.5f
+                ? new Color(1f, 0.97f, 0.75f) : new Color(1f, 0.78f, 0.1f);
+        }
 
         var age = Time.unscaledTime - changeStart;
         change!.gameObject.SetActive(age < ChangeSeconds);
@@ -373,6 +392,19 @@ public static class GildebloonHud
         change = panel.AddText(new Info("Change", width * 0.5f + height * 1.2f, 0, height * 2.6f, height * 0.8f), "", height * 0.45f);
         change.Text.textWrappingMode = TextWrappingModes.NoWrap;
         change.gameObject.SetActive(false);
+
+        // The shield bar, under the Vault and as wide, drawn with the panel (so it hides with it)
+        shieldWidth = width - height * 0.3f;
+        shieldBar = panel.AddImage(new Info("Shield", 0, -height * 0.9f, width, height * 0.55f), VanillaSprites.BarfillContainer);
+        shieldFill = shieldBar.AddImage(new Info("Fill", -shieldWidth / 2, 0, shieldWidth, height * 0.36f)
+        {
+            Anchor = new Vector2(0.5f, 0.5f), Pivot = new Vector2(0, 0.5f)
+        }, VanillaSprites.Barfillgreen);
+        // the game's fill is green; a plain white one takes the gold as it is
+        var white = Texture2D.whiteTexture;
+        shieldFill.Image.sprite = Sprite.Create(white, new Rect(0, 0, white.width, white.height), new Vector2(0.5f, 0.5f));
+        shieldFill.Image.color = new Color(1f, 0.78f, 0.1f);
+        shieldBar.gameObject.SetActive(false);
 
         // The Repossession banner: a big heading and what it took under it, placed when it shows
         banner = ModHelperText.Create(new Info("Repossession", 0, 0, canvas.rect.height * 1.4f, height * 5.5f)
