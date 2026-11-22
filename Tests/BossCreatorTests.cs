@@ -99,7 +99,7 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 20, "Info buttons in the boss section");
+        AssertEquals(infoButtons, 21, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
@@ -782,6 +782,8 @@ public class BossCreatorTest : CustomBossTest
     private IEnumerator WarningsBeforePlay(ChallengeEditor editor, BossEditorSection section)
     {
         var before = section.Strip.Warnings.Select(w => w.Kind).ToList();
+        var starsBefore = section.Difficulty.Shown;
+        AssertDifficultyRow(editor, section, "Before the rules change");
         var round = (editor.dcm.startRules.round, editor.round.text);
         var lives = (editor.dcm.startRules.lives, editor.lives.text);
         var bossRound = BossMode.Options.EffectiveSpawnRounds[0];
@@ -808,6 +810,9 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(editor.dcm.bloonModifiers.healthMultipliers.bloons, ceramic.maxValue / 100f, "The bloon health slider goes into the model");
         Assert(WarningLine(section, SetupWarning.HardSetup) != null, "No warning about a very hard setup");
         AssertStripHeight(section, "With the hard setup warning");
+        // The difficulty rating follows the rules too (#263)
+        AssertEquals(section.Difficulty.Shown, DifficultyRating.MaxStars, "Stars for a very hard setup");
+        AssertDifficultyRow(editor, section, "With the very hard rules");
         AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "Warnings must not stop Play");
 
         // Everything back: the warnings are the ones from before
@@ -822,6 +827,25 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(editor.dcm.startRules.lives, lives.lives, "Lives set back");
         AssertEquals(string.Join(",", section.Strip.Warnings.Select(w => w.Kind)), string.Join(",", before), "Warnings after setting the rules back");
         AssertStripHeight(section, "With the rules set back");
+        AssertEquals(section.Difficulty.Shown, starsBefore, "Stars after setting the rules back");
+    }
+
+    /// <summary>
+    /// The difficulty row (#263) sits right under the Tier Preview with its i, and lights as many stars as
+    /// <see cref="DifficultyRating"/> gives the setup
+    /// </summary>
+    private void AssertDifficultyRow(ChallengeEditor editor, BossEditorSection section, string when)
+    {
+        var row = section.Difficulty.Row;
+        Assert(row.activeSelf, $"{when}: the difficulty row is hidden");
+        AssertEquals(row.transform.GetSiblingIndex(), section.Strip.Row.transform.GetSiblingIndex() + 1,
+            $"{when}: the difficulty row's place");
+        Assert(row.GetComponentsInChildren<UnityEngine.Transform>(true).Any(t => t.name == EditorRows.InfoName),
+            $"{when}: the difficulty row has no i");
+        var expected = DifficultyRating.Stars(TierStrip.Facts(BossMode.Options, editor.dcm, Game.instance.model));
+        AssertEquals(section.Difficulty.Shown, expected, $"{when}: stars shown");
+        AssertEquals(section.Difficulty.Stars.Count(star => star.Image.color == DifficultyStars.On), expected,
+            $"{when}: stars lit");
     }
 
     /// <summary>

@@ -14,6 +14,7 @@
     "./health-steps": "./src/math/healthSteps.ts",
     "./limits": "./src/math/limits.ts",
     "./warnings": "./src/math/warnings.ts",
+    "./difficulty": "./src/math/difficulty.ts",
     "./dotnet": "./src/math/dotnet.ts",
     "./data": "./src/data.ts",
     "./past-events": "./src/pastEvents.ts"

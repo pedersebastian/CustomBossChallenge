@@ -46,6 +46,7 @@ export * as skulls from "./math/skulls";
 export * as tierBosses from "./math/tierBosses";
 export * as limits from "./math/limits";
 export * as warnings from "./math/warnings";
+export * as difficulty from "./math/difficulty";
 export type { TierBoss } from "./math/tierBosses";
 export type { SetupFacts, SetupWarning, TierBase, Warning } from "./math/warnings";
 

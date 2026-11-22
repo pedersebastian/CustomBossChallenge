@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "Dodaje taką część normalnego zdrowia za każdy poziom po pierwszym, ponad własne wzrosty gry: +100 % daje poziomowi 2 ×2, poziomowi 3 ×3 i tak dalej. Każdy poziom powyżej 5 ma już ×1,5 zdrowia poprzedniego, więc poziom 7 ma ×2,25 zdrowia poziomu 5. 0 % zachowuje normalne zdrowie.",
   "CustomBossChallenge-TierPreview": "Podgląd poziomów",
   "CustomBossChallenge-TierPreviewInfo": "Każdy poziom z rundą, w której się pojawia, prędkością w porównaniu ze zwykłą grą i zdrowiem. Pomarańczowy to więcej niż w zwykłej grze, niebieski mniej.",
+  "CustomBossChallenge-Difficulty": "Trudność",
+  "CustomBossChallenge-DifficultyInfo": "Przybliżona ocena tego, jak trudny jest zestaw, od 1 do 5 gwiazdek, aby porównać zestawy i wybrać jeden do wypróbowania. Wyliczana jest z liczb zestawu: zdrowia i szybkości bossów, Elite, liczby poziomów i tego, jak wcześnie przychodzą, czaszek, rund, trybu, poziomu trudności i zasad. Nie rozgrywa zestawu, więc twoja gra może wydawać się łatwiejsza lub trudniejsza.",
   "CustomBossChallenge-PerTier": "{0} % / poziom",
   "CustomBossChallenge-SpawnRounds": "Rundy Pojawienia",
   "CustomBossChallenge-SpawnRoundsInfo": "Runda, w której pojawia się każdy poziom, oddzielone przecinkami, np. 40, 60, 80. Brakujące rundy są ustawiane co 20 rund. Ostatnia runda gry jest przesuwana na po ostatnim poziomie, aby można było zagrać wszystkie poziomy.",

@@ -106,6 +106,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 1,
       "warnings": []
     },
     {
@@ -214,6 +215,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 1,
       "warnings": []
     },
     {
@@ -344,6 +346,7 @@
         "12.5%"
       ],
       "playProblem": null,
+      "difficulty": 5,
       "warnings": []
     },
     {
@@ -471,6 +474,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 2,
       "warnings": []
     },
     {
@@ -626,6 +630,7 @@
         "16.66%"
       ],
       "playProblem": null,
+      "difficulty": 5,
       "warnings": []
     },
     {
@@ -734,6 +739,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 2,
       "warnings": []
     },
     {
@@ -806,6 +812,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 1,
       "warnings": []
     },
     {
@@ -910,6 +917,7 @@
       ],
       "skulls": [],
       "playProblem": null,
+      "difficulty": 5,
       "warnings": []
     },
     {
@@ -1018,6 +1026,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 2,
       "warnings": []
     },
     {
@@ -1130,6 +1139,7 @@
         "12.5%"
       ],
       "playProblem": null,
+      "difficulty": 4,
       "warnings": []
     },
     {
@@ -1239,6 +1249,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 3,
       "warnings": [
         {
           "kind": "ChimpsEventRounds",
@@ -1397,6 +1408,7 @@
         "5%"
       ],
       "playProblem": null,
+      "difficulty": 4,
       "warnings": []
     },
     {
@@ -1523,6 +1535,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 2,
       "warnings": []
     },
     {
@@ -1640,6 +1653,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 1,
       "warnings": [
         {
           "kind": "TiersClose",
@@ -1785,6 +1799,7 @@
         "16.66%"
       ],
       "playProblem": null,
+      "difficulty": 3,
       "warnings": []
     },
     {
@@ -1912,6 +1927,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 4,
       "warnings": []
     },
     {
@@ -2040,6 +2056,7 @@
         "20%"
       ],
       "playProblem": null,
+      "difficulty": 2,
       "warnings": []
     },
     {
@@ -2148,6 +2165,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 1,
       "warnings": []
     },
     {
@@ -2259,6 +2277,7 @@
         "16.66%"
       ],
       "playProblem": null,
+      "difficulty": 1,
       "warnings": []
     },
     {
@@ -2367,6 +2386,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 1,
       "warnings": []
     },
     {
@@ -2477,6 +2497,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 2,
       "warnings": []
     },
     {
@@ -2587,6 +2608,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 1,
       "warnings": []
     },
     {
@@ -2695,6 +2717,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 1,
       "warnings": [
         {
           "kind": "StartRoundClose",
@@ -2865,6 +2888,7 @@
         "16.66%"
       ],
       "playProblem": null,
+      "difficulty": 5,
       "warnings": [
         {
           "kind": "HealthCapped",
@@ -2991,6 +3015,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 3,
       "warnings": [
         {
           "kind": "ChimpsEventRounds",
@@ -3121,6 +3146,7 @@
         "25%"
       ],
       "playProblem": null,
+      "difficulty": 1,
       "warnings": []
     }
   ],

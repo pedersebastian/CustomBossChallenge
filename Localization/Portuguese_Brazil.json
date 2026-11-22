@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "Adiciona essa parte da vida normal para cada nível depois do primeiro, além dos aumentos do próprio jogo: +100 % deixa o nível 2 ×2, o nível 3 ×3 e assim por diante. Cada nível acima de 5 já tem ×1,5 da vida do anterior, então o nível 7 tem ×2,25 da vida do nível 5. 0 % mantém a vida normal.",
   "CustomBossChallenge-TierPreview": "Prévia dos níveis",
   "CustomBossChallenge-TierPreviewInfo": "Cada nível com a rodada em que chega, sua velocidade comparada ao jogo normal e sua vida. Laranja é mais que o jogo normal, azul é menos.",
+  "CustomBossChallenge-Difficulty": "Dificuldade",
+  "CustomBossChallenge-DifficultyInfo": "Uma estimativa aproximada de quão difícil é a configuração, de 1 a 5 estrelas, para comparar configurações e escolher uma para testar. Ela é calculada a partir dos números da configuração: a vida e a velocidade dos chefes, Elite, quantos níveis vêm e quão cedo, as caveiras, as rodadas, o modo, a dificuldade e as regras. Ela não joga a configuração, então a sua partida pode parecer mais fácil ou mais difícil.",
   "CustomBossChallenge-PerTier": "{0} % / nível",
   "CustomBossChallenge-SpawnRounds": "Rodadas de Surgimento",
   "CustomBossChallenge-SpawnRoundsInfo": "A rodada em que cada nível chega, separadas por vírgulas, ex.: 40, 60, 80. As rodadas que faltarem continuam a cada 20 rodadas. A última rodada do jogo é movida para depois do último nível, para que todos os níveis possam ser jogados.",

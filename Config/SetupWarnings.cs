@@ -26,6 +26,15 @@ public sealed record SetupFacts
     /// <summary>Below 0 for no limit, like the game</summary>
     public int MaxTowers { get; init; } = -1;
 
+    /// <summary>Below 0 for no limit, like the game; 0 for no paragons</summary>
+    public int MaxParagons { get; init; } = -1;
+
+    /// <summary>How many of the towers (not heroes) can't be placed at all, for <see cref="DifficultyRating"/></summary>
+    public int BannedTowers { get; init; }
+
+    /// <summary>How many towers (not heroes) the game has, 0 when not known</summary>
+    public int AllTowers { get; init; }
+
     public double BloonSpeed { get; init; } = 1;
     public double MoabSpeed { get; init; } = 1;
     public double BossSpeed { get; init; } = 1;

@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "Fügt für jede Stufe nach der ersten diesen Anteil der normalen Gesundheit hinzu, zusätzlich zu den eigenen Schritten des Spiels: +100 % macht Stufe 2 ×2, Stufe 3 ×3 und so weiter. Jede Stufe über 5 hat schon ×1,5 der Gesundheit der vorigen, also hat Stufe 7 ×2,25 der Gesundheit von Stufe 5. 0 % behält die normale Gesundheit.",
   "CustomBossChallenge-TierPreview": "Stufenvorschau",
   "CustomBossChallenge-TierPreviewInfo": "Jede Stufe mit der Runde, in der sie kommt, ihrem Tempo im Vergleich zum normalen Spiel und ihrer Gesundheit. Orange ist mehr als im normalen Spiel, Blau weniger.",
+  "CustomBossChallenge-Difficulty": "Schwierigkeit",
+  "CustomBossChallenge-DifficultyInfo": "Eine grobe Schätzung, wie schwer das Setup ist, von 1 bis 5 Sternen, um Setups zu vergleichen und eines zum Ausprobieren zu wählen. Sie wird aus den Zahlen des Setups berechnet: Leben und Tempo der Bosse, Elite, wie viele Stufen kommen und wie früh, die Totenköpfe, die Runden, der Modus, der Schwierigkeitsgrad und die Regeln. Sie spielt das Setup nicht, daher kann sich dein eigenes Spiel leichter oder schwerer anfühlen.",
   "CustomBossChallenge-PerTier": "{0} % / Stufe",
   "CustomBossChallenge-SpawnRounds": "Spawn-Runden",
   "CustomBossChallenge-SpawnRoundsInfo": "Die Runde, in der jede Stufe erscheint, durch Kommas getrennt, z. B. 40, 60, 80. Fehlende Runden folgen im Abstand von 20 Runden. Die letzte Runde des Spiels wird hinter die letzte Stufe verschoben, damit alle Stufen gespielt werden können.",

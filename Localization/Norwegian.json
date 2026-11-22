@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "Legger til denne andelen av vanlig helse for hvert nivå etter det første, i tillegg til spillets egne økninger: +100 % gjør nivå 2 ×2, nivå 3 ×3 og så videre. Hvert nivå over 5 har allerede ×1,5 av helsen til nivået før, så nivå 7 har ×2,25 av nivå 5. 0 % beholder vanlig helse.",
   "CustomBossChallenge-TierPreview": "Nivåoversikt",
   "CustomBossChallenge-TierPreviewInfo": "Hvert nivå med runden det kommer på, farten sammenlignet med vanlig spill og livet. Oransje er mer enn vanlig spill, blått er mindre.",
+  "CustomBossChallenge-Difficulty": "Vanskelighetsgrad",
+  "CustomBossChallenge-DifficultyInfo": "Et grovt anslag over hvor vanskelig oppsettet er, fra 1 til 5 stjerner, for å sammenligne oppsett og velge ett å prøve. Det regnes ut fra tallene i oppsettet: bossenes liv og fart, Elite, hvor mange nivåer som kommer og hvor tidlig, hodeskallene, rundene, modusen, vanskelighetsgraden og reglene. Det spiller ikke oppsettet, så ditt eget spill kan føles lettere eller vanskeligere.",
   "CustomBossChallenge-PerTier": "{0} % / nivå",
   "CustomBossChallenge-SpawnRounds": "Spawn-runder",
   "CustomBossChallenge-SpawnRoundsInfo": "Runden hvert nivå kommer på, skilt med komma, f.eks. 40, 60, 80. Manglende runder fortsetter hver 20. runde. Spillets siste runde flyttes til etter det siste nivået, slik at alle nivåer kan spilles.",

@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Difficulty stars** (#263): the Boss Creator shows a difficulty rating from 1 to 5 stars under the Tier Preview,
+  and the website shows it with every setup: on the home page, in the Studio and in Compare. It is a rough estimate
+  from the setup's numbers: each tier's health and speed weighted by how late it comes, the boss (Phayze and Lych
+  count for more than Bloonarius), Elite, the number of tiers and how early they arrive, the skulls, Boss Event Rounds
+  and the CHIMPS events' rounds, the mode and difficulty, lives, cash, max towers and paragons, banned towers and the
+  other rules. Its i says it is an estimate. The mod and the website share the formula, checked by shared test cases;
+  most past Elite events get 4 or 5 stars and most normal ones 1 or 2.
 - **An issue the day BTD6 updates** (#272, #19, for contributors): a daily GitHub workflow watches Steam's news for a
   new version and Steam's public build for hotfixes, and opens an issue with the update checklist, once per version
   or build. The checklist is a new section of CONTRIBUTING.md, *Updating for a new BTD6 version*.

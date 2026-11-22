@@ -9,6 +9,7 @@ import { formatPercent } from "@cbc/share-code/skulls";
 import { endRound } from "@cbc/share-code/tiers";
 import { skulls, tierCards } from "../src/preview/compute";
 import { warningsOf } from "../src/preview/warnings";
+import { difficultyOf } from "../src/preview/difficulty";
 import { EXAMPLES } from "../src/data/types";
 
 const round6 = (value: number) => roundHalfEven(value, 6);
@@ -46,6 +47,8 @@ describe("codes the mod reads", () => {
 
       // The Tier Preview's warnings, from the game's own boss models in the mod (#186)
       expect(warningsOf(result.options, result.challenge)).toEqual(fixture.warnings);
+      // The difficulty rating under it (#263)
+      expect(difficultyOf(result.options, result.challenge).stars).toBe(fixture.difficulty);
     });
   }
 });

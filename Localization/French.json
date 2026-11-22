@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "Ajoute cette part de la santé normale pour chaque palier après le premier, en plus des paliers du jeu : +100 % donne ×2 au palier 2, ×3 au palier 3, et ainsi de suite. Chaque palier au-delà de 5 a déjà ×1,5 de la santé du précédent, donc le palier 7 a ×2,25 de celle du palier 5. 0 % garde la santé normale.",
   "CustomBossChallenge-TierPreview": "Aperçu des paliers",
   "CustomBossChallenge-TierPreviewInfo": "Chaque palier avec la manche où il arrive, sa vitesse par rapport au jeu normal et sa santé. L'orange est au-dessus du jeu normal, le bleu en dessous.",
+  "CustomBossChallenge-Difficulty": "Difficulté",
+  "CustomBossChallenge-DifficultyInfo": "Une estimation grossière de la difficulté de la configuration, de 1 à 5 étoiles, pour comparer des configurations et en choisir une à essayer. Elle est calculée à partir des chiffres de la configuration : la vie et la vitesse des boss, l'Élite, le nombre de paliers et leur arrivée plus ou moins tôt, les crânes, les manches, le mode, la difficulté et les règles. Elle ne joue pas la configuration, votre propre partie peut donc sembler plus facile ou plus difficile.",
   "CustomBossChallenge-PerTier": "{0} % / palier",
   "CustomBossChallenge-SpawnRounds": "Manches d'apparition",
   "CustomBossChallenge-SpawnRoundsInfo": "La manche d'arrivée de chaque palier, séparées par des virgules, p. ex. 40, 60, 80. Les manches manquantes continuent toutes les 20 manches. La dernière manche du jeu est déplacée après le dernier palier afin que tous les paliers puissent être joués.",
