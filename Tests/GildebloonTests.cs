@@ -756,3 +756,262 @@ public class GildebloonOverlayTest : GildebloonTest
         yield return ToMainMenu();
     }
 }
+
+/// <summary>
+/// Gildebloon never stands still for a player with a lot of cash and weak towers (#25): its health goes down between
+/// skulls. A shield from every Toll once made tier 3 stand at 195,001 of 200,000 (2026-11-22); Tolls give none now.
+/// </summary>
+[FullSuiteOnly("plays a rich game with one weak tower until its health drops (about 25 s)")]
+public class GildebloonNoStallTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        var options = new BossOptions {Boss = BossList.Gildebloon, Tiers = 1, SpawnRounds = "40"};
+        var dcm = WeakBossDcm();
+        dcm.startRules.cash = 1_000_000;
+        dcm.bloonModifiers.healthMultipliers.boss = 1;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+
+        var bridge = InGame.instance.bridge;
+        var manager = bridge.Simulation.map.spawner.bossBloonManager;
+        bridge.SetFastForward(true);
+        bridge.StartRound();
+        yield return WaitFor(() => manager.CurrentBoss != null, "Gildebloon arriving", 90);
+        var boss = manager.CurrentBoss!;
+        var position = boss.Position;
+        CreateTowerAt(bridge, new Vector2(position.X + 20, position.Y + 20), Game.instance.model.GetTowerFromId("DartMonkey"), costOverride: 0);
+
+        // Three Tolls of 2 % of a million go by, and still every hit takes health
+        var start = boss.health;
+        yield return WaitFor(() => GildebloonBrain.TotalStolen >= 3 * 1_000_000 * GildebloonBrain.TollShare * 0.85, "Three Tolls", 60);
+        Log($"health {start} -> {boss.health}, shield {GildebloonBrain.Armour(boss)}, stolen {GildebloonBrain.TotalStolen}");
+        AssertEquals(GildebloonBrain.Armour(boss), 0f, "Tolls give no shield, however rich the player");
+        Assert(boss.health < start, $"A Dart Monkey hurts it while the player is rich: {start} -> {boss.health}");
+        yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// The shield from a skull runs out (#25): after the skull's invulnerability and its <see cref="GildebloonBrain.ShieldSeconds"/>
+/// it is gone even if no tower broke it, the look plays VaultBreak, and Gildebloon moves at its own speed again
+/// </summary>
+[FullSuiteOnly("waits out a skull's shield (about 20 s)")]
+public class GildebloonShieldTimeTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        var options = new BossOptions {Boss = BossList.Gildebloon, Tiers = 1, SpawnRounds = "40"};
+        var dcm = WeakBossDcm();
+        dcm.startRules.cash = 50_000;
+        dcm.bloonModifiers.healthMultipliers.boss = 1;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+
+        var bridge = InGame.instance.bridge;
+        var manager = bridge.Simulation.map.spawner.bossBloonManager;
+        bridge.SetFastForward(true);
+        bridge.StartRound();
+        yield return WaitFor(() => manager.CurrentBoss != null, "Gildebloon arriving", 90);
+        var boss = manager.CurrentBoss!;
+        boss.SetHealth((int) (boss.bloonModel.maxHealth * 0.79f));
+        yield return WaitFor(() => GildebloonBrain.Armour(boss) > 0, "The skull's shield", 10);
+        var shieldAt = bridge.Simulation.time.elapsed;
+        Log($"shield {GildebloonBrain.Armour(boss)}, {GildebloonBrain.ShieldSecondsLeft:0.0} s");
+
+        yield return WaitFor(() => GildebloonBrain.Armour(boss) <= 0, "The shield running out", 30);
+        var lasted = (bridge.Simulation.time.elapsed - shieldAt) / (float) GildebloonBrain.FramesPerSecond;
+        Log($"the shield lasted {lasted:0.0} s; last animation {Visuals.GildebloonLook.LastAnimation}");
+        Assert(lasted >= GildebloonBrain.ShieldSeconds + Gildebloon.SkullSeconds - 0.5f &&
+               lasted <= GildebloonBrain.ShieldSeconds + Gildebloon.SkullSeconds + 0.5f, $"It lasted its seconds: {lasted:0.0}");
+        yield return WaitFor(() => Visuals.GildebloonLook.LastAnimation == "VaultBreak", "VaultBreak as it goes", 3);
+
+        // its own speed again
+        var from = boss.DistanceTraveled;
+        var frames = bridge.Simulation.time.elapsed;
+        yield return new WaitForSecondsRealtime(0.5f);
+        var speed = (boss.DistanceTraveled - from) / System.Math.Max(1, bridge.Simulation.time.elapsed - frames);
+        Assert(speed > boss.bloonModel.speedFrames * 0.85f, $"Its own speed without the shield: {speed} per frame of {boss.bloonModel.speedFrames}");
+        yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// A Tax Collector that leaks takes its kind's share of the cash and no lives (#25): a MOAB 5 %, a BFB 8 %, a ZOMG 10 %,
+/// a fortified ZOMG 12 %
+/// </summary>
+public class GildebloonCollectorLeakTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        var options = new BossOptions {Boss = BossList.Gildebloon, Tiers = 1, SpawnRounds = "40"};
+        var dcm = WeakBossDcm();
+        dcm.startRules.cash = 100_000;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+        var bridge = InGame.instance.bridge;
+
+        foreach (var kind in Gildebloon.CollectorKinds)
+        {
+            InGame.instance.SpawnBloons(kind.Id, 1, 0);
+            yield return WaitFor(() => InGame.instance.GetBloons().Any(bloon => bloon.bloonModel.id == kind.Id), $"A {kind.Source} Tax Collector", 5);
+            var collector = InGame.instance.GetBloons().First(bloon => bloon.bloonModel.id == kind.Id);
+            var cash = bridge.GetCash(-1);
+            var lives = InGame.instance.GetHealth();
+            collector.Leaked();
+            yield return null;
+            var taken = cash - bridge.GetCash(-1);
+            Log($"{kind.Id} leaked: took {taken} of {cash}, lives {lives} -> {InGame.instance.GetHealth()}");
+            AssertEquals(taken, System.Math.Floor(cash * kind.Share), $"A leaking {kind.Source} takes {kind.Share:P0}");
+            AssertEquals(InGame.instance.GetHealth(), lives, $"A leaking {kind.Source} takes no lives");
+        }
+        yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// Elite's Interest (#25): while nothing hits it its Vault grows, which is paid back, and gives it no shield (the
+/// shield comes only at a skull)
+/// </summary>
+[FullSuiteOnly("waits for an Elite's Interest (about 20 s)")]
+public class GildebloonInterestTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        var options = new BossOptions {Boss = BossList.Gildebloon, Elite = true, Tiers = 1, SpawnRounds = "40"};
+        var dcm = WeakBossDcm();
+        dcm.startRules.cash = 50_000;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+
+        var bridge = InGame.instance.bridge;
+        var manager = bridge.Simulation.map.spawner.bossBloonManager;
+        var interest = 0.0;
+        void Added(double amount) => interest += amount;
+        GildebloonBrain.InterestAdded += Added;
+        try
+        {
+            bridge.SetFastForward(true);
+            bridge.StartRound();
+            yield return WaitFor(() => manager.CurrentBoss != null, "Elite Gildebloon arriving", 90);
+            yield return WaitFor(() => GildebloonBrain.Stolen > 0, "A Toll", 20);
+            yield return WaitFor(() => interest > 0, "Interest while nothing hits it", 20);
+            var stolen = GildebloonBrain.TotalStolen;
+            Log($"interest {interest}, vault {GildebloonBrain.Stolen}, stolen from the cash {stolen}");
+            Assert(GildebloonBrain.Stolen >= stolen + interest - 1, "The Vault holds what it stole and its Interest");
+            AssertEquals(GildebloonBrain.Armour(manager.CurrentBoss!), 0f, "Interest gives no shield");
+        }
+        finally
+        {
+            GildebloonBrain.InterestAdded -= Added;
+        }
+        yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// The coats GildebloonOverlayTest doesn't put on it (#25): plain glue, the pink glue with bubbles and Unstable
+/// Concoction's acid. Each tower in a game of its own: while
+/// the game's overlay is on, Gildebloon's own coat shows and the game's (shaped for Bloonarius) doesn't draw. The game
+/// switches its overlays to what is on the boss every frame, so it takes the real towers.
+/// </summary>
+[FullSuiteOnly("plays three games, a tower's coat in each (about 60 s)")]
+public class GildebloonCoatsTest : GildebloonTest
+{
+    private static readonly (string Tower, string Overlay, string Coat)[] Steps =
+    [
+        ("GlueGunner-200", "BloonariusGlueBasic", "GlueBasic"),
+        // On a boss the pink glue with bubbles comes from 2-0-5; 0-0-4 and 0-0-5 glue no boss. Plain pink glue
+        // (GlueStronger) is 2-0-3's and 2-0-4's in the models, but neither glued it in 25 s (2026-11-22), so it isn't here
+        ("GlueGunner-205", "BloonariusGlueStrongerDot", "GlueStrongerDot"),
+        ("Alchemist-030", "BloonariusUnstableConcoction", "UnstableConcoction")
+    ];
+
+    protected override IEnumerator RunOn()
+    {
+        // a game each: a glued bloon isn't glued again by another Glue Gunner
+        var failed = new System.Collections.Generic.List<string>();
+        foreach (var (tower, overlay, coat) in Steps)
+        {
+            var options = new BossOptions {Boss = BossList.Gildebloon, Tiers = 1, SpawnRounds = "40"};
+            var dcm = WeakBossDcm();
+            dcm.startRules.cash = 20000;
+            dcm.bloonModifiers.healthMultipliers.boss = 30;
+            dcm.bloonModifiers.bossSpeedMultiplier = 0.2f;
+            yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+            Assert(Visuals.GildebloonBody.Ready, "The modelled body loaded");
+            var bridge = InGame.instance.bridge;
+            var manager = bridge.Simulation.map.spawner.bossBloonManager;
+            bridge.StartRound();
+            yield return WaitFor(() => manager.CurrentBoss != null, "Gildebloon arriving", 90);
+            yield return new WaitForSecondsRealtime(1);
+
+            Transform? Overlay(string name)
+            {
+                var display = manager.CurrentBoss?.GetUnityDisplayNode();
+                return display == null ? null
+                    : display.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == name && t.parent?.name == Visuals.GildebloonLook.OverlaysName);
+            }
+
+            AssertEquals(Visuals.GildebloonLook.CoatsShown.Count, 0, "No coat without an effect on it");
+            var position = manager.CurrentBoss!.Position;
+            CreateTowerAt(bridge, new Vector2(position.X + 22, position.Y + 22), Game.instance.model.GetTowerFromId(tower), costOverride: 0);
+            var seen = new System.Collections.Generic.HashSet<string>();
+            for (var waited = 0f; waited < 25 && !(Overlay(overlay)?.gameObject.activeInHierarchy == true && Visuals.GildebloonLook.CoatsShown.Contains(coat));
+                 waited += Time.unscaledDeltaTime)
+            {
+                var group = Overlay(overlay)?.parent;
+                for (var i = 0; group != null && i < group.childCount; i++)
+                {
+                    if (group.GetChild(i).gameObject.activeSelf && seen.Add(group.GetChild(i).name)) Log($"{tower}: on {group.GetChild(i).name}");
+                }
+                yield return null;
+            }
+            if (!(Overlay(overlay)?.gameObject.activeInHierarchy == true && Visuals.GildebloonLook.CoatsShown.Contains(coat)))
+                failed.Add($"{coat} from a {tower}; on: {string.Join(", ", seen)}");
+            else if (!Overlay(overlay)!.GetComponentsInChildren<Renderer>().All(r => r.forceRenderingOff)) failed.Add($"The game's {overlay} draws");
+            Log($"{tower}: coats shown {string.Join(", ", Visuals.GildebloonLook.CoatsShown)}");
+            yield return ToMainMenu();
+        }
+        AssertEquals(string.Join("; ", failed), "", "Every coat showed");
+    }
+}
+
+/// <summary>
+/// Tax Collectors are as big as the bloon they replace (#25): each kind's look covers that bloon's length and width
+/// (measured from the game's MOAB, BFB and ZOMG), within a tenth, and the bloon's own body doesn't draw
+/// </summary>
+public class GildebloonCollectorSizeTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        var options = new BossOptions {Boss = BossList.Gildebloon, Tiers = 1, SpawnRounds = "40"};
+        var dcm = WeakBossDcm();
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+        Assert(Visuals.GildebloonBody.Ready, "The modelled body loaded");
+
+        foreach (var kind in Gildebloon.CollectorKinds)
+        {
+            InGame.instance.SpawnBloons(kind.Id, 1, 0);
+            Il2CppAssets.Scripts.Simulation.Bloons.Bloon? collector = null;
+            yield return WaitFor(() =>
+            {
+                collector = InGame.instance.GetBloons().FirstOrDefault(bloon => bloon.bloonModel.id == kind.Id);
+                return collector != null && Visuals.GildebloonLook.HasLook(collector);
+            }, $"A {kind.Source} Tax Collector with its look", 5);
+            yield return null;
+
+            var node = collector!.GetUnityDisplayNode().transform;
+            var look = node.GetComponentsInChildren<Transform>(true).First(t => t.name.StartsWith(Visuals.GildebloonLook.RootName) && t.parent == node);
+            var points = look.GetComponentsInChildren<MeshFilter>().Where(f => f.sharedMesh != null).SelectMany(f =>
+                new[] {-1, 1}.SelectMany(x => new[] {-1, 1}.SelectMany(y => new[] {-1, 1}.Select(z =>
+                    node.InverseTransformPoint(f.transform.TransformPoint(f.sharedMesh.bounds.center +
+                                                                          Vector3.Scale(f.sharedMesh.bounds.extents, new Vector3(x, y, z)))))))).ToList();
+            var width = points.Max(p => p.x) - points.Min(p => p.x);
+            var length = points.Max(p => p.z) - points.Min(p => p.z);
+            Log($"{kind.Id}: {width:0.0} x {length:0.0}, its bloon {kind.Width} x {kind.Length}");
+            Assert(System.Math.Abs(length - kind.Length) <= kind.Length * 0.1f, $"{kind.Id} is as long as a {kind.Source}: {length:0.0} of {kind.Length}");
+            Assert(System.Math.Abs(width - kind.Width) <= kind.Width * 0.1f, $"{kind.Id} is as wide as a {kind.Source}: {width:0.0} of {kind.Width}");
+            Assert(!Visuals.GildebloonLook.BodyShows(collector), $"The {kind.Source}'s own body doesn't draw");
+            collector.Destroy();
+            yield return null;
+        }
+        yield return ToMainMenu();
+    }
+}

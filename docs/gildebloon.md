@@ -180,8 +180,9 @@ What could still show of Bloonarius, and how each is handled:
   glue, a Wizard's fire, a Dartling's Laser Shock and a sticky bomb on it. The body file grew to 1.3 MB (271 parts),
   loaded in about 100 ms.
   What a boss shows, found by
-  scanning every tower's models for an overlay type (game 57.4): glue (Glue Gunner: yellow for most, green from
-  Bloon Dissolver 3-x-x, pink from 0-0-3, pink with bubbles at 0-0-5; also the Desperado's Sheriff), sticky bombs
+  scanning every tower's models for an overlay type (game 57.4) and checked in tests: glue (Glue Gunner: yellow for
+  most, green from Bloon Dissolver 3-x-x, pink with bubbles from 2-0-5; plain pink is 2-0-3's and 2-0-4's in the
+  models but didn't glue a boss in a test, and 0-0-4 and 0-0-5 glue no boss; also the Desperado's Sheriff), sticky bombs
   (Ninja 0-0-4, Master Bomber 0-0-5, the Ninja Paragon's bomb tags), fire (Mortar, Wizard, Gwendolin, Buccaneer,
   Desperado and more), Laser Shock (Dartling 2-x-x), MOAB Maim (Bomb Shooter 0-3-x, Sniper 4-x-x), Unstable
   Concoction (Alchemist 0-3-x), the Skywarden's Chilled, Galvanised and Windlash, the Sheriff's dynamite and a kinetic
