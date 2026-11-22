@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **An issue the day BTD6 updates** (#272, #19, for contributors): a daily GitHub workflow watches Steam's news for a
+  new version and Steam's public build for hotfixes, and opens an issue with the update checklist, once per version
+  or build. The checklist is a new section of CONTRIBUTING.md, *Updating for a new BTD6 version*.
+
 ## [2.14.0] - 2026-11-22
 
 ### Added

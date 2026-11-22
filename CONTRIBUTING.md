@@ -254,6 +254,8 @@ guards (`[GuardPatch]`), so a bug report's `Latest.log` shows it.
 - **Website**: `npm test` and `npm run build` in `web/`, see below.
 - **Boss events**: `node --test "tools/boss-events/*.test.mjs"`, the tests of the boss events backfill and archiver,
   see below.
+- **Game version**: `node --test "tools/game-version/*.test.mjs"`, the tests of the daily check for a new BTD6 version,
+  see [Updating for a new BTD6 version](#updating-for-a-new-btd6-version).
 
 The first two are PowerShell scripts that also run locally in Windows PowerShell:
 
@@ -330,6 +332,35 @@ MelonLoader's assemblies.
 - A major update can need code changes: fix them on the PR's branch, or close it with a note and add an issue.
 - `build.yml` is included. Its MelonLoader, Mod Helper and game assemblies aren't actions, so they are bumped by hand
   (see **Releases** above).
+
+## Updating for a new BTD6 version
+
+`.github/workflows/game-version.yml` runs every day (and by hand) and opens an issue with the label `game-update` when
+the game changes, so an update is noticed the same day:
+
+- **A new version.** When Steam's news for the game names an update newer than `WorksOnVersion` in
+  `ModHelperData.cs` (Ninja Kiwi posts one for every major update, like "Update 57.0!"), it opens "BTD6 58.0 is out".
+- **A new build.** Hotfixes (57.1, 57.2, ...) get no news post, so it also watches the build id of Steam's public
+  branch (from [steamcmd.net](https://www.steamcmd.net/)). A new build opens "New BTD6 build on Steam (…)": check the
+  version on the title screen, and close the issue if nothing changed. A new build while an update's issue is still
+  open is added to that issue, and a build issue becomes the version's issue when the news post comes a day later.
+
+The issues keep what was seen in hidden markers, so a version or build never opens a second issue, also after it was
+closed. The very first run opens and closes one issue for the build that was live then, which later ones are
+compared with. The script is `tools/game-version/check.mjs`; `node tools/game-version/check.mjs --dry-run` shows
+what it sees. Its tests are `node --test "tools/game-version/*.test.mjs"`. The workflow can only write issues.
+
+The issue lists the steps below as tasks; the script reads them from this list, so keep it a numbered list:
+
+1. Update the game, start it with the mod and look in `MelonLoader/Latest.log` for `[CustomBossChallenge]` lines from
+   `PatchCheck`: which patches are missing?
+2. If the Boss Creator button says a part is missing, find the renamed or moved method and fix the patch.
+3. Run the unit tests and the in-game tests (see [In-game tests](#in-game-tests)).
+4. Set `WorksOnVersion` in `ModHelperData.cs` to the new version (`VersionTest` checks that it matches the game).
+5. Check that an unfinished `Continue.json` from the old version still continues, or is put aside with a message (#13).
+6. When `doombubbles/btd6-ci-dependencies` has the new version, set `CI_DEPENDENCIES_REF` in `build.yml` (see
+   [Releases](#releases)).
+7. Add a changelog entry under **Fixed**, then make a patch release (x.y.**z**).
 
 ## Website
 

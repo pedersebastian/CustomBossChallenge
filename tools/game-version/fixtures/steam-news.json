@@ -1,0 +1,88 @@
+{
+  "appnews": {
+    "appid": 960090,
+    "newsitems": [
+      {
+        "gid": "1846018067931512",
+        "title": "Update 57.0!",
+        "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1846018067931512",
+        "is_external_url": true,
+        "feedlabel": "Community Announcements",
+        "date": 1791496512,
+        "feedname": "steam_community_announcements",
+        "appid": 960090
+      },
+      {
+        "gid": "1845383656386444",
+        "title": "DDT and Tack Shooter Plushies",
+        "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1845383656386444",
+        "is_external_url": true,
+        "feedlabel": "Community Announcements",
+        "date": 1790949606,
+        "feedname": "steam_community_announcements",
+        "appid": 960090
+      },
+      {
+        "gid": "1842846814438873",
+        "title": "Social Seasons Is Live!",
+        "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1842846814438873",
+        "is_external_url": true,
+        "feedlabel": "Community Announcements",
+        "date": 1788307252,
+        "feedname": "steam_community_announcements",
+        "appid": 960090
+      },
+      {
+        "gid": "1840310314340464",
+        "title": "Update 56.0!",
+        "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1840310314340464",
+        "is_external_url": true,
+        "feedlabel": "Community Announcements",
+        "date": 1785975028,
+        "feedname": "steam_community_announcements",
+        "appid": 960090
+      },
+      {
+        "gid": "1837955055361803",
+        "title": "Ninja Kiwi Plushie and 20 Year Anniversary Hoodie!",
+        "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1837955055361803",
+        "is_external_url": true,
+        "feedlabel": "Community Announcements",
+        "date": 1783889617,
+        "feedname": "steam_community_announcements",
+        "appid": 960090
+      },
+      {
+        "gid": "1836506165563742",
+        "title": "Social Seasons Is Live!",
+        "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1836506165563742",
+        "is_external_url": true,
+        "feedlabel": "Community Announcements",
+        "date": 1782858045,
+        "feedname": "steam_community_announcements",
+        "appid": 960090
+      },
+      {
+        "gid": "1835871199301221",
+        "title": "Ninja Kiwi 20th Anniversary Hoodie and Ninja Kiwi Plushie!",
+        "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1835871199301221",
+        "is_external_url": true,
+        "feedlabel": "Community Announcements",
+        "date": 1781712006,
+        "feedname": "steam_community_announcements",
+        "appid": 960090
+      },
+      {
+        "gid": "1834602721186059",
+        "title": "Bloons TD 6 - Update 55.0",
+        "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1834602721186059",
+        "is_external_url": true,
+        "feedlabel": "Community Announcements",
+        "date": 1780525159,
+        "feedname": "steam_community_announcements",
+        "appid": 960090
+      }
+    ],
+    "count": 87
+  }
+}

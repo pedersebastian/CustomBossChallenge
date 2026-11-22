@@ -1,0 +1,31 @@
+{
+  "data": {
+    "960090": {
+      "common": {
+        "name": "Bloons TD 6"
+      },
+      "depots": {
+        "branches": {
+          "no-discord": {
+            "buildid": "26258356",
+            "description": "Live build without Discord",
+            "timebuildupdated": "1793148553",
+            "timeupdated": "1793148553"
+          },
+          "public": {
+            "buildid": "26122510",
+            "timebuildupdated": "1792634055",
+            "timeupdated": "1792709036"
+          },
+          "windows-adreno-test": {
+            "buildid": "26256851",
+            "description": "Disables anti-aliasing for adreno GPUs",
+            "timebuildupdated": "1793143212",
+            "timeupdated": "1793143212"
+          }
+        }
+      }
+    }
+  },
+  "status": "success"
+}

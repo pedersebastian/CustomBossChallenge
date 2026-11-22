@@ -1,0 +1,41 @@
+# Opens an issue with the update checklist when BTD6 gets a new version or a new Steam build (#272), so a game update
+# is noticed the same day. See "Updating for a new BTD6 version" in CONTRIBUTING.md. A run that fails (a source that
+# doesn't answer) sends the normal Actions e-mail and is caught up by the next day's run.
+name: Game version
+
+on:
+  schedule:
+    - cron: '41 7 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+# One run at a time, so two runs never open the same issue
+concurrency:
+  group: game-version
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Check for a new BTD6 version
+    runs-on: ubuntu-latest
+    # A run takes seconds; each request gives up after 30 s and is tried three times
+    timeout-minutes: 10
+    # Only issues can be written. The answers from Steam and steamcmd.net are read as data: only digits from them
+    # reach an issue.
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Compare the newest version and build with WorksOnVersion, open or update the issue
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node tools/game-version/check.mjs
