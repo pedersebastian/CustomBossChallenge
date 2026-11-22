@@ -139,6 +139,7 @@ public static class Gildebloon
         }
 
         AddTarnish(gameModel);
+        AddCashResistance(gameModel);
         return added;
     }
 
@@ -253,6 +254,67 @@ public static class Gildebloon
     /// Tarnish: every attack of the acid towers (<see cref="AcidTowers"/>), at every upgrade, does
     /// <see cref="AcidDamage"/> times its damage to bloons with Gildebloon's tag. Safe to call again.
     /// </summary>
+    /// <summary>
+    /// Gildebloon guards its gold against the towers that make money (#25): towers that can make cash do this share of
+    /// their damage to it, and so do towers in a Monkey Town's reach (a Monkey Village x-x-3 or more, whose pops are worth
+    /// more). Only the upgrades that make cash count: a Sniper from x-4-x (Supply Drop), a Heli Pilot from x-4-x, an
+    /// Engineer from x-x-4 (Bloon Trap), a Buccaneer from x-x-3 (Merchantman), an Alchemist from x-x-3 (Rubber to Gold), a
+    /// Super Monkey from x-4-x, a Druid from x-4-x, a Desperado's x-4-x, their paragons that make cash, Benjamin and
+    /// Obyn's levels that do; found by what their models have (<see cref="CashBehaviours"/>), so a new tower that makes
+    /// cash counts too.
+    /// </summary>
+    public const float CashTowerDamage = 0.5f;
+
+    /// <summary>The model behaviours that make a tower one that makes cash (seen in 57.4's towers)</summary>
+    internal static readonly string[] CashBehaviours =
+    [
+        "CashModel", "PerRoundCashBonusTowerModel", "GiveCashOnPopModel", "CashbackZoneModel", "BonusCashZoneModel",
+        "CashPerTowerInRangeModel", "BountyHunterZoneModel", "BananaCashIncreaseSupportModel", "IncreaseBloonWorthWithTierModel",
+        "MonkeyCityIncomeSupportModel"
+    ];
+
+    internal const string CashResistance = "GildeCashGuard";
+
+    /// <summary>The towers that make cash in a game model, by name, for tests</summary>
+    public static System.Collections.Generic.List<string> CashTowers(GameModel gameModel) =>
+        gameModel.towers.Where(MakesCash).Select(tower => tower.name).ToList();
+
+    private static bool MakesCash(Il2CppAssets.Scripts.Models.Towers.TowerModel tower) =>
+        tower.GetDescendants<Model>().ToList().Any(model => System.Array.IndexOf(CashBehaviours, model.GetIl2CppType().Name) >= 0);
+
+    /// <summary>Whether a Monkey Village upgrade is a Monkey Town or more: its pops are worth more</summary>
+    private static bool IsMonkeyTown(Il2CppAssets.Scripts.Models.Towers.TowerModel tower) =>
+        tower.baseId == "MonkeyVillage" && tower.HasBehavior<Il2CppAssets.Scripts.Models.Towers.Behaviors.CashIncreaseModel>();
+
+    /// <summary>See <see cref="CashTowerDamage"/>. Safe to call again.</summary>
+    private static void AddCashResistance(GameModel gameModel)
+    {
+        foreach (var tower in gameModel.towers)
+        {
+            if (IsMonkeyTown(tower))
+            {
+                if (tower.GetBehaviors<Il2CppAssets.Scripts.Models.Towers.Behaviors.DamageModifierSupportModel>().Any(model => model.name.EndsWith(CashResistance)))
+                    continue;
+                // the towers in its reach do less to Gildebloon; one Monkey Town's is enough (unique)
+                tower.AddBehavior(new Il2CppAssets.Scripts.Models.Towers.Behaviors.DamageModifierSupportModel(CashResistance, true,
+                    CashResistance, new Il2CppReferenceArray<Il2CppAssets.Scripts.Models.Towers.TowerFilters.TowerFilterModel>(0), false,
+                    new Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors.DamageModifierForTagModel(CashResistance, Tag, CashTowerDamage, 0, false, true, false),
+                    false, 0, false));
+                continue;
+            }
+
+            if (!MakesCash(tower)) continue;
+            foreach (var projectile in tower.GetDescendants<Il2CppAssets.Scripts.Models.Towers.Projectiles.ProjectileModel>().ToList())
+            {
+                if (!projectile.HasBehavior<Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors.DamageModel>()) continue;
+                if (projectile.GetBehaviors<Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors.DamageModifierForTagModel>()
+                    .Any(modifier => modifier.name.EndsWith(CashResistance))) continue;
+                projectile.AddBehavior(new Il2CppAssets.Scripts.Models.Towers.Projectiles.Behaviors.DamageModifierForTagModel(
+                    CashResistance, Tag, CashTowerDamage, 0, false, true, false));
+            }
+        }
+    }
+
     private static void AddTarnish(GameModel gameModel)
     {
         foreach (var tower in gameModel.towers)

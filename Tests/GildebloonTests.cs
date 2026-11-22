@@ -1015,3 +1015,174 @@ public class GildebloonCollectorSizeTest : GildebloonTest
         yield return ToMainMenu();
     }
 }
+
+/// <summary>
+/// Gildebloon guards its gold against towers that make money (#25): the upgrades that make cash do
+/// <see cref="Gildebloon.CashTowerDamage"/> of their damage to it, and so do towers in a Monkey Town's reach. Two
+/// Sniper Monkeys 2-0-0 shoot it, one beside a Monkey Village 0-0-3: that one does about half the damage.
+/// </summary>
+[FullSuiteOnly("two Snipers shoot it, one in a Monkey Town (about 25 s)")]
+public class GildebloonCashGuardTest : GildebloonTest
+{
+    protected override IEnumerator RunOn()
+    {
+        var game = Game.instance.model;
+        var cashTowers = Gildebloon.CashTowers(game);
+        foreach (var (tower, makesCash) in new[]
+                 {
+                     ("SniperMonkey-030", false), ("SniperMonkey-040", true), ("SniperMonkey-050", true), ("SniperMonkey-Paragon", true),
+                     ("HeliPilot-030", false), ("HeliPilot-040", true), ("EngineerMonkey-003", false), ("EngineerMonkey-004", true),
+                     ("MonkeyBuccaneer-002", false), ("MonkeyBuccaneer-003", true), ("Alchemist-002", false), ("Alchemist-003", true),
+                     ("DartMonkey-502", false), ("SuperMonkey-400", true), ("Druid-040", true)
+                 })
+            AssertEquals(cashTowers.Contains(tower), makesCash, $"{tower} makes cash");
+
+        var options = new BossOptions {Boss = BossList.Gildebloon, Tiers = 1, SpawnRounds = "40"};
+        var dcm = WeakBossDcm();
+        dcm.startRules.cash = 20000;
+        dcm.bloonModifiers.healthMultipliers.boss = 30;
+        dcm.bloonModifiers.bossSpeedMultiplier = 0.2f;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+        var bridge = InGame.instance.bridge;
+        var manager = bridge.Simulation.map.spawner.bossBloonManager;
+        bridge.StartRound();
+        yield return WaitFor(() => manager.CurrentBoss != null, "Gildebloon arriving", 90);
+        var position = manager.CurrentBoss!.Position;
+
+        // a Sniper far from the Monkey Town, and one beside it
+        CreateTowerAt(bridge, new Vector2(position.X + 30, position.Y - 10), game.GetTowerFromId("SniperMonkey-200"), costOverride: 0);
+        CreateTowerAt(bridge, new Vector2(position.X - 22, position.Y + 22), game.GetTowerFromId("MonkeyVillage-003"), costOverride: 0);
+        CreateTowerAt(bridge, new Vector2(position.X - 22, position.Y + 50), game.GetTowerFromId("SniperMonkey-200"), costOverride: 0);
+        yield return WaitFor(() => bridge.Simulation.towerManager.GetTowersByBaseId("SniperMonkey").ToList().Count == 2 &&
+                                   bridge.Simulation.towerManager.GetTowersByBaseId("MonkeyVillage").ToList().Count == 1, "Two Snipers and a Monkey Town", 10);
+        var town = bridge.Simulation.towerManager.GetTowersByBaseId("MonkeyVillage").ToList()[0];
+        var snipers = bridge.Simulation.towerManager.GetTowersByBaseId("SniperMonkey").ToList();
+        var near = snipers.OrderBy(s => (s.Position.X - town.Position.X) * (s.Position.X - town.Position.X) + (s.Position.Y - town.Position.Y) * (s.Position.Y - town.Position.Y)).First();
+        var far = snipers.First(s => s.Pointer != near.Pointer);
+
+        // only Gildebloon to shoot at
+        var start = Time.realtimeSinceStartup;
+        while (Time.realtimeSinceStartup - start < 12)
+        {
+            foreach (var other in InGame.instance.GetBloons().Where(bloon => !bloon.bloonModel.isBoss).ToList()) other.Destroy();
+            yield return null;
+        }
+
+        Log($"damage: beside the Monkey Town {near.damageDealt}, away from it {far.damageDealt}");
+        Assert(far.damageDealt > 0, "The Sniper away from the Monkey Town hurt it");
+        var share = near.damageDealt / (double) far.damageDealt;
+        Assert(share > Gildebloon.CashTowerDamage * 0.7 && share < Gildebloon.CashTowerDamage * 1.3,
+            $"The Sniper in the Monkey Town does about {Gildebloon.CashTowerDamage:P0}: {share:P0}");
+        yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// What Gildebloon costs (#25): a busy Elite match (glue, fire, a sticky bomb, a skull with padlocks, Tax Collectors and
+/// coins flying) a few times over. Logs what each of its per-frame parts takes, and checks that nothing piles up from
+/// match to match: the game's meshes, materials, textures, sprites and objects, and memory.
+/// </summary>
+[FullSuiteOnly("eight busy matches, Gildebloon's and Bloonarius's, measuring time and memory (about 3 min)")]
+public class GildebloonCostTest : GildebloonTest
+{
+    private const int Games = 3;
+
+    protected override IEnumerator RunOn()
+    {
+        var gildebloon = 0.0;
+        yield return Matches(BossList.Gildebloon, grown => gildebloon = grown);
+        // the same with the game's own boss: the game's memory grows from match to match by itself
+        var bloonarius = 0.0;
+        yield return Matches(BossType.Bloonarius, grown => bloonarius = grown);
+        Log($"the game's memory a match: Gildebloon {gildebloon:0.00} MB, Bloonarius {bloonarius:0.00} MB");
+        Assert(gildebloon <= bloonarius + 3, $"Gildebloon adds {gildebloon - bloonarius:0.00} MB of the game's memory a match over Bloonarius");
+    }
+
+    /// <summary>A match to fill the caches (meshes, materials, the HUD's templates), then <see cref="Games"/> more, measured</summary>
+    private IEnumerator Matches(BossType boss, System.Action<double> gameGrown)
+    {
+        yield return Match(boss, boss == BossList.Gildebloon);
+        var before = new System.Collections.Generic.Dictionary<string, int>();
+        var (managed, game) = (0.0, 0.0);
+        yield return Measure(before, (m, g) => (managed, game) = (m, g));
+        for (var i = 0; i < Games; i++) yield return Match(boss, false);
+        var after = new System.Collections.Generic.Dictionary<string, int>();
+        var (managedAfter, gameAfter) = (0.0, 0.0);
+        yield return Measure(after, (m, g) => (managedAfter, gameAfter) = (m, g));
+
+        var grown = before.Keys.Select(key => (key, per: (after[key] - before[key]) / (double) Games)).ToList();
+        Log($"{boss} per match: {string.Join(", ", grown.Select(g => $"{g.key} {g.per:+0.0;-0.0;0}"))}; " +
+            $"{(managedAfter - managed) / Games:0.000} MB managed, {(gameAfter - game) / Games:0.00} MB game memory");
+        gameGrown((gameAfter - game) / Games);
+        if (boss != BossList.Gildebloon) yield break;
+        foreach (var (key, per) in grown)
+            Assert(per <= (key == "GameObject" ? 5 : 1), $"{key}s pile up: {per:0.0} more after each match");
+        Assert((managedAfter - managed) / Games < 0.5, $"Managed memory grows by {(managedAfter - managed) / Games:0.00} MB a match");
+    }
+
+    private IEnumerator Match(BossType bossType, bool timeIt)
+    {
+        var options = new BossOptions {Boss = bossType, Elite = true, Tiers = 1, SpawnRounds = "40"};
+        var dcm = WeakBossDcm();
+        dcm.startRules.cash = 50000;
+        dcm.bloonModifiers.healthMultipliers.boss = 20;
+        dcm.bloonModifiers.bossSpeedMultiplier = 0.3f;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
+        var bridge = InGame.instance.bridge;
+        var manager = bridge.Simulation.map.spawner.bossBloonManager;
+        bridge.StartRound();
+        yield return WaitFor(() => manager.CurrentBoss != null, $"Elite {bossType} arriving", 90);
+        var boss = manager.CurrentBoss!;
+        var position = boss.Position;
+        var model = Game.instance.model;
+        CreateTowerAt(bridge, new Vector2(position.X + 22, position.Y + 22), model.GetTowerFromId("GlueGunner-300"), costOverride: 0);
+        CreateTowerAt(bridge, new Vector2(position.X - 22, position.Y + 22), model.GetTowerFromId("NinjaMonkey-004"), costOverride: 0);
+        CreateTowerAt(bridge, new Vector2(position.X, position.Y - 28), model.GetTowerFromId("WizardMonkey-030"), costOverride: 0);
+        CreateTowerAt(bridge, new Vector2(position.X + 25, position.Y - 25), model.GetTowerFromId("BananaFarm"), costOverride: 0);
+        yield return new WaitForSecondsRealtime(3);
+        var repossessions = Visuals.GildebloonHud.Repossessions;
+        boss.SetHealth((int) (boss.bloonModel.maxHealth * 0.86f));
+        if (bossType == BossList.Gildebloon)
+            yield return WaitFor(() => Visuals.GildebloonHud.Repossessions > repossessions && Visuals.GildebloonSeizeLook.PadlockCount > 0, "A Repossession", 10);
+        yield return new WaitForSecondsRealtime(1);
+
+        if (timeIt)
+        {
+            var parts = new[] {"Gildebloon vault", "Gildebloon look", "Gildebloon's money", "Gildebloon's Repossession"};
+            var start = parts.ToDictionary(part => part, part => CustomBossChallenge.UpdateTicks.TryGetValue(part, out var t) ? t : 0);
+            var frames = 0;
+            var began = Time.realtimeSinceStartup;
+            while (Time.realtimeSinceStartup - began < 4)
+            {
+                frames++;
+                yield return null;
+            }
+            var ms = parts.ToDictionary(part => part, part =>
+                (CustomBossChallenge.UpdateTicks[part] - start[part]) * 1000.0 / System.Diagnostics.Stopwatch.Frequency / frames);
+            Log($"a frame ({frames} frames): {string.Join(", ", ms.Select(m => $"{m.Key} {m.Value:0.000} ms"))}; together {ms.Values.Sum():0.000} ms");
+            // 2026-11-22: 0.9 ms before looking through the body only now and then and posing only parts that move
+            Assert(ms.Values.Sum() < 0.7, $"Gildebloon takes {ms.Values.Sum():0.000} ms a frame");
+        }
+        yield return ToMainMenu();
+    }
+
+    private static IEnumerator Measure(System.Collections.Generic.Dictionary<string, int> counts, System.Action<double, double> found)
+    {
+        yield return new WaitForSecondsRealtime(1);
+        var unload = Resources.UnloadUnusedAssets();
+        while (!unload.isDone) yield return null;
+        for (var i = 0; i < 6; i++)
+        {
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            Il2CppSystem.GC.Collect();
+            yield return null;
+        }
+        counts["Mesh"] = Resources.FindObjectsOfTypeAll<Mesh>().Length;
+        counts["Material"] = Resources.FindObjectsOfTypeAll<Material>().Length;
+        counts["Texture2D"] = Resources.FindObjectsOfTypeAll<Texture2D>().Length;
+        counts["Sprite"] = Resources.FindObjectsOfTypeAll<Sprite>().Length;
+        counts["GameObject"] = Resources.FindObjectsOfTypeAll<GameObject>().Length;
+        found(System.GC.GetTotalMemory(true) / 1048576.0, Il2CppSystem.GC.GetTotalMemory(false) / 1048576.0);
+    }
+}

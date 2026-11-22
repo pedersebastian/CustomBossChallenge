@@ -69,6 +69,16 @@ boss name through `BossList.Name`. The game itself only ever sees the string `bo
   Dispatch with a green $ on its back, as long and as wide as the bloon it replaces (measured in the game: MOAB 25.9 x
   42.4, BFB 43.6 x 60.1, ZOMG 49.1 x 75.9); at first about 60 % of a MOAB, it looked odd, and the game's effects on the
   MOAB (glue) lay off it.
+- **It guards its gold against towers that make money** (2026-11-22): the upgrades that can make cash do half their
+  damage to it (`Gildebloon.CashTowerDamage`), found by what their models have (`Gildebloon.CashBehaviours`: cash
+  drops, income each round, cash from pops, bounty and cash zones), so only those upgrades count: a Sniper from x-4-x
+  (Supply Drop), a Heli Pilot from x-4-x, an Engineer from x-x-4 (Bloon Trap), a Buccaneer from x-x-3 (Merchantman),
+  an Alchemist from x-x-3 (Rubber to Gold), a Super Monkey from x-4-x, a Druid from x-4-x, a Desperado's x-4-x, the
+  paragons that make cash, Benjamin and Obyn's levels that do. Their projectiles get a `DamageModifierForTagModel`
+  (x0.5) for its tag, like Tarnish. Towers in a Monkey Town's reach (a Monkey Village x-x-3 or more, whose pops are
+  worth more) do half too: the Monkey Town gets a `DamageModifierSupportModel` with the same modifier, unique, so two
+  Monkey Towns don't halve it twice. `GildebloonCashGuardTest`: a Sniper beside a Monkey Town did 57 % of what one
+  away from it did.
 - `Config/GildebloonBrain.cs` runs each simulation frame (`BossBloonManager.Process`): Toll, Vault (an armour
   layer `GildeVault`), Interest (Elite), seizing Banana Farms at a skull, Tax Collector leaks and the Payout.
 - `Patches/MixedBosses.cs` sets the game's boss type to "Gildebloon" before each of its tiers spawns, also when the
@@ -237,3 +247,18 @@ It found that a leaking Gildebloon counted as beaten (and paid out, so no retry 
 away through `BossBloonManager.BloonDestroyed` also when it leaks, so a Gildebloon with health left isn't counted
 there now. A leaking Tax Collector cost the lives of the bloons inside it whatever its model's leak damage said, so
 `Patches.Bloon_Leaked` holds the lives up while it leaks and puts them back.
+
+## What it costs (2026-11-22)
+
+`GildebloonCostTest` plays busy Elite matches (glue, fire, a sticky bomb, a skull with padlocks, Tax Collectors and
+coins flying) and times the mod's per-frame parts (`CustomBossChallenge.UpdateTicks`, kept by `Guarded`):
+
+- **Time.** Gildebloon took 0.9 ms a frame, 0.78 of it its look: looking through all of the boss's renderers every
+  frame for the game's parts to keep from drawing (0.40 ms), looking through the game's overlays and their renderers
+  (0.17 ms) and posing all 271 parts of its body (0.18 ms). Now the body is looked through every frame only while the
+  game builds its display (its first 30 frames) and then every 15th, the game's coats are hidden when they come on,
+  and a part is only moved when its pose changed: 0.5 ms a frame, the look 0.41 ms.
+- **Memory.** Nothing piles up from match to match: the game's meshes, materials, textures, sprites and objects are
+  as many after three more matches, and managed memory stays put. The game's own memory grows each match, by itself
+  (Bloonarius: 11.6 MB a match); with Gildebloon about 2.7 MB more, of which about 1.2 MB is the Vault's HUD: Mod
+  Helper's panels and texts are never quite freed (see `LeakTest`), and the HUD makes about a dozen each match.

@@ -88,7 +88,18 @@ public static class GildebloonLook
 
         /// <summary>The game's effects of towers on the boss under its display (Bloonarius's), once found</summary>
         public Transform? Overlays;
+
+        /// <summary>The game's overlays that coat the boss, found once, and whether each was on last frame</summary>
+        public List<(GameObject Overlay, string Coat)>? CoatOverlays;
+        public readonly HashSet<string> CoatsOn = new();
     }
+
+    /// <summary>
+    /// How often the body is looked through for the game's parts to keep from drawing, once it has settled: every frame
+    /// for its first frames, while the game builds its display, then every so many. Looking through all of a boss's
+    /// renderers every frame took about 0.4 ms (2026-11-22); the game seldom adds one later.
+    /// </summary>
+    private const int SettleFrames = 30, HideEvery = 15;
 
     /// <summary>The group the game shows towers' effects on a boss in (glue, sticky bombs, fire...)</summary>
     public const string OverlaysName = "BloonariusOverlays";
@@ -110,13 +121,29 @@ public static class GildebloonLook
     private static void ShowCoats(Shown look)
     {
         if (look.Body is not { } body || look.Overlays is not { } overlays) return;
-        for (var i = 0; i < overlays.childCount; i++)
+        if (look.CoatOverlays == null)
         {
-            var overlay = overlays.GetChild(i);
-            if (!Coats.TryGetValue(overlay.name, out var coat)) continue;
-            var on = overlay.gameObject.activeInHierarchy;
-            if (body.Coats.TryGetValue(coat, out var own) && own.activeSelf != on) own.SetActive(on);
-            if (!on) continue;
+            look.CoatOverlays = new List<(GameObject, string)>();
+            for (var i = 0; i < overlays.childCount; i++)
+            {
+                var overlay = overlays.GetChild(i);
+                if (Coats.TryGetValue(overlay.name, out var coat)) look.CoatOverlays.Add((overlay.gameObject, coat));
+            }
+        }
+
+        // the game's coat is kept from drawing when it comes on, and again whenever the body is looked through
+        var settling = look.Frames <= SettleFrames || look.Frames % HideEvery == 0;
+        foreach (var (overlay, coat) in look.CoatOverlays)
+        {
+            var on = overlay.activeSelf;
+            var was = look.CoatsOn.Contains(coat);
+            if (on != was)
+            {
+                if (on) look.CoatsOn.Add(coat);
+                else look.CoatsOn.Remove(coat);
+                if (body.Coats.TryGetValue(coat, out var own)) own.SetActive(on);
+            }
+            if (!on || was && !settling) continue;
             foreach (var renderer in overlay.GetComponentsInChildren<Renderer>())
             {
                 if (renderer.forceRenderingOff) continue;
@@ -300,7 +327,7 @@ public static class GildebloonLook
         }
 
         look.Frames++;
-        if (look.Look != null) HideBody(look, graphic.gameObject);
+        if (look.Look != null && (look.Frames <= SettleFrames || look.Frames % HideEvery == 0)) HideBody(look, graphic.gameObject);
         FitOverlays(look, graphic.gameObject);
         ShowCoats(look);
         if (!collector) Animate(look, bloon);

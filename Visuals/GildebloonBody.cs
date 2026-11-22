@@ -55,6 +55,14 @@ public static class GildebloonBody
 
         /// <summary>Its coats of what towers put on it (glue, acid, fire, laser shock), by name, hidden until on</summary>
         public readonly Dictionary<string, GameObject> Coats = new();
+
+        /// <summary>
+        /// The pose each part was last given, and whether it was given one: a part is only moved when its pose changed.
+        /// Most of its 271 parts stand still, and setting a transform is a call into the game (2026-11-22: posing every
+        /// part every frame took about a fifth of a millisecond)
+        /// </summary>
+        public GildebloonBodyData.Pose[] Posed = [];
+        public bool[] HasPose = [];
     }
 
     /// <summary>The coats a body has, by the name of their group in the file: "Overlay" and the game's overlay</summary>
@@ -218,6 +226,12 @@ public static class GildebloonBody
         var data = Data;
         if (data == null) return;
         Relight(data, instance);
+        if (instance.Posed.Length != instance.Parts.Length)
+        {
+            instance.Posed = new GildebloonBodyData.Pose[instance.Parts.Length];
+            instance.HasPose = new bool[instance.Parts.Length];
+        }
+
         for (var i = 0; i < instance.Parts.Length; i++)
         {
             var transform = instance.Parts[i];
@@ -231,6 +245,10 @@ public static class GildebloonBody
                 if (!instance.Player.Moves(i)) scale = instance.Elite ? System.Numerics.Vector3.One : System.Numerics.Vector3.Zero;
             }
 
+            var final = new GildebloonBodyData.Pose(pose.Position, pose.Rotation, scale);
+            if (instance.HasPose[i] && instance.Posed[i] == final) continue;
+            instance.Posed[i] = final;
+            instance.HasPose[i] = true;
             transform.localPosition = new Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);
             transform.localRotation = new Quaternion(pose.Rotation.X, pose.Rotation.Y, pose.Rotation.Z, pose.Rotation.W);
             transform.localScale = new Vector3(scale.X, scale.Y, scale.Z);

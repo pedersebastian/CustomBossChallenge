@@ -94,6 +94,7 @@ public class CustomBossChallenge : BloonsTD6Mod
 
     private static void Guarded(string part, Action update)
     {
+        var start = System.Diagnostics.Stopwatch.GetTimestamp();
         try
         {
             update();
@@ -102,7 +103,18 @@ public class CustomBossChallenge : BloonsTD6Mod
         {
             if (FailedUpdates.Add(part)) ModHelper.Warning<CustomBossChallenge>($"The {part} update failed: {e}");
         }
+        finally
+        {
+            UpdateTicks[part] = (UpdateTicks.TryGetValue(part, out var ticks) ? ticks : 0) +
+                                System.Diagnostics.Stopwatch.GetTimestamp() - start;
+        }
     }
+
+    /// <summary>
+    /// How long each part of <see cref="OnUpdate"/> has taken, in <see cref="System.Diagnostics.Stopwatch"/> ticks, for
+    /// the tests that measure what the mod costs a frame (GildebloonCostTest)
+    /// </summary>
+    internal static readonly System.Collections.Generic.Dictionary<string, long> UpdateTicks = new();
 
     public override void OnNewGameModel(GameModel result)
     {
