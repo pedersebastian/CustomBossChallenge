@@ -421,6 +421,13 @@ The names of maps, towers, modes and difficulties in `game.json` are the game's 
 so writing the files needs the game in English (#218). In another language `WebDataTest` refuses to write them, and
 when it checks them it leaves those names out.
 
+The bosses' portraits (#206) are the one piece of the game's art on the website: `web/public/bosses/`, credited to
+Ninja Kiwi in every page's footer (`web/src/preview/portrait.ts` shows them, and the boss's first letter if one doesn't
+load). They come from the game through the in-game test `BossPortraitsTest`, which otherwise checks that every
+portrait still loads: run it windowed with `CBC_TESTS=BossPortraitsTest` and `CBC_PORTRAITS=<a scratch folder>`, then
+`python -I web/scripts/portraits.py <that folder> web/public/bosses` (needs Pillow). The folder's README has the
+details; `web/test/boss-portraits.test.ts` fails while a boss has no portraits.
+
 A shared link to the website shows a card with `web/public/og-card.png` (1200 × 630), the tags in `web/index.html`
 and the address in `web/.env` (`VITE_SITE_URL`, which link previews need in full; change it if the site moves). A
 `#code=…` never reaches the server, so every link shows the same card. The picture is made from

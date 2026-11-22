@@ -16,6 +16,7 @@ import { renderCurves } from "../compare/chart";
 import { tierPairs } from "../compare/diff";
 import { tierGlow, tierGlowStyle } from "./tierLook";
 import { towerRuleText, towersWithRules } from "./towerRules";
+import { dice, portrait } from "./portrait";
 
 /** Orange where a tier is harder than the normal game, blue where it is easier, like the in-game preview */
 const tone = (factor: number): string => (factor > 1.0001 ? "harder" : factor < 0.9999 ? "easier" : "same");
@@ -111,7 +112,7 @@ export const breakable = (name: string): string =>
     .replace("Dreadbloon", "Dread­bloon")
     .replace("Bloonarius", "Bloon­arius");
 
-/** The boss's first letter, or ★ with a boss per tier; with more than 5 tiers it glows like the last tier */
+/** The boss's portrait (Elite when Elite is on, #206), or ★ with a boss per tier; with more than 5 tiers it glows like the last tier */
 function renderBadge(options: BossOptions): HTMLElement {
   const last = clampTiers(options.Tiers);
   const glow = tierGlow(bossOf(options, last).boss, last);
@@ -122,8 +123,15 @@ function renderBadge(options: BossOptions): HTMLElement {
       style: glow ? tierGlowStyle(glow) : undefined,
       "aria-hidden": "true",
     },
-    isMixed(options) ? "★" : options.Boss.slice(0, 1),
+    isMixed(options) ? "★" : portrait(options.Boss, options.Elite, 46),
   );
+}
+
+/** A tier's own boss's portrait in Advanced Mode, Elite or not; a die for a Random tier, whose boss isn't known yet */
+export function tierPortrait(options: BossOptions, tier: number, name: string): Element {
+  if (name.startsWith("Random")) return dice(24);
+  const { boss, elite } = bossOf(options, tier);
+  return portrait(boss, elite, 24, null);
 }
 
 /** The Tier Preview: a card per tier with its round, speed and health, like Menus/TierStrip.cs (the Studio shows it too) */
@@ -156,7 +164,9 @@ export function renderTiers(options: BossOptions, challenge: Challenge, notes?: 
         ),
         h("span", { class: "tier-label", "aria-hidden": "true" }, `T${card.tier}`),
         h("span", { class: "tier-round", "aria-hidden": "true" }, `R${card.round}`),
-        boss ? h("span", { class: "tier-boss", title: "This tier's boss", "aria-hidden": "true" }, breakable(boss)) : null,
+        boss
+          ? h("span", { class: "tier-boss", title: "This tier's boss", "aria-hidden": "true" }, tierPortrait(options, card.tier, boss), breakable(boss))
+          : null,
         h("span", { class: `tier-speed ${speedTone}`, title: "Speed compared with the normal game", "aria-hidden": "true" }, speed + ARROW[speedTone]),
         h("span", { class: `tier-health ${healthTone}`, title: "Health", "aria-hidden": "true" }, card.health + ARROW[healthTone]),
         boss

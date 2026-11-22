@@ -1,14 +1,15 @@
 // The Studio's Advanced Mode (#95): a card per tier, the bosses to put on them, and the chosen tier's own Elite, speed,
 // health and skulls, like the Boss Creator's Tier Preview and tier picker (Menus/TierStrip.cs, TierBossPicker.cs).
 // A boss goes on a tier by dragging it there, by picking a tier and then a boss (on a phone too), or with the arrows on
-// a tier's card. Only text and our own marks: no art from the game.
+// a tier's card. The bosses and the tiers show the bosses' portraits (#206), Elite on an Elite tier, and a die for Random.
 
 import { SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, tierBossName, type SkullMode } from "@cbc/share-code";
 import { announce, h } from "../dom";
 import { formatDecimals } from "@cbc/share-code/dotnet";
 import type { Challenge } from "@cbc/share-code";
 import { tierCards } from "../preview/compute";
-import { releaseSetup, renderSkulls } from "../preview/render";
+import { breakable, releaseSetup, renderSkulls, tierPortrait } from "../preview/render";
+import { dice, portrait } from "../preview/portrait";
 import { CHOICES, FOLLOWS, MAX_HEALTH, MAX_SPEED, MIN_HEALTH, MIN_SPEED, NORMAL, RANDOM } from "@cbc/share-code/tier-bosses";
 import { MAX_SKULLS } from "@cbc/share-code/skulls";
 import { HEALTH_SLIDER_STEPS } from "@cbc/share-code/health-steps";
@@ -73,7 +74,12 @@ export function setUpTierEditor(
   // ---------- The bosses to put on a tier ----------
 
   const chips = CHOICES.map((choice) => {
-    const chip = h("button", { class: "studio-chip", type: "button", draggable: "true", "data-boss": choice }, choiceName(choice));
+    const chip = h(
+      "button",
+      { class: "studio-chip", type: "button", draggable: "true", "data-boss": choice },
+      choice === RANDOM ? dice(24) : portrait(choice, false, 24, null),
+      choiceName(choice),
+    );
     chip.addEventListener("click", () => changeTier(selected, (s) => edit.pickTierBoss(s, selected, choice)));
     chip.addEventListener("dragstart", (event) => {
       event.dataTransfer?.setData(DRAG_TYPE, choice);
@@ -224,7 +230,8 @@ export function setUpTierEditor(
       card.replaceChildren(
         h("span", { class: "studio-tier-number" }, `T${tier}`),
         h("span", { class: "studio-tier-round" }, `R${rounds[i] ?? ""}`),
-        h("span", { class: "studio-tier-boss" }, name),
+        // Long names break where their parts meet, "Bloon-arius", never anywhere
+        h("span", { class: "studio-tier-boss" }, tierPortrait(setup.options, tier, name), breakable(name)),
         // Like the Tier Preview's cards: the speed compared with the normal game, and the health
         card_ ? h("span", { class: "studio-tier-values" }, `×${formatDecimals(card_.speed, 2)} · ${card_.health}`) : "",
         // Its own speed and health on one short line; the card's label says them in words

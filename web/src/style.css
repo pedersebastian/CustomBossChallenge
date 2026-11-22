@@ -389,6 +389,22 @@ input:focus-visible {
   box-shadow: 0 0 0 3px #ffd84d;
 }
 
+/* A boss's portrait (#206) in its round badge: the whole boss, on the badge's colour (it has no background of its own) */
+.boss-badge > .portrait,
+.studio-boss-badge > .portrait {
+  display: block;
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+}
+
+/* A tier's own boss in Advanced Mode: a small portrait over its name */
+.tier-boss > .portrait {
+  display: block;
+  margin: 0 auto 2px;
+  object-fit: contain;
+}
+
 .setup-name {
   margin: 0;
   overflow-wrap: anywhere;
@@ -1484,7 +1500,38 @@ input:focus-visible {
 
 .studio-tier-boss {
   font-weight: 700;
+  hyphens: manual;
   overflow-wrap: anywhere;
+}
+
+/* The bosses to put on a tier with a small portrait before the name, and each tier's boss with one over it (#206) */
+.studio-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.studio-tier-boss {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+}
+
+.studio-chip > .portrait,
+.studio-tier-boss > .portrait {
+  flex: none;
+  object-fit: contain;
+}
+
+/* Random's die, in place of a portrait: white with the gold of the Studio's icons */
+.dice-body {
+  fill: #fff;
+  stroke: var(--outline);
+  stroke-width: 1.5;
+}
+
+.dice-pip {
+  fill: var(--outline);
 }
 
 .studio-tier-panel {
@@ -1694,7 +1741,7 @@ input:focus-visible {
   stroke-linejoin: round;
 }
 
-/* The boss row: a round badge per boss, a green tick on the chosen one */
+/* The boss row: a round badge with the portrait per boss, a green tick on the chosen one */
 .studio-bosses {
   display: flex;
   flex-wrap: wrap;
@@ -1729,6 +1776,11 @@ input:focus-visible {
   border: 3px solid var(--outline);
   font: 1.3rem "Luckiest Guy", sans-serif;
   box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* With its portrait the badge is framed in the boss's colour, so the bosses still differ by colour as well */
+.studio-boss-badge:has(> .portrait) {
+  border-color: var(--boss);
 }
 
 .studio-boss.elite .studio-boss-badge {

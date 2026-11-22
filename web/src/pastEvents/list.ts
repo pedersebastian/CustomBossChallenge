@@ -26,6 +26,7 @@ import { linkTo, replaceAddress, studioLinkTo } from "../code/link";
 import { GAME } from "../data/types";
 import { NO_AUTOFILL, announce, copyWithFeedback, h } from "../dom";
 import { MOD_TEXTS, fillText } from "../modTexts";
+import { portrait } from "../preview/portrait";
 
 /** How long after the last change screen readers hear the count */
 export const COUNT_DELAY = 600;
@@ -196,7 +197,7 @@ function renderEvent(event: PastEvent, all: Map<string, PastEvent>, codesWork: b
   const article = h(
     "article",
     { class: "past-event" + (hasRules(event) ? "" : " no-rules"), "data-id": event.id },
-    h("div", { class: "boss-badge past-event-badge", "aria-hidden": "true" }, (boss ?? "?").slice(0, 1)),
+    h("div", { class: "boss-badge past-event-badge", "aria-hidden": "true" }, boss ? portrait(boss, false, 46) : "?"),
     h(
       "div",
       { class: "past-event-body" },
