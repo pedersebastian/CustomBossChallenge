@@ -195,12 +195,36 @@ A release needs this report (see **Release version** below), so before tagging:
 2. Build Debug (`dotnet build -c Debug`) and run the full suite of in-game tests (without `CBC_SUITE` and
    `CBC_TESTS`).
 3. Commit `TestResults/ingame.json` with the version bump.
-4. Run `Check-Release.ps1` (below), then tag.
+4. Make the README's pictures again (below), look through the ones that changed, and commit them with
+   `TestResults/screenshots.json`.
+5. Run `Check-Release.ps1` (below), then tag. It warns when the pictures weren't made for this version.
 
-The screenshots in the README come from the `ScreenshotTour` test. It only runs in a windowed game (without
-`-batchmode`) started with the environment variable `CBC_SCREENSHOTS=<folder>`. To look at other screen formats, also
-set `CBC_RESOLUTIONS`, e.g. `1280x800,1024x768,1680x720,1920x540`: the tour is then taken once per size, each in a
-subfolder of `<folder>` named after the size.
+#### README pictures
+
+The pictures in the README (`docs/*.jpg`) come from the game, in one command (#269). It is a step before a release
+only, not for every change:
+
+```
+powershell -ExecutionPolicy Bypass -File tools/screenshots/Make-Screenshots.ps1
+```
+
+It needs the game closed and a Debug build in its `Mods` folder. It starts the game windowed with only this mod, runs
+`ScreenshotTour` and `TierLookTour` (a few minutes; leave the window alone), and makes every picture listed in
+`tools/screenshots/pictures.json` from their screenshots: scaled to 1280x720, cropped, or for `tier-look.jpg` a grid
+of tiers 5-10. The tour is always in English, at the size in `pictures.json` (1920x1080, so crops stay sharp), with
+fixed setups and names, and it doesn't touch the player's setups. Animations make every run a little different, so a
+picture only replaces the one in `docs/` when more of its pixels changed than its `tolerance` (1% unless
+`pictures.json` says otherwise); the table at the end says which ones changed, and git shows only those. Look at
+each changed picture before committing it. The script writes `TestResults/screenshots.json` with the mod's version,
+which `Check-Release.ps1` looks at to remind you when a release's pictures weren't made.
+`-SkipGame` makes the pictures again from the last run's screenshots (e.g. after changing a crop), `-Force` replaces
+all of them. A new picture in the README needs a capture in the tour and a line in `pictures.json`;
+`node --test "tools/screenshots/*.test.mjs"` (also run on GitHub) checks that the two lists match.
+
+`ScreenshotTour` only runs in a windowed game (without `-batchmode`) started with the environment variable
+`CBC_SCREENSHOTS=<folder>`. To look at other screen formats, also set `CBC_RESOLUTIONS`, e.g.
+`1280x800,1024x768,1680x720,1920x540`: the tour is then taken once per size, each in a subfolder of `<folder>` named
+after the size.
 
 ### Compatibility with other mods
 

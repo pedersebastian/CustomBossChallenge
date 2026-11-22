@@ -9,6 +9,7 @@ using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Unity.UI_New;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
+using Il2CppNinjaKiwi.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -20,8 +21,12 @@ namespace CustomBossChallenge.Tests;
 /// game is started (without -batchmode) with <c>--cbc.screenshots=&lt;folder&gt;</c> or the environment variable
 /// <c>CBC_SCREENSHOTS=&lt;folder&gt;</c>. With <c>CBC_RESOLUTIONS=1280x800,1024x768</c> as well, the tour is taken once
 /// per screen size, each in a subfolder such as <c>1024x768</c>.
+/// <para>
+/// The README's pictures are made from it by <c>tools/screenshots/Make-Screenshots.ps1</c> (#269): the tour is always in
+/// English with fixed setups, and the screenshots the README uses are saved under the README's names.
+/// </para>
 /// </summary>
-public class ScreenshotTour : CustomBossTest
+public class ScreenshotTour : RulesPanelTestBase
 {
     public const string Argument = "--cbc.screenshots=";
 
@@ -60,27 +65,36 @@ public class ScreenshotTour : CustomBossTest
             yield break;
         }
 
-        var (width, height, mode) = (Screen.width, Screen.height, Screen.fullScreenMode);
+        var (width, height, mode) = (UnityEngine.Screen.width, UnityEngine.Screen.height, UnityEngine.Screen.fullScreenMode);
         try
         {
             foreach (var (w, h) in resolutions)
             {
-                Screen.SetResolution(w, h, FullScreenMode.Windowed);
+                UnityEngine.Screen.SetResolution(w, h, FullScreenMode.Windowed);
                 yield return new WaitForSecondsRealtime(2);
-                Log($"tour at {Screen.width}x{Screen.height}");
+                Log($"tour at {UnityEngine.Screen.width}x{UnityEngine.Screen.height}");
                 yield return Tour(Path.Combine(folder, $"{w}x{h}"));
                 yield return ToMainMenu();
             }
         }
         finally
         {
-            Screen.SetResolution(width, height, mode);
+            UnityEngine.Screen.SetResolution(width, height, mode);
         }
     }
 
     private IEnumerator Tour(string folder)
     {
         Directory.CreateDirectory(folder);
+
+        // Always in English, whatever the player's language, so the README's pictures don't change with it
+        var language = LocalizationManager.Instance.ActiveLanguage;
+        if (language != Language.English)
+        {
+            var task = LocalizationManager.Instance.UpdateLanguageAsync(Language.English);
+            yield return WaitFor(() => task.IsCompleted, "Switching to English", 30);
+        }
+
         yield return new WaitForSecondsRealtime(3);
         yield return Capture(folder, "main-menu");
 
@@ -118,7 +132,7 @@ public class ScreenshotTour : CustomBossTest
             BossEditorSection.Current!.Load(editor.dcm, BossMode.Options);
             editor.chalName.text = editor.dcm.name = "Tanky Elite Vortex";
             yield return new WaitForSecondsRealtime(1);
-            yield return Capture(folder, "editor-top");
+            yield return Capture(folder, "boss-creator");
 
             EditorRows.ShowInfo(Texts.BossTiers, Texts.BossTiersInfo);
             yield return new WaitForSecondsRealtime(1.5f);
@@ -133,6 +147,19 @@ public class ScreenshotTour : CustomBossTest
                 yield return new WaitForSecondsRealtime(1);
                 yield return Capture(folder, $"editor-{(int) (100 - position * 100)}");
             }
+
+            // The README's views of the sliders, the Tier Preview and the Share Code row
+            var creator = BossEditorSection.Current!;
+            ScrollTo(scroll, creator.BossSpeed.Row.GetComponent<RectTransform>(), 0.13f);
+            yield return new WaitForSecondsRealtime(1);
+            yield return Capture(folder, "boss-options");
+            ScrollTo(scroll, creator.Strip.Panel.RectTransform, 0.75f);
+            yield return new WaitForSecondsRealtime(1);
+            yield return Capture(folder, "tier-preview");
+            // Low enough that Past Events, whose download date changes every day, is out of view
+            ScrollTo(scroll, creator.CopyCode.RectTransform, 0.93f);
+            yield return new WaitForSecondsRealtime(1);
+            yield return Capture(folder, "share-code");
 
             // The skull preview with percentages that need decimals
             BossMode.Options = BossMode.Options with {SkullMode = SkullMode.EvenlySpaced, SkullCount = 5};
@@ -204,12 +231,64 @@ public class ScreenshotTour : CustomBossTest
             Assert(!BossMode.Active, "Leaving the Boss Creator must end boss mode");
             yield return Capture(folder, "after-back");
             yield return MixedGame(folder);
+            yield return RulesPanels(folder);
         }
         finally
         {
             BossMode.Store = store;
             BossMode.Saved = saved;
+            if (language != Language.English) LocalizationManager.Instance.UpdateLanguageAsync(language);
         }
+
+        if (language != Language.English)
+            yield return WaitFor(() => LocalizationManager.Instance.ActiveLanguage == language, "Going back to the player's language", 30);
+    }
+
+    /// <summary>
+    /// The pause screen's Rules panel of a Standard Mode game and of an Advanced Mode line-up with two Random tiers,
+    /// set up like <see cref="RulesPanelTest"/> and <see cref="RulesPanelAdvancedTest"/>
+    /// </summary>
+    private IEnumerator RulesPanels(string folder)
+    {
+        var dcm = TestUtils.BaseDcm();
+        dcm.bloonModifiers.healthMultipliers.boss = 3.69f;
+        dcm.bloonModifiers.bossSpeedMultiplier = 1.3f;
+        dcm.disableSelling = true;
+        dcm.disableMK = true;
+        yield return Play(new BossOptions
+        {
+            Boss = BossType.Vortex, Elite = true, Tiers = 6, SpawnRounds = "40, 50, 60, 70, 80, 90", SpeedPerTier = 10,
+            HealthPerTier = -5, SkullMode = SkullMode.EvenlySpaced, SkullCount = 4, BossEventRounds = true
+        }, dcm);
+        yield return OpenRules();
+        yield return new WaitForSecondsRealtime(1);
+        yield return Capture(folder, "rules-panel");
+        yield return CloseRules();
+
+        yield return Play(new BossOptions
+        {
+            Tiers = 10,
+            TierBosses = "Lych,VortexElite@120/80,Random,Phayze#4,,Bloonarius#60%;30%,DreadbloonElite,Blastapopoulos,Random,Lych@200/150"
+        });
+        yield return OpenRules();
+        yield return new WaitForSecondsRealtime(1);
+        yield return Capture(folder, "rules-panel-advanced");
+        yield return CloseRules();
+        yield return ToMainMenu();
+    }
+
+    /// <summary>
+    /// Scrolls so that the middle of <paramref name="target"/> is <paramref name="at"/> (0 top, 1 bottom) down the view
+    /// </summary>
+    internal static void ScrollTo(ScrollRect scroll, RectTransform target, float at)
+    {
+        Canvas.ForceUpdateCanvases();
+        var content = scroll.content;
+        var view = scroll.viewport != null ? scroll.viewport : scroll.GetComponent<RectTransform>();
+        var scrollable = content.rect.height - view.rect.height;
+        if (scrollable <= 0) return;
+        var fromTop = content.rect.yMax - content.InverseTransformPoint(target.TransformPoint(target.rect.center)).y;
+        scroll.verticalNormalizedPosition = 1 - Mathf.Clamp01((fromTop - at * view.rect.height) / scrollable);
     }
 
     /// <summary>
@@ -260,13 +339,16 @@ public class ScreenshotTour : CustomBossTest
     private static string Regions()
     {
         var regions = new System.Collections.Generic.List<string>();
+        void AddRect(string name, Rect rect)
+        {
+            rect = Rect.MinMaxRect(Mathf.Max(rect.xMin, 0), Mathf.Max(rect.yMin, 0), Mathf.Min(rect.xMax, UnityEngine.Screen.width), Mathf.Min(rect.yMax, UnityEngine.Screen.height));
+            if (rect.width <= 0 || rect.height <= 0) return;
+            regions.Add($"{{\"name\":\"{name}\",\"x\":{rect.xMin:0},\"y\":{UnityEngine.Screen.height - rect.yMax:0},\"width\":{rect.width:0},\"height\":{rect.height:0}}}");
+        }
         void Add(string name, Component? component)
         {
             if (component == null || !component.gameObject.activeInHierarchy) return;
-            var rect = LayoutChecks.ScreenRect(component.GetComponent<RectTransform>());
-            rect = Rect.MinMaxRect(Mathf.Max(rect.xMin, 0), Mathf.Max(rect.yMin, 0), Mathf.Min(rect.xMax, Screen.width), Mathf.Min(rect.yMax, Screen.height));
-            if (rect.width <= 0 || rect.height <= 0) return;
-            regions.Add($"{{\"name\":\"{name}\",\"x\":{rect.xMin:0},\"y\":{Screen.height - rect.yMax:0},\"width\":{rect.width:0},\"height\":{rect.height:0}}}");
+            AddRect(name, LayoutChecks.ScreenRect(component.GetComponent<RectTransform>()));
         }
 
         Add("boss-creator-button", Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.Main.MainMenu>()?.transform.Find(MainMenuButton.Name));
@@ -275,8 +357,17 @@ public class ScreenshotTour : CustomBossTest
         {
             Add("boss-section", section.Section.transform);
             Add("play", section.Play.transform);
+
+            // The Saved Setups and Share Code rows across the section, which the README shows on their own
+            if (section.SavedList.gameObject.activeInHierarchy && section.PasteCode.gameObject.activeInHierarchy)
+            {
+                var box = LayoutChecks.ScreenRect(section.Section.GetComponent<RectTransform>());
+                var top = LayoutChecks.ScreenRect(section.SavedList.RectTransform);
+                var bottom = LayoutChecks.ScreenRect(section.PasteCode.RectTransform);
+                AddRect("saved-setups", Rect.MinMaxRect(box.xMin, Mathf.Min(top.yMin, bottom.yMin), box.xMax, Mathf.Max(top.yMax, bottom.yMax)));
+            }
         }
 
-        return $"{{\"width\":{Screen.width},\"height\":{Screen.height},\"regions\":[{string.Join(",", regions)}]}}";
+        return $"{{\"width\":{UnityEngine.Screen.width},\"height\":{UnityEngine.Screen.height},\"regions\":[{string.Join(",", regions)}]}}";
     }
 }

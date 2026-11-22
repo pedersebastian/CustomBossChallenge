@@ -72,6 +72,16 @@ if (-not (Test-Path $reportPath)) {
     }
 }
 
+# The README's pictures are made by hand before a release (tools/screenshots/Make-Screenshots.ps1, #269): only a
+# reminder, since a release whose look didn't change can keep the old ones
+$picturesFile = "TestResults/screenshots.json"
+$picturesPath = Join-Path $Root $picturesFile
+$pictures = if (Test-Path $picturesPath) { [System.IO.File]::ReadAllText($picturesPath) | ConvertFrom-Json } else { $null }
+if (-not $pictures -or $pictures.modVersion -ne $Tag) {
+    $made = if ($pictures) { "were last made for $($pictures.modVersion)" } else { "were never made by the script" }
+    Write-Host "::warning file=${picturesFile}::The README's pictures $made, not ${Tag}: run tools/screenshots/Make-Screenshots.ps1, look through the changed ones and commit them with $picturesFile (see CONTRIBUTING.md)"
+}
+
 if ($errors.Count -gt 0) {
     Write-Host "$($errors.Count) release problem(s)"
     exit 1

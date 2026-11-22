@@ -1,0 +1,25 @@
+{
+  "$comment": "The README's pictures in docs/, made by Make-Screenshots.ps1 from the game's ScreenshotTour (#269). Sizes and crops are in pixels of a 1280x720 screen; scale gives more pixels per one of those. tolerance is the share of pixels that may change from run to run (1% by default): the pictures from inside a game have animated bosses, measured at up to 10% (arrival), 6% (line-up) and 13% (tier look) between two runs.",
+  "resolution": "1920x1080",
+  "pictures": [
+    { "name": "boss-creator" },
+    { "name": "boss-options" },
+    { "name": "info-popup" },
+    { "name": "modifiers" },
+    { "name": "rules-panel" },
+    { "name": "main-menu", "crop": { "x": 400, "y": 68, "width": 880, "height": 495 } },
+    { "name": "tier-bosses" },
+    { "name": "tier-boss-picker" },
+    { "name": "boss-arrival", "tolerance": 0.2 },
+    { "name": "boss-lineup", "tolerance": 0.2 },
+    { "name": "rules-panel-advanced" },
+    { "name": "saved-setups", "region": "saved-setups", "padding": 12, "scale": 1.5 },
+    { "name": "share-code" },
+    { "name": "tier-preview" },
+    {
+      "name": "tier-look",
+      "tolerance": 0.25,
+      "tierLook": { "bosses": ["Bloonarius", "Phayze", "Blastapopoulos"], "tiers": [5, 6, 7, 8, 9, 10] }
+    }
+  ]
+}
