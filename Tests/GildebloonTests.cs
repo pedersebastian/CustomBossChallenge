@@ -277,8 +277,11 @@ public class GildebloonBrainTest : GildebloonTest
         Assert(stolen >= 2 * 20000 * GildebloonBrain.TollShare * 0.9, $"It took a share of the cash: {stolen}");
         // The shield is what it took, times its tier's shield per dollar, up to half its health
         var perCash = GildebloonBrain.ShieldPerCashFor(boss.bloonModel.id.Contains(TierBossMath.EliteSuffix), TierMath.TierOf(boss.bloonModel.id));
+        // and at most MaxTheftShield of its health from each theft
         var shield = Math.Min(stolen * perCash, GildebloonBrain.ShieldCap(boss));
-        Assert(boss.HasArmour && Math.Abs(boss.CurrentArmourAmount - shield) < 2 * perCash,
+        var perTheft = Math.Ceiling(boss.bloonModel.maxHealth * GildebloonBrain.MaxTheftShield);
+        Assert(boss.HasArmour && boss.CurrentArmourAmount <= shield + 2 * perCash &&
+               boss.CurrentArmourAmount >= Math.Min(shield, perTheft) - 2 * perCash,
             $"Shield {boss.CurrentArmourAmount} for {stolen} stolen, at most {GildebloonBrain.ShieldCap(boss)}");
         AssertEquals(InGame.instance.bridge.Simulation.cashSpent.Value, 0.0, "Stealing isn't cash spent");
         yield return new WaitForSecondsRealtime(0.5f);

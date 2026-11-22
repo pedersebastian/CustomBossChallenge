@@ -120,7 +120,7 @@ public static class GildebloonHud
         }
 
         var height = Canvas().rect.height;
-        ((RectTransform) banner.transform).anchoredPosition = new Vector2(0, height * (top ? 0.22f : -0.24f));
+        banner.RectTransform.anchoredPosition = new Vector2(0, height * (top ? 0.22f : -0.24f));
         BannerOnTop = top;
     }
 
@@ -235,7 +235,10 @@ public static class GildebloonHud
         return cashText;
     }
 
-    private static RectTransform Canvas() => (RectTransform) panel!.transform.parent;
+    /// <summary>The game's canvas the Vault is on (a C# cast of its Transform fails under Il2Cpp)</summary>
+    private static RectTransform? canvasRect;
+
+    private static RectTransform Canvas() => canvasRect!;
 
     /// <summary>Where on the canvas a point on the map is</summary>
     private static Vector3? OnCanvas(Vector3 world)
@@ -256,7 +259,7 @@ public static class GildebloonHud
         if (popTemplate == null || CashText() is not { } cash || CashPoint() is not { } at) return;
         var made = Object.Instantiate(popTemplate, Canvas(), false);
         made.SetActive(true);
-        var item = (RectTransform) made.transform;
+        var item = made.GetComponent<RectTransform>();
         item.position = at;
         var label = made.GetComponent<TMP_Text>();
         label.text = text;
@@ -277,7 +280,7 @@ public static class GildebloonHud
             var sway = UnityEngine.Random.insideUnitCircle * Canvas().rect.height * 0.08f;
             Flights.Add(new Flight
             {
-                Item = (RectTransform) made.transform, Start = Time.unscaledTime + i * (toCash ? 0.05f : 0.07f), Seconds = FlySeconds,
+                Item = made.GetComponent<RectTransform>(), Start = Time.unscaledTime + i * (toCash ? 0.05f : 0.07f), Seconds = FlySeconds,
                 ToCash = toCash, Sway = sway
             });
         }
@@ -286,7 +289,7 @@ public static class GildebloonHud
     private static void UpdateFlights()
     {
         if (Flights.Count == 0) return;
-        if (panel == null)
+        if (panel == null || canvasRect == null)
         {
             Clear();
             return;
@@ -345,6 +348,7 @@ public static class GildebloonHud
         // Mod Helper leaves an empty text asset behind for every component (#235)
         using var leftovers = new ModHelperLeftovers();
         var canvas = ui.GetComponentInParent<Canvas>().rootCanvas.GetComponent<RectTransform>();
+        canvasRect = canvas;
         var height = canvas.rect.height * 0.045f;
         var width = height * 4.2f;
         panel = ModHelperPanel.Create(new Info(Name, canvas.rect.height * 0.42f, -canvas.rect.height * 0.12f, width, height)
@@ -379,7 +383,7 @@ public static class GildebloonHud
         banner.transform.SetSiblingIndex(panel.transform.GetSiblingIndex() + 1);
         banner.Text.color = new Color(1f, 0.82f, 0.25f);
         banner.Text.textWrappingMode = TextWrappingModes.NoWrap;
-        banner.Text.lineSpacing = -10;
+        banner.Text.lineSpacing = 12;
         banner.Text.outlineWidth = 0.25f;
         banner.Text.outlineColor = new Color32(70, 40, 0, 255);
         banner.Text.raycastTarget = false;

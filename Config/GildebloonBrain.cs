@@ -47,6 +47,16 @@ public static class GildebloonBrain
     public const double ShieldCapShare = 0.5;
 
     /// <summary>
+    /// The most shield one theft adds, as a share of the boss's health: a Toll, a Tax Collector's leak or Interest; a
+    /// skull's Repossession <see cref="MaxSkullShield"/>. Without it a player with a lot of cash had the Vault filled to
+    /// its cap at every Toll, faster than most towers could break it, and the boss stood still (2026-11-22: tier 2 with
+    /// $847,000, 23,700 shield every 6 s). So the Vault grows over a few thefts, and towers can wear it down.
+    /// </summary>
+    public const double MaxTheftShield = 0.04;
+
+    public const double MaxSkullShield = 0.12;
+
+    /// <summary>
     /// Shield per stolen dollar, per tier 1-5. The boss's health grows faster from tier to tier than a player's cash
     /// (tier 1 has 12,000 health at about round 40 with some $20,000; tier 5 has 1.9 million at about round 120 with some
     /// $650,000), so with one dollar a point the Vault was 40 % of its health at tier 1 and 1 % at tier 5 (2026-11-22).
@@ -206,7 +216,7 @@ public static class GildebloonBrain
         if (frame >= current.NextToll)
         {
             current.NextToll = frame + TollSeconds * FramesPerSecond;
-            Steal(sim, boss, current, Cash(sim) * (current.Elite ? EliteTollShare : TollShare));
+            Steal(sim, boss, current, Cash(sim) * (current.Elite ? EliteTollShare : TollShare), MaxTheftShield);
         }
 
         if (current.Elite && frame >= current.NextInterest)
@@ -216,8 +226,8 @@ public static class GildebloonBrain
             {
                 var interest = Math.Floor(current.Stolen * InterestShare);
                 current.Stolen += interest;
-                AddShield(boss, current, interest);
-                if (interest > 0) InterestAdded?.Invoke(interest);
+                AddShield(boss, current, interest, MaxTheftShield);
+                if (interest > 0) Tell(InterestAdded, interest);
             }
         }
 
@@ -226,10 +236,10 @@ public static class GildebloonBrain
         {
             current.Skulls = skulls;
             var before = current.Stolen;
-            Steal(sim, boss, current, Cash(sim) * (current.Elite ? EliteSkullShare : SkullShare));
+            Steal(sim, boss, current, Cash(sim) * (current.Elite ? EliteSkullShare : SkullShare), MaxSkullShield);
             var radius = SeizeRadiusFor(current.Tier);
             var (frozen, farms) = Repossess(sim, boss, frame, radius);
-            Repossessed?.Invoke(new Repossession(current.Stolen - before, frozen, farms, radius, boss));
+            Tell(Repossessed, new Repossession(current.Stolen - before, frozen, farms, radius, boss));
         }
     }
 
@@ -282,7 +292,7 @@ public static class GildebloonBrain
         var payout = Math.Floor(gone.Stolen * (chimps ? 1 : PayoutFactor));
         sim.AddCash(payout, Simulation.CashType.Normal, CashIndex, Simulation.CashSource.Normal, null, false);
         LastPayout = payout;
-        CashTaken?.Invoke(-payout);
+        Tell(CashTaken, -payout);
         ModHelper.Msg<CustomBossChallenge>($"{gone.BossId} beaten: paid back ${payout} of ${gone.Stolen} stolen");
     }
 
@@ -298,16 +308,40 @@ public static class GildebloonBrain
         }
     }
 
-    private static void Steal(Simulation sim, Bloon boss, Vault current, double amount)
+    private static void Steal(Simulation sim, Bloon boss, Vault current, double amount, double maxShield)
     {
         amount = Math.Floor(Math.Min(amount, Cash(sim)));
         if (amount <= 0) return;
         sim.RemoveCash(amount, Simulation.CashType.Normal, CashIndex, Simulation.CashSource.Normal);
         current.Stolen += amount;
         TotalStolen += amount;
-        AddShield(boss, current, amount);
-        CashTaken?.Invoke(amount);
+        AddShield(boss, current, amount, maxShield);
+        Tell(CashTaken, amount);
     }
+
+    /// <summary>
+    /// Tells the screen something happened. What shows it must never stop the simulation (2026-11-22: a cast that
+    /// failed in the HUD broke off every Toll), so a failure is logged once and left
+    /// </summary>
+    private static void Tell<T>(Action<T>? listeners, T what)
+    {
+        if (listeners == null) return;
+        foreach (var listener in listeners.GetInvocationList())
+        {
+            try
+            {
+                ((Action<T>) listener)(what);
+            }
+            catch (Exception e)
+            {
+                if (toldFailure) continue;
+                toldFailure = true;
+                ModHelper.Warning<CustomBossChallenge>($"Showing Gildebloon's {typeof(T).Name} failed: {e}");
+            }
+        }
+    }
+
+    private static bool toldFailure;
 
     /// <summary>A Tax Collector leaked: it takes a share of the cash, into the Vault if Gildebloon is still alive</summary>
     public static void CollectorLeaked(Bloon collector)
@@ -322,12 +356,12 @@ public static class GildebloonBrain
 
         sim.RemoveCash(amount, Simulation.CashType.Normal, CashIndex, Simulation.CashSource.Normal);
         TotalStolen += amount;
-        CashTaken?.Invoke(amount);
+        Tell(CashTaken, amount);
         var boss = InGame.instance?.bridge?.Simulation?.map?.spawner?.bossBloonManager?.CurrentBoss;
         if (vault != null && boss != null)
         {
             vault.Stolen += amount;
-            AddShield(boss, vault, amount);
+            AddShield(boss, vault, amount, MaxTheftShield);
         }
         ModHelper.Msg<CustomBossChallenge>($"A Tax Collector leaked and took ${amount}");
     }
@@ -338,9 +372,10 @@ public static class GildebloonBrain
     /// <summary>The most shield the Vault can hold on a boss: <see cref="ShieldCapShare"/> of its health</summary>
     public static int ShieldCap(Bloon boss) => (int) Math.Ceiling(boss.bloonModel.maxHealth * ShieldCapShare);
 
-    private static void AddShield(Bloon boss, Vault current, double cash)
+    private static void AddShield(Bloon boss, Vault current, double cash, double maxShare)
     {
         var amount = (int) Math.Round(cash * ShieldPerCashFor(current.Elite, current.Tier));
+        amount = Math.Min(amount, (int) Math.Ceiling(boss.bloonModel.maxHealth * maxShare));
         amount = Math.Min(amount, ShieldCap(boss) - (int) Math.Ceiling(Armour(boss)));
         if (amount <= 0) return;
 
