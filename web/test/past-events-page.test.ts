@@ -3,9 +3,10 @@
 // filters in the address, makes the code the mod reads, and says when the list can't be loaded
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { decode } from "@cbc/share-code";
+import { ANY_EVENT, decode, newestFirst, readPastEvents, type PastEvent } from "@cbc/share-code";
 import { h } from "../src/dom";
-import { queryFromHash, safeSource, setUpPastEvents, shownName } from "../src/pastEvents/list";
+import { hashForQuery, queryFromHash, ratingsOf, safeSource, setUpPastEvents, shownName, sortFromHash, sortPastEvents } from "../src/pastEvents/list";
+import { rate } from "../src/pastEvents/rating";
 import cases from "./past-event-cases.json";
 
 const FILE = JSON.stringify({ formatVersion: 1, generated: "2026-11-16T00:00:00.000Z", license: "test", events: cases.events });
@@ -215,5 +216,92 @@ describe("the Past Events page", () => {
     expect(shownName("Clicks")).toBe("CHIMPS");
     expect(shownName("Tutorial")).toBe("Monkey Meadow");
     expect(shownName("Medium")).toBe("Medium");
+  });
+});
+
+describe("the difficulty on Past events", () => {
+  const read = readPastEvents(FILE);
+  if (read.problem !== "None") throw new Error(read.error);
+  const events = read.file.events;
+  const sortSelect = (root: HTMLElement) => root.querySelector<HTMLSelectElement>('select[aria-label="Sort"]')!;
+
+  it("shows each level's stars, as the Studio rates the setup it opens as", async () => {
+    const root = await page();
+    const lych = events.find((event) => event.id === "Lych47_m5zq59de")!;
+    const [normal, elite] = root.querySelector('[data-id="Lych47_m5zq59de"]')!.querySelectorAll(".past-event-level");
+    for (const [level, isElite] of [[normal, false], [elite, true]] as const) {
+      const stars = level.querySelector(".past-event-stars")!;
+      const rated = rate(lych, isElite)!;
+      expect(stars.getAttribute("role")).toBe("img");
+      expect(stars.getAttribute("aria-label")).toBe(`Difficulty: ${rated.stars} of 10 stars, an estimate`);
+      expect(stars.querySelectorAll(".star.on")).toHaveLength(rated.stars);
+      expect(stars.querySelectorAll(".star")).toHaveLength(10);
+    }
+    expect(rate(lych, true)!.points).toBeGreaterThan(rate(lych, false)!.points);
+  });
+
+  it("shows no stars for a level that can't be opened", async () => {
+    const root = await page();
+    const [normal] = root.querySelector('[data-id="MadeUpMap"]')!.querySelectorAll(".past-event-level");
+    expect(normal.querySelector(".past-event-stars")).toBeNull();
+  });
+
+  it("sorts by date or by difficulty, Elite first, then normal, ties newest first and the unrated last", () => {
+    const [a, b, c, d] = newestFirst(events).slice(0, 4);
+    const rated = (event: PastEvent, elite: number | null, normal: number | null) => ({
+      normal: normal === null ? null : { event, elite: false, points: normal, stars: 1 },
+      elite: elite === null ? null : { event, elite: true, points: elite, stars: 1 },
+    });
+    const ratings = new Map([[a.id, rated(a, 5, 1)], [b.id, rated(b, 7, 2)], [c.id, rated(c, 5, 3)], [d.id, rated(d, null, null)]]);
+    const of = (event: PastEvent) => ratings.get(event.id)!;
+    const four = [d, c, b, a];
+    expect(sortPastEvents(four, "newest", of)).toEqual([a, b, c, d]);
+    expect(sortPastEvents(four, "oldest", of)).toEqual([d, c, b, a]);
+    expect(sortPastEvents(four, "hardest", of)).toEqual([b, c, a, d]);
+    expect(sortPastEvents(four, "easiest", of)).toEqual([a, c, b, d]);
+    // Two alike stay newest first
+    const same = new Map([[a.id, rated(a, 5, 1)], [b.id, rated(b, 5, 1)]]);
+    expect(sortPastEvents([b, a], "hardest", (event) => same.get(event.id)!)).toEqual([a, b]);
+  });
+
+  it("sorts the list from the Sort menu and keeps the order in the address", async () => {
+    const root = await page();
+    expect(sortSelect(root).value).toBe("newest");
+    sortSelect(root).value = "hardest";
+    sortSelect(root).dispatchEvent(new Event("change"));
+    expect(location.hash).toBe("#sort=hardest");
+    expect(ids(root)).toEqual(sortPastEvents(events, "hardest", ratingsOf).map((event) => event.id));
+    // The hardest has an Elite at least as hard as the next one's
+    const [first, second] = ids(root).map((id) => events.find((event) => event.id === id)!);
+    expect(rate(first, true)!.points).toBeGreaterThanOrEqual(rate(second, true)!.points);
+
+    const [boss] = root.querySelectorAll<HTMLSelectElement>(".past-events-filter");
+    boss.value = "lych";
+    boss.dispatchEvent(new Event("change"));
+    expect(location.hash).toBe("#boss=lych&sort=hardest");
+    sortSelect(root).value = "newest";
+    sortSelect(root).dispatchEvent(new Event("change"));
+    expect(location.hash).toBe("#boss=lych");
+  });
+
+  it("opens and follows the address's order, and leaves out one it doesn't know", async () => {
+    history.replaceState(null, "", "/past-events.html#sort=easiest");
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    const root = await page();
+    expect(sortSelect(root).value).toBe("easiest");
+    expect(ids(root)).toEqual(sortPastEvents(events, "easiest", ratingsOf).map((event) => event.id));
+    goTo("#sort=oldest");
+    expect(sortSelect(root).value).toBe("oldest");
+    expect(ids(root)).toEqual(newestFirst(events).reverse().map((event) => event.id));
+    goTo("#year=2025&sort=sideways");
+    expect(sortSelect(root).value).toBe("newest");
+    expect(location.hash).toBe("#year=2025");
+  });
+
+  it("writes the order after the filters, and newest first not at all", () => {
+    expect(hashForQuery({ ...ANY_EVENT, mode: "Clicks" }, "hardest")).toBe("#mode=Clicks&sort=hardest");
+    expect(hashForQuery(ANY_EVENT, "newest")).toBe("");
+    expect(sortFromHash("#sort=oldest")).toBe("oldest");
+    expect(sortFromHash("#sort=nope")).toBe("newest");
   });
 });

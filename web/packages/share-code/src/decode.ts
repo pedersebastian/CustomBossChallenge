@@ -370,6 +370,17 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
   }
 }
 
+/**
+ * The setup a code of these options and the game's JSON reads back as, without making the code: what decode gives for
+ * encode(options, json), for a browser without CompressionStream too. The Stats page rates the past events with it (#265).
+ */
+export function readSetup(options: BossOptions, json: JsonObject): { options: BossOptions; challenge: Challenge } {
+  const read = sanitize(readOptions(optionsJson(options)));
+  const challengeJson = clone(DATA.defaultChallenge);
+  apply(challengeJson, filterChallenge(json, DATA.defaultChallenge));
+  return { options: read, challenge: readChallenge(challengeJson, read) };
+}
+
 /** A name without control characters, at most 60 characters long (ChallengeLimits.CleanName) */
 export function cleanName(name: string, fallback: string): string {
   // eslint-disable-next-line no-control-regex
