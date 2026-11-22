@@ -35,18 +35,40 @@ public static class CodeFormat
     /// that uses an option 2.2 doesn't know is version 2, so 2.2 asks for an update instead of silently dropping it.
     /// The same goes for version 3, which has a different boss per tier (2.9), version 4, which has Boss Event
     /// Rounds, and version 5, which has the boss's own event rounds in CHIMPS (2.12): 2.11 reads every CHIMPS rounds
-    /// value it doesn't know as a broken code.
+    /// value it doesn't know as a broken code. Version 6 has a Boss Health or a tier's own health that version 5 and
+    /// older would change (#250): below 10 %, above 2000 %, or a tier's on a step of 5.
+    /// <br/>
+    /// Every version compares the options with the same defaults, Boss Event Rounds off, though a new setup has it on
+    /// (#251): a code means the same setup in every version that reads it.
     /// </summary>
     public const string Prefix = "CBC1:";
     public const string Version2Prefix = "CBC2:";
     public const string Version3Prefix = "CBC3:";
     public const string Version4Prefix = "CBC4:";
     public const string Version5Prefix = "CBC5:";
+    public const string Version6Prefix = "CBC6:";
 
     /// <summary>
     /// The prefixes this version reads
     /// </summary>
-    public static readonly string[] KnownPrefixes = [Prefix, Version2Prefix, Version3Prefix, Version4Prefix, Version5Prefix];
+    public static readonly string[] KnownPrefixes = [Prefix, Version2Prefix, Version3Prefix, Version4Prefix, Version5Prefix, Version6Prefix];
+
+    /// <summary>
+    /// The Boss Health range readers of version 5 and older keep a value in, as a multiplier, and the step they put a
+    /// tier's own health on (#250)
+    /// </summary>
+    public const double Version5MinBossHealth = 0.1;
+    public const double Version5MaxBossHealth = 20;
+    public const int Version5HealthStep = 10;
+
+    /// <summary>
+    /// Whether readers of version 5 and older would change <paramref name="bossHealth"/> (a multiplier) or one of
+    /// <paramref name="tierHealths"/> (in percent), so the code must be version 6 (#250)
+    /// </summary>
+    public static bool NeedsVersion6(double bossHealth, IEnumerable<int> tierHealths) =>
+        bossHealth < Version5MinBossHealth - 1e-6 || bossHealth > Version5MaxBossHealth + 1e-6 ||
+        tierHealths.Any(health => health < Version5MinBossHealth * 100 - 1e-6 || health > Version5MaxBossHealth * 100 + 1e-6 ||
+                                  health % Version5HealthStep != 0);
     public const string AnyVersionPrefix = "CBC";
     public const int PrefixLength = 5;
 

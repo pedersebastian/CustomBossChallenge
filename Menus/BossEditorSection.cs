@@ -745,10 +745,11 @@ public sealed class BossEditorSection
                 var dropdown = ChimpsEventRounds.Dropdown;
                 dropdown.value = Math.Clamp(dropdown.value + direction, 0, dropdown.options.Count - 1);
             },
+            // Back to a new setup's: on (#251), with the newest CHIMPS rounds in CHIMPS
             Reset = () =>
             {
-                if (ChimpsEventRounds.gameObject.activeSelf) ChimpsEventRounds.Dropdown.value = 0;
-                else BossEventRounds.Toggle.isOn = false;
+                if (ChimpsEventRounds.gameObject.activeSelf) ChimpsEventRounds.Dropdown.value = ChimpsIndex(BossOptions.NewSetup);
+                else BossEventRounds.Toggle.isOn = BossOptions.NewSetup.BossEventRounds;
             }
         });
         focusStops.Add(FocusStop.ForButton("ChimpsRoundsInfo", ChimpsRoundsInfo.Button));
@@ -1597,7 +1598,7 @@ public sealed class BossEditorSection
         dcm.maxParagons = ParagonMath.NoLimit;
         var settings = FortifiedModifier.Settings(editor);
         if (settings != null) FortifiedModifier.Show(settings, dcm);
-        BossMode.Options = new BossOptions();
+        BossMode.Options = BossOptions.NewSetup;
     }
 
     private void SetElite(bool elite)

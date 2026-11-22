@@ -271,7 +271,10 @@ public class MixedBossCreatorTest : CustomBossTest
 
         // Codes keep the bosses per tier
         var code = SetupCode.Encode(BossMode.Options, section.Editor.dcm);
-        Assert(code.StartsWith(SetupCode.Version3Prefix), $"Advanced Mode gives a version 3 code: {code}");
+        // With a new setup's Boss Event Rounds (#251), the version that has both
+        Assert(code.StartsWith(SetupCode.Version4Prefix), $"Advanced Mode with Boss Event Rounds gives a version 4 code: {code}");
+        Assert(SetupCode.Encode(BossMode.Options with {BossEventRounds = false}, section.Editor.dcm).StartsWith(SetupCode.Version3Prefix),
+            "Advanced Mode without Boss Event Rounds gives a version 3 code");
 
         // Off and on again brings the bosses back; the boss's reset turns it off
         var mixed = BossMode.Options.TierBosses;

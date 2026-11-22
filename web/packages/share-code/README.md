@@ -1,7 +1,7 @@
 # @cbc/share-code
 
 Read, check and make share codes for the [Custom Boss Challenge](https://github.com/pedersebastian/CustomBossChallenge)
-BTD6 mod: the `CBC1:` to `CBC5:` codes the Boss Creator copies and pastes. A code read here gives the same setup the
+BTD6 mod: the `CBC1:` to `CBC6:` codes the Boss Creator copies and pastes. A code read here gives the same setup the
 mod loads, and a code made here loads in the mod unchanged.
 
 The [website](https://pedersebastian.github.io/CustomBossChallenge/) uses this package for every code it reads and makes.
@@ -48,8 +48,9 @@ console.log(read.ok && read.options.Tiers); // 7
 ```
 
 `encode(options, challenge?)` brings the options into the Boss Creator's ranges first (`normalized`), writes only what
-differs from a new setup, and picks the oldest prefix that holds it (`prefixFor`): `CBC2:` for speed or health per
-tier, `CBC3:` for a boss per tier, `CBC4:` for Boss Event Rounds, `CBC5:` for the boss's own event rounds in CHIMPS. Pass the game's JSON of a challenge, for example
+differs from the defaults (`defaultOptions`), and picks the oldest prefix that holds it (`prefixFor`): `CBC2:` for speed or health per
+tier, `CBC3:` for a boss per tier, `CBC4:` for Boss Event Rounds, `CBC5:` for the boss's own event rounds in CHIMPS, `CBC6:` for a Boss Health or a tier's own health below 10 %, above
+2000 % or (a tier's) on a step of 5. Codes compare the options with Boss Event Rounds off, though a new setup has it on. Pass the game's JSON of a challenge, for example
 `result.json` from `decode`, to keep its rules; without one, the code uses the game's new challenge.
 
 ## Change a code
