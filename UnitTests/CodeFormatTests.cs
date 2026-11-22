@@ -236,6 +236,7 @@ public class CodeFormatTests
     [InlineData(CodeFormat.Version3Prefix)]
     [InlineData(CodeFormat.Version4Prefix)]
     [InlineData(CodeFormat.Version5Prefix)]
+    [InlineData(CodeFormat.Version6Prefix)]
     public void Every_known_version_is_read(string prefix)
     {
         Assert.True(CodeFormat.TryUnpack(CodeFormat.Pack("{\"o\":{},\"c\":{}}", prefix), out _, out var problem, out _));
@@ -248,4 +249,20 @@ public class CodeFormatTests
         Assert.False(CodeFormat.TryUnpack(CodeFormat.WebsiteUrl + "#code=CBC7:abc", out _, out var problem, out _));
         Assert.Equal(CodeProblem.TooNew, problem);
     }
+
+    [Theory]
+    [InlineData(1.0, "", false)]
+    [InlineData(0.1, "", false)]
+    [InlineData(20.0, "", false)]
+    [InlineData(0.15, "", false)]
+    [InlineData(0.05, "", true)]
+    [InlineData(20.1, "", true)]
+    [InlineData(50.0, "", true)]
+    [InlineData(1.0, "10,250,2000", false)]
+    [InlineData(1.0, "5", true)]
+    [InlineData(1.0, "15", true)]
+    [InlineData(1.0, "2010", true)]
+    public void Health_version_5_would_change_needs_version_6(double bossHealth, string tierHealths, bool needed) =>
+        Assert.Equal(needed, CodeFormat.NeedsVersion6(bossHealth,
+            tierHealths.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse)));
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System;
 using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
@@ -21,6 +22,7 @@ public static class SetupCode
     public const string Version3Prefix = CodeFormat.Version3Prefix;
     public const string Version4Prefix = CodeFormat.Version4Prefix;
     public const string Version5Prefix = CodeFormat.Version5Prefix;
+    public const string Version6Prefix = CodeFormat.Version6Prefix;
     public const int PrefixLength = CodeFormat.PrefixLength;
     public const int MaxLength = CodeFormat.MaxLength;
     public const int MaxJsonLength = CodeFormat.MaxJsonLength;
@@ -34,18 +36,27 @@ public static class SetupCode
     {
         var payload = CodeFormat.Payload(OptionsJson(options), OptionsJson(new BossOptions()),
             ChallengeJson(dcm), ChallengeJson(DailyChallengeModel.CreateDefaultEditorModel()));
-        return Pack(payload.ToString(Formatting.None), PrefixFor(options));
+        return Pack(payload.ToString(Formatting.None), PrefixFor(options, dcm));
     }
 
     /// <summary>
-    /// The oldest code version that holds everything in <paramref name="options"/>
+    /// The oldest code version that holds everything in <paramref name="options"/> and the boss's health in
+    /// <paramref name="dcm"/>
     /// </summary>
-    public static string PrefixFor(BossOptions options) =>
-        NeedsVersion5(options) ? Version5Prefix
+    public static string PrefixFor(BossOptions options, DailyChallengeModel? dcm = null) =>
+        NeedsVersion6(options, dcm) ? Version6Prefix
+        : NeedsVersion5(options) ? Version5Prefix
         : NeedsVersion4(options) ? Version4Prefix
         : NeedsVersion3(options) ? Version3Prefix
         : NeedsVersion2(options) ? Version2Prefix
         : Prefix;
+
+    /// <summary>
+    /// Whether version 5 readers would change the setup's Boss Health or a tier's own health (#250)
+    /// </summary>
+    public static bool NeedsVersion6(BossOptions options, DailyChallengeModel? dcm) =>
+        CodeFormat.NeedsVersion6(dcm?.bloonModifiers?.healthMultipliers?.boss ?? 1,
+            TierBossMath.Parse(options.TierBosses).Select(tier => tier.Health));
 
     /// <summary>
     /// Whether the code uses an option that version 4 readers (2.10-2.11) don't know: the boss's own event rounds in

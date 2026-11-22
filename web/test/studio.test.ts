@@ -103,8 +103,9 @@ describe("edit functions", () => {
 
 describe("CHIMPS event rounds (#139)", () => {
   it("picks the CHIMPS events' rounds like the Boss Creator's dropdown", () => {
+    // A new setup plays the newest CHIMPS events' rounds, as Boss Event Rounds start on (#251)
     const setup = fresh();
-    expect(edit.chimpsEventChoice(setup)).toBe("Off");
+    expect(edit.chimpsEventChoice(setup)).toBe("Newest");
     const earlier = edit.setChimpsEventRounds(setup, "Earlier");
     expect(earlier.options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Earlier" });
     expect(edit.chimpsEventChoice(earlier)).toBe("Earlier");

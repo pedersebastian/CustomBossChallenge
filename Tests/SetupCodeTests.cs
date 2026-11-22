@@ -93,9 +93,27 @@ public class SetupCodeTest : CustomBossTest
         Assert(SetupCode.TryDecode(SetupCode.Pack(SetupCode.Contents(code)), out var asVersion1, out _, out _),
             "The same contents must also read as version 1");
         AssertEquals(asVersion1, options, "Options read as version 1");
-        Assert(!SetupCode.TryDecode("CBC6:" + code[SetupCode.PrefixLength..], out _, out _, out var version6),
-            "A version 6 code must not decode");
-        AssertEquals(version6, CodeProblem.TooNew, "Problem of a version 6 code");
+        Assert(!SetupCode.TryDecode("CBC7:" + code[SetupCode.PrefixLength..], out _, out _, out var version7),
+            "A version 7 code must not decode");
+        AssertEquals(version7, CodeProblem.TooNew, "Problem of a version 7 code");
+
+        // Boss Health or a tier's own health version 5 would change makes a version 6 code (#250); one it keeps doesn't
+        var plain = new BossOptions();
+        var healthDcm = DailyChallengeModel.CreateDefaultEditorModel();
+        foreach (var (health, version6) in new[] {(0.05f, true), (25f, true), (50f, true), (0.1f, false), (20f, false), (1.5f, false), (0.15f, false)})
+        {
+            healthDcm.bloonModifiers.healthMultipliers.boss = health;
+            var healthCode = SetupCode.Encode(plain, healthDcm);
+            AssertEquals(healthCode.StartsWith(SetupCode.Version6Prefix), version6, $"Boss Health {health} in a version 6 code: {healthCode}");
+            Assert(SetupCode.TryDecode(healthCode, out _, out var readHealth, out _) &&
+                   Math.Abs(readHealth!.bloonModifiers.healthMultipliers.boss - health) < 1e-5f, $"Boss Health {health} reads back");
+        }
+        healthDcm.bloonModifiers.healthMultipliers.boss = 1;
+        foreach (var (tiers, version6) in new[] {("Lych@100/15", true), ("Lych@100/2500", true), ("Lych@100/5", true), ("Lych@100/250,Vortex", false)})
+        {
+            var tierCode = SetupCode.Encode(plain with {TierBosses = tiers}, healthDcm);
+            AssertEquals(tierCode.StartsWith(SetupCode.Version6Prefix), version6, $"Tiers {tiers} in a version 6 code: {tierCode}");
+        }
 
         // Codes from before 2.3 had Extra Tier Health; it becomes Health per Tier
         Assert(SetupCode.TryDecode(SetupCode.Pack("{\"o\":{\"Tiers\":7,\"ExtraTierHealth\":225},\"c\":{}}"), out var old, out _, out _),
@@ -115,9 +133,9 @@ public class SetupCodeTest : CustomBossTest
         Assert(examples.Any(example => example.StartsWith(SetupCode.Version3Prefix)), "The README must show a version 3 code");
         foreach (var example in examples)
         {
-            Assert(SetupCode.TryDecode(example, out var readmeOptions, out _, out var readmeProblem),
+            Assert(SetupCode.TryDecode(example, out var readmeOptions, out var readmeDcm, out var readmeProblem),
                 $"README code {Shorten(example)} doesn't load: {readmeProblem}");
-            AssertEquals(example[..SetupCode.PrefixLength], SetupCode.PrefixFor(readmeOptions),
+            AssertEquals(example[..SetupCode.PrefixLength], SetupCode.PrefixFor(readmeOptions, readmeDcm),
                 $"README code {Shorten(example)} must be the version its options need");
         }
         Log($"{examples.Count} README codes load");

@@ -208,7 +208,8 @@ describe("the Studio page", () => {
     await studio.load(newSetup(), null);
     button("Copy code").click();
     await vi.waitFor(() => expect(writeText).toHaveBeenCalledWith(studio.code()));
-    expect(studio.code().startsWith("CBC1:")).toBe(true);
+    // A new setup has Boss Event Rounds on (#251)
+    expect(studio.code().startsWith("CBC4:")).toBe(true);
   });
 
   const tab = (name: string): HTMLButtonElement =>
@@ -233,7 +234,8 @@ describe("the Studio page", () => {
     expect(rowOf("Boss").hidden).toBe(true);
     expect(studio.code().startsWith("CBC")).toBe(true);
     await studio.flush();
-    expect(studio.code().startsWith("CBC3:")).toBe(true);
+    // A boss per tier, with a new setup's Boss Event Rounds (#251)
+    expect(studio.code().startsWith("CBC4:")).toBe(true);
     expect([...form.querySelectorAll(".studio-tier")].filter((c) => !(c as HTMLElement).hidden)).toHaveLength(5);
     tab("Standard").click();
     expect(advanced.hidden).toBe(true);

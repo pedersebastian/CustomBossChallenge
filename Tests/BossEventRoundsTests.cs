@@ -379,20 +379,23 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         section.ResetAll();
         var row = section.BossEventRoundsRow;
 
-        Assert(!BossMode.Options.BossEventRounds && !section.BossEventRounds.Toggle.isOn, "Boss Event Rounds start off");
+        // A new setup plays the boss events' rounds (#251)
+        Assert(BossMode.Options.BossEventRounds && section.BossEventRounds.Toggle.isOn, "Boss Event Rounds start on");
         Assert(row.activeInHierarchy, "The tick shows in Standard");
         var spawnRounds = section.SpawnRounds.transform.parent;
         AssertEquals(row.transform.GetSiblingIndex(), spawnRounds.GetSiblingIndex() + 1, "The tick is right under Spawn Rounds");
 
         // The tick, and Undo
-        section.BossEventRounds.Toggle.isOn = true;
-        Assert(BossMode.Options.BossEventRounds, "Ticking turns Boss Event Rounds on");
+        section.BossEventRounds.Toggle.isOn = false;
+        Assert(!BossMode.Options.BossEventRounds, "Unticking turns Boss Event Rounds off");
         BossHistory.Undo(section.Editor);
         yield return null;
-        Assert(!BossMode.Options.BossEventRounds && !section.BossEventRounds.Toggle.isOn, "Undo turns it off again");
+        Assert(BossMode.Options.BossEventRounds && section.BossEventRounds.Toggle.isOn, "Undo turns it on again");
         BossHistory.Redo(section.Editor);
         yield return null;
-        Assert(BossMode.Options.BossEventRounds && section.BossEventRounds.Toggle.isOn, "Redo turns it on again");
+        Assert(!BossMode.Options.BossEventRounds && !section.BossEventRounds.Toggle.isOn, "Redo turns it off again");
+        section.BossEventRounds.Toggle.isOn = true;
+        Assert(BossMode.Options.BossEventRounds && section.BossEventRounds.Toggle.isOn, "Ticking turns it on");
 
         // In CHIMPS the Tier Preview warns that the CHIMPS events' rounds are much harder (#139), and only then
         bool Warned() => section.Strip.Warnings.Any(w => w.Kind == SetupWarning.ChimpsEventRounds);
@@ -523,18 +526,19 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         yield return null;
         Assert(row.activeInHierarchy && section.BossEventRounds.Toggle.isOn, "Standard shows the tick again, still on");
 
-        // The keyboard: Enter toggles, Delete turns it off
+        // The keyboard: Enter toggles, Delete puts back a new setup's, on (#251)
         var stop = section.FocusStops.Single(s => s.Name == "BossEventRounds");
         stop.Activate!();
         Assert(!BossMode.Options.BossEventRounds, "Enter on the tick turns it off");
         stop.Activate!();
         Assert(BossMode.Options.BossEventRounds, "Enter again turns it on");
+        stop.Activate!();
         stop.Reset!();
-        Assert(!BossMode.Options.BossEventRounds, "Delete turns it off");
+        Assert(BossMode.Options.BossEventRounds && section.BossEventRounds.Toggle.isOn, "Delete turns it on again");
 
-        // The reset turns it off
-        section.BossEventRounds.Toggle.isOn = true;
+        // The reset turns it on too
+        section.BossEventRounds.Toggle.isOn = false;
         section.ResetAll();
-        Assert(!BossMode.Options.BossEventRounds && !section.BossEventRounds.Toggle.isOn, "Reset turns it off");
+        Assert(BossMode.Options.BossEventRounds && section.BossEventRounds.Toggle.isOn, "Reset turns it on");
     }
 }

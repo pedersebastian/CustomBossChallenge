@@ -54,11 +54,19 @@ const advanced = (tierBosses: string, tiers: number): ((setup: StudioSetup) => S
 });
 
 const SETUPS: [string, StudioSetup][] = [
+  // A new setup has Boss Event Rounds on (#251); turned off, a code can still be version 1, 2 or 3
   ["new setup", make()],
+  ["event rounds off", make((s) => edit.setBossEventRounds(s, false))],
+  ["per tier, event rounds off", make((s) => edit.setBossEventRounds(s, false), (s) => edit.setTiers(s, 7), (s) => edit.setHealthPerTier(s, 25))],
+  ["advanced, event rounds off", make((s) => edit.setBossEventRounds(s, false), advanced("Lych,VortexElite@120/300", 2))],
   ["boss and Elite", make((s) => edit.setBoss(s, "Lych"), (s) => edit.setElite(s, true))],
   ["every boss", make((s) => edit.setBoss(s, "Diamondback"))],
   ["boss speed and health", make((s) => edit.setBossSpeed(s, 250), (s) => edit.setBossHealth(s, 1500))],
-  ["lowest boss speed and health", make((s) => edit.setBossSpeed(s, 10), (s) => edit.setBossHealth(s, 10))],
+  ["lowest boss speed and health", make((s) => edit.setBossSpeed(s, 10), (s) => edit.setBossHealth(s, 5))],
+  // Boss Health and a tier's own health version 5 would change make a version 6 code (#250)
+  ["highest boss health", make((s) => edit.setBossHealth(s, 5000))],
+  ["boss health on a step of 5", make((s) => edit.setBossEventRounds(s, false), (s) => edit.setBossHealth(s, 125))],
+  ["advanced, tier health on a step of 5", make(toAdvanced, (s) => edit.setTierHealth(s, 1, 255), (s) => edit.setTierHealth(s, 2, 4200))],
   ["no paragons", make((s) => edit.setParagonSlider(s, 0))],
   ["three paragons", make((s) => edit.setParagonSlider(s, 3))],
   ["one tier", make((s) => edit.setTiers(s, 1))],
@@ -206,7 +214,7 @@ describe("codes the website makes for the mod", () => {
   });
 
   it("cover every prefix", async () => {
-    expect(new Set((await made()).map((entry) => entry.code.slice(0, 5)))).toEqual(new Set(["CBC1:", "CBC2:", "CBC3:", "CBC4:"]));
+    expect(new Set((await made()).map((entry) => entry.code.slice(0, 5)))).toEqual(new Set(["CBC1:", "CBC2:", "CBC3:", "CBC4:", "CBC6:"]));
   });
 
   it.each(SETUPS)("%s is read back on the website as made", async (_, setup) => {

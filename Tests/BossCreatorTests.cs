@@ -260,7 +260,9 @@ public class BossCreatorTest : CustomBossTest
         var expected = new BossOptions
         {
             Boss = BossType.Vortex, Elite = true, Tiers = 7, SpeedPerTier = 20, HealthPerTier = 50,
-            SkullMode = SkullMode.EvenlySpaced, SkullCount = 5, SpawnRounds = "30, 50"
+            SkullMode = SkullMode.EvenlySpaced, SkullCount = 5, SpawnRounds = "30, 50",
+            // A new setup's (#251)
+            BossEventRounds = true
         };
         AssertEquals(BossMode.Options, expected, "Options from the boss section");
 
@@ -752,7 +754,9 @@ public class BossCreatorTest : CustomBossTest
         editor.clearBtn.onClick.Invoke();
         yield return new WaitForSecondsRealtime(1);
 
-        AssertEquals(BossMode.Options, new BossOptions(), "Options after reset");
+        // A new setup's options, with Boss Event Rounds on (#251)
+        AssertEquals(BossMode.Options, BossOptions.NewSetup, "Options after reset");
+        Assert(section.BossEventRounds.Toggle.isOn, "Boss Event Rounds shown on after reset");
         AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Bloonarius), "Name after reset");
         Assert(section.BossButtons[BossType.Bloonarius].transform.Find(BossEditorSection.SelectedMarker).gameObject.activeSelf,
             "Bloonarius must be shown as chosen after reset");
@@ -962,7 +966,7 @@ public class BossCreatorTest : CustomBossTest
         section.ResetAll();
         BossHistory.Clear();
         var before = BossMode.Options;
-        AssertEquals(before, defaults, "Reset Boss Options without asking");
+        AssertEquals(before, BossOptions.NewSetup, "Reset Boss Options without asking");
         for (var tiers = 6; tiers <= 9; tiers++) section.Tiers.Slider.value = tiers;
         section.SpeedPerTier.Slider.value = 20;
         AssertEquals(BossHistory.UndoCount, 2, "A slider drag and another slider");
@@ -1082,7 +1086,7 @@ public class BossCreatorTest : CustomBossTest
         section.ResetAllButton.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
         yield return ClosePopup(popup, true);
-        AssertEquals(BossMode.Options, defaults, "Reset Boss Options");
+        AssertEquals(BossMode.Options, BossOptions.NewSetup, "Reset Boss Options gives a new setup's options (#251)");
         AssertEquals(section.Tiers.Value, (float) defaults.Tiers, "The sliders follow Reset Boss Options");
         AssertEquals(editor.dcm.startRules.cash, 7777, "Reset Boss Options keeps the starting cash");
         AssertEquals(editor.dcm.map, map, "Reset Boss Options keeps the map");

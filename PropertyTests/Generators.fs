@@ -214,8 +214,18 @@ let setups = Arb.fromGenShrink (setup, shrink)
 let private mixed (options: JObject) =
     not (isNull options["TierBosses"]) && options["TierBosses"].Type <> JTokenType.Null
 
-let prefix (options: JObject) =
-    if options.Value<string>("ChimpsRounds") = "Own" then CodeFormat.Version5Prefix
+/// Boss Health and the tiers' own health, which version 5 readers would change outside their range (#250)
+let needsVersion6 (options: JObject) (challenge: JObject) =
+    let bossHealth =
+        match challenge.SelectToken("bloonModifiers.healthMultipliers.boss") with
+        | null -> 1.0
+        | token -> token.Value<float>()
+    let tiers = if mixed options then options.Value<string>("TierBosses") else null
+    CodeFormat.NeedsVersion6(bossHealth, TierBossMath.Parse(tiers) |> Seq.map (fun tier -> tier.Health))
+
+let prefix (options: JObject) (challenge: JObject) =
+    if needsVersion6 options challenge then CodeFormat.Version6Prefix
+    elif options.Value<string>("ChimpsRounds") = "Own" then CodeFormat.Version5Prefix
     elif options.Value<bool>("BossEventRounds") then CodeFormat.Version4Prefix
     elif mixed options then CodeFormat.Version3Prefix
     elif options.Value<int>("SpeedPerTier") <> 0 || options.Value<int>("HealthPerTier") <> 0
@@ -224,7 +234,7 @@ let prefix (options: JObject) =
 
 let encode setup =
     let payload = CodeFormat.Payload(setup.Options, Game.defaultOptions (), setup.Challenge, Game.defaultChallenge ())
-    CodeFormat.Pack(payload.ToString(Formatting.None), prefix setup.Options)
+    CodeFormat.Pack(payload.ToString(Formatting.None), prefix setup.Options setup.Challenge)
 
 /// The setup in a code, put back on top of the defaults the way SetupCode.TryDecode does
 let decode code =

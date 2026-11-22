@@ -61,7 +61,7 @@ public static class BossMode
     {
         if (!Store.TryLoad(out var options, out var dcm) || dcm == null)
         {
-            options = new BossOptions();
+            options = BossOptions.NewSetup;
             dcm = DefaultDcm(options);
         }
 
