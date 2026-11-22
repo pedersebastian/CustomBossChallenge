@@ -8,6 +8,7 @@ import { DATA, type JsonObject } from "./data";
 // Read: a code (or a link to one, or pasted text) to the setup the mod would load
 export {
   decode,
+  readSetup,
   extractCode,
   unescapeDataString,
   filterChallenge,

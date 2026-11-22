@@ -130,7 +130,7 @@ h3 {
 }
 
 h4 {
-  font-size: 1.05rem;
+  font-size: 1.3rem;
   margin: 0 0 0.5em;
 }
 
@@ -742,7 +742,7 @@ input:focus-visible {
   top: 48px;
   left: -1.5px;
   transform: translateX(-50%);
-  font-size: 1.05rem;
+  font-size: 1.3rem;
   font-weight: 800;
   white-space: nowrap;
   text-shadow: 0 1px 0 var(--outline);
@@ -1117,6 +1117,59 @@ input:focus-visible {
 
 .point.b {
   fill: #ff7ad9;
+}
+
+/* Stats page (#265): one colour for every mark, since the rows and columns are labelled */
+.stats {
+  display: grid;
+  gap: 18px;
+}
+
+/* A wide table or the timeline scrolls in its own box, not the page */
+.stats > * {
+  min-width: 0;
+}
+
+.stats-summary {
+  font-weight: 700;
+  margin: 0;
+}
+
+.stats-figure {
+  margin-bottom: 8px;
+}
+
+.stats-bars,
+.stats-scoring {
+  max-width: 620px;
+}
+
+/* Wide enough to tell the events apart; scrolls sideways on a phone */
+.stats-timeline {
+  min-width: 640px;
+}
+
+.curve-chart .bar,
+.curve-chart .bubble {
+  fill: #ffd84d;
+  stroke: var(--outline);
+  stroke-width: 1;
+}
+
+.curve-chart .value {
+  fill: var(--text);
+}
+
+.curve-chart .bubble-count {
+  fill: var(--outline);
+}
+
+.stats-table td {
+  font-weight: 700;
+}
+
+.stats h3 {
+  margin: 12px 0 4px;
 }
 
 .footer {
@@ -2147,6 +2200,12 @@ input:focus-visible {
   gap: 8px 12px;
   align-items: center;
   margin-top: 10px;
+}
+
+/* The level's difficulty stars (#263), smaller than the Studio's */
+.difficulty-stars.past-event-stars {
+  font-size: 1.3rem;
+  gap: 1px;
 }
 
 .past-event-level-name {

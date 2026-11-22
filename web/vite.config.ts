@@ -12,7 +12,7 @@ export default defineConfig({
   // events (#213)
   build: {
     rollupOptions: {
-      input: { main: "index.html", compare: "compare.html", studio: "studio.html", pastEvents: "past-events.html" },
+      input: { main: "index.html", compare: "compare.html", studio: "studio.html", pastEvents: "past-events.html", stats: "stats.html" },
     },
   },
   // CSS on, so a test can read style.css as text

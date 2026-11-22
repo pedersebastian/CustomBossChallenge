@@ -147,7 +147,7 @@ describe("the What's new box", () => {
 });
 
 describe("every page", () => {
-  it.each(["index.html", "compare.html", "studio.html", "past-events.html"])("%s has What's new in its menu", (page) => {
+  it.each(["index.html", "compare.html", "studio.html", "past-events.html", "stats.html"])("%s has What's new in its menu", (page) => {
     const html = readFileSync(join(__dirname, "..", page), "utf8");
     const menu = /<div class="nav-links">([\s\S]*?)<\/div>/.exec(html)?.[1] ?? "";
     expect(menu).toContain('<button type="button" class="nav-news" id="whats-new">What\'s new</button>');
