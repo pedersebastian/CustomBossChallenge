@@ -28,6 +28,7 @@
         <Compile Include="..\Config\NameField.cs" Link="Mod\NameField.cs" />
         <Compile Include="..\Config\RandomNames.cs" Link="Mod\RandomNames.cs" />
         <Compile Include="..\Config\RankedTime.cs" Link="Mod\RankedTime.cs" />
+        <Compile Include="..\Config\PseudoLocalization.cs" Link="Mod\PseudoLocalization.cs" />
         <Compile Include="..\Config\RichText.cs" Link="Mod\RichText.cs" />
         <Compile Include="..\Config\RulesSummary.cs" Link="Mod\RulesSummary.cs" />
         <Compile Include="..\Config\SetupWarnings.cs" Link="Mod\SetupWarnings.cs" />

@@ -578,6 +578,17 @@ powershell -ExecutionPolicy Bypass -File .github/scripts/Check-Localization.ps1 
 
 (all languages without `-Language`). A fix to a translation alone, with English unchanged, needs nothing here.
 
+### Pseudo language
+
+To see whether a new or longer text still fits before anyone translates it, run `LanguageLayoutTest` with the made-up
+pseudo language (#267): start the game with `CBC_TESTS=LanguageLayoutTest` and `CBC_LANGUAGES=Pseudo` (add
+`CBC_SCREENSHOTS=<folder>` and leave out `-batchmode` for pictures). The game stays in English, but every text of the
+mod is about 40 % longer, accented and in brackets, made from `English.json` by `Config/PseudoLocalization.cs`, so
+`Speed per Tier` shows as `[Śpééd pér Tíér ~~~]`. The test then reports texts that are cut off, wrap, overflow or run
+into each other, and English words that are neither in a bracket nor one of the game's own texts: those never went
+through `Localization`. `CBC_LANGUAGES=German,Pseudo` checks both. It isn't part of the normal run, since its texts
+are longer than any real translation needs to fit.
+
 ## AI-assisted development
 
 Most of the code, tests, documentation and translations were written with AI (Claude, via Claude Code). See the

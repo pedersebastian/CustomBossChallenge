@@ -11,6 +11,7 @@ using CustomBossChallenge.Persistence;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
 using Il2CppAssets.Scripts.Unity.UI_New.Popups;
+using Il2CppNinjaKiwi.Localization;
 using Il2CppTMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -162,7 +163,7 @@ public sealed class PastEventsBrowser
             return info;
         }
 
-        Search = ModHelperInputField.Create(FilterInfo("Search", 900), Query.Text, VanillaSprites.BlueInsertPanelRound,
+        Search = ModHelperInputField.Create(FilterInfo("Search", 800), Query.Text, VanillaSprites.BlueInsertPanelRound,
             Listeners.Wrap<string>(text =>
             {
                 if (!refreshing && built) SetQuery(Query with {Text = text});
@@ -176,7 +177,7 @@ public sealed class PastEventsBrowser
         Search.InputField.onEndEdit.AddListener(Listeners.Wrap<string>(_ => BossCreatorKeys.Deselect(Search.InputField)));
 
         BossFilter = Filter(FilterInfo("BossFilter", 470), index => SetQuery(Query with {Boss = bossChoices[index]}));
-        YearFilter = Filter(FilterInfo("YearFilter", 360), index => SetQuery(Query with {Year = yearChoices[index]}));
+        YearFilter = Filter(FilterInfo("YearFilter", 460), index => SetQuery(Query with {Year = yearChoices[index]}));
         ModeFilter = Filter(FilterInfo("ModeFilter", 560), index => SetQuery(Query with {Mode = modeChoices[index]}));
         Count = Panel.AddText(new Info("Count", -Margin, -FilterTop, Width / 2 - Margin - x, FilterHeight)
         {
@@ -389,6 +390,9 @@ public sealed class PastEventsBrowser
         text.Text.enableAutoSizing = true;
         text.Text.fontSizeMax = 60;
         text.Text.fontSizeMin = 32;
+        // A longer word shrinks the label rather than wrapping it out of the button's middle (#267)
+        text.Text.textWrappingMode = TextWrappingModes.NoWrap;
+        text.Text.overflowMode = TextOverflowModes.Ellipsis;
         text.Text.raycastTarget = false;
         return button;
     }
@@ -543,11 +547,16 @@ public sealed class PastEventsBrowser
         _ => "?"
     };
 
-    /// <summary>The name the player sees of a map, mode or difficulty id, from the game's own texts</summary>
+    /// <summary>
+    /// The name the player sees of a map, mode or difficulty id, from the game's own texts. A few modes have their
+    /// name only as "Mode " and the id: CHIMPS is "Mode Clicks", while "Clicks" alone has no text (#267).
+    /// </summary>
     public static string ShownName(string? id)
     {
         if (string.IsNullOrEmpty(id)) return "";
-        var shownName = id.T();
+        var table = LocalizationManager.Instance?.textTable;
+        var key = table != null && !table.ContainsKey(id) && table.ContainsKey("Mode " + id) ? "Mode " + id : id;
+        var shownName = key.T();
         return string.IsNullOrEmpty(shownName) ? id : shownName;
     }
 
