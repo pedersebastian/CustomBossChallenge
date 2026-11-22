@@ -130,7 +130,7 @@ h3 {
 }
 
 h4 {
-  font-size: 1.05rem;
+  font-size: 1.3rem;
   margin: 0 0 0.5em;
 }
 
@@ -742,7 +742,7 @@ input:focus-visible {
   top: 48px;
   left: -1.5px;
   transform: translateX(-50%);
-  font-size: 1.05rem;
+  font-size: 1.3rem;
   font-weight: 800;
   white-space: nowrap;
   text-shadow: 0 1px 0 var(--outline);
@@ -2200,6 +2200,12 @@ input:focus-visible {
   gap: 8px 12px;
   align-items: center;
   margin-top: 10px;
+}
+
+/* The level's difficulty stars (#263), smaller than the Studio's */
+.difficulty-stars.past-event-stars {
+  font-size: 1.3rem;
+  gap: 1px;
 }
 
 .past-event-level-name {

@@ -1,8 +1,10 @@
 // The numbers of the Stats page (#265), from the same boss-events.json as Past Events. Nothing here is fixed to the
 // events of today: a new event in the archive changes the numbers the next time the site is built.
 
-import { data, modesOf, pastEventBoss, pastEventSetup, readSetup, yearOf, type PastEvent, type Scoring } from "@cbc/share-code";
-import { difficultyOf } from "../preview/difficulty";
+import { data, modesOf, pastEventBoss, yearOf, type PastEvent, type Scoring } from "@cbc/share-code";
+import { rate, type Rated } from "../pastEvents/rating";
+
+export { rate, type Rated };
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -14,14 +16,6 @@ export function countedEvents(events: readonly PastEvent[]): PastEvent[] {
   return events
     .filter((event) => event.replacedBy.length === 0)
     .sort((a, b) => a.start - b.start || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-}
-
-export interface Gap {
-  /** Whole days from the end of one event to the start of the next */
-  days: number;
-  /** The events before and after it */
-  from: PastEvent;
-  to: PastEvent;
 }
 
 export interface BossStats {
@@ -37,8 +31,6 @@ export interface BossStats {
   last: PastEvent;
   /** Whole days since the last event ended; 0 the day it ends, null while it is on */
   daysSince: number | null;
-  /** The longest wait between two of its events, null with only one */
-  longestGap: Gap | null;
 }
 
 /** Whole days between two times, never below 0 */
@@ -46,11 +38,6 @@ const daysBetween = (from: number, to: number): number => Math.max(0, Math.floor
 
 /** The boss's events, oldest first, as countedEvents gives them */
 function bossStats(key: string, events: PastEvent[], now: number): BossStats {
-  let longestGap: Gap | null = null;
-  for (let i = 1; i < events.length; i++) {
-    const days = daysBetween(events[i - 1].end, events[i].start);
-    if (!longestGap || days > longestGap.days) longestGap = { days, from: events[i - 1], to: events[i] };
-  }
   const last = events[events.length - 1];
   return {
     key,
@@ -61,7 +48,6 @@ function bossStats(key: string, events: PastEvent[], now: number): BossStats {
     first: events[0],
     last,
     daysSince: now < last.end ? null : daysBetween(last.end, now),
-    longestGap,
   };
 }
 
@@ -166,25 +152,6 @@ export function eventsPerYear(events: readonly PastEvent[], now: number): { year
       counts: all.map((year) => counted.filter((event) => event.bossKey === boss.key && yearOf(event) === year).length),
     })),
   };
-}
-
-/** The difficulty of one level of an event (#263), as the Studio and the Boss Creator rate the setup it opens as */
-export interface Rated {
-  event: PastEvent;
-  elite: boolean;
-  points: number;
-  stars: number;
-}
-
-/**
- * The difficulty of the normal or the Elite event, from the setup Past Events opens it as, or null when it can't be
- * opened (a map the game doesn't have, a boss this version doesn't know)
- */
-export function rate(event: PastEvent, elite: boolean): Rated | null {
-  const { setup, json } = pastEventSetup(event, elite);
-  if (json === null) return null;
-  const { options, challenge } = readSetup(setup.options, json);
-  return { event, elite, ...difficultyOf(options, challenge) };
 }
 
 /** Every level of the counted events that can be rated, oldest first, normal before Elite */

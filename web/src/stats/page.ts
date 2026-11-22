@@ -322,7 +322,7 @@ export function renderStats(events: readonly PastEvent[], generated: string, now
     h("h2", { id: "stats-bosses" }, "Events per boss"),
     figure("Events per boss", "the numbers are in the table below", barChart(bosses)),
     table(
-      ["Boss", "Events", "Normal", "Elite", "First", "Last", "Since the last", "Longest wait"],
+      ["Boss", "Events", "Normal", "Elite", "First", "Last", "Since the last"],
       bosses.map((boss) => [
         boss.name,
         boss.events,
@@ -331,11 +331,10 @@ export function renderStats(events: readonly PastEvent[], generated: string, now
         englishDate(boss.first.start),
         englishDate(boss.last.start),
         sinceText(boss),
-        boss.longestGap ? `${days(boss.longestGap.days)}, ${englishDate(boss.longestGap.from.end)} - ${englishDate(boss.longestGap.to.start)}` : "–",
       ]),
       "Events per boss",
     ),
-    h("p", { class: "small muted" }, "An event pulled early and run again counts once. Since the last and the longest wait count from the end of an event to the start of the next."),
+    h("p", { class: "small muted" }, "An event pulled early and run again counts once. Since the last counts from the end of the boss's last event."),
   );
 
   const timeline = h(

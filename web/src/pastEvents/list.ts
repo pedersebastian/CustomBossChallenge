@@ -1,7 +1,7 @@
 // The Past Events page (#213): every official boss event, newest first, with a search and filters for the boss, the
 // year and the mode, like the Boss Creator's Past Events window (#146). Each event opens in the Studio, normal or
-// Elite, or is copied as a code or a link. The search and the filters are in the address after #, so a filtered list
-// can be shared.
+// Elite, or is copied as a code or a link. Each level shows its difficulty stars (#263), and the list can be sorted by them.
+// The search, the filters and the order are in the address after #, so a filtered list can be shared.
 
 import {
   canUseCodes,
@@ -25,8 +25,11 @@ import {
 import { linkTo, replaceAddress, studioLinkTo } from "../code/link";
 import { GAME } from "../data/types";
 import { NO_AUTOFILL, announce, copyWithFeedback, h } from "../dom";
+import { MAX_STARS } from "@cbc/share-code/difficulty";
 import { MOD_TEXTS, fillText } from "../modTexts";
+import { starsText } from "../preview/difficulty";
 import { portrait } from "../preview/portrait";
+import { rate, type Rated } from "./rating";
 
 /** How long after the last change screen readers hear the count */
 export const COUNT_DELAY = 600;
@@ -53,10 +56,61 @@ export function eventDates(event: PastEvent): string {
   return `${event.datesGuessed ? "~" : ""}${start === end ? start : `${start} - ${end}`}`;
 }
 
-const QUERY_KEYS = ["q", "boss", "year", "mode"];
+const QUERY_KEYS = ["q", "boss", "year", "mode", "sort"];
+
+/** The orders the list can be in; newest first is the default and isn't written in the address */
+export const SORTS = ["newest", "oldest", "hardest", "easiest"] as const;
+export type PastEventSort = (typeof SORTS)[number];
+
+const SORT_NAMES: Record<PastEventSort, string> = {
+  newest: "Newest first",
+  oldest: "Oldest first",
+  hardest: "Hardest first",
+  easiest: "Easiest first",
+};
+
+/** The sort in the address as written, or null without one */
+const sortParam = (hash: string): string | null => new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : "").get("sort");
+
+/** The order in the address: #sort=hardest; newest first for none or one this version doesn't know */
+export function sortFromHash(hash = location.hash): PastEventSort {
+  const sort = sortParam(hash);
+  return SORTS.find((known) => known === sort) ?? "newest";
+}
+
+/** The two levels' ratings of an event, null for one that can't be opened */
+export interface EventRatings {
+  normal: Rated | null;
+  elite: Rated | null;
+}
+
+export const ratingsOf = (event: PastEvent): EventRatings => ({ normal: rate(event, false), elite: rate(event, true) });
 
 /**
- * Whether the address's # holds a search: empty (every event) or with q, boss, year or mode. Another # like the skip
+ * The events in the order: by date, or by difficulty. Difficulty compares the Elite level first, then the normal
+ * level; events that can't be rated come last, and ties go newest first.
+ */
+export function sortPastEvents(events: readonly PastEvent[], sort: PastEventSort, ratings: (event: PastEvent) => EventRatings): PastEvent[] {
+  const newest = newestFirst(events);
+  if (sort === "newest") return newest;
+  if (sort === "oldest") return newest.reverse();
+  const sign = sort === "hardest" ? -1 : 1;
+  const points = new Map(newest.map((event) => {
+    const { normal, elite } = ratings(event);
+    return [event.id, [elite?.points ?? null, normal?.points ?? null]] as const;
+  }));
+  const compare = (a: number | null, b: number | null): number =>
+    a === null ? (b === null ? 0 : 1) : b === null ? -1 : sign * (a - b);
+  // The sort is stable, so equals stay newest first
+  return newest.sort((a, b) => {
+    const [eliteA, normalA] = points.get(a.id)!;
+    const [eliteB, normalB] = points.get(b.id)!;
+    return compare(eliteA, eliteB) || compare(normalA, normalB);
+  });
+}
+
+/**
+ * Whether the address's # holds a search: empty (every event) or with q, boss, year, mode or sort. Another # like the skip
  * link's #top isn't one, and leaves the search as it is.
  */
 export function isQueryHash(hash = location.hash): boolean {
@@ -77,18 +131,28 @@ export function queryFromHash(hash = location.hash): PastEventQuery {
   };
 }
 
-export function hashForQuery(query: PastEventQuery): string {
+export function hashForQuery(query: PastEventQuery, sort: PastEventSort = "newest"): string {
   const params = new URLSearchParams();
   if (query.text) params.set("q", query.text);
   if (query.boss) params.set("boss", query.boss);
   if (query.year) params.set("year", String(query.year));
   if (query.mode) params.set("mode", query.mode);
+  if (sort !== "newest") params.set("sort", sort);
   const text = params.toString();
   return text ? `#${text}` : "";
 }
 
-/** The page's address with this query, for the address bar */
-const addressFor = (query: PastEventQuery): string => location.pathname + location.search + hashForQuery(query);
+/** The page's address with this query and order, for the address bar */
+const addressFor = (query: PastEventQuery, sort: PastEventSort): string =>
+  location.pathname + location.search + hashForQuery(query, sort);
+
+/** The level's stars, lit in gold and the rest dimmed, like the Studio's */
+export function renderStars(stars: number): HTMLElement {
+  const text = starsText(stars);
+  const shown = h("span", { class: "difficulty-stars past-event-stars", role: "img", "aria-label": text, title: text });
+  for (let i = 1; i <= MAX_STARS; i++) shown.append(h("span", { class: i <= stars ? "star on" : "star", "aria-hidden": "true" }, "★"));
+  return shown;
+}
 
 /** Only https links to an event's sources: the file comes from the website, but a link must never run script */
 export function safeSource(url: string | undefined): string | null {
@@ -125,12 +189,22 @@ function details(event: PastEvent): string {
  * the keyboard or a finger comes to the event (prepare): a copy then starts in the click itself, which Safari needs,
  * and Open in Studio and Details are real links, so a middle-click opens them in a new tab.
  */
-function level(event: PastEvent, elite: boolean, codesWork: boolean): { row: HTMLElement; prepare: () => void } | null {
+function level(
+  event: PastEvent,
+  elite: boolean,
+  codesWork: boolean,
+  rated: Rated | null,
+): { row: HTMLElement; prepare: () => void } | null {
   const rules = rulesOf(event, elite);
   if (!rules) return null;
   const label = elite ? "Elite" : MOD_TEXTS.PastEventNormal;
   const { setup, json } = pastEventSetup(event, elite);
-  const row = h("div", { class: "past-event-level" + (elite ? " elite" : "") }, h("span", { class: "past-event-level-name" }, label));
+  const row = h(
+    "div",
+    { class: "past-event-level" + (elite ? " elite" : "") },
+    h("span", { class: "past-event-level-name" }, label),
+    rated ? renderStars(rated.stars) : null,
+  );
 
   if (setup.problem === "MissingMap") {
     row.append(h("span", { class: "muted" }, fillText(MOD_TEXTS.PastEventMissingMap, setup.map ?? "?")));
@@ -187,10 +261,10 @@ function level(event: PastEvent, elite: boolean, codesWork: boolean): { row: HTM
   return { row, prepare: () => void prepare().catch(() => {}) };
 }
 
-function renderEvent(event: PastEvent, all: Map<string, PastEvent>, codesWork: boolean): HTMLElement {
+function renderEvent(event: PastEvent, all: Map<string, PastEvent>, codesWork: boolean, ratings: EventRatings): HTMLElement {
   const boss = pastEventBoss(event.bossKey);
   const replacedBy = event.replacedBy.map((id) => all.get(id)?.displayName ?? id);
-  const levels = [level(event, false, codesWork), level(event, true, codesWork)].filter((part) => part !== null);
+  const levels = [level(event, false, codesWork, ratings.normal), level(event, true, codesWork, ratings.elite)].filter((part) => part !== null);
   const sourceUrl = safeSource(event.sourceUrls[0]);
   const source = event.license && sourceUrl ? h("a", { class: "past-event-source", href: sourceUrl }, `Source (${event.license})`) : null;
 
@@ -285,10 +359,27 @@ export async function setUpPastEvents(
   const fromAddress = (): PastEventQuery => {
     const read = queryFromHash();
     const shown = known(read);
-    if (hashForQuery(shown) !== hashForQuery(read)) replaceAddress(addressFor(shown));
+    // A sort this version doesn't know is taken out of the address too
+    const written = sortParam(location.hash);
+    const sortShown = sortFromHash();
+    if (hashForQuery(shown) !== hashForQuery(read) || (written !== null && written !== sortShown)) {
+      replaceAddress(addressFor(shown, sortShown));
+    }
     return shown;
   };
   let query = fromAddress();
+  let sort = sortFromHash();
+
+  // Rated once, when an event is first shown or sorted on
+  const ratings = new Map<string, EventRatings>();
+  const ratingOf = (event: PastEvent): EventRatings => {
+    let rated = ratings.get(event.id);
+    if (!rated) {
+      rated = ratingsOf(event);
+      ratings.set(event.id, rated);
+    }
+    return rated;
+  };
 
   const search = h("input", {
     class: "past-events-search",
@@ -302,6 +393,7 @@ export async function setUpPastEvents(
   const year = select("Year", [["", MOD_TEXTS.AnyYear], ...years.map((y): [string, string] => [String(y), String(y)])],
     query.year ? String(query.year) : null);
   const mode = select("Mode", [["", MOD_TEXTS.AnyMode], ...modes.map((m): [string, string] => [m, shownName(m)])], query.mode);
+  const order = select("Sort", SORTS.map((id): [string, string] => [id, SORT_NAMES[id]]), sort);
   const count = h("p", { class: "past-events-count" });
   const list = h("div", { class: "past-events-list" });
   const empty = h("p", { class: "muted past-events-empty" }, MOD_TEXTS.PastEventsNoMatch);
@@ -310,7 +402,7 @@ export async function setUpPastEvents(
   const rowOf = (event: PastEvent): HTMLElement => {
     let row = rendered.get(event.id);
     if (!row) {
-      row = renderEvent(event, byId, codesWork);
+      row = renderEvent(event, byId, codesWork, ratingOf(event));
       rendered.set(event.id, row);
     }
     return row;
@@ -319,7 +411,8 @@ export async function setUpPastEvents(
   // Screen readers hear the count once the typing stops, not after every letter
   let countTimer: ReturnType<typeof setTimeout> | undefined;
   function show(): void {
-    const shown = events.filter((event) => matchesPastEvent(event, query, () => searchTexts.get(event.id) ?? ""));
+    const matching = events.filter((event) => matchesPastEvent(event, query, () => searchTexts.get(event.id) ?? ""));
+    const shown = sortPastEvents(matching, sort, ratingOf);
     list.replaceChildren(...shown.map(rowOf));
     count.textContent = fillText(MOD_TEXTS.PastEventsCount, shown.length, events.length);
     empty.hidden = shown.length > 0;
@@ -329,7 +422,7 @@ export async function setUpPastEvents(
 
   function update(change: Partial<PastEventQuery>): void {
     query = { ...query, ...change };
-    replaceAddress(addressFor(query));
+    replaceAddress(addressFor(query, sort));
     show();
   }
 
@@ -337,11 +430,17 @@ export async function setUpPastEvents(
   boss.addEventListener("change", () => update({ boss: boss.value || null }));
   year.addEventListener("change", () => update({ year: year.value ? Number(year.value) : null }));
   mode.addEventListener("change", () => update({ mode: mode.value || null }));
+  order.addEventListener("change", () => {
+    sort = SORTS.find((known) => known === order.value) ?? "newest";
+    update({});
+  });
 
   // A link with other filters, or Back, shows those; another # like the skip link's leaves them
   const follow = (): void => {
     if (!isQueryHash()) return;
     query = fromAddress();
+    sort = sortFromHash();
+    order.value = sort;
     search.value = query.text;
     boss.value = query.boss ?? "";
     year.value = query.year ? String(query.year) : "";
@@ -350,7 +449,7 @@ export async function setUpPastEvents(
   };
   window.addEventListener("hashchange", follow);
 
-  root.replaceChildren(h("div", { class: "past-events-filters" }, search, boss, year, mode, count));
+  root.replaceChildren(h("div", { class: "past-events-filters" }, search, boss, year, mode, order, count));
   // Without CompressionStream no code can be made; the list still shows the events
   if (!codesWork) root.append(h("p", { class: "warning" }, UNSUPPORTED_REASON));
   root.append(list, empty);

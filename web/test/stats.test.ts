@@ -104,17 +104,6 @@ describe("the numbers", () => {
     expect(sinceText(statsPerBoss(EVENTS, at("2023-03-25") + 3600_000).find((b) => b.key === "vortex")!)).toBe("Ended today");
   });
 
-  it("finds the longest wait between two events of a boss, from the end of one to the start of the next", () => {
-    const bosses = new Map(statsPerBoss(EVENTS, NOW).map((b) => [b.key, b]));
-    // Bloonarius: 29 Jul - 1 Sep 2021 is 34 days, 6 Sep 2021 - 10 Jan 2022 is 126
-    const gap = bosses.get("bloonarius")!.longestGap!;
-    expect(gap.days).toBe(126);
-    expect([gap.from.start, gap.to.start]).toEqual([at("2021-09-01"), at("2022-01-10")]);
-    expect(bosses.get("lych")!.longestGap!.days).toBe(421);
-    // One event, no wait
-    expect(bosses.get("vortex")!.longestGap).toBeNull();
-  });
-
   it("counts an event's map once, or once for each of two maps", () => {
     expect(mapsOf(EVENTS[1])).toEqual(["Ravine"]);
     expect(mapsOf(EVENTS[2])).toEqual(["Cubism", "Ravine"]);
@@ -277,7 +266,7 @@ describe("the Stats page", () => {
     expect(root.querySelectorAll("table")).toHaveLength(8);
     const bossRows = [...root.querySelectorAll("#stats-bosses ~ .table-scroll tbody tr")].map((row) =>
       [...row.children].map((cell) => cell.textContent));
-    expect(bossRows[0]).toEqual(["Bloonarius", "3", "3", "3", "24 Jul 2021", "10 Jan 2022", "473 days", "126 days, 6 Sep 2021 - 10 Jan 2022"]);
+    expect(bossRows[0]).toEqual(["Bloonarius", "3", "3", "3", "24 Jul 2021", "10 Jan 2022", "473 days"]);
     expect(bossRows[1][6]).toBe("On now");
     // One mark per counted event on the timeline
     expect(root.querySelectorAll(".stats-timeline rect")).toHaveLength(6);
