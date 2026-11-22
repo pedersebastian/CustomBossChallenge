@@ -282,6 +282,29 @@ public class TierLookTour : CustomBossTest
         }
 
         folder = Path.Combine(folder, "tier-look");
+
+        // At the tour's first screen size, if it has one, so the crops are the same whatever size the window had
+        var (width, height, mode) = (Screen.width, Screen.height, Screen.fullScreenMode);
+        if (ScreenshotTour.Resolutions is {Length: > 0} sizes)
+        {
+            Screen.SetResolution(sizes[0].Width, sizes[0].Height, FullScreenMode.Windowed);
+            yield return new WaitForSecondsRealtime(2);
+        }
+
+        try
+        {
+            yield return Tour(folder);
+        }
+        finally
+        {
+            Screen.SetResolution(width, height, mode);
+        }
+    }
+
+    private IEnumerator Tour(string folder)
+    {
+        // The crops are as big a part of the screen at every screen size: 560 pixels of a 720 pixel high screen
+        int Side(int side) => side * Screen.height / 720;
         foreach (var boss in TierLookScene.Bosses)
         {
             var options = new BossOptions {Boss = boss, Tiers = 10};
@@ -291,14 +314,14 @@ public class TierLookTour : CustomBossTest
                 yield return TierLookScene.Spawn(options, tier, _ => { });
                 yield return new WaitForSecondsRealtime(1);
                 var center = TierLookScene.ScreenCenter(TierLookScene.Graphics());
-                yield return TierLookScene.Crop(Path.Combine(folder, $"{boss}-{tier}.png"), center, boss == BossType.Diamondback ? 760 : 560);
+                yield return TierLookScene.Crop(Path.Combine(folder, $"{boss}-{tier}.png"), center, Side(boss == BossType.Diamondback ? 760 : 560));
                 if (tier is 5 or 7 or 10)
                 {
                     var ui = Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.InGame.Races.BossUI>();
                     if (ui?.stars is {Length: > 2} stars)
                     {
                         var rect = LayoutChecks.ScreenRect(stars[2].rectTransform);
-                        yield return TierLookScene.Crop(Path.Combine(folder, $"{boss}-panel-{tier}.png"), rect.center, 360);
+                        yield return TierLookScene.Crop(Path.Combine(folder, $"{boss}-panel-{tier}.png"), rect.center, Side(360));
                     }
                 }
                 if (tier < 10)

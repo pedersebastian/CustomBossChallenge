@@ -28,6 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **An issue the day BTD6 updates** (#272, #19, for contributors): a daily GitHub workflow watches Steam's news for a
   new version and Steam's public build for hotfixes, and opens an issue with the update checklist, once per version
   or build. The checklist is a new section of CONTRIBUTING.md, *Updating for a new BTD6 version*.
+- **README pictures from the game** (#269, for contributors): `tools/screenshots/Make-Screenshots.ps1` runs the
+  screenshot tour in the game and makes every picture in `docs/` from it, in English, at a fixed size, with fixed
+  setups, and only replaces a picture that really changed. The tour now also takes the Rules panels, the Share Code
+  row and the Tier Preview. It is a step before a release only: it writes `TestResults/screenshots.json`, and
+  `Check-Release.ps1` warns when a release's pictures weren't made, as a reminder to look through them.
 
 ## [2.14.0] - 2026-11-22
 
