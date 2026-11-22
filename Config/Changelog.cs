@@ -162,20 +162,6 @@ public static class Changelog
         entries.SelectMany(entry => entry.Added.Where(point => !point.ForContributors).Select(point => (entry, point)));
 
     /// <summary>
-    /// The first sentence of a point's text, at most <paramref name="maxLength"/> letters, cut after a word with "…"
-    /// </summary>
-    public static string FirstSentence(string text, int maxLength = 170)
-    {
-        text = text.Trim();
-        var end = Regex.Match(text, @"[.!?](?=\s|$)");
-        var sentence = end.Success ? text[..(end.Index + 1)] : text;
-        if (sentence.Length <= maxLength) return sentence;
-
-        var cut = sentence.LastIndexOf(' ', maxLength - 1);
-        return sentence[..(cut > maxLength / 2 ? cut : maxLength - 1)].TrimEnd(',', ';', ':', ' ') + "…";
-    }
-
-    /// <summary>
     /// Markdown as TextMeshPro rich text: bold as &lt;b&gt;, <c>code</c> and links as their plain text. A "&lt;" in
     /// the text gets a zero width space after it, so text like <c>&lt;noparse&gt;</c> shows instead of becoming a tag.
     /// </summary>

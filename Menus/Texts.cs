@@ -332,8 +332,6 @@ public static class Texts
     public static readonly string WhatsNew = Key(nameof(WhatsNew), "What's New");
     public static readonly string WhatsNewIntro = Key(nameof(WhatsNewIntro),
         "Custom Boss Challenge has been updated to {0}. Here is what's new:");
-    public static readonly string WhatsNewMore = Key(nameof(WhatsNewMore),
-        "And {0} more on the mod's website.");
     public static readonly string DontShowAgain = Key(nameof(DontShowAgain), "Don't Show Again");
 
     /// <summary>

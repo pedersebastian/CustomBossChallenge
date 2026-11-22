@@ -156,21 +156,6 @@ public class ChangelogTests
     public void An_unreadable_record_counts_as_none() =>
         Assert.Equal(new WhatsNewRule.Decision(true, null, "2.15.0"), WhatsNewRule.Decide("garbage", true, "2.15.0"));
 
-    [Theory]
-    [InlineData("the Boss Creator shows stars. The website too.", "the Boss Creator shows stars.")]
-    [InlineData("one sentence without an end", "one sentence without an end")]
-    [InlineData("version 2.14 is out! More later.", "version 2.14 is out!")]
-    public void The_first_sentence(string text, string expected) => Assert.Equal(expected, Changelog.FirstSentence(text));
-
-    [Fact]
-    public void A_long_sentence_is_cut_after_a_word()
-    {
-        var text = string.Join(' ', Enumerable.Repeat("word", 60)) + ".";
-        var first = Changelog.FirstSentence(text, 50);
-        Assert.True(first.Length <= 50, first);
-        Assert.EndsWith("word…", first);
-    }
-
     [Fact]
     public void Markdown_becomes_rich_text()
     {

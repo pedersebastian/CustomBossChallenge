@@ -21,9 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   most past Elite events get 5 to 7 stars, most normal ones 1 to 3, and 10 is left for setups harder than
   any event so far.
 - **What's new after an update** (#264): the first time the Boss Creator opens after the mod is updated, a popup in the
-  game's own look shows what the new version added, once. Not on a fresh install, and never twice for the same
-  version; Don't Show Again in the popup, or Show What's New in Mod Settings, turns it off. The website has a What's
-  new button in its menu with the newest versions' news, from the same changelog, and a dot on it after a release.
+  game's own look shows what the new version added, once, in a list that scrolls. Not on a fresh install, and never
+  twice for the same version; Don't Show Again in the popup, or Show What's New in Mod Settings, turns it off. The
+  website has a What's new button in its menu with the newest versions' news, from the same changelog, and a dot on it
+  after a release.
 - **An issue the day BTD6 updates** (#272, #19, for contributors): a daily GitHub workflow watches Steam's news for a
   new version and Steam's public build for hotfixes, and opens an issue with the update checklist, once per version
   or build. The checklist is a new section of CONTRIBUTING.md, *Updating for a new BTD6 version*.

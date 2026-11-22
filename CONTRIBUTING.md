@@ -276,11 +276,11 @@ when every check passes does it build the DLL, publish it to Thunderstore and cr
 checks fail releases nothing: fix the problem, delete the tag and push it again.
 
 **Players read the changelog** (#264). The mod is built with `CHANGELOG.md` inside it, and after an update the Boss
-Creator shows the new version's `### Added` points once, in a What's new popup: the bold title of each, and with only one
-point also the first sentence after the colon. The website's menu has What's new too, from the same file. So write
-each Added point as `- **Short title for players** (#issue): text`, with the first sentence able to stand on its own,
-and add `for contributors` in the brackets, like `(#272, for contributors)`, for points players don't need: those are
-left out of both. A release is built before the workflow renames its Unreleased section, so the mod reads Unreleased as
+Creator shows the new version's `### Added` points once, whole, in a What's new popup that scrolls. Only the newest
+release's points: a player who skipped versions finds the others under What's new in the website's menu, which reads
+the same file. So write each Added point for players, as `- **Short title** (#issue): text`, and add
+`for contributors` in the brackets, like `(#272, for contributors)`, for points players don't need: those are left out
+of both. A release is built before the workflow renames its Unreleased section, so the mod reads Unreleased as
 its own version when there is no section for it.
 
 Only a commit on the default branch can be released, and an existing tag must be on the commit the run builds, so tag
