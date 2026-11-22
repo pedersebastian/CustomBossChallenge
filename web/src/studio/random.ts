@@ -8,7 +8,7 @@ import {
   BOSSES,
   bossOf,
   defaultName,
-  defaultOptions,
+  newSetupOptions,
   effectiveSpawnRounds,
   entryOf,
   isMixed,
@@ -155,8 +155,9 @@ function objectAt(parent: JsonObject, key: string): JsonObject {
  * Fixes what a boss game can't use: an unsupported mode and a start round after the first tier. Changes the challenge.
  */
 export function randomizeBoss(challenge: JsonObject, rng: Rng, advanced: boolean): BossOptions {
+  // Like a new setup, with Boss Event Rounds on (BossRandomizer.Randomize, #251)
   let options: BossOptions = {
-    ...defaultOptions(),
+    ...newSetupOptions(),
     Boss: BOSSES[next(rng, BOSSES.length)],
     Elite: chance(rng, ELITE_CHANCE),
     Tiers: weightedTiers(rng),

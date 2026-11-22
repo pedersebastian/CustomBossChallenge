@@ -3,7 +3,7 @@
 // towers, Advanced Mode's tier bosses) stays as it was in the code.
 
 import { GAME, type Json, type JsonObject } from "../data/types";
-import { defaultOptions, effectiveSpawnRounds, entryOf, isMixed, type BossOptions, type SkullMode } from "@cbc/share-code";
+import { defaultOptions, newSetupOptions, effectiveSpawnRounds, entryOf, isMixed, type BossOptions, type SkullMode } from "@cbc/share-code";
 import {
   FOLLOWS,
   MAX_SPEED,
@@ -43,7 +43,8 @@ const isObject = (value: Json | undefined): value is JsonObject =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
 /** A new setup: the Boss Creator's defaults on the game's new challenge */
-export const newSetup = (): StudioSetup => ({ options: defaultOptions(), challenge: clone(GAME.defaultChallenge) });
+/** A new setup, with Boss Event Rounds on like in the Boss Creator (BossOptions.NewSetup, #251) */
+export const newSetup = (): StudioSetup => ({ options: newSetupOptions(), challenge: clone(GAME.defaultChallenge) });
 
 const withOptions = (setup: StudioSetup, change: Partial<BossOptions>): StudioSetup => ({
   ...setup,
@@ -114,7 +115,7 @@ export const setParagonSlider = (setup: StudioSetup, position: number): StudioSe
  * starting cash, stay (BossEditorSection.ResetAll and ResetBossValues)
  */
 export const resetBossOptions = (setup: StudioSetup): StudioSetup =>
-  withChallenge({ ...setup, options: defaultOptions() }, (challenge) => {
+  withChallenge({ ...setup, options: newSetupOptions() }, (challenge) => {
     const bloons = objectAt(challenge, "bloonModifiers");
     bloons.bossSpeedMultiplier = 1;
     objectAt(bloons, "healthMultipliers").boss = 1;

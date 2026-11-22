@@ -70,7 +70,11 @@ export class OptionTypeError extends Error {}
 
 const DEFAULTS = DATA.defaultOptions as unknown as BossOptions;
 
+/** The defaults codes compare with (BossOptions' own), Boss Event Rounds off */
 export const defaultOptions = (): BossOptions => ({ ...DEFAULTS, ChimpsRounds: "Newest" });
+
+/** What a new setup starts with (BossOptions.NewSetup, #251): the defaults, with Boss Event Rounds on */
+export const newSetupOptions = (): BossOptions => ({ ...defaultOptions(), BossEventRounds: true });
 
 /** The options as JSON, the way the mod writes them (OptionsJson in Persistence/SetupCode.cs) */
 export function optionsJson(options: BossOptions): JsonObject {

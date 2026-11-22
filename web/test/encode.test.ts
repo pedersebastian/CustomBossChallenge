@@ -6,7 +6,7 @@ import fixtures from "../src/data/fixtures.json";
 import generatedFile from "./generated-codes.json";
 import { decode, filterChallenge } from "@cbc/share-code";
 import { deepEqual, diff, encode, prefixFor } from "@cbc/share-code";
-import { defaultOptions } from "@cbc/share-code";
+import { defaultOptions, newSetupOptions } from "@cbc/share-code";
 import { EXAMPLES, GAME, type Json, type JsonObject } from "../src/data/types";
 
 /** The JSON inside a code, as the mod reads it */
@@ -63,7 +63,7 @@ describe("codes the website makes", () => {
   });
 
   it("covers every prefix", () => {
-    expect(new Set([...examples, ...generated].map((code) => code.slice(0, 5)))).toEqual(new Set(["CBC1:", "CBC2:", "CBC3:", "CBC4:"]));
+    expect(new Set([...examples, ...generated].map((code) => code.slice(0, 5)))).toEqual(new Set(["CBC1:", "CBC2:", "CBC3:", "CBC4:", "CBC6:"]));
   });
 
   it("makes an empty payload for a new setup", async () => {
@@ -93,8 +93,32 @@ describe("prefixFor", () => {
     // 2.11 can't read the boss's own rounds in CHIMPS at all, so they are version 5 even with the tick off
     [{ BossEventRounds: true, ChimpsRounds: "Own" as const }, "CBC5:"],
     [{ ChimpsRounds: "Own" as const }, "CBC5:"],
+    // A tier's own health version 5 would change (#250)
+    [{ TierBosses: "Lych@100/15" }, "CBC6:"],
+    [{ TierBosses: "Lych@100/2500", BossEventRounds: true }, "CBC6:"],
+    [{ TierBosses: "Lych@100/250" }, "CBC3:"],
   ])("%j gives %s", (change, prefix) => {
     expect(prefixFor({ ...base, ...change })).toBe(prefix);
+  });
+
+  it.each([
+    [0.05, "CBC6:"],
+    [25, "CBC6:"],
+    [50, "CBC6:"],
+    [0.1, "CBC1:"],
+    [0.15, "CBC1:"],
+    [20, "CBC1:"],
+  ])("Boss Health %d gives %s (#250)", (health, prefix) => {
+    const challenge = { bloonModifiers: { healthMultipliers: { boss: health } } };
+    expect(prefixFor(base, challenge)).toBe(prefix);
+  });
+});
+
+describe("a new setup (#251)", () => {
+  it("has Boss Event Rounds on, while codes compare with them off", () => {
+    expect(newSetupOptions().BossEventRounds).toBe(true);
+    expect(defaultOptions().BossEventRounds).toBe(false);
+    expect(prefixFor(newSetupOptions())).toBe("CBC4:");
   });
 });
 

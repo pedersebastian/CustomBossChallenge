@@ -63,8 +63,17 @@ public sealed record BossOptions
     /// <summary>
     /// The boss events' own rounds instead of the default ones (#80), moved to the tiers' Spawn Rounds. In Advanced
     /// Mode (#84) the rounds follow the first tier's boss, and every tier arrives on the round made for its own boss.
+    /// <br/>
+    /// Off here, which share codes and the setup files compare with, so the ones written before #251 keep their
+    /// rounds. A new setup has it on: <see cref="NewSetup"/>.
     /// </summary>
     public bool BossEventRounds { get; init; }
+
+    /// <summary>
+    /// What a new setup starts with (#251): the defaults, with Boss Event Rounds on, as the boss events' rounds are
+    /// made for boss games. For the Boss Creator's first visit, Reset Boss Options, a reset of the option and Random.
+    /// </summary>
+    public static BossOptions NewSetup => new() {BossEventRounds = true};
 
     /// <summary>
     /// Which CHIMPS boss events' rounds Boss Event Rounds play in CHIMPS. Left out of saves and codes when it is the

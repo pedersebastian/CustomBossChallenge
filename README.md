@@ -233,10 +233,18 @@ Codes are checked before they load: values outside what the game can play are br
 player can't make in the Challenge Editor or the Boss Creator are ignored, and a code with a value of the wrong type
 (or `NaN` or `Infinity`) doesn't load at all.
 
-Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, `CBC3:` when they use Advanced Mode, or
-`CBC4:` when they use Boss Event Rounds, or `CBC5:` when they play the boss's own event rounds in CHIMPS; a setup that uses several of them gets the highest,
-so that older versions of the mod ask for an update instead of loading them without those settings. They only contain what differs from a new
-setup, so they are usually a few hundred characters. A new, unchanged setup gives a code like this one:
+Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, `CBC3:` when they use Advanced Mode,
+`CBC4:` when they use Boss Event Rounds, `CBC5:` when they play the boss's own event rounds in CHIMPS, or `CBC6:` when
+Boss Health or a tier's own health is below 10 %, above 2000 % or (a tier's) on a step of 5 %; a setup that uses several
+of them gets the highest, so that older versions of the mod ask for an update instead of loading them without those
+settings. They only contain what differs from the defaults, with Boss Event Rounds off, so they are usually a few
+hundred characters. A new, unchanged setup, which has Boss Event Rounds on, gives a `CBC4:` code like this one:
+
+```
+CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTa3VUUoGSRanpqYoWRmampkYWZgZW9bWAgA
+```
+
+The same setup with Boss Event Rounds off is a `CBC1:` code:
 
 ```
 CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA
@@ -271,7 +279,7 @@ CBC3:HY2xCsMwDER_pWjWUDK04DEESiFDh5BdSQQ2dSxjOdA05N9rd7u7B_cOEDAHDI6TgrnjP7WiyqV
 | First Boss Round | 1–200 | 40 | Fills in Spawn Rounds together with Rounds Between Tiers. |
 | Rounds Between Tiers | 1–50 | 20 | Fills in Spawn Rounds; 1 sends a new tier every round. |
 | Spawn Rounds | comma separated rounds | 40, 60, 80, … | Missing rounds continue every 20 rounds; rounds always ascend. |
-| Boss Event Rounds | on / off | off | The official boss events' rounds for the boss, moved with the tiers when Spawn Rounds differ from 40, 60, 80, 100, 120. In Advanced Mode each tier's round comes from its own boss. In CHIMPS a dropdown: off, the newest CHIMPS boss event's rounds (default; no regrow, dense) or the earlier ones' (regrow, DDTs), for every boss, or the boss's own event rounds. |
+| Boss Event Rounds | on / off | on | The official boss events' rounds for the boss, moved with the tiers when Spawn Rounds differ from 40, 60, 80, 100, 120. In Advanced Mode each tier's round comes from its own boss. In CHIMPS a dropdown: off, the newest CHIMPS boss event's rounds (default; no regrow, dense) or the earlier ones' (regrow, DDTs), for every boss, or the boss's own event rounds. |
 | Skulls | Vanilla / Evenly Spaced / Custom % | Vanilla | In Advanced, set per tier in its picker, with the count and the list below. |
 | Skull Count | 0–10 | 3 | Evenly Spaced only; 0 removes all skulls. |
 | Skulls at Boss HP % | comma separated % (1–99) | 75, 50, 25 | Custom only, e.g. `80, 60, 40, 20`. Use a point for decimals (`33.5`). The field shows the list as it is used: sorted, duplicates merged, invalid values dropped. |

@@ -3,6 +3,23 @@
   "codes": [
     {
       "name": "new setup",
+      "code": "CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTa3VUUpWsqqurQUA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": true
+      },
+      "challenge": {}
+    },
+    {
+      "name": "event rounds off",
       "code": "CBC1:q1bKV7KqrtVRSgZRtQA",
       "options": {
         "Boss": "Bloonarius",
@@ -19,8 +36,43 @@
       "challenge": {}
     },
     {
+      "name": "per tier, event rounds off",
+      "code": "CBC2:q1bKV7KqVgrJTC0qVrIy11HySE3MKckISC0CCSlZGZnW6iglK1lV19YCAA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 7,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 25,
+        "SpawnRounds": null,
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
+      "name": "advanced, event rounds off",
+      "code": "CBC3:q1bKV7KqVgrJTC0qVrIy0gGznPKLi1OLlayUfCqTM3TC8otKUitcczJLUh0MjQz0jQ0MlGp1lJKVrKprawE",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 2,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "TierBosses": "Lych,VortexElite@120/300",
+        "BossEventRounds": false
+      },
+      "challenge": {}
+    },
+    {
       "name": "boss and Elite",
-      "code": "CBC1:q1bKV7KqVnLKLy5WslLyqUzOUNJRcs3JLElVsiopKk2t1VFKVrKqrq0FAA",
+      "code": "CBC4:q1bKV7KqVnLKLy5WslLyqUzOUNJRcs3JLElVsiopKk3VAUu5lqXmlQTll-alFEOEa3WUkpWsqmtrAQ",
       "options": {
         "Boss": "Lych",
         "Elite": true,
@@ -31,13 +83,13 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "every boss",
-      "code": "CBC1:q1bKV7KqVnLKLy5WslJyyUzMzc9LSUpMzlaq1VFKVrKqrq0FAA",
+      "code": "CBC4:q1bKV7KqVnLKLy5WslJyyUzMzc9LSUpMzlbSAQu6lqXmlQTll-alFCtZlRSVptbqKCUrWVXX1gIA",
       "options": {
         "Boss": "Diamondback",
         "Elite": false,
@@ -48,13 +100,13 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "boss speed and health",
-      "code": "CBC1:q1bKV7KqrtVRSlayqlZKysnPz_PNT8lMy0wtKgaL5BcXBxekpqb4luaUZBbkZKYWKVkZ6ZnqKGWkJuaUZCCE4cqVrAxNa2trawE",
+      "code": "CBC4:RcqxCoAgEIDhd7lZggIXx6DRpZ6g8kJBPPG0Je7do4Zav_-_gMBcMBLzdGKqM7XkGEwtDUXB_sQtEiVLLhwBC79CzEtGdLbFGnIMWMAMnVbgcY3V__ztYHotInID",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -65,7 +117,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "bloonModifiers": {
@@ -78,7 +130,54 @@
     },
     {
       "name": "lowest boss speed and health",
-      "code": "CBC1:q1bKV7KqrtVRSlayqlZKysnPz_PNT8lMy0wtKgaL5BcXBxekpqb4luaUZBbkZKYWKVkZ6BnqKGWkJuaUZCCE4crB8rW1tbUA",
+      "code": "CBC6:RcoxCoAwDEDRu2QW0cGlo-DooidQG2mgNNK0LiV3lzro-t8vwGAKjCwy3RjSwjlYAZNiRm3gqLh75jCzpZMwyltYZL0Q7Zx9ossTRjBd2zfgcPPJ_fnbq3eDquoD",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": true
+      },
+      "challenge": {
+        "bloonModifiers": {
+          "bossSpeedMultiplier": 0.1,
+          "healthMultipliers": {
+            "boss": 0.05
+          }
+        }
+      }
+    },
+    {
+      "name": "highest boss health",
+      "code": "CBC6:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTa3VUUoGSSbl5Ofn-eanZKZlphYVg0QyUhNzSjJ8S3NKMgtyYIJJ-cXFSlamBrW1tbUA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": true
+      },
+      "challenge": {
+        "bloonModifiers": {
+          "healthMultipliers": {
+            "boss": 50
+          }
+        }
+      }
+    },
+    {
+      "name": "boss health on a step of 5",
+      "code": "CBC1:q1bKV7KqrtVRSlayqlZKysnPz_PNT8lMy0wtKgaJZKQm5pRk-JbmlGQW5MAEk_KLi5WsDPWMTGtra2sB",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -93,16 +192,15 @@
       },
       "challenge": {
         "bloonModifiers": {
-          "bossSpeedMultiplier": 0.1,
           "healthMultipliers": {
-            "boss": 0.1
+            "boss": 1.25
           }
         }
       }
     },
     {
-      "name": "no paragons",
-      "code": "CBC1:q1bKV7KqrtVRSlayqlbKTawISCxKTM_PK1ayMqitBQA",
+      "name": "advanced, tier health on a step of 5",
+      "code": "CBC6:q1bKV7KqVgrJTC1yyi8uTi1WslJyysnPz0ssyiwtdjA0MNA3MjXVQRMyMTIwQBKjKlNJRwnkEtey1LySoPzSvJRiJauSotLUWh2lZCWr6tpaAA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -113,7 +211,25 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "TierBosses": "Bloonarius@100/255,Bloonarius@100/4200,Bloonarius,Bloonarius,Bloonarius,Bloonarius,Bloonarius,Bloonarius,Bloonarius,Bloonarius",
+        "BossEventRounds": true
+      },
+      "challenge": {}
+    },
+    {
+      "name": "no paragons",
+      "code": "CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTa3VUUoGSeYmVgQkFiWm5-cVK1kZ1NYCAA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": true
       },
       "challenge": {
         "maxParagons": 0
@@ -121,7 +237,7 @@
     },
     {
       "name": "three paragons",
-      "code": "CBC1:q1bKV7KqrtVRSlayqlbKTawISCxKTM_PK1ayMq6tBQA",
+      "code": "CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTa3VUUoGSeYmVgQkFiWm5-cVK1kZ19YCAA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -132,7 +248,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "maxParagons": 3
@@ -140,7 +256,7 @@
     },
     {
       "name": "one tier",
-      "code": "CBC1:q1bKV7KqVgrJTC0qVrIyrNVRSlayqq6tBQA",
+      "code": "CBC4:q1bKV7KqVgrJTC0qVrIy1FFyyi8udi1LzSsJyi_NSylWsiopKk2t1VFKVrKqrq0FAA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -151,13 +267,13 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "ten tiers, faster and tougher",
-      "code": "CBC2:q1bKV7KqVgrJTC0qVrIyNNBRCi5ITU0JSC0CCSlZmRroKHmkJuaUZMCFjAwManWUkpWsqmtrAQ",
+      "code": "CBC4:q1bKV7KqVgrJTC0qVrIyNNBRCi5ITU0JSC0CCSlZmRroKHmkJuaUZMCFjAwMdJSc8ouLXctS80qC8kvzUoqVrEqKSlNrdZSSlayqa2sB",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -168,13 +284,13 @@
         "SpeedPerTier": 50,
         "HealthPerTier": 200,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "weaker per tier",
-      "code": "CBC2:q1bKV7KqVgrJTC0qVrIy11EKLkhNTQlILQKJKFnpGhroKHmkJuaUZCCL1eooJStZVdfWAgA",
+      "code": "CBC4:q1bKV7KqVgrJTC0qVrIy11EKLkhNTQlILQKJKFnpGhroKHmkJuaUZKCKOeUXF7uWpeaVBOWX5qUUK1mVFJWm1uooJStZVdfWAgA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -185,13 +301,13 @@
         "SpeedPerTier": -10,
         "HealthPerTier": -10,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "spread spawn rounds",
-      "code": "CBC1:BcHBDYAgEATAVjb73ofHiQhlaAVG32BijA9C7850NpbO_T6-urW3Xg8LQxQ8CXMWFhOSC2sUchJsyoIFE8ydQzxZ-hg_",
+      "code": "CBC4:NcuxDYMwFATQVU5XX8HHIY5dIrFAmAARWjvCQArLu6fi9a8yM1bO3-WX3vlMn8LIfhCcFx5BeJrgnfAahOAF64JgvQnmHMUxlzJdWzrufezn1sSVsbb2Bw",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -202,13 +318,13 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": "25, 37, 49, 61, 73, 85, 97, 109, 121, 133",
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "latest spawn rounds",
-      "code": "CBC1:FcYxDoAgDAXQq5A_d6hAGXoM9QJGHVzASIwD6d1N3_QGGnRgvc6nQycmLPf21bm99ehQRGYKUZhC8iVf9mWf-MRXfEUYRtihw-wH",
+      "code": "CBC4:NcwrDoAwEAXAq5CnVyy0W1FJwgWACxCowLSE8hFN705W4EZNQYIvmPdwZviWCdOxvHFMd9wyPDpmajphaozKqKzKqkQlKqdywiD0KefhCfH6k-u8QyWs8KXWDw",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -219,13 +335,13 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": "200, 250, 300, 350, 400, 450, 500, 550, 600, 650",
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "typed spawn rounds",
-      "code": "CBC1:q1bKV7KqVgouSCzPC8ovzUspVrJSMjbQUTA21FGwNNBRMDEwUKrVUUpWsqqurQUA",
+      "code": "CBC4:q1bKV7KqVgouSCzPC8ovzUspVrJSMjbQUTA21FGwNNBRMDEwUNJRcsovLnYtS80rgakpKSpNrdVRSlayqq6tBQA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -236,13 +352,13 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": "30, 31, 90, 400",
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "broken spawn rounds",
-      "code": "CBC1:q1bKV7KqVgouSCzPC8ovzUspVrJSMjNQqtVRSlayqq6tBQA",
+      "code": "CBC4:q1bKV7KqVgouSCzPC8ovzUspVrJSMjNQ0lFyyi8udi1LzSuBCZcUlabW6iglK1lV19YCAA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -253,7 +369,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": "60",
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
@@ -276,7 +392,7 @@
     },
     {
       "name": "evenly spaced skulls",
-      "code": "CBC1:q1bKV7KqVgrOLs3J8c1PSVWyUnItS83LqQwuSExOTVHSgUg555fmlShZmdfqKCUrWVXX1gIA",
+      "code": "CBC4:q1bKV7KqVgrOLs3J8c1PSVWyUnItS83LqQwuSExOTVHSgUg555fmlShZmesoOeUXF4NUlATll-alFCtZlRSVptbqKCUrWVXX1gIA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -287,13 +403,13 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "no skulls",
-      "code": "CBC1:q1bKV7KqVgrOLs3J8c1PSVWyUnItS83LqQwuSExOTVHSgUg555fmlShZGdTqKCUrWVXX1gIA",
+      "code": "CBC4:q1bKV7KqVgrOLs3J8c1PSVWyUnItS83LqQwuSExOTVHSgUg555fmlShZGegoOeUXF4NUlATll-alFCtZlRSVptbqKCUrWVXX1gIA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -304,13 +420,13 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "custom skulls",
-      "code": "CBC1:q1bKV7KqVgrOLs3J8c1PSVWyUnIuLS7Jz1XSgTLAUsVKVkqWBjoKZmZ6ZuY6CoZGeqZKtTpKyUpW1bW1AA",
+      "code": "CBC4:q1bKV7KqVgrOLs3J8c1PSVWyUnIuLS7Jz1XSgTLAUsVKVkqWBjoKZmZ6ZuY6CoZGeqZKOkpO-cXFrmWpeSVB-aV5KcVKViVFpam1OkrJSlbVtbUA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -321,13 +437,13 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "advanced kept",
-      "code": "CBC3:q1bKV7KqVgrJTC0qVrIy0QGznPKLi1OLlayUnHLy8_MSizJLi3V8KpMzXHMyS1IdDE0N9C0MlI10ghLzUvJzdcLyi0pSKxwMDQz0jQ0MlE0NVK2NDFSVanWUkpWsqmtrAQ",
+      "code": "CBC4:HczBCoMwDADQf4l4CxjdhJFdRPC2k4zdRQMruAaaVjZK_31st3d6GRQ4w91JMOAz_jWqmRgwjLuqX4JLhrfP-px2F2Voe2ouVHU4L37TFz40RHkPLVFzIqp6qq8d1YDwa6ZDfJw1-c2AY0hSEFbgXMoX",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -339,7 +455,7 @@
         "HealthPerTier": 0,
         "SpawnRounds": null,
         "TierBosses": "Bloonarius,LychElite@150/80#2,Random,Vortex@100/300#50%;20%",
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
@@ -363,7 +479,7 @@
     },
     {
       "name": "advanced with boss speed",
-      "code": "CBC3:JYwxCoAwEAT_snUq7VKKbSr9QDQnBA435LQK-buo3cAw00D4hjVLNfjBfTTRTAwec5WYNiVPN2m0KxYW3kpDd9jf8JOBKR__oWGj2VJEUrj1ykWzVPix9_4A",
+      "code": "CBC4:JYwxDsMgEAT_sjVV0l1pJaUbOx_A4SIhIRZxkAbx98hON8XMDBAy8IpaDXJzFy00U4PgUdWHI5HZLclb84WFPdHgcErPr-a2sedgkFa7Tof3-bualSF-_uOBg2Z7UQ1rTy2WFLVC7nPOHw",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -375,7 +491,7 @@
         "HealthPerTier": 0,
         "SpawnRounds": null,
         "TierBosses": "Dreadbloon,Blastapopoulos",
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "bloonModifiers": {
@@ -385,7 +501,7 @@
     },
     {
       "name": "advanced from standard",
-      "code": "CBC3:q1bKV7KqVnLKLy5WslLyqUzOUNJRCslMLQKJpMLEHAxNDfQNDQx0BoKjVKujlKxkVV1bCwA",
+      "code": "CBC4:q1bKV7KqVnLKLy5WslLyqUzOUNJRCslMLQKJpMLEHAxNDfQNDQx0BoKjpAN2nmtZal5JUH5pXkqxklVJUWlqrY5SspJVdW0tAA",
       "options": {
         "Boss": "Lych",
         "Elite": false,
@@ -397,13 +513,13 @@
         "HealthPerTier": 0,
         "SpawnRounds": null,
         "TierBosses": "Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100,Lych@150/100",
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
     {
       "name": "advanced, every kind of tier",
-      "code": "CBC3:q1bKV7KqVgrJTC0qVrIy0wGznPKLi1OLlayUwvKLSlIrXHMyS1J1ghLzUvJzHYyNDPQNLS0NoHyInFNOfn5eYlFmabGyOTLH0lTV2thYz1jV2lQVqgFJmiBTqVZHKVnJqrq2FgA",
+      "code": "CBC4:q1bKV7KqVgrJTC0qVrIy0wGznPKLi1OLlayUwvKLSlIrXHMyS1J1ghLzUvJzHYyNDPQNLS0NoHyInFNOfn5eYlFmabGyOTLH0lTV2thYz1jV2lQVqgFJmiBTSUcJ5BTXstS8kqD80ryUYiWrkqLS1FodpWQlq-raWgA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -415,7 +531,7 @@
         "HealthPerTier": 0,
         "SpawnRounds": null,
         "TierBosses": "VortexElite,Random@320/1990,RandomElite,Bloonarius#7,Bloonarius#95%;33.3%;5%,Random,Bloonarius,Bloonarius,Bloonarius,Bloonarius",
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {}
     },
@@ -498,7 +614,7 @@
     },
     {
       "name": "random 1",
-      "code": "CBC1:HcoxDsIwDEbhu_xzFiQmjwjEhGDgAsZOi0Vio6ZIVFXujsr6vrciQCsO0RoIR-Marg-WFxLulqcG2vcE2abKbxBOLk_2Oeu5sGYkqA2DyafMy6bcFiTU0AzChUeTq5d_4u-NJx7DG2jX-w8",
+      "code": "CBC4:HctBCsIwEEbhu_zrbARXsxSLK1HEC0yTtAaTiWQSsZTcXdrt-3grMmjFKauCcA6csriR7RsGz-CLgo5m5-HrpT5yE6egWprvBnZ7E39AGMS-WKp3l8jOw8CFaQq2xbpsyrrAIGXnQbjyHOxN4p74d-fCcxYFHXr_Aw",
       "options": {
         "Boss": "Diamondback",
         "Elite": false,
@@ -509,7 +625,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "map": "EnchantedGlade",
@@ -520,7 +636,7 @@
     },
     {
       "name": "random 2",
-      "code": "CBC2:NY_LbsIwEEV_JbprCwECFl62RWITgUR-YCAOGXUcR360RJH_HTm0u9G5mjl3ZjjoGR8uBGh8eUPtTZwboHD9TiK1aw00PlOIzkL9DUtUFg57VW3XUGjY-AB9UDgZkthfjC8IerfOCvfisDRC4zqyyC9NUGi56_ieJE7QOFIozL59NQtH8tN5kEKXSrVruXtrZvSLpU4SeZR_eFu-2Kw2OSsMZMulxqVHb3x1_DF-qhq2pljoeSFPDzcE6G3OLw",
+      "code": "CBC4:NY_LasMwEEV_xdy1CElos9CyraEb05D4B5R4HIuMJKNHWmP070VKuxvOMPfcWeEgV7y5ECDx4UkNF3bOQuB8T8ydGwgS7ylEZyD-hroqB4dX0ey3EOg1-QB5EPgkxXE6ki8I8mUranr7IBtPLtkhQEafKAtci9qoGRLnWTN_qwUCgx5HfU0cF0i0KhRmnjU6zToqv3xZLrQ27dygx6d9xVTlXeKoZ_6Hl_rcbrPLWcAqU5J6l24T-aZ9kF-aXhsqFvVzVF7dnA2Q-5x_AQ",
       "options": {
         "Boss": "Dreadbloon",
         "Elite": false,
@@ -531,7 +647,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 40,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "map": "Spillway",
@@ -548,7 +664,7 @@
     },
     {
       "name": "random 3",
-      "code": "CBC2:HY3BCsIwEAV_pbxzED3oIUdB8BIQ6w-kzRYX0mzJpkop-XeJ52Fmdgjsjjv5WN4Pyi-mDHs6V4OxgdkvsHCkHgaBp4nHNZYNFjevGwxmCQSLJ30oK8FgiCLJSeCJKWtrDKLaL0TBrbHwEv-L4-FSDZKfm31tjs-8asep66N8OyeFJaHWHw",
+      "code": "CBC4:HY1LCoMwEIavIv86lHbRLrIUhG6Eor1ANCMdiBnJJBYR717s_nvsENgdT3Ihf16U3kwJ9nY3qEW1WSnmTkr0CptTocNgPPnZLbBoSR0MPE8TjyXkDRaN0w0Gs3iCRUcrJSUYDEEktuJ5Ykp6NgZR7Rci35aQeQn_8_XyOAyim0-7Ph2XuGjFseqDfKtWMkvEcfwA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -559,7 +675,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 15,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "map": "Mesa",
@@ -573,7 +689,7 @@
     },
     {
       "name": "random advanced 4",
-      "code": "CBC3:bY8xr4JAEIT_yxK6TdhDsTgbQrSzMMb46hXOcPFgyd2RiIb_buRZWk0x38xkXiCgX7B3NhrQ0Y8G4WyNryQEE0DDRXw0j8XHynGIPMggo5OAx5anp_lKqRRlShEeprotFVGmckoKSrd5kWLlRHr2dgz_HFGy-l23LCWbYsltc0pxZ7mTvrlyfccT9410C1OqNWVrIpgR6s-HjgfQ8Cf-HloZAKGxt5utRxcn0LDnMME8vwE",
+      "code": "CBC4:bU87b4MwEP4vh9hO4kxDB2dBKGwdqqhq5ys4worxIT-q0oj_XoV07PQN3_sGAvoGvbPJgE4hG4Q3a0InMZoIGt4lJPO989g5jokXWSQ7ifg68fpj_qBViiqlCF_WYWoVUaVqKhoqj3VTYudEPAeb40NHVDz9H7c3Fc_N7jvWVOLJ8ix-_OThimf2o8y7plUHqg5EgHAf238Zn86S_RgfPzaE4X5t5gU0fEi4xkkWQBjt5WKH7NIKGnqOK2zbLw",
       "options": {
         "Boss": "Bloonarius",
         "Elite": true,
@@ -585,7 +701,7 @@
         "HealthPerTier": 0,
         "SpawnRounds": null,
         "TierBosses": "VortexElite,Blastapopoulos,Phayze,Phayze@110/110,Lych@100/120#50%;25%,Bloonarius@110/100#3,Blastapopoulos,PhayzeElite#65%;25%;20%,Diamondback,RandomElite@140/400",
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "map": "Workshop",
@@ -594,7 +710,7 @@
     },
     {
       "name": "random advanced 5",
-      "code": "CBC3:TY9BTsMwEEXv8iPvLHUMTQvOpmqLxLICLjBNXLAa25UdS5Qqd0dOEcp25v33Z24I0DdsQ0rQOHzx9cdA4qW3g4EeYjYSH9bEApiCbPsQPEebU7WuRbMm0axINHUt5N6yC747cnuulJyBT3_QksRsPHVMksdayDf2XXBzx7TfKKKFWtJct5pTG6VooYiqBxKN-hdVSu6j4e5YYvem53LBvQ2jRFv-dnyBxnv2Z-N3oc_OJ0h09nSybe6HKzReOXaQcPx94MifwSdoGsdf",
+      "code": "CBC4:TZDBTsMwDIbfxVVulubAukF6mcYmcZwGL-A12YjWJChpEGPqu6O0CPVqf_5-23cIoO6wDSmBgsMH334MIOw72xtQfcwG4d2aWABTkG0Xgudoc6rWtWjWJJoViaauBe4su-D1idtrJXEGPv1BSxKz8pgxSh5rgUf2Ori5Y-xvJNFCLmmuW82pjZS0kETVA4lG_osqibtoWJ_K2JT0XDaY0gDHi_dfxvfHkL1O060DQlve4fgTFLxlfzX-JXTZ-QQI2p7Pts1dfwMFrxw1IDj-PnDkS_AJFA3DLw",
       "options": {
         "Boss": "Phayze",
         "Elite": true,
@@ -606,7 +722,7 @@
         "HealthPerTier": 0,
         "SpawnRounds": null,
         "TierBosses": "Bloonarius#75%;70%;60%;55%,Diamondback#1,Bloonarius#80%;60%;40%,BloonariusElite#75%;35%,Random,DiamondbackElite@100/140,Bloonarius#6,Diamondback@110/100#20%;15%,Random#1,DreadbloonElite#90%;45%;35%",
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "map": "SunkenColumns",
@@ -616,7 +732,7 @@
     },
     {
       "name": "rules: game",
-      "code": "CBC1:LckxCoAwDAXQq8ifc4KsLrp7gdAmWGhaqTpI6d0FcXy8jgrugxDAHS4HGGsxbUUyCDGZpXDn6wFjkRZB8Br1U7ZZzh2EIq7_T1tyPTHGCw",
+      "code": "CBC4:LclBCsMgEAXQq5S_9gQuEwLttuQCg45U0LE4Ggji3UNDl483UGAHlqK6HSztXbp4hW218zRwv8z0hcVLAlehBAMfQ4iup3bC4knVwyAXz7dSWEk_MBDK_P_HHjMr5rwA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -627,7 +743,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "map": "Infernal",
@@ -638,7 +754,7 @@
     },
     {
       "name": "rules: start",
-      "code": "CBC1:q1bKV7KqrtVRSlayqlYqLkksKgkqzUktBvFyMstADEMdpdzECh8Ix8jUQEcpObE4Q8nK0AAKdJSK8kvzUpSsDI1qa2sB",
+      "code": "CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTa3VUUoGSRaXJBaVBJXmpBaDeDmZZSCGoY5SbmKFD4RjZGqgo5ScWJyhZGVoAAU6SkUgs5SsDI1qa2sB",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -649,7 +765,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "startRules": {
@@ -662,7 +778,7 @@
     },
     {
       "name": "rules: bloons",
-      "code": "CBC1:XY7LCoMwFET_ZdZBEkQKd1vozo39gtjcaiB6JYl0Ifn3YoW-lnMOzMwGAW1F4Qba0AeRuRXn755j2klamF27huyX4DmCTNUoTGL767_RVX1qFCIPUR6dzfwrtVEY2YY8fnh6jyZQffQmkNG6KNgQznYSUI4rv2LHA89f-SIx71fdwUopTw",
+      "code": "CBC4:XY_LCsIwEEX_ZdahJJQiZKnorpv4BakZ20CaKZlUFyX_LrXia3nvgftYgEAvsCfm4w1jNjRHx6BzmrEIuKywC0SxJeevHhOvDk-Irp1D9lPwmECrqhEwku3O_0RW9a4RkLBPdDc24y-USsCANuTh4_O7lEHXWy6DVlIWATaEgx1pW_iUBnuMX_pEKa9T3etFKQ8",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -673,7 +789,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "bloonModifiers": {
@@ -692,7 +808,7 @@
     },
     {
       "name": "rules: on and off",
-      "code": "CBC1:XctBCsJADEDRu2TdA0i2FUFEEO0F0jbqYExgMkMLw9zdTavY7fv8AgZYagMDYIE3zZ1NHB1w18AYnHrh8wkwxcxfuLFI0MdGL8v4h3vLvXBL_tyEA3nqIg2v1dVa0xQ0s__oqJ7oyhPFEfBO4lzrBw",
+      "code": "CBC4:XctbCsJADIXhveS5C5B5tCqICFK7gbQTdXBMYJJphTJ7F_GGff3-cyYQcBMsRXU9EFsjmb2Cs5SpVNA_4w3vrYyUFNyiAh8Uu0j73Wv0hSPFGPg808P7-IcryV2kGvUyCxtUaxP214-z1MIWOJP-aMtq2NCIyYM7YVQq5QE",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -703,7 +819,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "maxTowers": 8,
@@ -718,7 +834,7 @@
     },
     {
       "name": "rules: costs and least",
-      "code": "CBC1:VcoxCgIxEEbhu_x1kFVZhLSpbUQPkN0MODDuSGZWkZC7W6yNr_1egyK2HjAjNghl85TtfjMqiPvhV9jkylRto8MYUOmhL8qTUFLz8yrOT2GqiENAnljYP0lVir6XC5V1dtblb9sdT2PvXw",
+      "code": "CBC4:VcrBCsIwDIDhd8m5yFSG0KPFo5cxH6BbAwZiI006kdF3F5kX_-v3ryDgVziL6mXBbIPUnBS8lYrNwfxFxqgWot5vign8vvvlNhkJi2506B0UfMiCcWIMonatbPRkwgK-cxAnYrJ3EOEkrzxgqrOR5L9tdzz1rX0A",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -729,7 +845,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "leastCashUsed": 100000000,
@@ -740,7 +856,7 @@
     },
     {
       "name": "towers: limits, paths and a paragon",
-      "code": "CBC1:q1bKV7KqrtVRSlayqlYqyS9PLSoGsVQyS1JzwSxDSxCZm1ihZGWso1SUWlxSlJlcEpBYlJien6dkVVJUmlqro2RsAldlAOKagrgFiSUZhn6luU45-cnZqSkhmWDDDXXAEkYYEqYQCWMMCeNaHSUTA7gFhgYGBrUgAAA",
+      "code": "CBC4:ZY3BCgIxDET_JXjsobW7B3tc8Coi_kDpBi3arbSpCkv_XVKhl80hzPAmkxUimBWmmPPxjQtdYlnmDIZSwSrAMaT4wZRZ7TxhaEodeAf7BaMFJMyUvKOzTfYWl36uh56SbEe2L0t3dSphekb3wPnqW7kSDew3YPwDvQG6Chhkf6CklJXnBw",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -751,7 +867,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "towers": {
@@ -777,7 +893,7 @@
     },
     {
       "name": "towers: military only, no heroes",
-      "code": "CBC1:Xc87CoAwEIThuyyWFjG7vnIbkRQWIqigEHJ3iZW_KcJ-MMVMkk1CyrXMEpKc2xX3o1zVcsb1vfryrdMtweVamhH0jmxITyppZAsqw8qw_sIdyc46kJxgnGCcYJxgbGXfVuU9",
+      "code": "CBC4:XY89DsIwDEbvYjF2aGuXn4xIXIAbVCUDQxMpSQGp6t1RmPrwYPnJ3_C9VaK4Va4x59vLh3KPS3hkcSUtfmtkqs8S3z7leh2exc-_61TXPH7EtVsj3QXYt8SO2BOVaMQBqAwrw_oXPhLZWc9EKhgVjApGBWMr27eq8wU",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -788,7 +904,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "towers": {
@@ -859,7 +975,7 @@
     },
     {
       "name": "towers: heroes allowed",
-      "code": "CBC1:q1bKV7KqrtVRSlayqlYqyS9PLSoGsVQyS1JzwSwDEJGbWKFkZViro2SIwjOH8wxqQQAA",
+      "code": "CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTa3VUUoGSZbkl6cWFYNYKpklqblglgGIyE2sULIyrNVRMkThmcN5BrUgAAA",
       "options": {
         "Boss": "Bloonarius",
         "Elite": false,
@@ -870,7 +986,7 @@
         "SpeedPerTier": 0,
         "HealthPerTier": 0,
         "SpawnRounds": null,
-        "BossEventRounds": false
+        "BossEventRounds": true
       },
       "challenge": {
         "towers": {

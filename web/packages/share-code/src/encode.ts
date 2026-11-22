@@ -3,7 +3,8 @@
 // reads any raw deflate.
 
 import { DATA, type Json, type JsonObject } from "./data";
-import { PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFIX, VERSION5_PREFIX, VERSION6_PREFIX, filterChallenge } from "./decode";
+import { PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFIX, VERSION5_PREFIX, VERSION6_PREFIX, VERSION7_PREFIX, filterChallenge } from "./decode";
+import { parseTierBosses } from "./math/tierBosses";
 import { defaultOptions, optionsJson, readOptions, sanitize, usesGildebloon, type BossOptions } from "./options";
 import { UnsupportedBrowserError, canUseCodes } from "./support";
 
@@ -58,9 +59,29 @@ export function diff(value: Json, defaults: Json | undefined): Json | undefined 
 /** The options brought into the Boss Creator's ranges first, so the mod reads back exactly what the code holds */
 export const normalized = (options: BossOptions): BossOptions => sanitize(readOptions(optionsJson(options)));
 
+/** The Boss Health range version 5 readers keep a value in, and the step they put a tier's own health on (#250) */
+const VERSION5_MIN_BOSS_HEALTH = 0.1;
+const VERSION5_MAX_BOSS_HEALTH = 20;
+const VERSION5_HEALTH_STEP = 10;
+
+/** CodeFormat.NeedsVersion6: whether version 5 readers would change the Boss Health or a tier's own health (#250) */
+export function needsVersion6(options: BossOptions, challenge?: JsonObject): boolean {
+  const modifiers = challenge?.bloonModifiers as JsonObject | undefined;
+  const health = (modifiers?.healthMultipliers as JsonObject | undefined)?.boss;
+  const bossHealth = typeof health === "number" ? health : 1;
+  if (bossHealth < VERSION5_MIN_BOSS_HEALTH - 1e-6 || bossHealth > VERSION5_MAX_BOSS_HEALTH + 1e-6) return true;
+  return parseTierBosses(options.TierBosses).some(
+    (tier) =>
+      tier.health < VERSION5_MIN_BOSS_HEALTH * 100 - 1e-6 ||
+      tier.health > VERSION5_MAX_BOSS_HEALTH * 100 + 1e-6 ||
+      tier.health % VERSION5_HEALTH_STEP !== 0,
+  );
+}
+
 /** SetupCode.PrefixFor: the oldest code version that holds everything in the options */
-export function prefixFor(options: BossOptions): string {
-  if (usesGildebloon(options)) return VERSION6_PREFIX;
+export function prefixFor(options: BossOptions, challenge?: JsonObject): string {
+  if (usesGildebloon(options)) return VERSION7_PREFIX;
+  if (needsVersion6(options, challenge)) return VERSION6_PREFIX;
   if (options.ChimpsRounds === "Own") return VERSION5_PREFIX;
   if (options.BossEventRounds) return VERSION4_PREFIX;
   if (options.TierBosses != null) return VERSION3_PREFIX;
@@ -102,5 +123,5 @@ export async function pack(json: string, prefix = PREFIX): Promise<string> {
  */
 export async function encode(options: BossOptions, challenge: JsonObject = DATA.defaultChallenge): Promise<string> {
   const setup = normalized(options);
-  return pack(JSON.stringify(payload(setup, challenge)), prefixFor(setup));
+  return pack(JSON.stringify(payload(setup, challenge)), prefixFor(setup, challenge));
 }

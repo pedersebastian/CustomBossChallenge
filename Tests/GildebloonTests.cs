@@ -150,17 +150,17 @@ public class GildebloonModelTest : GildebloonTest
         AssertEquals(ExtraTiers.MissingVanillaTier(game, options), null, "Every tier has a source model");
         AssertEquals(options.SourceId(7), "GildebloonElite5", "Tier 7's source");
 
-        // Share codes with it are version 6, by name, and read back the same (#25)
+        // Share codes with it are version 7, by name, and read back the same (#25)
         var dcm = BossMode.DefaultDcm(options);
         var code = Persistence.SetupCode.Encode(options, dcm);
-        Assert(code.StartsWith(Persistence.SetupCode.Version6Prefix), $"A code with Gildebloon is version 6: {code}");
+        Assert(code.StartsWith(Persistence.SetupCode.Version7Prefix), $"A code with Gildebloon is version 7: {code}");
         Assert(Persistence.CodeFormat.Contents(code).Contains("\"Gildebloon\""), "The code has it by name");
         Assert(Persistence.SetupCode.TryDecode(code, out var read, out _, out var problem), $"The code loads: {problem}");
         AssertEquals(read, options.Sanitized(), "Options read from the code");
         var mixed = new BossOptions {Tiers = 2, TierBosses = "Lych,GildebloonElite"};
-        Assert(Persistence.SetupCode.Encode(mixed, dcm).StartsWith(Persistence.SetupCode.Version6Prefix), "A tier with it is version 6 too");
+        Assert(Persistence.SetupCode.Encode(mixed, dcm).StartsWith(Persistence.SetupCode.Version7Prefix), "A tier with it is version 7 too");
         Assert(!Persistence.SetupCode.Encode(new BossOptions {Tiers = 1, TierBosses = ",Gildebloon"}, dcm)
-            .StartsWith(Persistence.SetupCode.Version6Prefix), "A tier that isn't played doesn't count");
+            .StartsWith(Persistence.SetupCode.Version7Prefix), "A tier that isn't played doesn't count");
         yield break;
     }
 

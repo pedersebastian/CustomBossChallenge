@@ -1,6 +1,114 @@
 {
   "valid": [
     {
+      "code": "CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTa3VUUoGSRanpqYoWRmampkYWZgZW9bWAgA",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 5,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "BossEventRounds": true
+      },
+      "challenge": {
+        "name": "",
+        "map": "Tutorial",
+        "difficulty": "Medium",
+        "mode": "Standard",
+        "cash": -1,
+        "lives": -1,
+        "maxLives": -1,
+        "round": -1,
+        "bossSpeed": 1.0,
+        "bossHealth": 1.0,
+        "bloonSpeed": 1.0,
+        "moabSpeed": 1.0,
+        "bloonHealth": 1.0,
+        "moabHealth": 1.0,
+        "regrowRate": 1.0,
+        "allCamo": false,
+        "allRegen": false,
+        "allFortified": false,
+        "maxParagons": -1,
+        "maxTowers": -1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "noInstaReward": true,
+        "abilityCooldown": 1.0,
+        "removableCost": 1.0,
+        "leastCash": -1,
+        "leastTiers": -1,
+        "towers": {},
+        "blockedTiers": {},
+        "paragonLocked": []
+      },
+      "spawnRounds": [
+        40,
+        60,
+        80,
+        100,
+        120
+      ],
+      "endRound": 140,
+      "tiers": [
+        {
+          "round": 40,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "20k",
+          "capped": false,
+          "skulls": 3
+        },
+        {
+          "round": 60,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "75k",
+          "capped": false,
+          "skulls": 3
+        },
+        {
+          "round": 80,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "350k",
+          "capped": false,
+          "skulls": 3
+        },
+        {
+          "round": 100,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "750k",
+          "capped": false,
+          "skulls": 3
+        },
+        {
+          "round": 120,
+          "speed": 1.0,
+          "healthFactor": 1.0,
+          "health": "3M",
+          "capped": false,
+          "skulls": 3
+        }
+      ],
+      "skulls": [
+        "75%",
+        "50%",
+        "25%"
+      ],
+      "playProblem": null,
+      "warnings": []
+    },
+    {
       "code": "CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA",
       "options": {
         "Boss": "Bloonarius",
@@ -3054,7 +3162,7 @@
       "problem": "Invalid"
     },
     {
-      "code": "CBC1:q1bKV7KqrtVRSgZSSs",
+      "code": "CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayK",
       "why": "cut short",
       "loads": false,
       "problem": "Invalid"

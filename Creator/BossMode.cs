@@ -62,7 +62,7 @@ public static class BossMode
         // A last setup with Gildebloon while it is off starts from the defaults; the file keeps it for later (#25)
         if (!Store.TryLoad(out var options, out var dcm) || dcm == null || Menus.BossEditorSection.GildebloonProblem(options) != null)
         {
-            options = new BossOptions();
+            options = BossOptions.NewSetup;
             dcm = DefaultDcm(options);
         }
 

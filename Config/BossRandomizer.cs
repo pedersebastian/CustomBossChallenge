@@ -22,7 +22,8 @@ public static partial class BossRandomizer
     public static BossOptions Randomize(DailyChallengeModel dcm, string[] unsupportedModes, bool advanced = false)
     {
         var bosses = BossList.Available;
-        var options = new BossOptions
+        // Like a new setup, with Boss Event Rounds on (#251)
+        var options = BossOptions.NewSetup with
         {
             Boss = bosses[Random.Next(bosses.Length)],
             Elite = Chance(EliteChance),

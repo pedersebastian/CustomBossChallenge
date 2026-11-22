@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **New setups play the boss events' rounds** (#251): Boss Event Rounds starts ticked on your first visit, after Reset
+  Boss Options and Delete on the option, and in Random setups; in CHIMPS that is the newest CHIMPS events' rounds. The
+  normal rounds are full of bloons that pull towers away from the boss; the event rounds are made for boss games.
+  Share codes, saved setups, your last setup and unfinished games keep the rounds they were made with.
+- **Share codes version 6** (#250, #251): a code with Boss Health or a tier's own health below 10 %, above 2000 % or
+  (a tier's) on a step of 5 % starts with `CBC6:`, so older versions of the mod ask for an update instead of changing
+  the health. Other codes keep the oldest version that holds them, and the website reads and makes them all.
 - **Boss Health goes from 5 % to 5000 %** (#250), up from 10–2000 %, for Boss Health and each tier's own health in
   Advanced Mode. The slider moves in steps of 5 % up to 500 % and 10 % above, also with the arrows and the keyboard.
   The game's health limit still holds every tier below about 2 billion.
