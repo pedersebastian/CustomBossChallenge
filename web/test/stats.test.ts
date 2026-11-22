@@ -1,18 +1,26 @@
 // @vitest-environment happy-dom
 // The Stats page (#265): its numbers from a small archive made here, and the page built from boss-events.json
 
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import type { PastEvent, Scoring } from "@cbc/share-code";
+import { decode, pastEventCode, readPastEvents, readSetup, pastEventSetup, type PastEvent, type Scoring } from "@cbc/share-code";
+import { difficultyOf } from "../src/preview/difficulty";
 import { h } from "../src/dom";
 import {
+  averageStars,
   countedEvents,
+  difficultyStats,
+  hardestFirst,
+  rate,
+  starSpread,
   eventsPerYear,
   mapsAndModes,
   mapsOf,
   scoringPerYear,
   statsPerBoss,
 } from "../src/stats/compute";
-import { setUpStats, sinceText, topList } from "../src/stats/page";
+import { levelName, setUpStats, sinceText, topList } from "../src/stats/page";
 
 const DAY = 24 * 60 * 60 * 1000;
 const at = (date: string): number => Date.parse(`${date}T00:00:00Z`);
@@ -161,6 +169,72 @@ describe("the numbers", () => {
   });
 });
 
+describe("the difficulty", () => {
+  it("rates a level like the Studio rates the setup Past Events opens it as", () => {
+    for (const elite of [false, true]) {
+      const { setup, json } = pastEventSetup(EVENTS[0], elite);
+      const { options, challenge } = readSetup(setup.options, json!);
+      expect(rate(EVENTS[0], elite)).toEqual({ event: EVENTS[0], elite, ...difficultyOf(options, challenge) });
+    }
+    expect(rate(EVENTS[0], true)!.points).toBeGreaterThan(rate(EVENTS[0], false)!.points);
+  });
+
+  it("doesn't rate a level that can't be opened", () => {
+    expect(rate(event("lych", "2024-01-01", { map: "NoSuchMap" }), false)).toBeNull();
+  });
+
+  it("averages the stars to one decimal", () => {
+    const rated = (stars: number) => ({ event: EVENTS[0], elite: false, points: stars, stars });
+    expect(averageStars([rated(2), rated(3), rated(3)])).toBe(2.7);
+    expect(averageStars([])).toBeNull();
+  });
+
+  it("puts the hardest first, and the newest of two alike", () => {
+    const at = (event: PastEvent, points: number) => ({ event, elite: true, points, stars: 5 });
+    expect(hardestFirst([at(EVENTS[1], 1), at(EVENTS[0], 3), at(EVENTS[2], 3)]).map((r) => r.event)).toEqual([EVENTS[0], EVENTS[2], EVENTS[1]]);
+  });
+
+  it("averages normal and Elite per boss and per year, and counts the stars", () => {
+    const { perBoss, perYear, rated } = difficultyStats(EVENTS, NOW);
+    expect(rated).toHaveLength(12);
+    expect(perBoss.map((b) => b.group)).toEqual(["bloonarius", "lych", "vortex"]);
+    expect(perYear.map((y) => y.group)).toEqual(["2021", "2022", "2023"]);
+    for (const group of [...perBoss, ...perYear]) {
+      expect(group.elite!).toBeGreaterThan(group.normal!);
+      expect(group.hardest!.elite).toBe(true);
+    }
+    const vortex = rated.filter((r) => r.event.bossKey === "vortex");
+    expect(perBoss[2].normal).toBe(vortex.find((r) => !r.elite)!.stars);
+    const spread = starSpread(rated);
+    expect(spread.normal.reduce((a, b) => a + b)).toBe(6);
+    expect(spread.elite.reduce((a, b) => a + b)).toBe(6);
+    expect(levelName(perBoss[2].hardest!)).toBe(`${vortex[0].event.displayName} Elite`);
+  });
+
+  it("gives every archived event the setup its code reads back as", async () => {
+    // happy-dom gives import.meta.url an http address, so the archive is found from web/, where the tests run
+    const archive = join(process.cwd(), "..", "data", "boss-events");
+    const events = readdirSync(archive)
+      .filter((name) => name.endsWith(".json"))
+      .map((name) => JSON.parse(readFileSync(join(archive, name), "utf8")) as unknown);
+    const read = readPastEvents(JSON.stringify({ formatVersion: 1, generated: "2026-11-22T00:00:00.000Z", license: "test", events }));
+    if (read.problem !== "None") throw new Error(read.error);
+    let checked = 0;
+    for (const archived of read.file.events) {
+      for (const elite of [false, true]) {
+        const { code } = await pastEventCode(archived, elite);
+        if (code === null) continue;
+        const decoded = await decode(code);
+        if (!decoded.ok) throw new Error(decoded.reason);
+        const { setup, json } = pastEventSetup(archived, elite);
+        expect(readSetup(setup.options, json!), `${archived.id}${elite ? " Elite" : ""}`).toEqual({ options: decoded.options, challenge: decoded.challenge });
+        checked++;
+      }
+    }
+    expect(checked).toBeGreaterThan(500);
+  }, 60_000);
+});
+
 const file = (events: PastEvent[]) =>
   JSON.stringify({
     formatVersion: 1,
@@ -198,15 +272,20 @@ describe("the Stats page", () => {
     expect(root.querySelector(".stats-summary")!.textContent).toContain("6 events from 24 Jul 2021 to 1 May 2023, with 3 bosses");
     // Every chart is hidden from screen readers and has a table
     const charts = root.querySelectorAll("svg.curve-chart");
-    expect(charts).toHaveLength(4);
+    expect(charts).toHaveLength(5);
     charts.forEach((chart) => expect(chart.getAttribute("aria-hidden")).toBe("true"));
-    expect(root.querySelectorAll("table")).toHaveLength(5);
+    expect(root.querySelectorAll("table")).toHaveLength(8);
     const bossRows = [...root.querySelectorAll("#stats-bosses ~ .table-scroll tbody tr")].map((row) =>
       [...row.children].map((cell) => cell.textContent));
     expect(bossRows[0]).toEqual(["Bloonarius", "3", "3", "3", "24 Jul 2021", "10 Jan 2022", "473 days", "126 days, 6 Sep 2021 - 10 Jan 2022"]);
     expect(bossRows[1][6]).toBe("On now");
     // One mark per counted event on the timeline
     expect(root.querySelectorAll(".stats-timeline rect")).toHaveLength(6);
+    // The hardest events link to themselves in Past events
+    const hardest = [...root.querySelectorAll<HTMLAnchorElement>(".stats-hardest a")];
+    expect(hardest).toHaveLength(5);
+    expect(hardest[0].getAttribute("href")).toMatch(/^\.\/past-events\.html#q=/);
+    expect(hardest[0].textContent).toMatch(/ Elite$/);
   });
 
   it("says when the events can't be loaded", async () => {

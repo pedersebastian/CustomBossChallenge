@@ -1,7 +1,8 @@
 // The numbers of the Stats page (#265), from the same boss-events.json as Past Events. Nothing here is fixed to the
 // events of today: a new event in the archive changes the numbers the next time the site is built.
 
-import { data, modesOf, pastEventBoss, yearOf, type PastEvent, type Scoring } from "@cbc/share-code";
+import { data, modesOf, pastEventBoss, pastEventSetup, readSetup, yearOf, type PastEvent, type Scoring } from "@cbc/share-code";
+import { difficultyOf } from "../preview/difficulty";
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -165,4 +166,75 @@ export function eventsPerYear(events: readonly PastEvent[], now: number): { year
       counts: all.map((year) => counted.filter((event) => event.bossKey === boss.key && yearOf(event) === year).length),
     })),
   };
+}
+
+/** The difficulty of one level of an event (#263), as the Studio and the Boss Creator rate the setup it opens as */
+export interface Rated {
+  event: PastEvent;
+  elite: boolean;
+  points: number;
+  stars: number;
+}
+
+/**
+ * The difficulty of the normal or the Elite event, from the setup Past Events opens it as, or null when it can't be
+ * opened (a map the game doesn't have, a boss this version doesn't know)
+ */
+export function rate(event: PastEvent, elite: boolean): Rated | null {
+  const { setup, json } = pastEventSetup(event, elite);
+  if (json === null) return null;
+  const { options, challenge } = readSetup(setup.options, json);
+  return { event, elite, ...difficultyOf(options, challenge) };
+}
+
+/** Every level of the counted events that can be rated, oldest first, normal before Elite */
+export function ratedEvents(events: readonly PastEvent[]): Rated[] {
+  return countedEvents(events).flatMap((event) => [rate(event, false), rate(event, true)].filter((r): r is Rated => r !== null));
+}
+
+/** The average stars, to one decimal, or null with none */
+export function averageStars(rated: readonly Rated[]): number | null {
+  if (rated.length === 0) return null;
+  return Math.round((rated.reduce((sum, r) => sum + r.stars, 0) / rated.length) * 10) / 10;
+}
+
+/** The hardest first: the most points, then the newest */
+export const hardestFirst = (rated: readonly Rated[]): Rated[] =>
+  [...rated].sort((a, b) => b.points - a.points || b.event.start - a.event.start);
+
+export interface DifficultyGroup {
+  /** A boss key or a year */
+  group: string;
+  normal: number | null;
+  elite: number | null;
+  /** The hardest level of the group */
+  hardest: Rated | null;
+}
+
+function difficultyGroup(group: string, rated: Rated[]): DifficultyGroup {
+  return {
+    group,
+    normal: averageStars(rated.filter((r) => !r.elite)),
+    elite: averageStars(rated.filter((r) => r.elite)),
+    hardest: hardestFirst(rated)[0] ?? null,
+  };
+}
+
+/** The average stars of the normal and the Elite events, per boss (in statsPerBoss's order) and per year (oldest first) */
+export function difficultyStats(events: readonly PastEvent[], now: number): { perBoss: DifficultyGroup[]; perYear: DifficultyGroup[]; rated: Rated[] } {
+  const rated = ratedEvents(events);
+  return {
+    perBoss: statsPerBoss(events, now).map((boss) => difficultyGroup(boss.key, rated.filter((r) => r.event.bossKey === boss.key))),
+    perYear: years(countedEvents(events))
+      .reverse()
+      .map((year) => difficultyGroup(String(year), rated.filter((r) => yearOf(r.event) === year))),
+    rated,
+  };
+}
+
+/** How many normal and Elite levels got each number of stars: index 1 to 10 */
+export function starSpread(rated: readonly Rated[]): { normal: number[]; elite: number[] } {
+  const spread = { normal: Array<number>(11).fill(0), elite: Array<number>(11).fill(0) };
+  for (const r of rated) spread[r.elite ? "elite" : "normal"][r.stars]++;
+  return spread;
 }

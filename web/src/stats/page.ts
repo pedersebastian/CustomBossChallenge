@@ -2,20 +2,26 @@
 // hidden from screen readers and has its values in a table; nothing moves, so there is nothing to turn off for
 // reduced motion. Each chart tells things apart by labels and shapes, not by colour alone.
 
-import { englishDate, readPastEvents, type PastEvent } from "@cbc/share-code";
+import { ANY_EVENT, englishDate, readPastEvents, type PastEvent } from "@cbc/share-code";
+import { MAX_STARS } from "@cbc/share-code/difficulty";
 import { s } from "../compare/chart";
 import { h } from "../dom";
 import { MOD_TEXTS } from "../modTexts";
-import { PAST_EVENTS_FILE, shownName } from "../pastEvents/list";
+import { PAST_EVENTS_FILE, hashForQuery, shownName } from "../pastEvents/list";
 import {
   SCORINGS,
   countedEvents,
+  difficultyStats,
+  hardestFirst,
+  starSpread,
   eventsPerYear,
   mapsAndModes,
   scoringPerYear,
   statsPerBoss,
   type BossStats,
   type Count,
+  type DifficultyGroup,
+  type Rated,
   type ScoringOrUnknown,
   type ScoringYear,
   type Usage,
@@ -168,6 +174,123 @@ export function scoringChart(rows: ScoringYear[], level: "normal" | "elite"): SV
   return chart;
 }
 
+/** "Lych 47 Elite" */
+export const levelName = (rated: Rated): string => `${rated.event.displayName}${rated.elite ? " Elite" : ""}`;
+
+/** "5.8", or – with no rated event */
+const average = (stars: number | null): string => (stars === null ? "–" : stars.toFixed(1));
+
+/** "Lych 47 Elite, 8 stars" */
+const hardestText = (rated: Rated | null): string => (rated ? `${levelName(rated)}, ${rated.stars} ${rated.stars === 1 ? "star" : "stars"}` : "–");
+
+/** The event in the Past events list, found by its name */
+const pastEventLink = (event: PastEvent): string => `./past-events.html${hashForQuery({ ...ANY_EVENT, text: event.name })}`;
+
+/**
+ * The average stars of each year as two lines on a scale from 0 to 10: normal solid with round points, Elite dashed
+ * with square ones, like the A and B of Compare
+ */
+export function difficultyChart(years: DifficultyGroup[]): SVGElement {
+  const width = 460;
+  const height = 230;
+  const left = 40;
+  const right = 28;
+  const top = 12;
+  const bottom = 32;
+  const x = (i: number): number => (years.length === 1 ? (left + width - right) / 2 : left + (i / (years.length - 1)) * (width - left - right));
+  const y = (stars: number): number => top + (1 - stars / MAX_STARS) * (height - top - bottom);
+  const chart = s("svg", { viewBox: `0 0 ${width} ${height}`, class: "curve-chart stats-difficulty", "aria-hidden": "true" });
+  for (let stars = 0; stars <= MAX_STARS; stars += 2) {
+    chart.append(
+      s("line", { x1: left, x2: width - right, y1: y(stars), y2: y(stars), class: "grid" }),
+      s("text", { x: left - 8, y: y(stars) + 4, class: "tick", "text-anchor": "end" }, String(stars)),
+    );
+  }
+  years.forEach((year, i) => chart.append(s("text", { x: x(i), y: height - 10, class: "tick", "text-anchor": "middle" }, year.group)));
+  for (const [side, level] of [["a", "normal"], ["b", "elite"]] as const) {
+    const points = years.flatMap((year, i) => (year[level] === null ? [] : [{ x: x(i), y: y(year[level]!) }]));
+    if (points.length > 1) chart.append(s("polyline", { points: points.map((p) => `${p.x},${p.y}`).join(" "), class: `series ${side}` }));
+    for (const p of points) {
+      chart.append(side === "a" ? s("circle", { cx: p.x, cy: p.y, r: 5, class: "point a" }) : s("rect", { x: p.x - 5, y: p.y - 5, width: 10, height: 10, class: "point b" }));
+    }
+  }
+  return chart;
+}
+
+/** A sample of a line and its point, for the legend */
+function swatch(side: "a" | "b"): SVGElement {
+  return s(
+    "svg",
+    { viewBox: "0 0 40 16", width: 40, height: 16, class: "swatch", "aria-hidden": "true" },
+    s("line", { x1: 2, x2: 38, y1: 8, y2: 8, class: `series ${side}` }),
+    side === "a" ? s("circle", { cx: 20, cy: 8, r: 5, class: "point a" }) : s("rect", { x: 15, y: 3, width: 10, height: 10, class: "point b" }),
+  );
+}
+
+/** The difficulty section: the stars of #263, as the Studio and the Boss Creator rate the setup each event opens as */
+function difficultySection(events: readonly PastEvent[], now: number, nameOf: Map<string, string>): HTMLElement {
+  const { perBoss, perYear, rated } = difficultyStats(events, now);
+  const spread = starSpread(rated);
+  const hardest = hardestFirst(rated).slice(0, 5);
+  return h(
+    "section",
+    { class: "block", "aria-labelledby": "stats-difficulty" },
+    h("h2", { id: "stats-difficulty" }, MOD_TEXTS.Difficulty),
+    h(
+      "p",
+      {},
+      `Each event rated from 1 to ${MAX_STARS} stars, like the Boss Creator and the Studio rate the setup it opens as. `,
+      "It is an estimate from the setup's numbers, not how hard the event felt.",
+    ),
+    h(
+      "div",
+      { class: "legend" },
+      h("span", {}, swatch("a"), ` ${MOD_TEXTS.PastEventNormal} (solid line, round points)`),
+      h("span", {}, swatch("b"), " Elite (dashed line, square points)"),
+    ),
+    figure("Average stars per year", "the numbers are in the table below", difficultyChart(perYear)),
+    h(
+      "details",
+      { class: "towers" },
+      h("summary", {}, "The averages per year as a table"),
+      table(
+        ["Year", `${MOD_TEXTS.PastEventNormal}, average stars`, "Elite, average stars", "Hardest"],
+        perYear.map((year) => [year.group, average(year.normal), average(year.elite), hardestText(year.hardest)]),
+        "Average stars per year",
+      ),
+    ),
+    h("h3", {}, "Per boss"),
+    table(
+      ["Boss", `${MOD_TEXTS.PastEventNormal}, average stars`, "Elite, average stars", "Hardest"],
+      perBoss.map((boss) => [nameOf.get(boss.group) ?? boss.group, average(boss.normal), average(boss.elite), hardestText(boss.hardest)]),
+      "Average stars per boss",
+    ),
+    h("h3", {}, "How many got each number of stars"),
+    table(
+      ["Stars", ...Array.from({ length: MAX_STARS }, (_, i) => String(i + 1))],
+      [
+        [MOD_TEXTS.PastEventNormal, ...spread.normal.slice(1)],
+        ["Elite", ...spread.elite.slice(1)],
+      ],
+      "Events per number of stars",
+    ),
+    h("h3", {}, "The hardest events"),
+    h(
+      "ol",
+      { class: "stats-hardest" },
+      ...hardest.map((r) =>
+        h(
+          "li",
+          {},
+          h("a", { href: pastEventLink(r.event) }, levelName(r)),
+          `, ${englishDate(r.event.start)}: `,
+          h("strong", {}, `${r.stars} of ${MAX_STARS} stars`),
+        )),
+    ),
+    h("p", { class: "small muted" }, "Events the Boss Creator can't open, on a map the game no longer has, aren't rated."),
+  );
+}
+
 function usageTable(rows: Usage[], name: (group: string) => string, first: string): HTMLElement {
   return table(
     [first, "Events", "Maps used most", "Modes used most"],
@@ -270,7 +393,7 @@ export function renderStats(events: readonly PastEvent[], generated: string, now
     h("p", { class: "small muted" }, "An event counts once for each map and mode of its normal and Elite level."),
   );
 
-  return [summary, perBoss, timeline, scoringSection, mapsSection];
+  return [summary, perBoss, timeline, difficultySection(events, now, nameOf), scoringSection, mapsSection];
 }
 
 /** Fills the page: loads the events (load gives the file's text; tests give their own) and shows the stats */

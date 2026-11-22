@@ -27,7 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   after a release.
 - **Boss event stats on the website** (#265): a new Stats page, linked in the menu and from Past Events, shows the
   official boss events in numbers: events per boss, normal and Elite, the days since each boss was last on and its
-  longest wait, a timeline since July 2021, how the events were ranked each year and the maps and modes used most,
+  longest wait, a timeline since July 2021, the difficulty stars of #263 for every event (averages per boss and per
+  year, and the hardest events), how the events were ranked each year and the maps and modes used most,
   per boss and per year. Every chart has its numbers in a table, and the page follows the archive as events are added.
 - **An issue the day BTD6 updates** (#272, #19, for contributors): a daily GitHub workflow watches Steam's news for a
   new version and Steam's public build for hotfixes, and opens an issue with the update checklist, once per version
