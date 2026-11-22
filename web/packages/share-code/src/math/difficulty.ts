@@ -1,4 +1,4 @@
-// A rough difficulty score for a setup, 1 to 5 stars (#263), like Config/DifficultyRating.cs: an estimate from the
+// A rough difficulty score for a setup, 1 to 10 stars (#263), like Config/DifficultyRating.cs: an estimate from the
 // setup's numbers, not from playing it. web/test/difficulty-cases.json is shared with UnitTests/DifficultyRatingTests.cs,
 // and WebDataTest exports the mod's score for each of web/src/data/fixtures.json's setups.
 //
@@ -11,10 +11,13 @@ import { DEFAULT_COUNT } from "./skulls";
 import { clampTiers, extraTierFactor, FIRST_SPAWN_ROUND, healthFactor, ROUNDS_BETWEEN_TIERS, speedFactor, VANILLA_TIERS } from "./tiers";
 import type { SetupFacts } from "./warnings";
 
-export const MAX_STARS = 5;
+export const MAX_STARS = 10;
 
-/** The points at which 2, 3, 4 and 5 stars begin */
-export const STAR_STEPS = [1, 2.5, 3.25, 5] as const;
+/**
+ * The points at which 2 to 10 stars begin: most normal boss events get 1 to 3 stars, most Elite ones 5 to 7, and 10 is
+ * left for setups harder than any event so far
+ */
+export const STAR_STEPS = [0.5, 1.5, 2.5, 3.25, 4, 5, 6.5, 8, 10] as const;
 
 /** How much harder each boss is than Bloonarius, in points (DifficultyRating.BossWeight) */
 export const BOSS_WEIGHTS: Record<string, number> = {
@@ -35,6 +38,12 @@ export const ELITE_WEIGHT = 3;
 
 /** What each tier more than the game's five adds, and each tier fewer takes away */
 export const TIER_COUNT_WEIGHT = 0.25;
+
+/**
+ * What halving the rounds between tiers adds, against the normal 20: tiers every round add about 2.2 points, as each tier
+ * must be beaten before the next one arrives (DifficultyRating.GapWeight)
+ */
+export const GAP_WEIGHT = 0.5;
 
 /** What each skull fewer than the default three adds: fewer skulls, fewer breathers */
 export const SKULL_WEIGHT = 0.2;
@@ -95,17 +104,35 @@ export function roundPoints(facts: SetupFacts): number {
     if (percents !== null) skulls += SKULL_WEIGHT * (DEFAULT_COUNT - percents.length);
   }
 
-  let points = early / weights + skulls / rounds.length;
+  let points = early / weights + skulls / rounds.length + gapPoints(rounds);
   if (options.BossEventRounds) points += facts.mode === CHIMPS_MODE && chimpsEventRoundSet(options, facts.mode) !== null ? 1 : 0.25;
   return points;
 }
 
 /**
- * The Challenge Editor's rules: the bloons' health and speed, lives, cash, towers, paragons, the rules that take a tool
+ * The rounds between tiers: each gap shorter than the normal 20 leaves less time to beat a tier before the next one comes,
+ * GAP_WEIGHT for each halving; longer gaps take a little away (DifficultyRating.GapPoints)
+ */
+export function gapPoints(rounds: number[]): number {
+  if (rounds.length < 2) return 0;
+  let sum = 0;
+  for (let i = 1; i < rounds.length; i++) {
+    const gap = Math.max(rounds[i] - rounds[i - 1], 1);
+    sum += Math.min(Math.max(Math.log2(ROUNDS_BETWEEN_TIERS / gap), -1), Math.log2(ROUNDS_BETWEEN_TIERS));
+  }
+  return (GAP_WEIGHT * sum) / (rounds.length - 1);
+}
+
+/** What the map adds, by its group in the game's map list (DifficultyRating.MapWeight) */
+export const MAP_WEIGHTS: Record<string, number> = { Intermediate: 0.25, Advanced: 0.5, Expert: 1 };
+
+/**
+ * The Challenge Editor's rules: the map, the bloons' health and speed, lives, cash, towers, paragons, the rules that take a tool
  * away, the difficulty and the mode
  */
 export function rulePoints(facts: SetupFacts): number {
-  let points = log(facts.bloonHealth) + log(facts.moabHealth) + log(facts.bloonSpeed) + log(facts.moabSpeed);
+  let points =
+    (MAP_WEIGHTS[facts.mapDifficulty] ?? 0) + log(facts.bloonHealth) + log(facts.moabHealth) + log(facts.bloonSpeed) + log(facts.moabSpeed);
   points += facts.lives < 0 ? 0 : facts.lives <= 1 ? 2 : facts.lives <= 10 ? 1 : facts.lives <= 50 ? 0.5 : 0;
   points += facts.cash >= 0 && facts.cash < 400 ? 1 : 0;
   points += facts.maxTowers >= 0 && facts.maxTowers <= 5 ? 1.5 : facts.maxTowers > 5 && facts.maxTowers <= 15 ? 0.5 : 0;

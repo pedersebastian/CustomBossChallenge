@@ -26,7 +26,7 @@
   "CustomBossChallenge-TierPreview": "단계 미리보기",
   "CustomBossChallenge-TierPreviewInfo": "각 단계가 나오는 라운드, 기본 게임과 비교한 속도, 체력입니다. 주황색은 기본 게임보다 많고, 파란색은 적습니다.",
   "CustomBossChallenge-Difficulty": "난이도",
-  "CustomBossChallenge-DifficultyInfo": "설정이 얼마나 어려운지 1~5개의 별로 나타낸 대략적인 추정치로, 설정을 비교하고 시도할 설정을 고르는 데 쓸 수 있습니다. 보스의 체력과 속도, 엘리트, 단계 수와 등장 시점, 해골, 라운드, 모드, 난이도, 규칙 등 설정의 수치로 계산합니다. 실제로 플레이하는 것은 아니므로 직접 해 보면 더 쉽거나 더 어렵게 느껴질 수 있습니다.",
+  "CustomBossChallenge-DifficultyInfo": "설정이 얼마나 어려운지 1~10개의 별로 나타낸 대략적인 추정치로, 설정을 비교하고 시도할 설정을 고르는 데 쓸 수 있습니다. 보스의 체력과 속도, 엘리트, 단계 수와 등장 시점 및 간격, 해골, 라운드, 맵, 모드, 난이도, 규칙 등 설정의 수치로 계산합니다. 실제로 플레이하는 것은 아니므로 직접 해 보면 더 쉽거나 더 어렵게 느껴질 수 있습니다.",
   "CustomBossChallenge-PerTier": "{0} % / 단계",
   "CustomBossChallenge-SpawnRounds": "등장 라운드",
   "CustomBossChallenge-SpawnRoundsInfo": "각 단계가 등장하는 라운드를 ','로 구분해 입력합니다(예: 40, 60, 80). 빠진 라운드는 20라운드마다 이어집니다. 모든 단계를 플레이할 수 있도록 게임의 마지막 라운드는 마지막 단계 뒤로 옮겨집니다.",

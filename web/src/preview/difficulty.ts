@@ -3,13 +3,16 @@
 import type { BossOptions, Challenge } from "@cbc/share-code";
 import { difficultyPoints, MAX_STARS, starsOf } from "@cbc/share-code/difficulty";
 import { factsOf } from "@cbc/share-code/warnings";
+import { GAME } from "../data/types";
 import { h } from "../dom";
 import { MOD_TEXTS } from "../modTexts";
 import { tierBases } from "./warnings";
 
-/** The setup's score in points and its stars, 1 to 5 */
+/** The setup's score in points and its stars, 1 to 10 */
 export function difficultyOf(options: BossOptions, challenge: Challenge): { points: number; stars: number } {
-  const points = difficultyPoints(factsOf(options, challenge, tierBases(options)));
+  // The map's group comes from the game's data (game.json), which the package doesn't carry
+  const facts = { ...factsOf(options, challenge, tierBases(options)), mapDifficulty: GAME.mapDifficulties[challenge.map] ?? "" };
+  const points = difficultyPoints(facts);
   return { points, stars: starsOf(points) };
 }
 

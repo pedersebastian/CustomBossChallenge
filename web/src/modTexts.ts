@@ -36,7 +36,7 @@ export const MOD_TEXTS = {
   // The difficulty rating next to the Tier Preview (#263)
   Difficulty: "Difficulty",
   DifficultyInfo:
-    "A rough estimate of how hard the setup is, from 1 to 5 stars, to compare setups and pick one to try. It is worked out from the setup's numbers: the bosses' health and speed, Elite, how many tiers come and how early, the skulls, the rounds, the mode, the difficulty and the rules. It doesn't play the setup, so your own game may feel easier or harder.",
+    "A rough estimate of how hard the setup is, from 1 to 10 stars, to compare setups and pick one to try. It is worked out from the setup's numbers: the bosses' health and speed, Elite, how many tiers come, how early and how close together, the skulls, the rounds, the map, the mode, the difficulty and the rules. It doesn't play the setup, so your own game may feel easier or harder.",
   // The warnings under the Tier Preview (#186), with the values Texts.Warning puts in for {0}, {1} and {2}
   StartRoundClose: "The game starts on round {0}, only {1} rounds before the first boss on round {2}.",
   TiersClose: "Tiers come only a few rounds apart on rounds {0}, which leaves little time to beat each one.",

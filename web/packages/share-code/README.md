@@ -104,7 +104,7 @@ if (result.ok) {
   `cleanName` cleans a name like the mod does.
 - **Helpers:** `tiers` (spawn rounds, health and speed per tier), `skulls`, `tierBosses` (the per-tier tokens like
   `"LychElite@120/80#4"`), `limits` (the mod's clamping), `warnings` (the Boss Creator's warnings before Play) and `difficulty` (its
-  difficulty rating, 1 to 5 stars, from the same facts: `difficulty.difficultyStars(warnings.factsOf(...))`). Each
+  difficulty rating, 1 to 10 stars, from the same facts: `difficulty.difficultyStars(warnings.factsOf(...))`). Each
   is also on its own path, e.g. `@cbc/share-code/tiers`.
 - **Past events:** `readPastEvents` reads the official boss events (`boss-events.json`, which the website publishes
   next to its pages), and `mapPastEvent` and `pastEventCode` turn the normal or the Elite event into the setup and the

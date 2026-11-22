@@ -811,7 +811,7 @@ public class BossCreatorTest : CustomBossTest
         Assert(WarningLine(section, SetupWarning.HardSetup) != null, "No warning about a very hard setup");
         AssertStripHeight(section, "With the hard setup warning");
         // The difficulty rating follows the rules too (#263)
-        AssertEquals(section.Difficulty.Shown, DifficultyRating.MaxStars, "Stars for a very hard setup");
+        Assert(section.Difficulty.Shown >= 8, $"Stars for a very hard setup: {section.Difficulty.Shown}");
         AssertDifficultyRow(editor, section, "With the very hard rules");
         AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "Warnings must not stop Play");
 

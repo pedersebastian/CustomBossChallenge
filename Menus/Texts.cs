@@ -85,10 +85,10 @@ public static class Texts
     /// <summary>The difficulty rating under the Tier Preview (#263)</summary>
     public static readonly string Difficulty = Key(nameof(Difficulty), "Difficulty");
     public static readonly string DifficultyInfo = Key(nameof(DifficultyInfo),
-        "A rough estimate of how hard the setup is, from 1 to 5 stars, to compare setups and pick one to try. It is " +
-        "worked out from the setup's numbers: the bosses' health and speed, Elite, how many tiers come and how early, " +
-        "the skulls, the rounds, the mode, the difficulty and the rules. It doesn't play the setup, so your own game " +
-        "may feel easier or harder.");
+        "A rough estimate of how hard the setup is, from 1 to 10 stars, to compare setups and pick one to try. It is " +
+        "worked out from the setup's numbers: the bosses' health and speed, Elite, how many tiers come, how early and " +
+        "how close together, the skulls, the rounds, the map, the mode, the difficulty and the rules. It doesn't play " +
+        "the setup, so your own game may feel easier or harder.");
     public static readonly string PerTier = Key(nameof(PerTier), "{0} % / tier");
 
     public static readonly string BossEventRounds = Key(nameof(BossEventRounds), "Boss Event Rounds");

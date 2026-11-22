@@ -42,7 +42,7 @@ describe("the shared cases", () => {
 });
 
 describe("stars", () => {
-  it("go from 1 to 5", () => {
+  it("go from 1 to 10", () => {
     expect(starsOf(-100)).toBe(1);
     expect(starsOf(100)).toBe(MAX_STARS);
     for (const [i, step] of STAR_STEPS.entries()) {
@@ -70,13 +70,13 @@ const decoded = async (code: string): Promise<{ options: BossOptions; challenge:
 
 describe("the examples", () => {
   const expected: Record<string, number> = {
-    "Marathon Lych": 5,
+    "Marathon Lych": 9,
     "Speed Demon Vortex": 2,
     "Glass Cannon": 1,
-    "No Skulls, No Mercy": 5,
-    "Speedrun Dreadbloon": 2,
-    "Paragon Ban": 4,
-    "CHIMPS Throwback": 3,
+    "No Skulls, No Mercy": 8,
+    "Speedrun Dreadbloon": 5,
+    "Paragon Ban": 7,
+    "CHIMPS Throwback": 4,
     "Boss Gauntlet": 2,
   };
 
@@ -110,12 +110,13 @@ describe("the past events", () => {
     return counts;
   }
 
-  it("Elite events mostly get 4 or 5 stars, normal ones 1 or 2", async () => {
+  it("Elite events mostly get 5 to 7 stars, normal ones 1 to 3, and none 10", async () => {
     const { normal, elite } = await spread();
     const share = (counts: number[], from: number, to: number): number =>
       counts.slice(from, to + 1).reduce((a, b) => a + b, 0) / counts.reduce((a, b) => a + b, 0);
-    expect(share(elite, 4, 5)).toBeGreaterThanOrEqual(0.8);
-    expect(share(normal, 1, 2)).toBeGreaterThanOrEqual(0.8);
+    expect(share(elite, 5, 7)).toBeGreaterThanOrEqual(0.8);
+    expect(share(normal, 1, 3)).toBeGreaterThanOrEqual(0.8);
+    expect(elite[MAX_STARS] + normal[MAX_STARS]).toBe(0);
   }, 60_000);
 });
 

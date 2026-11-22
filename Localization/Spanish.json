@@ -26,7 +26,7 @@
   "CustomBossChallenge-TierPreview": "Vista previa de niveles",
   "CustomBossChallenge-TierPreviewInfo": "Cada nivel con la ronda en la que llega, su velocidad comparada con el juego normal y su vida. Naranja es más que el juego normal, azul es menos.",
   "CustomBossChallenge-Difficulty": "Dificultad",
-  "CustomBossChallenge-DifficultyInfo": "Una estimación aproximada de lo difícil que es la configuración, de 1 a 5 estrellas, para comparar configuraciones y elegir una para probar. Se calcula a partir de los números de la configuración: la salud y la velocidad de los jefes, Élite, cuántos niveles llegan y cuán pronto, las calaveras, las rondas, el modo, la dificultad y las reglas. No juega la configuración, así que tu propia partida puede parecer más fácil o más difícil.",
+  "CustomBossChallenge-DifficultyInfo": "Una estimación aproximada de lo difícil que es la configuración, de 1 a 10 estrellas, para comparar configuraciones y elegir una para probar. Se calcula a partir de los números de la configuración: la salud y la velocidad de los jefes, Élite, cuántos niveles llegan, cuán pronto y cuán seguidos, las calaveras, las rondas, el mapa, el modo, la dificultad y las reglas. No juega la configuración, así que tu propia partida puede parecer más fácil o más difícil.",
   "CustomBossChallenge-PerTier": "{0} % / nivel",
   "CustomBossChallenge-SpawnRounds": "Rondas de aparición",
   "CustomBossChallenge-SpawnRoundsInfo": "La ronda en la que llega cada nivel, separadas por comas, p. ej. 40, 60, 80. Las rondas que falten continúan cada 20 rondas. La última ronda del juego se mueve después del último nivel para que se puedan jugar todos los niveles.",

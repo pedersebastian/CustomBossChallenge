@@ -5,7 +5,7 @@ using Il2CppAssets.Scripts.Data.Boss;
 namespace CustomBossChallenge.Config;
 
 /// <summary>
-/// A rough difficulty score for a setup, 1 to 5 stars (#263), shown next to the Tier Preview in the Boss Creator and on
+/// A rough difficulty score for a setup, 1 to 10 stars (#263), shown next to the Tier Preview in the Boss Creator and on
 /// the website. It is an estimate from the setup's numbers, not from playing it: it helps players compare setups and
 /// pick one to try.
 /// <br/>
@@ -19,10 +19,13 @@ namespace CustomBossChallenge.Config;
 /// </summary>
 public static class DifficultyRating
 {
-    public const int MaxStars = 5;
+    public const int MaxStars = 10;
 
-    /// <summary>The points at which 2, 3, 4 and 5 stars begin</summary>
-    public static readonly double[] StarSteps = [1, 2.5, 3.25, 5];
+    /// <summary>
+    /// The points at which 2 to 10 stars begin: most normal boss events get 1 to 3 stars, most Elite ones 5 to 7, and 10
+    /// is left for setups harder than any event so far
+    /// </summary>
+    public static readonly double[] StarSteps = [0.5, 1.5, 2.5, 3.25, 4, 5, 6.5, 8, 10];
 
     /// <summary>
     /// How much harder each boss is than Bloonarius, in points: Phayze and Lych count for more, as their abilities
@@ -50,6 +53,12 @@ public static class DifficultyRating
 
     /// <summary>What each tier more than the game's five adds, and each tier fewer takes away</summary>
     public const double TierCountWeight = 0.25;
+
+    /// <summary>
+    /// What halving the rounds between tiers adds, against the normal 20: tiers every round add about 2.2 points, as
+    /// each tier must be beaten before the next one arrives
+    /// </summary>
+    public const double GapWeight = 0.5;
 
     /// <summary>What each skull fewer than <see cref="SkullMath.DefaultCount"/> adds: fewer skulls, fewer breathers</summary>
     public const double SkullWeight = 0.2;
@@ -107,7 +116,7 @@ public static class DifficultyRating
             if (options.TierSkullPercents(tier) is { } percents) skulls += SkullWeight * (SkullMath.DefaultCount - percents.Length);
         }
 
-        var points = early / weights + skulls / rounds.Length;
+        var points = early / weights + skulls / rounds.Length + GapPoints(rounds);
         if (options.UsesBossEventRounds)
             points += facts.Mode == BossOptions.ChimpsMode && BossOptions.IsChimpsEventRoundSet(options.BaseEventRoundSetIn(facts.Mode))
                 ? 1
@@ -116,12 +125,39 @@ public static class DifficultyRating
     }
 
     /// <summary>
-    /// The Challenge Editor's rules: the bloons' health and speed, lives, cash, towers, paragons, the rules that take a
+    /// The rounds between tiers: each gap shorter than <see cref="TierMath.RoundsBetweenTiers"/> leaves less time to beat a
+    /// tier before the next one comes, <see cref="GapWeight"/> for each halving; longer gaps take a little away
+    /// </summary>
+    public static double GapPoints(int[] rounds)
+    {
+        if (rounds.Length < 2) return 0;
+        double sum = 0;
+        for (var i = 1; i < rounds.Length; i++)
+        {
+            var gap = Math.Max(rounds[i] - rounds[i - 1], 1);
+            sum += Math.Clamp(Math.Log2((double) TierMath.RoundsBetweenTiers / gap), -1, Math.Log2(TierMath.RoundsBetweenTiers));
+        }
+
+        return GapWeight * sum / (rounds.Length - 1);
+    }
+
+    /// <summary>What the map adds, by its group in the game's map list: harder maps have shorter paths and less room</summary>
+    public static double MapWeight(string mapDifficulty) => mapDifficulty switch
+    {
+        "Intermediate" => 0.25,
+        "Advanced" => 0.5,
+        "Expert" => 1,
+        _ => 0
+    };
+
+    /// <summary>
+    /// The Challenge Editor's rules: the map, the bloons' health and speed, lives, cash, towers, paragons, the rules that take a
     /// tool away, the difficulty and the mode
     /// </summary>
     public static double RulePoints(SetupFacts facts)
     {
-        var points = Log(facts.BloonHealth) + Log(facts.MoabHealth) + Log(facts.BloonSpeed) + Log(facts.MoabSpeed);
+        var points = MapWeight(facts.MapDifficulty) +
+                     Log(facts.BloonHealth) + Log(facts.MoabHealth) + Log(facts.BloonSpeed) + Log(facts.MoabSpeed);
         points += facts.Lives switch
         {
             < 0 => 0,

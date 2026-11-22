@@ -461,6 +461,7 @@ public sealed class TierStrip
             LimitedPowers = limitedPowers,
             StartRound = dcm.startRules?.round ?? facts.StartRound,
             Difficulty = dcm.difficulty ?? facts.Difficulty,
+            MapDifficulty = MapDifficulty(dcm.map),
             Mode = dcm.mode ?? facts.Mode,
             Lives = dcm.startRules?.lives ?? facts.Lives,
             Cash = dcm.startRules?.cash ?? facts.Cash,
@@ -481,6 +482,22 @@ public sealed class TierStrip
             AllRegrow = modifiers?.allRegen ?? false,
             AllFortified = modifiers?.allFortified ?? false
         };
+    }
+
+    /// <summary>
+    /// The group of <paramref name="map"/> in the game's map list, like "Expert", or "" when the game doesn't know it
+    /// </summary>
+    public static string MapDifficulty(string? map)
+    {
+        if (string.IsNullOrEmpty(map)) return "";
+        var maps = Il2CppAssets.Scripts.Data.GameData.Instance?.mapSet?.Maps?.items;
+        if (maps == null) return "";
+        foreach (var details in maps)
+        {
+            if (details != null && details.id == map) return details.difficulty.ToString();
+        }
+
+        return "";
     }
 
     /// <summary>

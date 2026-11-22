@@ -26,7 +26,7 @@
   "CustomBossChallenge-TierPreview": "Tasojen esikatselu",
   "CustomBossChallenge-TierPreviewInfo": "Jokainen taso, sen saapumiskierros, nopeus normaaliin peliin verrattuna ja kestävyys. Oranssi on enemmän kuin normaalissa pelissä, sininen vähemmän.",
   "CustomBossChallenge-Difficulty": "Vaikeus",
-  "CustomBossChallenge-DifficultyInfo": "Karkea arvio siitä, kuinka vaikea asetelma on, 1–5 tähteä, jotta voit verrata asetelmia ja valita kokeiltavan. Se lasketaan asetelman luvuista: pomojen kestävyys ja nopeus, Elite, kuinka monta tasoa tulee ja kuinka aikaisin, kallot, kierrokset, pelitila, vaikeustaso ja säännöt. Se ei pelaa asetelmaa, joten oma pelisi voi tuntua helpommalta tai vaikeammalta.",
+  "CustomBossChallenge-DifficultyInfo": "Karkea arvio siitä, kuinka vaikea asetelma on, 1–10 tähteä, jotta voit verrata asetelmia ja valita kokeiltavan. Se lasketaan asetelman luvuista: pomojen kestävyys ja nopeus, Elite, kuinka monta tasoa tulee, kuinka aikaisin ja kuinka tiheästi, kallot, kierrokset, kartta, pelitila, vaikeustaso ja säännöt. Se ei pelaa asetelmaa, joten oma pelisi voi tuntua helpommalta tai vaikeammalta.",
   "CustomBossChallenge-PerTier": "{0} % / taso",
   "CustomBossChallenge-SpawnRounds": "Ilmestymiskierrokset",
   "CustomBossChallenge-SpawnRoundsInfo": "Kierros, jolla kukin taso saapuu, pilkuilla erotettuna, esim. 40, 60, 80. Puuttuvat kierrokset jatkuvat 20 kierroksen välein. Pelin viimeinen kierros siirretään viimeisen tason jälkeen, jotta kaikki tasot voi pelata.",

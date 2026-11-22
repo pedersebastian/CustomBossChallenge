@@ -26,7 +26,7 @@
   "CustomBossChallenge-TierPreview": "Kademe Önizlemesi",
   "CustomBossChallenge-TierPreviewInfo": "Her kademe, geldiği tur, normal oyuna göre hızı ve canıyla. Turuncu normal oyundan fazla, mavi az demektir.",
   "CustomBossChallenge-Difficulty": "Zorluk",
-  "CustomBossChallenge-DifficultyInfo": "Kurulumun ne kadar zor olduğuna dair 1 ile 5 yıldız arasında kaba bir tahmin; kurulumları karşılaştırmak ve denemek için birini seçmek içindir. Kurulumun sayılarından hesaplanır: bossların canı ve hızı, Elite, kaç kademe geldiği ve ne kadar erken geldiği, kafatasları, turlar, mod, zorluk ve kurallar. Kurulumu oynamaz, bu yüzden kendi oyunun daha kolay ya da daha zor gelebilir.",
+  "CustomBossChallenge-DifficultyInfo": "Kurulumun ne kadar zor olduğuna dair 1 ile 10 yıldız arasında kaba bir tahmin; kurulumları karşılaştırmak ve denemek için birini seçmek içindir. Kurulumun sayılarından hesaplanır: bossların canı ve hızı, Elite, kaç kademe geldiği, ne kadar erken ve ne kadar sık geldiği, kafatasları, turlar, harita, mod, zorluk ve kurallar. Kurulumu oynamaz, bu yüzden kendi oyunun daha kolay ya da daha zor gelebilir.",
   "CustomBossChallenge-PerTier": "%{0} / kademe",
   "CustomBossChallenge-SpawnRounds": "Çıkış Turları",
   "CustomBossChallenge-SpawnRoundsInfo": "Her kademenin geldiği tur, virgülle ayrılmış, örn. 40, 60, 80. Eksik turlar her 20 turda bir devam eder. Oyunun son turu, tüm kademeler oynanabilsin diye son kademeden sonraya taşınır.",

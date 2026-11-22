@@ -62,10 +62,10 @@ public class DifficultyRatingTests
     }
 
     [Fact]
-    public void A_normal_boss_event_gets_one_star_and_an_Elite_one_four()
+    public void A_normal_boss_event_gets_one_star_and_an_Elite_one_five()
     {
         Assert.Equal(1, DifficultyRating.Stars(new SetupFacts {Options = BossOptions.NewSetup}));
-        Assert.Equal(4, DifficultyRating.Stars(new SetupFacts {Options = BossOptions.NewSetup with {Elite = true}}));
+        Assert.Equal(5, DifficultyRating.Stars(new SetupFacts {Options = BossOptions.NewSetup with {Elite = true}}));
     }
 
     [Fact]

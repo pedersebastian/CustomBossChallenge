@@ -7,15 +7,15 @@ using UnityEngine;
 namespace CustomBossChallenge.Menus;
 
 /// <summary>
-/// The row under the Tier Preview with the setup's difficulty rating (#263): 1 to 5 stars from
+/// The row under the Tier Preview with the setup's difficulty rating (#263): 1 to 10 stars from
 /// <see cref="DifficultyRating"/>, lit in gold, the rest dimmed. Its i says the rating is an estimate.
 /// </summary>
 public sealed class DifficultyStars
 {
     public const string RowName = "DifficultyRow";
     public const string StarName = "Star";
-    public const float StarSize = 120;
-    public const float StarGap = 20;
+    public const float StarSize = 100;
+    public const float StarGap = 14;
 
     public static readonly Color On = new(1f, 0.82f, 0.2f);
     public static readonly Color Off = new(1f, 1f, 1f, 0.25f);

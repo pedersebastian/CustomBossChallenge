@@ -26,7 +26,7 @@
   "CustomBossChallenge-TierPreview": "Niveauoversigt",
   "CustomBossChallenge-TierPreviewInfo": "Hvert niveau med runden det kommer i, dets fart sammenlignet med det normale spil og dets liv. Orange er mere end det normale spil, blå er mindre.",
   "CustomBossChallenge-Difficulty": "Sværhedsgrad",
-  "CustomBossChallenge-DifficultyInfo": "Et groft skøn over, hvor svær opsætningen er, fra 1 til 5 stjerner, så du kan sammenligne opsætninger og vælge en at prøve. Det regnes ud fra opsætningens tal: bossernes liv og fart, Elite, hvor mange niveauer der kommer og hvor tidligt, kranierne, runderne, tilstanden, sværhedsgraden og reglerne. Det spiller ikke opsætningen, så dit eget spil kan føles lettere eller sværere.",
+  "CustomBossChallenge-DifficultyInfo": "Et groft skøn over, hvor svær opsætningen er, fra 1 til 10 stjerner, så du kan sammenligne opsætninger og vælge en at prøve. Det regnes ud fra opsætningens tal: bossernes liv og fart, Elite, hvor mange niveauer der kommer, hvor tidligt og hvor tæt, kranierne, runderne, banen, tilstanden, sværhedsgraden og reglerne. Det spiller ikke opsætningen, så dit eget spil kan føles lettere eller sværere.",
   "CustomBossChallenge-PerTier": "{0} % / niveau",
   "CustomBossChallenge-SpawnRounds": "Spawn-runder",
   "CustomBossChallenge-SpawnRoundsInfo": "Runden, hvor hvert niveau ankommer, adskilt af kommaer, f.eks. 40, 60, 80. Manglende runder fortsætter hver 20. runde. Spillets sidste runde flyttes til efter det sidste niveau, så alle niveauer kan spilles.",

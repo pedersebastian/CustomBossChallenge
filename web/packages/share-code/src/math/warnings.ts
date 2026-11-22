@@ -29,6 +29,8 @@ export interface SetupFacts {
   /** The round the game starts on, as the player sees it; below 1 for the game's own */
   startRound: number;
   difficulty: string;
+  /** The group of the map in the game's map list, "Beginner" to "Expert"; "" when not known */
+  mapDifficulty: string;
   mode: string;
   /** Below 0 for the difficulty's own, like the game */
   lives: number;
@@ -99,6 +101,7 @@ export const setupFacts = (facts: Partial<SetupFacts> = {}): SetupFacts => ({
   options: defaultOptions(),
   startRound: 1,
   difficulty: "Medium",
+  mapDifficulty: "",
   mode: "Standard",
   lives: -1,
   cash: -1,
@@ -131,6 +134,7 @@ export function factsOf(options: BossOptions, challenge: Challenge, tierBases: (
     options,
     startRound: challenge.round,
     difficulty: challenge.difficulty,
+    mapDifficulty: "",
     mode: challenge.mode,
     lives: challenge.lives,
     cash: challenge.cash,

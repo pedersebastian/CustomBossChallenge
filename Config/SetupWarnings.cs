@@ -16,6 +16,12 @@ public sealed record SetupFacts
     public int StartRound { get; init; } = 1;
 
     public string Difficulty { get; init; } = "Medium";
+
+    /// <summary>
+    /// The group of the map in the game's map list, "Beginner" to "Expert", for <see cref="DifficultyRating"/>; empty
+    /// when not known
+    /// </summary>
+    public string MapDifficulty { get; init; } = "";
     public string Mode { get; init; } = "Standard";
     /// <summary>Below 0 for the difficulty's own, like the game</summary>
     public int Lives { get; init; } = -1;

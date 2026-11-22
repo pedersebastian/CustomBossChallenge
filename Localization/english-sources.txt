@@ -28,7 +28,7 @@ HealthPerTierInfo	05ecfbd9	05ecfbd9	05ecfbd9	05ecfbd9	05ecfbd9	05ecfbd9	05ecfbd9
 TierPreview	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5	dcd416d5
 TierPreviewInfo	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883	ae9ca883
 Difficulty	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e	be44133e
-DifficultyInfo	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393	eca84393
+DifficultyInfo	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa	ae595eaa
 PerTier	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09	d0a1fd09
 SpawnRounds	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb	d19b26bb
 SpawnRoundsInfo	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d	ae28ff5d

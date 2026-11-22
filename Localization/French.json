@@ -26,7 +26,7 @@
   "CustomBossChallenge-TierPreview": "Aperçu des paliers",
   "CustomBossChallenge-TierPreviewInfo": "Chaque palier avec la manche où il arrive, sa vitesse par rapport au jeu normal et sa santé. L'orange est au-dessus du jeu normal, le bleu en dessous.",
   "CustomBossChallenge-Difficulty": "Difficulté",
-  "CustomBossChallenge-DifficultyInfo": "Une estimation grossière de la difficulté de la configuration, de 1 à 5 étoiles, pour comparer des configurations et en choisir une à essayer. Elle est calculée à partir des chiffres de la configuration : la vie et la vitesse des boss, l'Élite, le nombre de paliers et leur arrivée plus ou moins tôt, les crânes, les manches, le mode, la difficulté et les règles. Elle ne joue pas la configuration, votre propre partie peut donc sembler plus facile ou plus difficile.",
+  "CustomBossChallenge-DifficultyInfo": "Une estimation grossière de la difficulté de la configuration, de 1 à 10 étoiles, pour comparer des configurations et en choisir une à essayer. Elle est calculée à partir des chiffres de la configuration : la vie et la vitesse des boss, l'Élite, le nombre de paliers, leur arrivée plus ou moins tôt et plus ou moins rapprochée, les crânes, les manches, la carte, le mode, la difficulté et les règles. Elle ne joue pas la configuration, votre propre partie peut donc sembler plus facile ou plus difficile.",
   "CustomBossChallenge-PerTier": "{0} % / palier",
   "CustomBossChallenge-SpawnRounds": "Manches d'apparition",
   "CustomBossChallenge-SpawnRoundsInfo": "La manche d'arrivée de chaque palier, séparées par des virgules, p. ex. 40, 60, 80. Les manches manquantes continuent toutes les 20 manches. La dernière manche du jeu est déplacée après le dernier palier afin que tous les paliers puissent être joués.",

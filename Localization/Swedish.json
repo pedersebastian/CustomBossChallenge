@@ -26,7 +26,7 @@
   "CustomBossChallenge-TierPreview": "Nivåöversikt",
   "CustomBossChallenge-TierPreviewInfo": "Varje nivå med rundan den kommer i, dess fart jämfört med vanligt spel och dess hälsa. Orange är mer än vanligt spel, blått är mindre.",
   "CustomBossChallenge-Difficulty": "Svårighetsgrad",
-  "CustomBossChallenge-DifficultyInfo": "En grov uppskattning av hur svår uppställningen är, från 1 till 5 stjärnor, för att jämföra uppställningar och välja en att prova. Den räknas fram ur uppställningens siffror: bossarnas hälsa och fart, Elit, hur många nivåer som kommer och hur tidigt, dödskallarna, rundorna, läget, svårighetsgraden och reglerna. Den spelar inte uppställningen, så ditt eget spel kan kännas lättare eller svårare.",
+  "CustomBossChallenge-DifficultyInfo": "En grov uppskattning av hur svår uppställningen är, från 1 till 10 stjärnor, för att jämföra uppställningar och välja en att prova. Den räknas fram ur uppställningens siffror: bossarnas hälsa och fart, Elit, hur många nivåer som kommer, hur tidigt och hur tätt, dödskallarna, rundorna, banan, läget, svårighetsgraden och reglerna. Den spelar inte uppställningen, så ditt eget spel kan kännas lättare eller svårare.",
   "CustomBossChallenge-PerTier": "{0} % / nivå",
   "CustomBossChallenge-SpawnRounds": "Spawnrundor",
   "CustomBossChallenge-SpawnRoundsInfo": "Rundan som varje nivå anländer på, separerade med kommatecken, t.ex. 40, 60, 80. Saknade rundor fortsätter var 20:e runda. Spelets sista runda flyttas till efter den sista nivån så att alla nivåer kan spelas.",
