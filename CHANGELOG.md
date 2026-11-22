@@ -39,6 +39,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   setups, and only replaces a picture that really changed. The tour now also takes the Rules panels, the Share Code
   row and the Tier Preview. It is a step before a release only: it writes `TestResults/screenshots.json`, and
   `Check-Release.ps1` warns when a release's pictures weren't made, as a reminder to look through them.
+- **Pseudo language** (#267, for contributors): `CBC_LANGUAGES=Pseudo` runs `LanguageLayoutTest` with every text of
+  the mod about 40 % longer, accented and in brackets, to find texts that would be cut off in a longer translation
+  and English that skips the localization. The test now also reports one-line labels that wrap and dropdown texts
+  that run into their arrow, in every language. It found the English-only default setup names, filed as #279.
+
+### Fixed
+
+- **Past Events show CHIMPS by its name** (#267): an event in CHIMPS mode showed the game's internal "Clicks" in its
+  details and in the mode filter, in every language.
+- **Dropdown texts keep clear of their arrow** (#267): in the Past Events filters and the Saved Setups list a longer
+  entry ran into the arrow, in English too. The year filter is a little wider, so "Every Year" fits in every language,
+  and the Normal button of a past event no longer wraps a long translation onto two lines.
 
 ## [2.14.0] - 2026-11-22
 

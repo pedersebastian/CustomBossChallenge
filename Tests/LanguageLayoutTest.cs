@@ -23,6 +23,11 @@ namespace CustomBossChallenge.Tests;
 /// In every language the game has, no text of the Boss section, the tier picker or Past Events is cut off, runs out of
 /// its box or into the text next to it (#234). Fonts differ: Arabic, Chinese, Japanese, Korean, Russian and Thai have
 /// taller lines than the Latin font, and German, Swedish and Polish have longer words.
+/// <para>
+/// <c>CBC_LANGUAGES=Pseudo</c> checks the made-up <see cref="PseudoLocalization"/> language instead (#267): the game
+/// in English with every text of the mod about 40 % longer, accented and in brackets. It finds texts that would be cut
+/// off in a longer translation, and English that never went through the mod's localization, which stays plain.
+/// </para>
 /// </summary>
 [FullSuiteOnly("every language the game has (about 2 min)")]
 public class LanguageLayoutTest : CustomBossTest
@@ -37,8 +42,17 @@ public class LanguageLayoutTest : CustomBossTest
         TierBosses = "LychElite,Vortex#4,Random,Phayze#60%;30%,BloonariusElite"
     };
 
+    /// <summary>The made-up language, which <c>CBC_LANGUAGES</c> has to name: it isn't in the normal run</summary>
+    public const string Pseudo = "Pseudo";
+
     private readonly List<string> problems = new();
     private string language = "";
+
+    /// <summary>The English texts of the mod while the pseudo language replaces them, to put back afterwards</summary>
+    private readonly Dictionary<string, string> replaced = new();
+
+    /// <summary>In the pseudo language, every word of the game's own texts: those are English, but translated</summary>
+    private HashSet<string>? gameWords;
 
     protected override IEnumerator Run()
     {
@@ -51,13 +65,15 @@ public class LanguageLayoutTest : CustomBossTest
         {
             // CBC_LANGUAGES=German,Japanese checks only those, CBC_SCREENSHOTS=folder also saves what was checked
             var only = System.Environment.GetEnvironmentVariable("CBC_LANGUAGES")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            foreach (var name in LocalizationTest.Languages.Where(name => only is not {Length: > 0} || only.Contains(name)))
+            foreach (var name in LocalizationTest.Languages.Append(Pseudo)
+                         .Where(name => only is {Length: > 0} ? only.Contains(name) : name != Pseudo))
             {
                 yield return CheckLanguage(name);
             }
         }
         finally
         {
+            RestoreEnglish();
             LocalizationManager.Instance.UpdateLanguageAsync(original);
             BossMode.Store = store;
             BossMode.Saved = saved;
@@ -74,11 +90,12 @@ public class LanguageLayoutTest : CustomBossTest
     {
         language = name;
         yield return ToMainMenu();
-        var target = Enum.Parse<Language>(name);
+        var target = name == Pseudo ? Language.English : Enum.Parse<Language>(name);
         var task = LocalizationManager.Instance.UpdateLanguageAsync(target);
         yield return WaitFor(() => task.IsCompleted, $"Switching to {name}", 30);
         yield return new WaitForSecondsRealtime(1);
         AssertEquals(LocalizationManager.Instance.ActiveLanguage, target, "Language");
+        if (name == Pseudo) UsePseudo();
 
         BossMode.Enter(Setup, BossMode.DefaultDcm(Setup));
         yield return WaitFor(() => BossEditorSection.Current?.Editor != null &&
@@ -123,6 +140,40 @@ public class LanguageLayoutTest : CustomBossTest
 
         Object.FindObjectOfType<CommonForegroundScreen>().backBtn.onClick.Invoke();
         yield return ToMainMenu();
+        RestoreEnglish();
+    }
+
+    /// <summary>
+    /// Replaces the mod's English texts in the game's table with their pseudo texts, made from the English.json the
+    /// mod has; the game's own texts stay English
+    /// </summary>
+    private void UsePseudo()
+    {
+        var table = LocalizationManager.Instance.textTable;
+        var english = new Dictionary<string, string>();
+        gameWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var entry in table)
+        {
+            if (entry.Key.StartsWith(Texts.KeyPrefix)) english[entry.Key] = entry.Value;
+            else gameWords.UnionWith(PseudoLocalization.PlainWords(entry.Value ?? ""));
+        }
+
+        foreach (var (key, text) in PseudoLocalization.MakeAll(english))
+        {
+            replaced[key] = english[key];
+            table[key] = text;
+        }
+        Log($"{Pseudo}: {replaced.Count} texts, e.g. {Texts.SpeedPerTier.T()}");
+    }
+
+    /// <summary>Puts the mod's English texts back where the pseudo language replaced them</summary>
+    private void RestoreEnglish()
+    {
+        if (replaced.Count == 0) return;
+        var table = LocalizationManager.Instance.textTable;
+        foreach (var (key, text) in replaced) table[key] = text;
+        replaced.Clear();
+        gameWords = null;
     }
 
     /// <summary>
@@ -149,9 +200,39 @@ public class LanguageLayoutTest : CustomBossTest
                    !shown.Contains("esrapon", StringComparison.OrdinalIgnoreCase), $"{at}: {path} '{quoted}' shows its tags");
             // A long setup name may end in "…" in the Saved Setups list, like in the game's own lists, and so may a
             // past event's details, which name the event that replaced it
-            var mayEnd = text.GetComponentInParent<TMP_Dropdown>()?.captionText?.Pointer == text.Pointer || text.name == "Details";
+            var list = text.GetComponentInParent<TMP_Dropdown>();
+            var mayEnd = (list?.name == "SavedList" && list.captionText?.Pointer == text.Pointer) || text.name == "Details";
             Expect(mayEnd || !text.isTextTruncated, $"{at}: {path} '{quoted}' is cut off");
             Expect(!text.isTextOverflowing, $"{at}: {path} '{quoted}' runs out of its box");
+            // A label of one line at its full size, like a button's, keeps to one line: a longer word wraps it out of
+            // its middle
+            var lines = text.textInfo.lineCount;
+            var fullSize = text.enableAutoSizing && text.fontSize > 0 ? text.fontSizeMax / text.fontSize : 1;
+            Expect(lines < 2 || text.text.Contains('\n') || text.text.Contains("<br", StringComparison.OrdinalIgnoreCase) ||
+                   text.rectTransform.rect.height >= 1.8f * text.textInfo.lineInfo[0].lineHeight * fullSize,
+                $"{at}: {path} '{quoted}' wraps to {lines} lines in a box for one");
+
+            // A dropdown's caption stays clear of its arrow
+            var dropdown = text.GetComponentInParent<TMP_Dropdown>();
+            if (dropdown != null && dropdown.captionText?.Pointer == text.Pointer)
+            {
+                var caption = InkRect(text);
+                foreach (var image in dropdown.GetComponentsInChildren<UnityEngine.UI.Image>(false))
+                {
+                    if (image.gameObject == dropdown.gameObject || image.transform.IsChildOf(dropdown.template) ||
+                        text.transform.IsChildOf(image.transform)) continue;
+                    var rect = ScreenRect(image);
+                    Expect(caption.width < 1 || !Overlap(caption, rect),
+                        $"{at}: {path} '{quoted}' {Describe(caption)} runs into the dropdown's {image.name} {Describe(rect)}");
+                }
+            }
+
+            if (gameWords != null)
+            {
+                // A word that is neither in a pseudo text nor one of the game's: the mod shows it without localization
+                var plain = PseudoLocalization.PlainWords(shown).Where(word => !gameWords.Contains(word)).Distinct().ToList();
+                Expect(plain.Count == 0, $"{at}: {path} '{quoted}' shows English without localization: {string.Join(", ", plain)}");
+            }
 
             var letters = LettersRect(text);
             if (letters.width < 1) continue;
