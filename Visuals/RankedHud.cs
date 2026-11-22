@@ -212,7 +212,7 @@ public static class RankedHud
     /// <summary>
     /// The game's lives and cash at the top left, which the panel sits under
     /// </summary>
-    private const string LeftHudPath = "InGame/UIRect/MainHudLeftAlign(Clone)/LeftGroup";
+    internal const string LeftHudPath = "InGame/UIRect/MainHudLeftAlign(Clone)/LeftGroup";
 
     /// <summary>
     /// How many looks in a row may miss the lives and cash before the log says so: a match that is still loading

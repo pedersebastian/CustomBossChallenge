@@ -211,13 +211,11 @@ public static class Texts
         "The clipboard doesn't contain a Boss Creator code. Copy the whole code, starting with CBC.");
     public static readonly string GildebloonOff = Key(nameof(GildebloonOff),
         "This setup has Gildebloon, a boss made by this mod. Turn on Include Gildebloon in Mod Settings to play it.");
-    public static readonly string GildebloonRepossession = Key(nameof(GildebloonRepossession),
-        "Repossession! Gildebloon seized ${0} and froze {1} for {2} s");
-    public static readonly string GildebloonRepossessionCash = Key(nameof(GildebloonRepossessionCash),
-        "Repossession! Gildebloon seized ${0}");
-    public static readonly string GildebloonTowerOne = Key(nameof(GildebloonTowerOne), "1 tower");
-    public static readonly string GildebloonTowers = Key(nameof(GildebloonTowers), "{0} towers");
-    public static readonly string GildebloonFarmsLocked = Key(nameof(GildebloonFarmsLocked), "Banana Farms locked: {0}, for {1} s");
+    public static readonly string GildebloonRepossessionTitle = Key(nameof(GildebloonRepossessionTitle), "Repossession!");
+    public static readonly string GildebloonTowerFrozen = Key(nameof(GildebloonTowerFrozen), "1 tower frozen for {0} s");
+    public static readonly string GildebloonTowersFrozen = Key(nameof(GildebloonTowersFrozen), "{0} towers frozen for {1} s");
+    public static readonly string GildebloonFarmLocked = Key(nameof(GildebloonFarmLocked), "1 Banana Farm locked for {0} s");
+    public static readonly string GildebloonFarmsLocked = Key(nameof(GildebloonFarmsLocked), "{0} Banana Farms locked for {1} s");
     public static readonly string GildebloonSeizedFor = Key(nameof(GildebloonSeizedFor), "Repossessed: {0} s");
     public static readonly string CodeTooNew = Key(nameof(CodeTooNew),
         "This code comes from a newer version of Custom Boss Challenge. Update the mod to load it.");

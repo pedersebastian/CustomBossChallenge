@@ -15,11 +15,12 @@ namespace CustomBossChallenge.Visuals;
 /// <list type="bullet">
 /// <item>a gold ring grows from Gildebloon out to how far it reaches,</item>
 /// <item>coins fly from each seized tower to it,</item>
-/// <item>each seized tower gets a gold outline and a padlock over it, with a disc under the padlock that shrinks as its
-/// time runs out (3 s for most towers, 12 s for Banana Farms, whose padlock is bigger),</item>
-/// <item>and when a tower is let go, its padlock bursts into coins.</item>
+/// <item>each seized tower gets a gold outline, is greyed a little, and gets a padlock over it facing the camera
+/// (<see cref="GildebloonPadlock"/>, modelled in Blender): a $ on it, a banana on a Banana Farm's (which is bigger), and a
+/// ring of gold ticks round it that go one by one as its time runs out (3 s for most towers, 12 s for Banana Farms),</item>
+/// <item>and when a tower is let go, its padlock springs open and bursts into coins.</item>
 /// </list>
-/// Made like Gildebloon's own look, from <see cref="GildebloonMeshes"/> and its materials.
+/// Without the padlock's file, a simpler one made from <see cref="GildebloonMeshes"/>.
 /// </summary>
 public static class GildebloonSeizeLook
 {
@@ -27,7 +28,16 @@ public static class GildebloonSeizeLook
     public const string RingName = "GildebloonReach";
 
     /// <summary>How high over a tower its padlock floats</summary>
-    private const float PadlockHeight = 45;
+    private const float PadlockHeight = 34;
+
+    /// <summary>How big the modelled padlock is: its lock's body this many of the game's units wide</summary>
+    private const float PadlockSize = 9, FarmPadlockSize = 11.5f;
+
+    /// <summary>How much a seized tower is greyed</summary>
+    private static readonly Color Greyed = new(0.62f, 0.62f, 0.68f, 1);
+
+    private static readonly int ColorId = Shader.PropertyToID("_Color");
+    private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
     private const float RingSeconds = 1.3f;
     private const float FlySeconds = 0.7f;
@@ -40,7 +50,8 @@ public static class GildebloonSeizeLook
     {
         public Tower Tower = null!;
         public GameObject Root = null!;
-        public Transform Timer = null!;
+        public Transform? Timer;
+        public GildebloonPadlock.Instance? Model;
         public float Total;
         public float Phase;
         public readonly List<(Renderer Renderer, MaterialPropertyBlock? Before)> Outlined = new();
@@ -55,6 +66,9 @@ public static class GildebloonSeizeLook
     }
 
     private static readonly Dictionary<IntPtr, Padlock> Padlocks = new();
+
+    /// <summary>Modelled padlocks of towers let go, springing open before they burst</summary>
+    private static readonly List<Padlock> Opening = new();
     private static readonly List<(GameObject Ring, float Radius, float Start)> Rings = new();
     private static readonly List<Flying> Coins = new();
     private static bool subscribed;
@@ -101,8 +115,28 @@ public static class GildebloonSeizeLook
             Padlocks.Remove(key);
         }
 
+        UpdateOpening();
         UpdateRings();
         UpdateCoins();
+    }
+
+    private static void UpdateOpening()
+    {
+        for (var i = Opening.Count - 1; i >= 0; i--)
+        {
+            var padlock = Opening[i];
+            if (padlock.Model is not { } model || padlock.Root == null)
+            {
+                Opening.RemoveAt(i);
+                continue;
+            }
+
+            GildebloonPadlock.Update(model, 0, Time.deltaTime * Math.Max(1, Time.timeScale));
+            if (!GildebloonPadlock.Opened(model)) continue;
+            Burst(padlock.Root.transform.position);
+            Object.Destroy(padlock.Root);
+            Opening.RemoveAt(i);
+        }
     }
 
     private static void OnRepossessed(GildebloonBrain.Repossession repossession)
@@ -154,6 +188,30 @@ public static class GildebloonSeizeLook
         var iron = Material("Iron");
         if (display == null || gold == null || iron == null) return null;
 
+        var padlock = new Padlock
+        {
+            Tower = tower, Total = farm ? GildebloonBrain.SeizeSeconds : GildebloonBrain.FreezeSeconds,
+            Phase = (tower.Pointer.ToInt64() % 100) / 10f
+        };
+        if (BossPresentation.MapRoot() is { } map &&
+            GildebloonPadlock.Build(map, (farm ? FarmPadlockSize : PadlockSize) / MapScale(), farm, map.gameObject.layer) is { } model)
+        {
+            padlock.Model = model;
+            padlock.Root = model.Root;
+        }
+        else
+        {
+            padlock.Root = OldPadlock(farm, gold, iron, out var timer);
+            padlock.Timer = timer;
+        }
+
+        Dress(padlock, display.gameObject);
+        return padlock;
+    }
+
+    /// <summary>The padlock made in code, lying flat: without the modelled one's file</summary>
+    private static GameObject OldPadlock(bool farm, Material gold, Material iron, out Transform timer)
+    {
         // Lying flat, seen from above: the body, the shackle at its top (+z, up on the screen) and the keyhole
         var root = OnMap(new GameObject(PadlockName));
         var box = GildebloonLook.MeshFor("Gold_Box", "box", []);
@@ -164,20 +222,22 @@ public static class GildebloonSeizeLook
         Part(root.transform, box, iron, new Vector3(2.2f, 0, 2.8f), new Vector3(1.3f, 1.3f, 3.6f));
         Part(root.transform, box, iron, new Vector3(0, 0, 4.6f), new Vector3(5.7f, 1.3f, 1.3f));
         Part(root.transform, box, iron, new Vector3(0, 1.4f, -0.6f), new Vector3(1.2f, 0.4f, 2.2f));
-        var timer = Part(root.transform, GildebloonLook.MeshFor("Gold_Reach", "ring", [64, 0.9f]), gold, new Vector3(0, -1.5f, 0),
+        timer = Part(root.transform, GildebloonLook.MeshFor("Gold_Reach", "ring", [64, 0.9f]), gold, new Vector3(0, -1.5f, 0),
             Vector3.one * 7);
         root.transform.localScale = Vector3.one * (size / MapScale());
+        return root;
+    }
 
-        var padlock = new Padlock
-        {
-            Tower = tower, Root = root, Timer = timer, Total = farm ? GildebloonBrain.SeizeSeconds : GildebloonBrain.FreezeSeconds,
-            Phase = (tower.Pointer.ToInt64() % 100) / 10f
-        };
-
-        // A gold outline on the tower itself, through its property block so its materials stay as they are
+    /// <summary>
+    /// A gold outline on the seized tower, and greyed a little, through its property blocks so its materials stay as
+    /// they are
+    /// </summary>
+    private static void Dress(Padlock padlock, GameObject display)
+    {
         foreach (var renderer in display.GetComponentsInChildren<Renderer>())
         {
-            if (renderer.sharedMaterial == null || !renderer.sharedMaterial.HasProperty(OutlineColor)) continue;
+            var material = renderer.sharedMaterial;
+            if (material == null || !material.HasProperty(OutlineColor)) continue;
             MaterialPropertyBlock? before = null;
             if (renderer.HasPropertyBlock())
             {
@@ -187,20 +247,31 @@ public static class GildebloonSeizeLook
             var block = new MaterialPropertyBlock();
             if (before != null) renderer.GetPropertyBlock(block);
             block.SetColor(OutlineColor, Gold);
+            foreach (var id in new[] {ColorId, BaseColorId})
+            {
+                if (material.HasProperty(id)) block.SetColor(id, material.GetColor(id) * Greyed);
+            }
             renderer.SetPropertyBlock(block);
             padlock.Outlined.Add((renderer, before));
         }
-        return padlock;
     }
 
     private static void Place(Padlock padlock, float left)
     {
         var display = padlock.Tower.GetUnityDisplayNode();
         if (display == null) return;
+        var share = padlock.Total > 0 ? Mathf.Clamp01(left / padlock.Total) : 0;
+        if (padlock.Model is { } model)
+        {
+            // it sways in its own animation
+            padlock.Root.transform.position = display.transform.position + Vector3.up * PadlockHeight;
+            GildebloonPadlock.Update(model, share, Time.deltaTime * Math.Max(1, Time.timeScale));
+            return;
+        }
+
         var bob = Mathf.Sin(Time.time * 4 + padlock.Phase) * 1.2f;
         padlock.Root.transform.position = display.transform.position + Vector3.up * PadlockHeight + new Vector3(0, 0, bob);
-        var share = padlock.Total > 0 ? Mathf.Clamp01(left / padlock.Total) : 0;
-        padlock.Timer.localScale = Vector3.one * (7 * (0.25f + 0.75f * share));
+        if (padlock.Timer != null) padlock.Timer.localScale = Vector3.one * (7 * (0.25f + 0.75f * share));
     }
 
     /// <summary>Takes a padlock off; let go in play it bursts into coins</summary>
@@ -213,21 +284,15 @@ public static class GildebloonSeizeLook
                 if (renderer != null) renderer.SetPropertyBlock(before);
             }
 
-            if (burst && padlock.Root != null && Material("Gold") is { } gold)
+            // let go in play, the modelled one springs open first and bursts after
+            if (burst && padlock.Model is { } model && padlock.Root != null)
             {
-                var coin = GildebloonLook.MeshFor("Gold_Coin", "cylinder", [16, 1, 0.15f]);
-                var centre = padlock.Root.transform.position;
-                for (var i = 0; i < 8; i++)
-                {
-                    var angle = i * Mathf.PI * 2 / 8;
-                    var flying = Coin(coin, gold, centre, 2.5f);
-                    Coins.Add(new Flying
-                    {
-                        Coin = flying, From = centre, Velocity = new Vector3(Mathf.Cos(angle) * 40, 30, Mathf.Sin(angle) * 40),
-                        Start = Time.time, Seconds = BurstSeconds
-                    });
-                }
+                GildebloonPadlock.Unlock(model);
+                Opening.Add(padlock);
+                return;
             }
+
+            if (burst && padlock.Root != null) Burst(padlock.Root.transform.position);
         }
         catch (Exception)
         {
@@ -235,6 +300,23 @@ public static class GildebloonSeizeLook
         }
 
         if (padlock.Root != null) Object.Destroy(padlock.Root);
+    }
+
+    /// <summary>A padlock bursting into coins</summary>
+    private static void Burst(Vector3 centre)
+    {
+        if (Material("Gold") is not { } gold) return;
+        var coin = GildebloonLook.MeshFor("Gold_Coin", "cylinder", [16, 1, 0.15f]);
+        for (var i = 0; i < 8; i++)
+        {
+            var angle = i * Mathf.PI * 2 / 8;
+            var flying = Coin(coin, gold, centre, 2.5f);
+            Coins.Add(new Flying
+            {
+                Coin = flying, From = centre, Velocity = new Vector3(Mathf.Cos(angle) * 40, 30, Mathf.Sin(angle) * 40),
+                Start = Time.time, Seconds = BurstSeconds
+            });
+        }
     }
 
     private static void UpdateRings()
@@ -353,9 +435,14 @@ public static class GildebloonSeizeLook
     /// <summary>Takes everything off, at the end of a match</summary>
     private static void Clear()
     {
-        if (Padlocks.Count == 0 && Rings.Count == 0 && Coins.Count == 0) return;
+        if (Padlocks.Count == 0 && Rings.Count == 0 && Coins.Count == 0 && Opening.Count == 0) return;
         foreach (var padlock in Padlocks.Values) Release(padlock, false);
         Padlocks.Clear();
+        foreach (var padlock in Opening)
+        {
+            if (padlock.Root != null) Object.Destroy(padlock.Root);
+        }
+        Opening.Clear();
         foreach (var (ring, _, _) in Rings)
         {
             if (ring != null) Object.Destroy(ring);

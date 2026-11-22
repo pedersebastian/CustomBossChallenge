@@ -206,6 +206,32 @@ public class GildebloonBodyTests
     }
 
     [Fact]
+    public void ThePadlockHasItsTicksFacesAndAnimations()
+    {
+        using var file = File.OpenRead(Path.Combine(Root, "Bundles", "gildebloon-padlock.gba.gz"));
+        var padlock = GildebloonBodyData.Read(file);
+        Assert.Equal(["Hold", "Lock", "Unlock"], padlock.Clips.Keys.OrderBy(name => name));
+        Assert.True(padlock.Clips["Hold"].Loops);
+        Assert.False(padlock.Clips["Unlock"].Loops);
+        // 16 ticks the mod takes away as the time runs out, the $ and the banana it picks between, the shackle that opens
+        for (var tick = 0; tick < 16; tick++) Assert.True(padlock.PartIndex($"Tick{tick:00}") >= 0, $"Tick{tick:00}");
+        foreach (var name in new[] {"LockBody", "LockDollar", "LockBanana", "Shackle"})
+            Assert.True(padlock.Parts[padlock.PartIndex(name)].VertexCount > 0, name);
+        // The shackle swings open in Unlock
+        Assert.Contains(padlock.PartIndex("ShackleHinge"), padlock.Clips["Unlock"].Tracks.Keys);
+    }
+
+    [Fact]
+    public void TheTaxCollectorHasItsDollar()
+    {
+        var body = Body.Value;
+        var proxy = body.PartIndex("CollectorProxy");
+        var dollar = body.PartIndex("CollectorDollar");
+        Assert.True(dollar > proxy && proxy >= 0);
+        Assert.Equal(proxy, body.Parts[dollar].Parent);
+    }
+
+    [Fact]
     public void ALoopWrapsAround()
     {
         var idle = Body.Value.Clips["Idle"];

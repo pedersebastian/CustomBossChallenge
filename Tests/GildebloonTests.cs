@@ -131,12 +131,14 @@ public class GildebloonModelTest : GildebloonTest
                     $"{id} skulls {Show(SkullModifier.GetSkulls(model))}");
                 AssertEquals(model.GetBehaviors<SpawnBloonsActionModel>().Count(spawn => !Gildebloon.IsCollector(spawn.bloonType)), 0,
                     $"{id} has none of Bloonarius's spawns, only its Tax Collectors");
+                AssertEquals(model.GetBehavior<SpawnBloonsActionModel>()?.bloonType, Gildebloon.CollectorFor(elite, tier),
+                    $"{id} sends its tier's Tax Collector");
                 Assert(model.GetBehavior<IncreaseDamageFromTypeModel>() == null && model.GetBehavior<SpawnDeathAnimModel>() == null, $"{id} has the mod's own Tarnish and no Bloonarius death");
                 Assert(Gildebloon.IsGildebloon(id), $"{id} is one of Gildebloon's tiers");
             }
         }
 
-        foreach (var id in new[] {Gildebloon.CollectorId, Gildebloon.EliteCollectorId})
+        foreach (var id in Gildebloon.CollectorKinds.Select(kind => kind.Id))
         {
             Assert(game.DoesBloonExist(id), $"{id} exists");
             AssertEquals(game.GetBloon(id).leakDamage, 0f, $"{id} takes no lives");
@@ -273,9 +275,10 @@ public class GildebloonBrainTest : GildebloonTest
         Assert(bridge.GetCash(-1) <= before - stolen + 1, $"Cash went down by what it stole: {before} -> {bridge.GetCash(-1)}, stolen {stolen}");
         // A share of the cash, no cap: two thefts of 2 % of $20,000
         Assert(stolen >= 2 * 20000 * GildebloonBrain.TollShare * 0.9, $"It took a share of the cash: {stolen}");
-        // The shield is what it took, up to half its health
-        var shield = Math.Min(stolen, GildebloonBrain.ShieldCap(boss));
-        Assert(boss.HasArmour && Math.Abs(boss.CurrentArmourAmount - shield) < 2,
+        // The shield is what it took, times its tier's shield per dollar, up to half its health
+        var perCash = GildebloonBrain.ShieldPerCashFor(boss.bloonModel.id.Contains(TierBossMath.EliteSuffix), TierMath.TierOf(boss.bloonModel.id));
+        var shield = Math.Min(stolen * perCash, GildebloonBrain.ShieldCap(boss));
+        Assert(boss.HasArmour && Math.Abs(boss.CurrentArmourAmount - shield) < 2 * perCash,
             $"Shield {boss.CurrentArmourAmount} for {stolen} stolen, at most {GildebloonBrain.ShieldCap(boss)}");
         AssertEquals(InGame.instance.bridge.Simulation.cashSpent.Value, 0.0, "Stealing isn't cash spent");
         yield return new WaitForSecondsRealtime(0.5f);
@@ -303,18 +306,20 @@ public class GildebloonBrainTest : GildebloonTest
         Assert(Visuals.GildebloonHud.Repossessions > 0, "The Repossession was shown");
         var banner = AssertNotNull(Visuals.GildebloonHud.Banner, "The Repossession banner shows")!;
         Log($"banner: {banner.Replace('\n', '/')}; frozen {GildebloonBrain.FrozenCount}, padlocks {Visuals.GildebloonSeizeLook.PadlockCount}");
-        Assert(banner.Contains("Gildebloon") && banner.Contains("Banana Farms locked: 1"), $"Banner: {banner}");
+        Assert(banner.StartsWith("Repossession!") && banner.Contains("1 Banana Farm locked for 12 s"), $"Banner: {banner}");
+        Assert(Visuals.GildebloonHud.CashShown > 0, "What it took showed at the cash");
         Assert(Visuals.GildebloonSeizeLook.RingsShown > 0, "The ring showed how far it reached");
         AssertEquals(Visuals.GildebloonSeizeLook.PadlockCount, GildebloonBrain.SeizedCount + GildebloonBrain.FrozenCount, "A padlock over each seized tower");
         if (!string.IsNullOrEmpty(folderNow)) yield return ScreenshotTour.Capture(folderNow, "gildebloon-repossession");
 
-        // The banner says how many towers, in the right form
-        AssertEquals(Visuals.GildebloonHud.BannerText(new GildebloonBrain.Repossession(2400, 1, 0, 50, boss)),
-            "Repossession! Gildebloon seized $2,400 and froze 1 tower for 3 s", "One tower");
-        AssertEquals(Visuals.GildebloonHud.BannerText(new GildebloonBrain.Repossession(2400, 30, 0, 50, boss)),
-            "Repossession! Gildebloon seized $2,400 and froze 30 towers for 3 s", "Many towers");
+        // The banner says what it took, a line each, in the right form
+        string Lines(double cash, int frozen, int farms) =>
+            string.Join(" / ", Visuals.GildebloonHud.BannerLines(new GildebloonBrain.Repossession(cash, frozen, farms, 50, boss)));
+        AssertEquals(Lines(2400, 1, 0), "-$2,400 / 1 tower frozen for 3 s", "One tower");
+        AssertEquals(Lines(2400, 30, 2), "-$2,400 / 30 towers frozen for 3 s / 2 Banana Farms locked for 12 s", "Many towers and farms");
+        AssertEquals(Lines(80, 0, 1), "-$80 / 1 Banana Farm locked for 12 s", "One farm");
         AssertEquals(Visuals.GildebloonHud.BannerText(new GildebloonBrain.Repossession(80, 0, 0, 50, boss)),
-            "Repossession! Gildebloon seized $80", "No towers");
+            "Repossession!\n<size=60%>-$80</size>", "Only cash");
 
         // The Vault lies under the tower menu, like the boss panel (#25)
         var menu = Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu.TowerSelectionMenu.instance;

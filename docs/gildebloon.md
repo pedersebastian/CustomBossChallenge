@@ -46,14 +46,25 @@ boss name through `BossList.Name`. The game itself only ever sees the string `bo
   models carry. Damage over time (the Glue Gunner's corrosive glue) isn't covered. A Harmony prefix on `Bloon.Damage`
   crashed the game natively at the first hit, so don't patch it.
 - **What it takes** is a share of the cash with no cap (2026-11-21; the old caps took $150 a theft at tier 1, 0.15 % of
-  $100,000): a Toll every 6 s takes 2 % (Elite 4 %), a skull 10 % (Elite 15 %), a leaking Tax Collector 5 % (Elite's
-  8 %). The Vault's shield is at most half the boss's health (`ShieldCapShare`), so a player with a lot of cash can
-  still beat it; the Payout pays back all it took, half again.
+  $100,000): a Toll every 6 s takes 2 % (Elite 4 %), a skull 10 % (Elite 15 %). The Vault's shield is at most half
+  the boss's health (`ShieldCapShare`), so a player with a lot of cash can still beat it; the Payout pays back all it
+  took, half again.
+- **Shield per dollar by tier** (2026-11-22). Its health grows faster from tier to tier than a player's cash (tier 1:
+  12,000 health at about round 40 with some $20,000; tier 5: 1.9 million at about round 120 with some $650,000), so at
+  one point a dollar the Vault was up to 40 % of its health at tier 1 and about 1 % at tier 5.
+  `GildebloonBrain.ShieldPerCash` is 1, 1.4, 2.4, 2.7, 4.9 by tier (Elite 1.5, 3.3, 8.2, 17, 34), which keeps a theft
+  of the same share of the cash about the same share of its health; tiers past 5 use tier 5's.
+- **Tax Collectors by tier** (2026-11-22; a MOAB was no threat from tier 3 on): MOAB at tiers 1-2, BFB at 3-4, ZOMG at
+  5; Elite one step up and fortified from tier 4 (`Gildebloon.CollectorFor`). A bigger one takes more when it leaks:
+  MOAB 5 %, BFB 8 %, ZOMG 10 %, fortified ZOMG 12 % (`Gildebloon.CollectorKinds`). Their look is the gold blimp of
+  Dispatch with a green $ on its back, as long as the bloon it replaces.
 - `Config/GildebloonBrain.cs` runs each simulation frame (`BossBloonManager.Process`): Toll, Vault (an armour
   layer `GildeVault`), Interest (Elite), seizing Banana Farms at a skull, Tax Collector leaks and the Payout.
 - `Patches/MixedBosses.cs` sets the game's boss type to "Gildebloon" before each of its tiers spawns, also when the
   whole setup is Gildebloon; `bossData.bossBloon` gets Bloonarius (`BossList.Host`).
-- `Visuals/GildebloonHud.cs` shows the Vault under the boss panel.
+- `Visuals/GildebloonHud.cs` shows the Vault under the boss panel, and what it takes and pays back at the player's own
+  cash (top left): "-$700" under it and coins flying on the screen from the cash to Gildebloon (the Payout: "+$1,050"
+  and a shower of coins back). Before (2026-11-22) only "-$700" next to the Vault showed it, far from the cash.
 
 ## Its look (M4)
 
@@ -118,7 +129,7 @@ What could still show of Bloonarius, and how each is handled:
   | Hit, TarnishHit | squash and squint; grey-green tarnish flashing on the gold | a drop in health (at most every 0.4 s); TarnishHit when an acid tower's projectile (one carrying `Gildebloon.Tarnish`) was within 60 units of it in the last 0.3 s: the game's damage can't be hooked (`Bloon.Damage` crashes), so the look watches the projectiles instead (`GildebloonTarnishTest`) |
   | Toll, Interest, VaultUp, VaultBreak | coins into the slot; the Vault pulsing (Elite); the shield growing; the shield shattering | `GildebloonBrain.CashTaken` above 0 (a Toll or a Tax Collector's leak); `GildebloonBrain.InterestAdded`; the armour from 0 up; to 0 |
   | Repossession, Skittish, Dispatch | a skull; the dash ahead; a Tax Collector popping out of the door | a skull passed; `GildebloonBrain.Dashes` going up; a Tax Collector's look attaching |
-  | Death, Escape, Payout | bursts into coins; grins and dives out; the coins streaming to the cash at the top right | gone with no health left; gone with health left (it leaked); `CashTaken` below 0 after Death |
+  | Death, Escape, Payout | bursts into coins; grins and dives out; the coins fountaining up and out (which way the cash is on the screen depends on how it faces, so the HUD flies them on to the cash) | gone with no health left; gone with health left (it leaked); `CashTaken` below 0 after Death |
 
   Seen in the game (2026-11-21, the Gildebloon tests' screenshots): it faces along the track, is about Bloonarius's
   size, rises out of the pile, and Elite's band, crown, dents and cracks show. Its see-through parts, the Vault's shell
@@ -147,9 +158,17 @@ death, for "Bloonarius" in its object, mesh or material.
 
 At each skull Gildebloon seizes cash and the towers near it (50 to 70 units, by tier). `Visuals/GildebloonSeizeLook.cs`
 shows it on the map: a gold ring grows out to its reach, coins fly from the seized towers to it, and every seized tower
-has a padlock over it whose ring shrinks as its time runs out (3 s, Banana Farms 12 s), bursting into coins when it is
-let go. The banner says what it took ("froze 1 tower for 3 s", the Banana Farms on their own line), and a selected
-seized tower shows its time left in the middle of the screen. The Vault makes way while the tower menu is open.
+is outlined in gold, greyed a little and has a padlock over it. The padlock is modelled in Blender
+(`tools/blender/gildebloon-padlock.py`, written by `build-padlock.py` to `Bundles/gildebloon-padlock.gba.gz` in the
+body's format; `Visuals/GildebloonPadlock.cs`): a gold padlock facing the camera with a green $ on it (a banana on a
+Banana Farm's, which is bigger) and a ring of 16 gold ticks that go one by one as its time runs out (3 s, Banana Farms
+12 s). It drops in (Lock), sways (Hold), and springs open (Unlock) and bursts into coins when the tower is let go. The
+flat padlock before it read as a crate from the game's camera (2026-11-22); it stays as the fallback without the file.
+
+The banner shows a big "Repossession!" with a line under it for each thing it took ("-$3,947", "1 tower frozen for
+3 s", "2 Banana Farms locked for 12 s"), on the half of the screen Gildebloon isn't on, so it doesn't cover it. A
+selected seized tower shows its time left in the middle of the screen. The Vault makes way while the tower menu is
+open.
 
 Things drawn on the map with a material made from the map's own are drawn before the towers and bloons (render queue
 1998), so they would be hidden under them; the padlocks and the ring use copies drawn last (3500). The game's camera is

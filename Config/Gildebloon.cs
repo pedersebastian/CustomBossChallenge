@@ -22,10 +22,43 @@ public static class Gildebloon
     /// <summary>The game boss the models are made from</summary>
     public const string Source = "Bloonarius";
 
-    /// <summary>The MOAB-class bloons Gildebloon sends at each skull, which steal cash when they leak</summary>
+    /// <summary>
+    /// The Tax Collectors: MOAB-class bloons Gildebloon sends at each skull, which steal cash when they leak. A plain
+    /// MOAB was no threat from tier 3 on (2026-11-22), so a tier sends bigger ones (<see cref="CollectorsFor"/>), and a
+    /// bigger one takes more when it leaks.
+    /// </summary>
     public const string CollectorId = "GildebloonCollector";
 
-    public const string EliteCollectorId = "GildebloonCollectorElite";
+    public const string BfbCollectorId = "GildebloonCollectorBfb";
+    public const string ZomgCollectorId = "GildebloonCollectorZomg";
+    public const string FortifiedZomgCollectorId = "GildebloonCollectorZomgFortified";
+
+    /// <summary>Every Tax Collector: its id, the game bloon it is made from, how long its look is on the map (about as
+    /// long as that bloon) and the share of the cash it takes when it leaks</summary>
+    public static readonly (string Id, string Source, float Length, double Share)[] CollectorKinds =
+    [
+        (CollectorId, "Moab", 26, 0.05),
+        (BfbCollectorId, "Bfb", 34, 0.08),
+        (ZomgCollectorId, "Zomg", 44, 0.1),
+        (FortifiedZomgCollectorId, "ZomgFortified", 44, 0.12)
+    ];
+
+    /// <summary>The Tax Collector each tier 1-5 sends: Elite one step up, fortified from tier 4</summary>
+    internal static readonly string[] CollectorsFor = [CollectorId, CollectorId, BfbCollectorId, BfbCollectorId, ZomgCollectorId];
+
+    internal static readonly string[] EliteCollectorsFor =
+        [BfbCollectorId, BfbCollectorId, ZomgCollectorId, FortifiedZomgCollectorId, FortifiedZomgCollectorId];
+
+    /// <summary>The Tax Collector a tier sends; tiers past 5 send tier 5's</summary>
+    public static string CollectorFor(bool elite, int tier)
+    {
+        var table = elite ? EliteCollectorsFor : CollectorsFor;
+        return table[System.Math.Clamp(tier, 1, table.Length) - 1];
+    }
+
+    /// <summary>What kind of Tax Collector a bloon is, or null if it isn't one</summary>
+    public static (string Id, string Source, float Length, double Share)? CollectorKind(string? id) =>
+        CollectorKinds.Where(kind => kind.Id == id).Select(kind => ((string, string, float, double)?) kind).FirstOrDefault();
 
     // Health and speed of tiers 1-5; between Blastapopoulos and Dreadbloon, since the Vault adds to the health
     internal static readonly int[] Health = [12_000, 45_000, 200_000, 450_000, 1_900_000];
@@ -82,16 +115,21 @@ public static class Gildebloon
         if (!Experimental.Gildebloon || gameModel.DoesBloonExist(BossOptions.BossIdOf(BossList.Gildebloon, false, 1))) return 0;
 
         var added = 0;
+        foreach (var kind in CollectorKinds)
+        {
+            if (CreateCollector(gameModel, kind.Id, kind.Source) is { } made) added += Add(gameModel, made);
+        }
+
         foreach (var elite in new[] {false, true})
         {
-            var collector = CreateCollector(gameModel, elite);
-            if (collector != null) added += Add(gameModel, collector);
-
             for (var tier = 1; tier <= TierMath.VanillaTiers; tier++)
             {
                 var source = BossOptions.BossIdOf(Il2CppAssets.Scripts.Data.Boss.BossType.Bloonarius, elite, tier);
                 if (!gameModel.DoesBloonExist(source)) continue;
-                var model = Create(gameModel.GetBloon(source), elite, tier, collector?.id, Invulnerability(gameModel));
+                var collector = CollectorFor(elite, tier);
+                var model = Create(gameModel.GetBloon(source), elite, tier,
+                    gameModel.DoesBloonExist(collector) ? collector : gameModel.DoesBloonExist(CollectorId) ? CollectorId : null,
+                    Invulnerability(gameModel));
                 Unbloonarius(model, gameModel);
                 added += Add(gameModel, model);
             }
@@ -228,11 +266,11 @@ public static class Gildebloon
         }
     }
 
-    private static BloonModel? CreateCollector(GameModel gameModel, bool elite)
+    private static BloonModel? CreateCollector(GameModel gameModel, string id, string source)
     {
-        var source = elite ? "Bfb" : "Moab";
+        // a game without the fortified one gets the plain one
+        if (!gameModel.DoesBloonExist(source)) source = source.Replace("Fortified", "");
         if (!gameModel.DoesBloonExist(source)) return null;
-        var id = elite ? EliteCollectorId : CollectorId;
         var model = gameModel.GetBloon(source).Clone().Cast<BloonModel>();
         model.id = id;
         model.name = id;
@@ -246,7 +284,7 @@ public static class Gildebloon
     }
 
     /// <summary>Whether the bloon is one of Gildebloon's Tax Collectors</summary>
-    public static bool IsCollector(string? id) => id is CollectorId or EliteCollectorId;
+    public static bool IsCollector(string? id) => CollectorKind(id) != null;
 
     /// <summary>Whether a model id is one of Gildebloon's tiers, e.g. "GildebloonElite3"</summary>
     public static bool IsGildebloon(string? id) =>

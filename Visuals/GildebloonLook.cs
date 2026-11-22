@@ -37,10 +37,8 @@ public static class GildebloonLook
     /// <summary>How long a Tax Collector's hull is in the look's units</summary>
     private const float CollectorModelLength = 2.7f;
 
-    /// <summary>How long a Tax Collector is on the map, about as long as the MOAB (BFB) it replaces</summary>
-    public const float CollectorLength = 26;
-
-    public const float EliteCollectorLength = 34;
+    /// <summary>How long a Tax Collector is on the map, about as long as the MOAB, BFB or ZOMG it replaces</summary>
+    private static float CollectorLength(Bloon bloon) => Gildebloon.CollectorKind(bloon.bloonModel?.id)?.Length ?? 26;
 
     /// <summary>The mutator the game gives bloons a boss sends, which dresses them in the boss's skin</summary>
     public const string BossSkinMutator = "BossSkinMutator";
@@ -297,7 +295,7 @@ public static class GildebloonLook
         }
 
         // A Tax Collector: the gold MOAB Gildebloon sends out in Dispatch, when the modelled body loaded
-        if (look.Collector && GildebloonBody.BuildCollector(graphic.transform, elite ? EliteCollectorLength : CollectorLength) is { } collector)
+        if (look.Collector && GildebloonBody.BuildCollector(graphic.transform, CollectorLength(look.Bloon)) is { } collector)
         {
             look.Look = collector;
             HideBody(look, graphic);
@@ -343,7 +341,7 @@ public static class GildebloonLook
             {
                 if (Find(instance, name) is { } part) Object.DestroyImmediate(part.gameObject);
             }
-            size = (elite ? EliteCollectorLength : CollectorLength) / CollectorModelLength;
+            size = CollectorLength(look.Bloon) / CollectorModelLength;
             instance.name = RootName + "Collector";
         }
         if (scale > 0) instance.transform.localScale = Vector3.one * (size / scale);
@@ -858,6 +856,7 @@ public static class GildebloonLook
             GildebloonPileMesh.Load();
             GildebloonBody.Load();
             GildebloonMapOoze.Load();
+            GildebloonPadlock.Load();
             if (!listening)
             {
                 listening = true;

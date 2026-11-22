@@ -46,10 +46,22 @@ public static class GildebloonBrain
     /// </summary>
     public const double ShieldCapShare = 0.5;
 
-    /// <summary>Shield per stolen dollar</summary>
-    public const double ShieldPerCash = 1;
+    /// <summary>
+    /// Shield per stolen dollar, per tier 1-5. The boss's health grows faster from tier to tier than a player's cash
+    /// (tier 1 has 12,000 health at about round 40 with some $20,000; tier 5 has 1.9 million at about round 120 with some
+    /// $650,000), so with one dollar a point the Vault was 40 % of its health at tier 1 and 1 % at tier 5 (2026-11-22).
+    /// These keep a theft of the same share of the cash about the same share of its health at every tier.
+    /// </summary>
+    internal static readonly double[] ShieldPerCash = [1, 1.4, 2.4, 2.7, 4.9];
 
-    public const double EliteShieldPerCash = 1.5;
+    internal static readonly double[] EliteShieldPerCash = [1.5, 3.3, 8.2, 17, 34];
+
+    /// <summary>Shield per stolen dollar for a tier; tiers past 5 are made from tier 5 and get its</summary>
+    public static double ShieldPerCashFor(bool elite, int tier)
+    {
+        var table = elite ? EliteShieldPerCash : ShieldPerCash;
+        return table[Math.Clamp(tier, 1, table.Length) - 1];
+    }
 
     /// <summary>Elite's Vault grows by this share each second it isn't hit for <see cref="InterestQuietSeconds"/></summary>
     public const double InterestShare = 0.01;
@@ -59,10 +71,9 @@ public static class GildebloonBrain
     /// <summary>The Payout outside CHIMPS; in CHIMPS the player only gets the stolen cash back</summary>
     public const double PayoutFactor = 1.5;
 
-    /// <summary>A Tax Collector that leaks takes this share of the player's cash; Elite's (a BFB) more</summary>
+    /// <summary>A Tax Collector that leaks takes a share of the player's cash, the bigger the bloon the more
+    /// (<see cref="Gildebloon.CollectorKinds"/>); this if it is none of those</summary>
     public const double CollectorShare = 0.05;
-
-    public const double EliteCollectorShare = 0.08;
 
     /// <summary>How far from Gildebloon towers are seized at a skull, per tier 1-5</summary>
     internal static readonly float[] SeizeRadii = [50, 55, 60, 65, 70];
@@ -243,13 +254,14 @@ public static class GildebloonBrain
     {
         var id = boss.bloonModel.id;
         var elite = id.Contains(TierBossMath.EliteSuffix);
-        var factor = elite ? EliteShieldPerCash : ShieldPerCash;
+        var tier = TierMath.TierOf(id);
+        var factor = ShieldPerCashFor(elite, tier);
         // A boss brought back by a retry or a continued game keeps its shield; the Vault is worked out from it
         var armour = Armour(boss);
         ModHelper.Msg<CustomBossChallenge>($"{id} arrives{(armour > 0 ? $" with {armour} shield" : "")}");
         return new Vault
         {
-            BossId = id, Elite = elite, Tier = TierMath.TierOf(id), Stolen = Math.Floor(armour / factor),
+            BossId = id, Elite = elite, Tier = tier, Stolen = Math.Floor(armour / factor),
             NextToll = frame + TollSeconds * FramesPerSecond, NextInterest = frame + FramesPerSecond, LastHit = frame,
             Health = boss.health, Armour = armour, Skulls = SkullsPassed(boss)
         };
@@ -304,8 +316,8 @@ public static class GildebloonBrain
         var sim = collector.Sim;
         if (sim == null) return;
 
-        var elite = collector.bloonModel.id == Gildebloon.EliteCollectorId;
-        var amount = Math.Floor(Cash(sim) * (elite ? EliteCollectorShare : CollectorShare));
+        var share = Gildebloon.CollectorKind(collector.bloonModel.id)?.Share ?? CollectorShare;
+        var amount = Math.Floor(Cash(sim) * share);
         if (amount <= 0) return;
 
         sim.RemoveCash(amount, Simulation.CashType.Normal, CashIndex, Simulation.CashSource.Normal);
@@ -328,7 +340,7 @@ public static class GildebloonBrain
 
     private static void AddShield(Bloon boss, Vault current, double cash)
     {
-        var amount = (int) Math.Round(cash * (current.Elite ? EliteShieldPerCash : ShieldPerCash));
+        var amount = (int) Math.Round(cash * ShieldPerCashFor(current.Elite, current.Tier));
         amount = Math.Min(amount, ShieldCap(boss) - (int) Math.Ceiling(Armour(boss)));
         if (amount <= 0) return;
 

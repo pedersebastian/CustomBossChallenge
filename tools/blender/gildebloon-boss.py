@@ -39,7 +39,7 @@ ANIMS = [
     ("Interest", 725, 756, "Elite's Interest: the Vault pulses once and a few coins drop in"),
     ("VaultUp", 757, 792, "its Vault builds up: coins rise from the bags into a shield"),
     ("EliteSpawn", 793, 876, "Elite: rises out of the pile like Spawn, then its crown of spikes shoots up"),
-    ("Payout", 877, 924, "beaten: the coins it leaves stream to the player's cash, top right of the screen"),
+    ("Payout", 877, 924, "beaten: the coins it leaves fountain up and out; the mod's screen flies them on to the cash"),
     ("IdleCount", 925, 972, "idle: flips a coin out of the door and catches it"),
     ("IdlePolish", 973, 1020, "idle: polishes its shine with a banknote"),
     ("IdleSmug", 1021, 1068, "idle, after a big Toll: leans back, chuckles, bags bouncing"),
@@ -499,6 +499,11 @@ for i, (x, z) in enumerate(((0.0, 0.26), (0.0, -0.26), (0.26, 0.0), (-0.26, 0.0)
     if x != 0:
         fo.rotation_euler = (0, math.pi / 2, 0)
 obj("CollectorDoor", disc("Gilde_CollectorDoor", 0.14, 0.04, GOLD_FACE), proxy, loc=(0, -0.05, 0.27), line=0.01)
+# a big green $ on its back, so it reads as the thief it is from the game's camera above (2026-11-22: it read as a
+# gold MOAB), and a dark band round its middle like a MOAB's
+obj("CollectorDollar", text_mesh("$", 0.34, 0.03, GREEN), proxy, loc=(0, 0.27, 0.235), rot=(-0.45, 0, math.pi / 2), line=0.012)
+obj("CollectorBand", torus("Gilde_CollectorBand", 0.335, 0.022, GOLD_DARK, 32, 6, squash=(1, 0.83)), proxy,
+    loc=(0, 0.12, 0), rot=(math.pi / 2, 0, 0), line=0.008)
 for o in [proxy] + list(proxy.children_recursive):
     o.visible_shadow = False
 # idle polish: a banknote it rubs its shine with
@@ -1059,24 +1064,25 @@ key(hull, f0 + 70, scale=1)
 key(hull, f0 + 74, scale=(0.95, 0.95, 1.08))
 key(hull, f0 + 80, scale=1)
 
-# Payout: beaten; the heap it left rises and streams to the player's cash, top right of the screen
+# Payout: beaten; the heap it left fountains up and out and is gone. Which way the cash is on the screen depends on
+# how Gildebloon faces, so the clip throws them every way and the mod flies coins on screen from here to the cash
+# (Visuals/GildebloonHud.cs)
 f0, f1 = 877, 924
 key(root, f0, scale=0)  # its body is gone already (Death)
 key(shadow, f0, scale=0)
-cam_rot = cam.rotation_euler.to_matrix()
-corner = cam.location + cam_rot @ Vector((3.3, 2.4, -12.0))
 for i, c in enumerate(fx):
-    a = 2 * math.pi * i / len(fx)
-    st = Vector((0.6 * math.cos(a) + rng.uniform(-0.3, 0.3), 0.6 * math.sin(a) + rng.uniform(-0.3, 0.3), 0.03))
-    fs = f0 + 2 + round(i * 0.7)  # all of them done by the clip's end
+    a = 2 * math.pi * i / len(fx) + rng.uniform(-0.2, 0.2)
+    st = Vector((0.3 * math.cos(a), 0.3 * math.sin(a), 0.05))
+    out = Vector((math.cos(a), math.sin(a), 0)) * rng.uniform(0.9, 1.5)
+    rise = rng.uniform(2.2, 3.0)
+    fs = f0 + 2 + round(i * 0.6)  # all of them done by the clip's end
     key(c, fs - 1, tuple(st), (0, 0, 0), 0)
     key(c, fs, tuple(st), (0, 0, 0), 1)
-    for k in range(2, 21, 2):
-        t = k / 20
-        up = st + Vector((0, 0, 0.9))
-        pt = st.lerp(up, min(1, t * 3)) if t < 0.33 else up.lerp(corner, (t - 0.33) / 0.67)
-        key(c, fs + k, tuple(pt), (t * 12, t * 6, 0), 1.0 - 0.6 * t)
-    key(c, fs + 21, scale=0)
+    for k in range(2, 23, 2):
+        t = k / 22
+        pt = st + out * t + Vector((0, 0, rise * t - 1.6 * t * t))
+        key(c, fs + k, tuple(pt), (t * 14, t * 7, 0), 1.0 if t < 0.7 else 1.0 - (t - 0.7) / 0.3 * 0.9)
+    key(c, fs + 23, scale=0)
 
 # IdleCount: flips a coin out of the door, eyes follow it, catches it back in
 f0, f1 = 925, 972
