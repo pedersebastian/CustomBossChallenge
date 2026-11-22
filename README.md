@@ -374,7 +374,9 @@ asks for:
 
 How to build the mod from source and run its automated tests is described in
 [CONTRIBUTING.md](https://github.com/pedersebastian/CustomBossChallenge/blob/master/CONTRIBUTING.md) (the
-**Contributing** tab on GitHub).
+**Contributing** tab on GitHub). What to do when BTD6 gets a new version is in
+[Updating for a new BTD6 version](https://github.com/pedersebastian/CustomBossChallenge/blob/master/CONTRIBUTING.md#updating-for-a-new-btd6-version);
+a daily check opens an issue for it the day the update comes out.
 
 ## AI disclaimer
 
