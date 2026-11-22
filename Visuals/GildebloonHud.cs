@@ -24,6 +24,9 @@ namespace CustomBossChallenge.Visuals;
 /// Gildebloon isn't on, so it doesn't cover it;</item>
 /// <item>a selected seized tower's time left.</item>
 /// </list>
+/// Made with Mod Helper's components once, as a template that lasts the session, and copied into each match as plain
+/// Unity objects that go with it: Mod Helper's panels and texts are never quite freed, and making a dozen each match
+/// kept about 1.2 MB of the game's memory a match (2026-11-22, GildebloonCostTest).
 /// </summary>
 public static class GildebloonHud
 {
@@ -36,25 +39,26 @@ public static class GildebloonHud
 
     private const float CashPopSeconds = 1.8f;
 
-    private static ModHelperPanel? panel;
-    private static ModHelperText? amount;
-    private static ModHelperText? change;
+    private static GameObject? panel;
+    private static TMP_Text? amount;
+    private static TMP_Text? change;
 
     /// <summary>The shield from a skull: a gold bar under the Vault that empties as it is hit, and how wide it is full</summary>
-    private static ModHelperImage? shieldBar, shieldFill;
+    private static GameObject? shieldBar;
+    private static UnityEngine.UI.Image? shieldFill;
     private static float shieldWidth;
 
     /// <summary>How full the shield bar shows, 0 when hidden, for tests</summary>
-    public static float ShieldShown => shieldBar != null && shieldBar.gameObject.activeSelf && shieldFill != null
-        ? shieldFill.RectTransform.sizeDelta.x / Math.Max(1, shieldWidth) : 0;
+    public static float ShieldShown => shieldBar != null && shieldBar.activeSelf && shieldFill != null
+        ? shieldFill.rectTransform.sizeDelta.x / Math.Max(1, shieldWidth) : 0;
     private static float changeStart = -100;
     private static bool subscribed;
 
     /// <summary>The Vault panel while it is shown, for tests (hidden while a tower is selected)</summary>
-    public static ModHelperPanel? Panel => panel != null && panel.gameObject != null ? panel : null;
+    public static GameObject? Panel => panel != null ? panel : null;
 
     /// <summary>The amount it shows, for tests</summary>
-    public static string? Shown => amount != null ? amount.Text.text : null;
+    public static string? Shown => amount != null ? amount.text : null;
 
     /// <summary>Called every frame</summary>
     public static void Update()
@@ -71,7 +75,7 @@ public static class GildebloonHud
 
         if (!GildebloonBrain.Active)
         {
-            if (Panel != null) Panel.gameObject.SetActive(false);
+            if (Panel != null) Panel.SetActive(false);
             if (seizedLine != null) seizedLine.gameObject.SetActive(false);
             if (banner != null) banner.gameObject.SetActive(false);
             return;
@@ -80,31 +84,31 @@ public static class GildebloonHud
         if (Panel == null)
         {
             var ui = Object.FindObjectOfType<BossUI>();
-            if (ui == null) return;
-            Build(ui);
+            if (ui == null || !Build(ui)) return;
         }
 
         if (BossDisplay() is { } boss) lastBoss = boss.position;
 
         // The tower menu covers the boss panel's right end, where the Vault is: the Vault makes way while it is open
         var selected = Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu.TowerSelectionMenu.instance?.selectedTower != null;
-        Panel!.gameObject.SetActive(!selected);
-        amount!.SetText($"${GildebloonBrain.Stolen:N0}");
+        Panel!.SetActive(!selected);
+        var stolen = $"${GildebloonBrain.Stolen:N0}";
+        if (amount!.text != stolen) amount.text = stolen;
         var shield = GildebloonBrain.ShieldLeft;
-        shieldBar!.gameObject.SetActive(shield > 0 && GildebloonBrain.ShieldSecondsLeft > 0);
+        shieldBar!.SetActive(shield > 0 && GildebloonBrain.ShieldSecondsLeft > 0);
         if (shield > 0)
         {
-            var size = shieldFill!.RectTransform.sizeDelta;
-            shieldFill.RectTransform.sizeDelta = new Vector2(shieldWidth * shield, size.y);
+            var size = shieldFill!.rectTransform.sizeDelta;
+            shieldFill.rectTransform.sizeDelta = new Vector2(shieldWidth * shield, size.y);
             // it blinks in its last two seconds
             var left = GildebloonBrain.ShieldSecondsLeft;
-            shieldFill.Image.color = left < 2 && Mathf.Repeat(Time.unscaledTime * 4, 1) < 0.5f
+            shieldFill.color = left < 2 && Mathf.Repeat(Time.unscaledTime * 4, 1) < 0.5f
                 ? new Color(1f, 0.97f, 0.75f) : new Color(1f, 0.78f, 0.1f);
         }
 
         var age = Time.unscaledTime - changeStart;
         change!.gameObject.SetActive(age < ChangeSeconds);
-        if (age < ChangeSeconds) change.Text.alpha = Math.Min(1, (ChangeSeconds - age) / 0.6f);
+        if (age < ChangeSeconds) change.alpha = Math.Min(1, (ChangeSeconds - age) / 0.6f);
 
         UpdateSeizedLine();
 
@@ -112,7 +116,7 @@ public static class GildebloonHud
         banner!.gameObject.SetActive(shown < BannerSeconds);
         if (shown < BannerSeconds)
         {
-            banner.Text.alpha = Math.Min(1, (BannerSeconds - shown) / 0.5f);
+            banner.alpha = Math.Min(1, (BannerSeconds - shown) / 0.5f);
             banner.transform.localScale = Vector3.one * (1 + 0.15f * Math.Max(0, 1 - shown * 4));
         }
     }
@@ -121,7 +125,7 @@ public static class GildebloonHud
     private static void OnRepossessed(GildebloonBrain.Repossession repossession)
     {
         if (Panel == null || banner == null) return;
-        banner.SetText(BannerText(repossession));
+        banner.text = BannerText(repossession);
         bannerStart = Time.unscaledTime;
         Repossessions++;
 
@@ -139,7 +143,7 @@ public static class GildebloonHud
         }
 
         var height = Canvas().rect.height;
-        banner.RectTransform.anchoredPosition = new Vector2(0, height * (top ? 0.22f : -0.24f));
+        banner.rectTransform.anchoredPosition = new Vector2(0, height * (top ? 0.22f : -0.24f));
         BannerOnTop = top;
     }
 
@@ -166,9 +170,9 @@ public static class GildebloonHud
     }
 
     /// <summary>The line under the Vault while a seized tower is selected, for tests</summary>
-    public static string? SeizedLine => seizedLine != null && seizedLine.gameObject.activeSelf ? seizedLine.Text.text : null;
+    public static string? SeizedLine => seizedLine != null && seizedLine.gameObject.activeSelf ? seizedLine.text : null;
 
-    private static ModHelperText? seizedLine;
+    private static TMP_Text? seizedLine;
 
     /// <summary>A seized tower selected: how long until it is let go</summary>
     private static void UpdateSeizedLine()
@@ -179,17 +183,17 @@ public static class GildebloonHud
             : GildebloonBrain.SeizedNow().Where(entry => entry.Tower != null && entry.Tower.Pointer == selected.Pointer)
                 .Select(entry => (float?) entry.SecondsLeft).FirstOrDefault();
         seizedLine.gameObject.SetActive(seized != null);
-        if (seized is { } left) seizedLine.SetText(Texts.GildebloonSeizedFor.T(Math.Ceiling(left)));
+        if (seized is { } left) seizedLine.text = Texts.GildebloonSeizedFor.T(Math.Ceiling(left));
     }
 
     /// <summary>How many Repossessions the HUD showed, for tests</summary>
     public static int Repossessions { get; private set; }
 
     /// <summary>The Repossession banner while it shows, for tests</summary>
-    public static string? Banner => banner != null && banner.gameObject.activeSelf ? banner.Text.text : null;
+    public static string? Banner => banner != null && banner.gameObject.activeSelf ? banner.text : null;
 
     private const float BannerSeconds = 3f;
-    private static ModHelperText? banner;
+    private static TMP_Text? banner;
     private static float bannerStart = -100;
 
     /// <summary>It took cash (a Toll, a skull, a Tax Collector) or paid it back (negative)</summary>
@@ -198,8 +202,8 @@ public static class GildebloonHud
         if (change != null)
         {
             // what went into the Vault, or came out of it
-            change.SetText(cash >= 0 ? $"+${cash:N0}" : $"-${-cash:N0}");
-            change.Text.color = cash >= 0 ? new Color(1f, 0.85f, 0.3f) : new Color(1f, 0.55f, 0.45f);
+            change.text = cash >= 0 ? $"+${cash:N0}" : $"-${-cash:N0}";
+            change.color = cash >= 0 ? new Color(1f, 0.85f, 0.3f) : new Color(1f, 0.55f, 0.45f);
             changeStart = Time.unscaledTime;
         }
 
@@ -224,7 +228,6 @@ public static class GildebloonHud
     }
 
     private static readonly List<Flight> Flights = new();
-    private static GameObject? coinTemplate, popTemplate;
     private static TMP_Text? cashText;
     private static Vector3? lastBoss;
 
@@ -362,98 +365,162 @@ public static class GildebloonHud
         Flights.Clear();
     }
 
-    private static void Build(BossUI ui)
+    // ---- The template, made once a session ----
+
+    /// <summary>
+    /// The HUD made with Mod Helper's components, kept for the session (not drawn), with those components taken off
+    /// once its pictures have loaded; each match gets copies. Made again only if the canvas's height changed (another
+    /// screen size), which its sizes come from.
+    /// </summary>
+    private static GameObject? template;
+    private static GameObject? panelTemplate, bannerTemplate, seizedTemplate, coinTemplate, popTemplate;
+    private static float templateHeight;
+    private static bool templateReady;
+
+    /// <summary>How many times the template was made this session, for tests</summary>
+    public static int TemplatesMade { get; private set; }
+
+    /// <returns>Whether the template is there to copy: its pictures load over a few frames</returns>
+    private static bool Template(float canvasHeight)
+    {
+        if (template != null && Math.Abs(templateHeight - canvasHeight) > 1)
+        {
+            Object.Destroy(template);
+            template = null;
+        }
+
+        if (template == null)
+        {
+            MakeTemplate(canvasHeight);
+            return false;
+        }
+        if (templateReady) return true;
+
+        // ready once every picture has loaded; then Mod Helper's components come off, and copies are plain Unity
+        if (template.GetComponentsInChildren<UnityEngine.UI.Image>(true).Any(image => image.sprite == null)) return false;
+        foreach (var component in template.GetComponentsInChildren<ModHelperComponent>(true)) Object.DestroyImmediate(component);
+        templateReady = true;
+        return true;
+    }
+
+    private static void MakeTemplate(float canvasHeight)
     {
         // Mod Helper leaves an empty text asset behind for every component (#235)
         using var leftovers = new ModHelperLeftovers();
-        var canvas = ui.GetComponentInParent<Canvas>().rootCanvas.GetComponent<RectTransform>();
-        canvasRect = canvas;
-        var height = canvas.rect.height * 0.045f;
+        templateReady = false;
+        templateHeight = canvasHeight;
+        TemplatesMade++;
+        template = new GameObject("GildebloonHudTemplate");
+        template.AddComponent<RectTransform>();
+        template.SetActive(false);
+        Object.DontDestroyOnLoad(template);
+        var root = template.transform;
+
+        var height = canvasHeight * 0.045f;
         var width = height * 4.2f;
-        panel = ModHelperPanel.Create(new Info(Name, canvas.rect.height * 0.42f, -canvas.rect.height * 0.12f, width, height)
+        var vault = ModHelperPanel.Create(new Info(Name, canvasHeight * 0.42f, -canvasHeight * 0.12f, width, height)
         {
             Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 0.5f)
         }, VanillaSprites.MainBGPanelBlue);
-        panel.transform.SetParent(canvas, false);
-
-        // Right after the boss panel among the canvas's children, so the tower menus and popups drawn after it cover
-        // the Vault like they cover the boss panel, instead of the Vault lying on top of them
-        var above = ui.transform;
-        while (above.parent != null && above.parent != canvas.transform) above = above.parent;
-        if (above.parent == canvas.transform) panel.transform.SetSiblingIndex(above.GetSiblingIndex() + 1);
-        var group = panel.gameObject.AddComponent<CanvasGroup>();
+        vault.transform.SetParent(root, false);
+        var group = vault.gameObject.AddComponent<CanvasGroup>();
         group.blocksRaycasts = false;
         group.interactable = false;
 
-        panel.AddImage(new Info("Coin", -width / 2 + height * 0.6f, 0, height * 0.85f, height * 0.85f), VanillaSprites.GoldenBloonIcon);
-        amount = panel.AddText(new Info("Amount", height * 0.45f, 0, width - height * 1.3f, height * 0.8f), "", height * 0.5f);
-        amount.Text.color = new Color(1f, 0.85f, 0.3f);
-        amount.Text.textWrappingMode = TextWrappingModes.NoWrap;
-        change = panel.AddText(new Info("Change", width * 0.5f + height * 1.2f, 0, height * 2.6f, height * 0.8f), "", height * 0.45f);
-        change.Text.textWrappingMode = TextWrappingModes.NoWrap;
-        change.gameObject.SetActive(false);
+        vault.AddImage(new Info("Coin", -width / 2 + height * 0.6f, 0, height * 0.85f, height * 0.85f), VanillaSprites.GoldenBloonIcon);
+        var amountText = vault.AddText(new Info("Amount", height * 0.45f, 0, width - height * 1.3f, height * 0.8f), "", height * 0.5f);
+        amountText.Text.color = new Color(1f, 0.85f, 0.3f);
+        amountText.Text.textWrappingMode = TextWrappingModes.NoWrap;
+        var changeText = vault.AddText(new Info("Change", width * 0.5f + height * 1.2f, 0, height * 2.6f, height * 0.8f), "", height * 0.45f);
+        changeText.Text.textWrappingMode = TextWrappingModes.NoWrap;
+        changeText.gameObject.SetActive(false);
 
         // The shield bar, under the Vault and as wide, drawn with the panel (so it hides with it)
         shieldWidth = width - height * 0.3f;
-        shieldBar = panel.AddImage(new Info("Shield", 0, -height * 0.9f, width, height * 0.55f), VanillaSprites.BarfillContainer);
-        shieldFill = shieldBar.AddImage(new Info("Fill", -shieldWidth / 2, 0, shieldWidth, height * 0.36f)
+        var bar = vault.AddImage(new Info("Shield", 0, -height * 0.9f, width, height * 0.55f), VanillaSprites.BarfillContainer);
+        var fill = bar.AddImage(new Info("Fill", -shieldWidth / 2, 0, shieldWidth, height * 0.36f)
         {
             Anchor = new Vector2(0.5f, 0.5f), Pivot = new Vector2(0, 0.5f)
         }, VanillaSprites.Barfillgreen);
         // the game's fill is green; a plain white one takes the gold as it is
         var white = Texture2D.whiteTexture;
-        shieldFill.Image.sprite = Sprite.Create(white, new Rect(0, 0, white.width, white.height), new Vector2(0.5f, 0.5f));
-        shieldFill.Image.color = new Color(1f, 0.78f, 0.1f);
-        shieldBar.gameObject.SetActive(false);
+        fill.Image.sprite = Sprite.Create(white, new Rect(0, 0, white.width, white.height), new Vector2(0.5f, 0.5f));
+        fill.Image.color = new Color(1f, 0.78f, 0.1f);
+        bar.gameObject.SetActive(false);
+        panelTemplate = vault.gameObject;
 
         // The Repossession banner: a big heading and what it took under it, placed when it shows
-        banner = ModHelperText.Create(new Info("Repossession", 0, 0, canvas.rect.height * 1.4f, height * 5.5f)
+        var bannerText = ModHelperText.Create(new Info("Repossession", 0, 0, canvasHeight * 1.4f, height * 5.5f)
         {
             Anchor = new Vector2(0.5f, 0.5f), Pivot = new Vector2(0.5f, 0.5f)
         }, "", height * 1.1f);
-        banner.transform.SetParent(canvas, false);
-        banner.transform.SetSiblingIndex(panel.transform.GetSiblingIndex() + 1);
-        banner.Text.color = new Color(1f, 0.82f, 0.25f);
-        banner.Text.textWrappingMode = TextWrappingModes.NoWrap;
-        banner.Text.lineSpacing = 12;
-        banner.Text.outlineWidth = 0.25f;
-        banner.Text.outlineColor = new Color32(70, 40, 0, 255);
-        banner.Text.raycastTarget = false;
-        banner.gameObject.SetActive(false);
+        bannerText.transform.SetParent(root, false);
+        bannerText.Text.color = new Color(1f, 0.82f, 0.25f);
+        bannerText.Text.textWrappingMode = TextWrappingModes.NoWrap;
+        bannerText.Text.lineSpacing = 12;
+        bannerText.Text.outlineWidth = 0.25f;
+        bannerText.Text.outlineColor = new Color32(70, 40, 0, 255);
+        bannerText.Text.raycastTarget = false;
+        bannerText.gameObject.SetActive(false);
+        bannerTemplate = bannerText.gameObject;
 
         // A seized tower's time left, in the middle under the boss panel, where the tower menu doesn't cover it
-        seizedLine = ModHelperText.Create(new Info("GildebloonSeized", 0, -canvas.rect.height * 0.2f, canvas.rect.height * 0.8f, height)
+        var seized = ModHelperText.Create(new Info("GildebloonSeized", 0, -canvasHeight * 0.2f, canvasHeight * 0.8f, height)
         {
             Anchor = new Vector2(0.5f, 1), Pivot = new Vector2(0.5f, 0.5f)
         }, "", height * 0.6f);
-        seizedLine.transform.SetParent(canvas, false);
-        seizedLine.transform.SetSiblingIndex(panel.transform.GetSiblingIndex() + 1);
-        seizedLine.Text.color = new Color(1f, 0.82f, 0.25f);
-        seizedLine.Text.textWrappingMode = TextWrappingModes.NoWrap;
-        seizedLine.Text.outlineWidth = 0.2f;
-        seizedLine.Text.outlineColor = new Color32(70, 40, 0, 255);
-        seizedLine.gameObject.SetActive(false);
+        seized.transform.SetParent(root, false);
+        seized.Text.color = new Color(1f, 0.82f, 0.25f);
+        seized.Text.textWrappingMode = TextWrappingModes.NoWrap;
+        seized.Text.outlineWidth = 0.2f;
+        seized.Text.outlineColor = new Color32(70, 40, 0, 255);
+        seized.gameObject.SetActive(false);
+        seizedTemplate = seized.gameObject;
 
-        // What the flying coins and the "-$700" at the cash are copied from: copies make no more Mod Helper leftovers
-        if (coinTemplate == null)
-        {
-            var coin = ModHelperImage.Create(new Info("GildebloonFlyingCoin", height * 0.7f), VanillaSprites.CoinIcon);
-            coin.transform.SetParent(canvas, false);
-            coin.Image.raycastTarget = false;
-            coin.gameObject.SetActive(false);
-            coinTemplate = coin.gameObject;
-        }
+        // What the flying coins and the "-$700" at the cash are copied from
+        var coin = ModHelperImage.Create(new Info("GildebloonFlyingCoin", height * 0.7f), VanillaSprites.CoinIcon);
+        coin.transform.SetParent(root, false);
+        coin.Image.raycastTarget = false;
+        coinTemplate = coin.gameObject;
 
-        if (popTemplate == null)
-        {
-            var pop = ModHelperText.Create(new Info("GildebloonCashPop", height * 4, height * 0.9f), "", height * 0.6f);
-            pop.transform.SetParent(canvas, false);
-            pop.Text.textWrappingMode = TextWrappingModes.NoWrap;
-            pop.Text.outlineWidth = 0.25f;
-            pop.Text.outlineColor = new Color32(40, 20, 0, 255);
-            pop.Text.raycastTarget = false;
-            pop.gameObject.SetActive(false);
-            popTemplate = pop.gameObject;
-        }
+        var pop = ModHelperText.Create(new Info("GildebloonCashPop", height * 4, height * 0.9f), "", height * 0.6f);
+        pop.transform.SetParent(root, false);
+        pop.Text.textWrappingMode = TextWrappingModes.NoWrap;
+        pop.Text.outlineWidth = 0.25f;
+        pop.Text.outlineColor = new Color32(40, 20, 0, 255);
+        pop.Text.raycastTarget = false;
+        popTemplate = pop.gameObject;
+    }
+
+    /// <returns>Whether the HUD is on the match's canvas now; not until the template is ready</returns>
+    private static bool Build(BossUI ui)
+    {
+        var canvas = ui.GetComponentInParent<Canvas>().rootCanvas.GetComponent<RectTransform>();
+        if (!Template(canvas.rect.height)) return false;
+        canvasRect = canvas;
+
+        panel = Object.Instantiate(panelTemplate!, canvas, false);
+        panel.name = Name;
+        panel.SetActive(true);
+        // Right after the boss panel among the canvas's children, so the tower menus and popups drawn after it cover
+        // the Vault like they cover the boss panel, instead of the Vault lying on top of them
+        var above = ui.transform;
+        while (above.parent != null && above.parent != canvas.transform) above = above.parent;
+        if (above.parent == canvas.transform) panel.transform.SetSiblingIndex(above.GetSiblingIndex() + 1);
+        amount = panel.transform.Find("Amount").GetComponent<TMP_Text>();
+        change = panel.transform.Find("Change").GetComponent<TMP_Text>();
+        shieldBar = panel.transform.Find("Shield").gameObject;
+        shieldFill = shieldBar.transform.Find("Fill").GetComponent<UnityEngine.UI.Image>();
+
+        var bannerCopy = Object.Instantiate(bannerTemplate!, canvas, false);
+        bannerCopy.name = "Repossession";
+        bannerCopy.transform.SetSiblingIndex(panel.transform.GetSiblingIndex() + 1);
+        banner = bannerCopy.GetComponent<TMP_Text>();
+
+        var seizedCopy = Object.Instantiate(seizedTemplate!, canvas, false);
+        seizedCopy.name = "GildebloonSeized";
+        seizedCopy.transform.SetSiblingIndex(panel.transform.GetSiblingIndex() + 1);
+        seizedLine = seizedCopy.GetComponent<TMP_Text>();
+        return true;
     }
 }

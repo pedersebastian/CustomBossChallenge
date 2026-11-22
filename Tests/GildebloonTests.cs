@@ -1094,14 +1094,17 @@ public class GildebloonCostTest : GildebloonTest
         // the same with the game's own boss: the game's memory grows from match to match by itself
         var bloonarius = 0.0;
         yield return Matches(BossType.Bloonarius, grown => bloonarius = grown);
+        // Only logged: the game's (Il2Cpp) memory swings by several MB from run to run (Bloonarius 11.6 MB a match in one
+        // run, 3.6 in the next, 2026-11-22), too much to tell 1 MB; what is checked is what can't swing: the counts of
+        // the game's objects, managed memory, and the HUD's template made once
         Log($"the game's memory a match: Gildebloon {gildebloon:0.00} MB, Bloonarius {bloonarius:0.00} MB");
-        Assert(gildebloon <= bloonarius + 3, $"Gildebloon adds {gildebloon - bloonarius:0.00} MB of the game's memory a match over Bloonarius");
     }
 
     /// <summary>A match to fill the caches (meshes, materials, the HUD's templates), then <see cref="Games"/> more, measured</summary>
     private IEnumerator Matches(BossType boss, System.Action<double> gameGrown)
     {
         yield return Match(boss, boss == BossList.Gildebloon);
+        var templates = Visuals.GildebloonHud.TemplatesMade;
         var before = new System.Collections.Generic.Dictionary<string, int>();
         var (managed, game) = (0.0, 0.0);
         yield return Measure(before, (m, g) => (managed, game) = (m, g));
@@ -1115,6 +1118,8 @@ public class GildebloonCostTest : GildebloonTest
             $"{(managedAfter - managed) / Games:0.000} MB managed, {(gameAfter - game) / Games:0.00} MB game memory");
         gameGrown((gameAfter - game) / Games);
         if (boss != BossList.Gildebloon) yield break;
+        // the HUD is copied from a template made once, not made with Mod Helper each match (about 1.2 MB a match)
+        AssertEquals(Visuals.GildebloonHud.TemplatesMade, templates, "The HUD's template isn't made again each match");
         foreach (var (key, per) in grown)
             Assert(per <= (key == "GameObject" ? 5 : 1), $"{key}s pile up: {per:0.0} more after each match");
         Assert((managedAfter - managed) / Games < 0.5, $"Managed memory grows by {(managedAfter - managed) / Games:0.00} MB a match");

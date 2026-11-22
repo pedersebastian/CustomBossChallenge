@@ -259,6 +259,10 @@ coins flying) and times the mod's per-frame parts (`CustomBossChallenge.UpdateTi
   game builds its display (its first 30 frames) and then every 15th, the game's coats are hidden when they come on,
   and a part is only moved when its pose changed: 0.5 ms a frame, the look 0.41 ms.
 - **Memory.** Nothing piles up from match to match: the game's meshes, materials, textures, sprites and objects are
-  as many after three more matches, and managed memory stays put. The game's own memory grows each match, by itself
-  (Bloonarius: 11.6 MB a match); with Gildebloon about 2.7 MB more, of which about 1.2 MB is the Vault's HUD: Mod
-  Helper's panels and texts are never quite freed (see `LeakTest`), and the HUD makes about a dozen each match.
+  as many after three more matches, and managed memory stays put. The game's own memory grows each match, by itself,
+  and swings a lot from run to run (Bloonarius 11.6 MB a match in one run, 3.6 MB in the next). Turning the Vault's
+  HUD off took about 1.2 MB a match off Gildebloon's: Mod Helper's panels and texts are never quite freed (see
+  `LeakTest`), and it made about a dozen each match. Now `GildebloonHud` makes them once a session, as a template
+  kept with `DontDestroyOnLoad` and stripped of Mod Helper's components once its pictures have loaded, and copies it
+  into each match as plain Unity objects (`TemplatesMade` stays 1). The game's memory is logged, not checked: it
+  swings too much to tell a megabyte.
