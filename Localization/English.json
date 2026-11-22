@@ -176,11 +176,18 @@
   "CustomBossChallenge-Past Events Category": "Past Events",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Download New Boss Events",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "When the game starts, the Boss Creator's Past Events list downloads the newest list of official boss events from the mod's website (pedersebastian.github.io/CustomBossChallenge), so new events show up without an update of the mod. No personal data is sent. Off, the list has the events the mod came with, and the ones it downloaded before.",
+  "CustomBossChallenge-Updates Category": "Updates",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Show What's New",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "After an update of the mod, the first time you open the Boss Creator shows what's new in the new version, once. Off, it is never shown. Don't Show Again in that popup turns this off too.",
   "CustomBossChallenge-TierTime": "Tier {0}",
   "CustomBossChallenge-TotalTime": "Total",
   "CustomBossChallenge-PenaltyTime": "Penalty",
   "CustomBossChallenge-TiersUsed": "Upgrade Tiers Used",
   "CustomBossChallenge-CashUsed": "Cash Used",
   "CustomBossChallenge-RankedTime": "Time",
-  "CustomBossChallenge-RulesNoChanges": "No other changes"
+  "CustomBossChallenge-RulesNoChanges": "No other changes",
+  "CustomBossChallenge-WhatsNew": "What's New",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge has been updated to {0}. Here is what's new:",
+  "CustomBossChallenge-WhatsNewMore": "And {0} more on the mod's website.",
+  "CustomBossChallenge-DontShowAgain": "Don't Show Again"
 }

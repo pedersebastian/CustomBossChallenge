@@ -1,4 +1,4 @@
-// What every page of the site shares: the fonts and the game version in the footer.
+// What every page of the site shares: the fonts, the game version in the footer and the menu's What's new.
 // The fonts are part of the site, so they load nothing from other servers (only the visit counter in the HTML does).
 // The site is in English: Latin is enough.
 import "@fontsource/luckiest-guy/latin-400.css";
@@ -9,6 +9,7 @@ import { GAME } from "./data/types";
 import { setUpKonami } from "./fun/konami";
 import { keepsSetup } from "./code/link";
 import { focusWithoutScroll, scrollToElement } from "./dom";
+import { setUpWhatsNew } from "./news/whatsNew";
 
 setUpKonami();
 
@@ -28,3 +29,7 @@ document.addEventListener("click", (event) => {
 
 const version = document.getElementById("game-version");
 if (version) version.textContent = `Boss data from BTD6 ${GAME.gameVersion}`;
+
+// What's new in the newest versions of the mod, from CHANGELOG.md (#264)
+const news = document.getElementById("whats-new");
+if (news instanceof HTMLButtonElement) setUpWhatsNew(news);

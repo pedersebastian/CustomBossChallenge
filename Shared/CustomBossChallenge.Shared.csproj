@@ -14,6 +14,7 @@
         <Compile Include="..\Config\BossOptions.cs" Link="Mod\BossOptions.cs" />
         <Compile Include="..\Config\BossRoundsMath.cs" Link="Mod\BossRoundsMath.cs" />
         <Compile Include="..\Config\BossRowMath.cs" Link="Mod\BossRowMath.cs" />
+        <Compile Include="..\Config\Changelog.cs" Link="Mod\Changelog.cs" />
         <Compile Include="..\Config\ChimpsRoundSet.cs" Link="Mod\ChimpsRoundSet.cs" />
         <Compile Include="..\Config\ChallengeLimits.Options.cs" Link="Mod\ChallengeLimits.Options.cs" />
         <Compile Include="..\Config\BossRandomizer.Weights.cs" Link="Mod\BossRandomizer.Weights.cs" />

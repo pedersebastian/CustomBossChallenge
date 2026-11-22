@@ -176,11 +176,18 @@
   "CustomBossChallenge-Past Events Category": "지난 이벤트",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "새 보스 이벤트 다운로드",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "게임을 시작하면 보스 크리에이터의 지난 이벤트 목록이 모드 웹사이트(pedersebastian.github.io/CustomBossChallenge)에서 공식 보스 이벤트의 최신 목록을 다운로드하므로, 모드를 업데이트하지 않아도 새 이벤트가 나타납니다. 개인 데이터는 전송되지 않습니다. 끄면 목록에는 모드에 포함된 이벤트와 이전에 다운로드한 이벤트가 있습니다.",
+  "CustomBossChallenge-Updates Category": "업데이트",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "새 기능 보기",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "모드를 업데이트한 뒤 보스 크리에이터를 처음 열 때 새 버전의 새 기능을 한 번 보여 줍니다. 끄면 보여 주지 않습니다. 그 창의 다시 보지 않기를 눌러도 꺼집니다.",
   "CustomBossChallenge-TierTime": "{0}단계",
   "CustomBossChallenge-TotalTime": "합계",
   "CustomBossChallenge-PenaltyTime": "페널티",
   "CustomBossChallenge-TiersUsed": "사용한 업그레이드 티어",
   "CustomBossChallenge-CashUsed": "사용한 돈",
   "CustomBossChallenge-RankedTime": "시간",
-  "CustomBossChallenge-RulesNoChanges": "다른 변경 없음"
+  "CustomBossChallenge-RulesNoChanges": "다른 변경 없음",
+  "CustomBossChallenge-WhatsNew": "새 기능",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge가 {0}(으)로 업데이트되었습니다. 새 기능:",
+  "CustomBossChallenge-WhatsNewMore": "모드 웹사이트에 {0}개가 더 있습니다.",
+  "CustomBossChallenge-DontShowAgain": "다시 보지 않기"
 }

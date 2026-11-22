@@ -176,11 +176,18 @@
   "CustomBossChallenge-Past Events Category": "Événements passés",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Télécharger les nouveaux événements de boss",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "Au lancement du jeu, la liste des événements passés du Créateur de boss télécharge la liste la plus récente des événements de boss officiels depuis le site du mod (pedersebastian.github.io/CustomBossChallenge), pour que les nouveaux événements apparaissent sans mise à jour du mod. Aucune donnée personnelle n'est envoyée. Désactivée, la liste contient les événements fournis avec le mod et ceux téléchargés auparavant.",
+  "CustomBossChallenge-Updates Category": "Mises à jour",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Afficher les nouveautés",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Après une mise à jour du mod, la première ouverture du Créateur de boss affiche les nouveautés de la nouvelle version, une seule fois. Désactivé, elles ne sont jamais affichées. Ne plus afficher dans cette fenêtre le désactive aussi.",
   "CustomBossChallenge-TierTime": "Palier {0}",
   "CustomBossChallenge-TotalTime": "Total",
   "CustomBossChallenge-PenaltyTime": "Pénalité",
   "CustomBossChallenge-TiersUsed": "Niveaux d’amélioration utilisés",
   "CustomBossChallenge-CashUsed": "Argent utilisé",
   "CustomBossChallenge-RankedTime": "Temps",
-  "CustomBossChallenge-RulesNoChanges": "Aucun autre changement"
+  "CustomBossChallenge-RulesNoChanges": "Aucun autre changement",
+  "CustomBossChallenge-WhatsNew": "Nouveautés",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge a été mis à jour en {0}. Voici les nouveautés :",
+  "CustomBossChallenge-WhatsNewMore": "Et {0} de plus sur le site du mod.",
+  "CustomBossChallenge-DontShowAgain": "Ne plus afficher"
 }

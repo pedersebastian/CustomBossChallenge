@@ -38,11 +38,15 @@ public abstract class CustomBossTest : ModTest
         var lastSetup = Creator.BossMode.Store;
         var savedSetups = Creator.BossMode.Saved;
         var toldAboutNewerFiles = Creator.BossMode.ToldAboutNewerFiles;
+        var whatsNew = Menus.WhatsNew.Store;
         TempFolder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "CustomBossChallengeTest-" + Guid.NewGuid().ToString("N"));
         CustomBossRetries.Store = new Persistence.ContinueStore(System.IO.Path.Combine(TempFolder, "Continue.json"));
         Creator.BossMode.Store = new Persistence.LastSetupStore(System.IO.Path.Combine(TempFolder, "LastSetup.json"));
         Creator.BossMode.Saved = new Persistence.SavedSetupsStore(System.IO.Path.Combine(TempFolder, "SavedSetups.json"));
         Creator.BossMode.ToldAboutNewerFiles = true;
+        Menus.WhatsNew.Store = new Persistence.WhatsNewStore(System.IO.Path.Combine(TempFolder, "WhatsNew.json"));
+        Menus.WhatsNew.Suppressed = true;
+        Menus.WhatsNew.EnabledOverride = null;
         CustomBossRetries.FailNextSnapshot = false;
         CustomBossChallenge.FailNextUpdate = null;
         Visuals.RankedHud.ShowRankedStatsOverride = null;
@@ -62,6 +66,9 @@ public abstract class CustomBossTest : ModTest
         Creator.BossMode.Store = lastSetup;
         Creator.BossMode.Saved = savedSetups;
         Creator.BossMode.ToldAboutNewerFiles = toldAboutNewerFiles;
+        Menus.WhatsNew.Store = whatsNew;
+        Menus.WhatsNew.Suppressed = false;
+        Menus.WhatsNew.EnabledOverride = null;
         if (System.IO.Directory.Exists(TempFolder)) System.IO.Directory.Delete(TempFolder, true);
     }
 

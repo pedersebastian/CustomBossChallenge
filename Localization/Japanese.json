@@ -176,11 +176,18 @@
   "CustomBossChallenge-Past Events Category": "過去のイベント",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "新しいボスイベントをダウンロード",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "ゲーム起動時に、ボスクリエイターの過去のイベント一覧がMODのウェブサイト（pedersebastian.github.io/CustomBossChallenge）から公式ボスイベントの最新リストをダウンロードするため、MODを更新しなくても新しいイベントが表示されます。個人データは送信されません。オフの場合、一覧にはMODに付属のイベントと以前にダウンロードしたイベントが表示されます。",
+  "CustomBossChallenge-Updates Category": "アップデート",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "新機能を表示",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "MODのアップデート後、ボスクリエイターを初めて開いたときに、新しいバージョンの新機能を一度だけ表示します。オフにすると表示しません。その画面の「今後表示しない」でもオフになります。",
   "CustomBossChallenge-TierTime": "ティア {0}",
   "CustomBossChallenge-TotalTime": "合計",
   "CustomBossChallenge-PenaltyTime": "ペナルティ",
   "CustomBossChallenge-TiersUsed": "使用アップグレードティア",
   "CustomBossChallenge-CashUsed": "使用資金",
   "CustomBossChallenge-RankedTime": "タイム",
-  "CustomBossChallenge-RulesNoChanges": "その他の変更なし"
+  "CustomBossChallenge-RulesNoChanges": "その他の変更なし",
+  "CustomBossChallenge-WhatsNew": "新機能",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challengeが{0}にアップデートされました。新機能はこちら：",
+  "CustomBossChallenge-WhatsNewMore": "MODのサイトにあと{0}件あります。",
+  "CustomBossChallenge-DontShowAgain": "今後表示しない"
 }

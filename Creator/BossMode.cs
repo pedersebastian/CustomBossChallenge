@@ -67,6 +67,7 @@ public static class BossMode
 
         Enter(options, dcm);
         TellAboutNewerFiles();
+        Menus.WhatsNew.ShowIfNew();
     }
 
     /// <summary>

@@ -176,11 +176,18 @@
   "CustomBossChallenge-Past Events Category": "Vergangene Events",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Neue Boss-Events herunterladen",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "Beim Spielstart lädt die Liste der vergangenen Events im Boss-Ersteller die neueste Liste offizieller Boss-Events von der Website der Mod herunter (pedersebastian.github.io/CustomBossChallenge), damit neue Events ohne Update der Mod erscheinen. Es werden keine persönlichen Daten gesendet. Ausgeschaltet enthält die Liste die Events, die mit der Mod kamen, und die zuvor heruntergeladenen.",
+  "CustomBossChallenge-Updates Category": "Updates",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Neuigkeiten zeigen",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Nach einem Update der Mod zeigt der Boss-Ersteller beim ersten Öffnen einmal, was in der neuen Version neu ist. Aus wird es nie gezeigt. Nicht mehr zeigen in diesem Fenster schaltet das auch aus.",
   "CustomBossChallenge-TierTime": "Stufe {0}",
   "CustomBossChallenge-TotalTime": "Gesamt",
   "CustomBossChallenge-PenaltyTime": "Strafe",
   "CustomBossChallenge-TiersUsed": "Verwendete Upgrade-Stufen",
   "CustomBossChallenge-CashUsed": "Verwendetes Geld",
   "CustomBossChallenge-RankedTime": "Zeit",
-  "CustomBossChallenge-RulesNoChanges": "Keine weiteren Änderungen"
+  "CustomBossChallenge-RulesNoChanges": "Keine weiteren Änderungen",
+  "CustomBossChallenge-WhatsNew": "Neuigkeiten",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge wurde auf {0} aktualisiert. Das ist neu:",
+  "CustomBossChallenge-WhatsNewMore": "Und {0} weitere auf der Website der Mod.",
+  "CustomBossChallenge-DontShowAgain": "Nicht mehr zeigen"
 }

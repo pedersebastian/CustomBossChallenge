@@ -176,11 +176,18 @@
   "CustomBossChallenge-Past Events Category": "Menneet tapahtumat",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Lataa uudet pomotapahtumat",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "Kun peli käynnistyy, Pomoluojan menneiden tapahtumien lista lataa uusimman listan virallisista pomotapahtumista modin verkkosivulta (pedersebastian.github.io/CustomBossChallenge), joten uudet tapahtumat näkyvät ilman modin päivitystä. Henkilötietoja ei lähetetä. Pois päältä listassa ovat modin mukana tulleet tapahtumat ja aiemmin ladatut.",
+  "CustomBossChallenge-Updates Category": "Päivitykset",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Näytä uutuudet",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Modin päivityksen jälkeen Pomoluoja näyttää uuden version uutuudet, kun avaat sen ensimmäisen kerran, vain kerran. Pois päältä niitä ei näytetä koskaan. Ikkunan Älä näytä uudelleen -painike kytkee tämän myös pois.",
   "CustomBossChallenge-TierTime": "Taso {0}",
   "CustomBossChallenge-TotalTime": "Yhteensä",
   "CustomBossChallenge-PenaltyTime": "Rangaistus",
   "CustomBossChallenge-TiersUsed": "Käytetyt päivitystasot",
   "CustomBossChallenge-CashUsed": "Käytetyt rahat",
   "CustomBossChallenge-RankedTime": "Aika",
-  "CustomBossChallenge-RulesNoChanges": "Ei muita muutoksia"
+  "CustomBossChallenge-RulesNoChanges": "Ei muita muutoksia",
+  "CustomBossChallenge-WhatsNew": "Uutta",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge on päivitetty versioon {0}. Tässä uutuudet:",
+  "CustomBossChallenge-WhatsNewMore": "Ja {0} lisää modin verkkosivuilla.",
+  "CustomBossChallenge-DontShowAgain": "Älä näytä uudelleen"
 }

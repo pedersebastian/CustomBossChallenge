@@ -176,11 +176,18 @@
   "CustomBossChallenge-Past Events Category": "Прошлые события",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Загружать новые события с боссами",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "При запуске игры список прошлых событий в Создателе боссов загружает самый новый список официальных событий с боссами с сайта мода (pedersebastian.github.io/CustomBossChallenge), чтобы новые события появлялись без обновления мода. Личные данные не отправляются. Если выключено, в списке есть события, поставляемые с модом, и загруженные ранее.",
+  "CustomBossChallenge-Updates Category": "Обновления",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Показывать новое",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "После обновления мода при первом открытии Создателя боссов один раз показывается, что нового в новой версии. Если выключено, это не показывается никогда. Кнопка «Больше не показывать» в этом окне тоже выключает это.",
   "CustomBossChallenge-TierTime": "Уровень {0}",
   "CustomBossChallenge-TotalTime": "Итого",
   "CustomBossChallenge-PenaltyTime": "Штраф",
   "CustomBossChallenge-TiersUsed": "Использовано уровней улучшений",
   "CustomBossChallenge-CashUsed": "Потрачено денег",
   "CustomBossChallenge-RankedTime": "Время",
-  "CustomBossChallenge-RulesNoChanges": "Других изменений нет"
+  "CustomBossChallenge-RulesNoChanges": "Других изменений нет",
+  "CustomBossChallenge-WhatsNew": "Что нового",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge обновлён до версии {0}. Вот что нового:",
+  "CustomBossChallenge-WhatsNewMore": "И ещё {0} на сайте мода.",
+  "CustomBossChallenge-DontShowAgain": "Больше не показывать"
 }

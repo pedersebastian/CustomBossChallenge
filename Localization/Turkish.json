@@ -176,11 +176,18 @@
   "CustomBossChallenge-Past Events Category": "Geçmiş Etkinlikler",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Yeni Boss Etkinliklerini İndir",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "Oyun başladığında Boss Oluşturucu'nun geçmiş etkinlikler listesi, resmi boss etkinliklerinin en yeni listesini modun web sitesinden (pedersebastian.github.io/CustomBossChallenge) indirir; böylece yeni etkinlikler mod güncellenmeden görünür. Hiçbir kişisel veri gönderilmez. Kapalıyken liste, modla gelen etkinlikleri ve daha önce indirilenleri içerir.",
+  "CustomBossChallenge-Updates Category": "Güncellemeler",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Yenilikleri göster",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Mod güncellendikten sonra Boss Oluşturucu'yu ilk açtığında yeni sürümdeki yenilikler bir kez gösterilir. Kapalıyken hiç gösterilmez. O penceredeki Bir daha gösterme düğmesi de bunu kapatır.",
   "CustomBossChallenge-TierTime": "Kademe {0}",
   "CustomBossChallenge-TotalTime": "Toplam",
   "CustomBossChallenge-PenaltyTime": "Ceza",
   "CustomBossChallenge-TiersUsed": "Kullanılan geliştirme kademesi",
   "CustomBossChallenge-CashUsed": "Kullanılan para",
   "CustomBossChallenge-RankedTime": "Süre",
-  "CustomBossChallenge-RulesNoChanges": "Başka değişiklik yok"
+  "CustomBossChallenge-RulesNoChanges": "Başka değişiklik yok",
+  "CustomBossChallenge-WhatsNew": "Yenilikler",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge {0} sürümüne güncellendi. İşte yenilikler:",
+  "CustomBossChallenge-WhatsNewMore": "Ve modun web sitesinde {0} tane daha.",
+  "CustomBossChallenge-DontShowAgain": "Bir daha gösterme"
 }

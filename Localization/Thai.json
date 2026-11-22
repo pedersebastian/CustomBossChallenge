@@ -176,11 +176,18 @@
   "CustomBossChallenge-Past Events Category": "อีเวนต์ที่ผ่านมา",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "ดาวน์โหลดอีเวนต์บอสใหม่",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "เมื่อเริ่มเกม รายการอีเวนต์ที่ผ่านมาของตัวสร้างบอส จะดาวน์โหลดรายการอีเวนต์บอสอย่างเป็นทางการล่าสุดจากเว็บไซต์ของม็อด (pedersebastian.github.io/CustomBossChallenge) เพื่อให้อีเวนต์ใหม่ปรากฏโดยไม่ต้องอัปเดตม็อด ไม่มีการส่งข้อมูลส่วนบุคคล เมื่อปิด รายการจะมีอีเวนต์ที่มากับม็อดและที่ดาวน์โหลดไว้ก่อนหน้า",
+  "CustomBossChallenge-Updates Category": "อัปเดต",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "แสดงสิ่งใหม่",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "หลังจากอัปเดตม็อด ครั้งแรกที่เปิดตัวสร้างบอสจะแสดงสิ่งใหม่ในเวอร์ชันใหม่หนึ่งครั้ง ถ้าปิดไว้จะไม่แสดงเลย ปุ่มไม่ต้องแสดงอีกในหน้าต่างนั้นก็ปิดตัวเลือกนี้ด้วย",
   "CustomBossChallenge-TierTime": "ระดับ {0}",
   "CustomBossChallenge-TotalTime": "รวม",
   "CustomBossChallenge-PenaltyTime": "บทลงโทษ",
   "CustomBossChallenge-TiersUsed": "ระดับอัปเกรดที่ใช้",
   "CustomBossChallenge-CashUsed": "เงินที่ใช้",
   "CustomBossChallenge-RankedTime": "เวลา",
-  "CustomBossChallenge-RulesNoChanges": "ไม่มีการเปลี่ยนแปลงอื่น"
+  "CustomBossChallenge-RulesNoChanges": "ไม่มีการเปลี่ยนแปลงอื่น",
+  "CustomBossChallenge-WhatsNew": "มีอะไรใหม่",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge อัปเดตเป็น {0} แล้ว นี่คือสิ่งใหม่:",
+  "CustomBossChallenge-WhatsNewMore": "และอีก {0} รายการในเว็บไซต์ของม็อด",
+  "CustomBossChallenge-DontShowAgain": "ไม่ต้องแสดงอีก"
 }
