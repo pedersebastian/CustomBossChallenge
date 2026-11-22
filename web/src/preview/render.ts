@@ -12,6 +12,7 @@ import { normalGame, skulls, tierCards } from "./compute";
 import { renderTimeline } from "./timeline";
 import { eventRoundsText } from "./eventRounds";
 import { warningText, warningTexts } from "./warnings";
+import { renderDifficulty } from "./difficulty";
 import { renderCurves } from "../compare/chart";
 import { tierPairs } from "../compare/diff";
 import { tierGlow, tierGlowStyle } from "./tierLook";
@@ -65,8 +66,9 @@ export function renderSetup(options: BossOptions, challenge: Challenge, compact 
 
   if (problem) root.append(h("p", { class: "warning" }, `In the game, Play refuses this setup: ${problem}`));
 
-  // Under the Tier Preview, the warnings the Boss Creator shows there before Play (#186)
-  root.append(renderTiers(options, challenge, warningTexts(options, challenge)));
+  // Under the Tier Preview, the warnings the Boss Creator shows there before Play (#186), and the difficulty rating
+  // the Boss Creator shows under it (#263)
+  root.append(renderTiers(options, challenge, warningTexts(options, challenge)), renderDifficulty(options, challenge));
   if (compact) return root;
 
   // With a boss per tier the bosses' own skulls differ between tiers, so the skulls follow the card pointed at or

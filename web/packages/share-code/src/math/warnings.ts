@@ -13,6 +13,7 @@ import {
   type BossOptions,
   type ChimpsRounds,
 } from "../options";
+import { DATA, type JsonObject } from "../data";
 import { float } from "./dotnet";
 import { clampTiers, extraTierFactor, healthFactor, maxModelHealth, speedFactor } from "./tiers";
 
@@ -28,6 +29,8 @@ export interface SetupFacts {
   /** The round the game starts on, as the player sees it; below 1 for the game's own */
   startRound: number;
   difficulty: string;
+  /** The group of the map in the game's map list, "Beginner" to "Expert"; "" when not known */
+  mapDifficulty: string;
   mode: string;
   /** Below 0 for the difficulty's own, like the game */
   lives: number;
@@ -35,6 +38,12 @@ export interface SetupFacts {
   cash: number;
   /** Below 0 for no limit, like the game */
   maxTowers: number;
+  /** Below 0 for no limit, like the game; 0 for no paragons */
+  maxParagons: number;
+  /** How many of the towers (not heroes) can't be placed at all, for the difficulty rating */
+  bannedTowers: number;
+  /** How many towers (not heroes) the game has, 0 when not known */
+  allTowers: number;
   bloonSpeed: number;
   moabSpeed: number;
   bossSpeed: number;
@@ -92,10 +101,14 @@ export const setupFacts = (facts: Partial<SetupFacts> = {}): SetupFacts => ({
   options: defaultOptions(),
   startRound: 1,
   difficulty: "Medium",
+  mapDifficulty: "",
   mode: "Standard",
   lives: -1,
   cash: -1,
   maxTowers: -1,
+  maxParagons: -1,
+  bannedTowers: 0,
+  allTowers: 0,
   bloonSpeed: 1,
   moabSpeed: 1,
   bossSpeed: 1,
@@ -121,10 +134,13 @@ export function factsOf(options: BossOptions, challenge: Challenge, tierBases: (
     options,
     startRound: challenge.round,
     difficulty: challenge.difficulty,
+    mapDifficulty: "",
     mode: challenge.mode,
     lives: challenge.lives,
     cash: challenge.cash,
     maxTowers: challenge.maxTowers,
+    maxParagons: challenge.maxParagons,
+    ...towerCounts(challenge),
     bloonSpeed: float(challenge.bloonSpeed),
     moabSpeed: float(challenge.moabSpeed),
     bossSpeed: float(challenge.bossSpeed),
@@ -139,6 +155,18 @@ export function factsOf(options: BossOptions, challenge: Challenge, tierBases: (
     allFortified: challenge.allFortified,
     tierBases,
   };
+}
+
+/**
+ * How many towers (not heroes) the game has and how many of them the challenge doesn't allow at all, like
+ * TierStrip.Facts: from the game's new challenge, with the challenge's own limits on top
+ */
+export function towerCounts(challenge: Challenge): { bannedTowers: number; allTowers: number } {
+  const towers = (Array.isArray(DATA.defaultChallenge.towers) ? DATA.defaultChallenge.towers : []).filter(
+    (tower): tower is JsonObject => typeof tower === "object" && tower !== null && !Array.isArray(tower) && tower.isHero !== true,
+  );
+  const banned = towers.filter((tower) => (challenge.towers[tower.tower as string] ?? (tower.max as number)) === 0).length;
+  return { bannedTowers: banned, allTowers: towers.length };
 }
 
 const baseOf = (facts: SetupFacts, tier: number): TierBase | null =>

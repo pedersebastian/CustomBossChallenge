@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "最初のティア以降、ティアごとに通常の体力のこの割合を加えます。ゲーム本来の上昇に上乗せされます。+100 % ならティア 2 は ×2、ティア 3 は ×3 となります。ティア 5 より上の各ティアは、すでに一つ前のティアの ×1.5 の体力を持ちます。ティア 7 はティア 5 の ×2.25 です。0 % で通常の体力です。",
   "CustomBossChallenge-TierPreview": "ティアのプレビュー",
   "CustomBossChallenge-TierPreviewInfo": "各ティアの出現ラウンド、通常のゲームと比べた速度、体力です。オレンジは通常より多く、青は少ないことを表します。",
+  "CustomBossChallenge-Difficulty": "難易度",
+  "CustomBossChallenge-DifficultyInfo": "セットアップがどれくらい難しいかを1〜10個の星で表したおおまかな目安です。セットアップを比べて、試すものを選ぶのに使えます。ボスの体力と速さ、エリート、ティアの数と来る早さや間隔、ドクロ、ラウンド、マップ、モード、難易度、ルールといったセットアップの数値から計算します。実際にプレイするわけではないので、あなたのゲームでは簡単にも難しくも感じることがあります。",
   "CustomBossChallenge-PerTier": "{0} % / ティア",
   "CustomBossChallenge-SpawnRounds": "出現ラウンド",
   "CustomBossChallenge-SpawnRoundsInfo": "各ティアが登場するラウンドをカンマ区切りで指定します（例：40, 60, 80）。指定のないラウンドは20ラウンドごとに続きます。すべてのティアをプレイできるよう、ゲームの最終ラウンドは最後のティアの後に移動されます。",

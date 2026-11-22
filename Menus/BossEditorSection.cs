@@ -60,6 +60,9 @@ public sealed class BossEditorSection
     public SliderRow SpeedPerTier { get; private set; } = null!;
     public SliderRow HealthPerTier { get; private set; } = null!;
     public TierStrip Strip { get; private set; } = null!;
+
+    /// <summary>The difficulty rating under the Tier Preview (#263)</summary>
+    public DifficultyStars Difficulty { get; private set; } = null!;
     public SliderRow SkullCount { get; private set; } = null!;
     public SliderRow MaxParagons { get; private set; } = null!;
 
@@ -356,6 +359,10 @@ public sealed class BossEditorSection
             value => UpdateOptions("HealthPerTier", o => o with {HealthPerTier = (int) value}));
         var stripRow = EditorRows.LabelRow(template, rows, "TierStripRow", Texts.TierPreview.T(), VanillaSprites.BossT5Icon);
         Strip = new TierStrip(stripRow) {CardClicked = tier => OpenPicker(tier)};
+        var difficultyRow = EditorRows.LabelRow(template, rows, DifficultyStars.RowName, Texts.Difficulty.T(),
+            VanillaSprites.Star);
+        Difficulty = new DifficultyStars(difficultyRow);
+        Strip.Difficulty = Difficulty;
 
         FirstSpawnRound = SliderRow.Clone(template, rows, "FirstSpawnRoundRow", Texts.FirstBossRound.T(),
             VanillaSprites.BossT1Icon, 1, TierMath.MaxFirstSpawnRound, 1, TierMath.FirstSpawnRound, value => ShownNumber.Whole(value),
@@ -532,6 +539,7 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(SpeedPerTier.Row, Texts.SpeedPerTier, Texts.SpeedPerTierInfo);
         EditorRows.AddInfo(HealthPerTier.Row, Texts.HealthPerTier, Texts.HealthPerTierInfo);
         EditorRows.AddInfo(stripRow, Texts.TierPreview, Texts.TierPreviewInfo);
+        EditorRows.AddInfo(difficultyRow, Texts.Difficulty, Texts.DifficultyInfo);
         EditorRows.AddInfo(FirstSpawnRound.Row, Texts.FirstBossRound, Texts.FirstBossRoundInfo);
         EditorRows.AddInfo(RoundsBetween.Row, Texts.RoundsBetweenTiers, Texts.RoundsBetweenTiersInfo);
         EditorRows.AddInfo(roundsRow, Texts.SpawnRounds, Texts.SpawnRoundsInfo);
@@ -547,6 +555,7 @@ public sealed class BossEditorSection
         // The Tier Preview sits right under the boss, where in Advanced Mode its cards pick the bosses, and Max Paragons,
         // a rule of the game rather than of the boss, after the skulls
         stripRow.transform.SetSiblingIndex(bossRow.transform.GetSiblingIndex() + 1);
+        difficultyRow.transform.SetSiblingIndex(stripRow.transform.GetSiblingIndex() + 1);
         MaxParagons.Row.transform.SetSiblingIndex(skullStripRow.transform.GetSiblingIndex());
     }
 
