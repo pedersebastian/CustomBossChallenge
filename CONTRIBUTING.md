@@ -373,8 +373,8 @@ The issue lists the steps below as tasks; the script reads them from this list, 
 ## Website
 
 `web/` is a small website (Vite + TypeScript, no framework) that reads share codes without the game, shows the setup
-like the Boss Creator does (Tier Preview, skulls, rules) and lists example codes. It has four pages: `index.html`,
-`compare.html` (two setups side by side), `past-events.html` (the past boss events, #213) and `studio.html`, the Studio (#12, #79), which makes and changes setups with
+like the Boss Creator does (Tier Preview, skulls, rules) and lists example codes. It has five pages: `index.html`,
+`compare.html` (two setups side by side), `past-events.html` (the past boss events, #213), `stats.html` (their stats, #265) and `studio.html`, the Studio (#12, #79), which makes and changes setups with
 the Boss Creator's controls (`web/src/studio/`), Advanced Mode's bosses per tier included (`tiers.ts`, #95), the
 Challenge Editor's rules (`rules.ts`, #97) and its tower restrictions (`towers.ts`, #128), held to `ChallengeLimits`
 with the same clamping the code reader uses. It is laid out like the Boss Creator (#133): rows with our own icons
@@ -390,7 +390,7 @@ Then open http://localhost:5173. To try the site on a phone, `npm run dev:lan` s
 and prints the address to open on the phone (on the same network). `npm test` runs its tests and `npm run build`
 puts the finished site in `web/dist`.
 
-The Past Events page (`past-events.html`, #213) loads `boss-events.json`, which isn't committed: run
+The Past Events page (`past-events.html`, #213) and the Stats page (`stats.html`, #265, numbers from `web/src/stats/compute.ts`) load `boss-events.json`, which isn't committed: run
 `npm run boss-events` once in `web/` to build it into `web/public/` from `data/boss-events/`, as `pages.yml` does
 before every deploy. The tests don't need it; they read the archive itself. The website's mapping
 (`web/packages/share-code/src/pastEvents.ts`) is a port of the mod's `Config/PastEventRules.cs`, and
