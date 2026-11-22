@@ -176,11 +176,17 @@
   "CustomBossChallenge-Past Events Category": "Minione wydarzenia",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Pobieraj nowe wydarzenia z bossami",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "Przy starcie gry lista minionych wydarzeń w Kreatorze Bossów pobiera najnowszą listę oficjalnych wydarzeń z bossami ze strony moda (pedersebastian.github.io/CustomBossChallenge), więc nowe wydarzenia pojawiają się bez aktualizacji moda. Żadne dane osobowe nie są wysyłane. Po wyłączeniu lista ma wydarzenia dołączone do moda i te pobrane wcześniej.",
+  "CustomBossChallenge-Updates Category": "Aktualizacje",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Pokazuj nowości",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Po aktualizacji moda przy pierwszym otwarciu Kreatora Bossów zobaczysz jeden raz, co nowego w nowej wersji. Wyłączone nigdy się nie pokazuje. Przycisk Nie pokazuj więcej w tym oknie też to wyłącza.",
   "CustomBossChallenge-TierTime": "Poziom {0}",
   "CustomBossChallenge-TotalTime": "Razem",
   "CustomBossChallenge-PenaltyTime": "Kara",
   "CustomBossChallenge-TiersUsed": "Użyte poziomy ulepszeń",
   "CustomBossChallenge-CashUsed": "Użyta gotówka",
   "CustomBossChallenge-RankedTime": "Czas",
-  "CustomBossChallenge-RulesNoChanges": "Brak innych zmian"
+  "CustomBossChallenge-RulesNoChanges": "Brak innych zmian",
+  "CustomBossChallenge-WhatsNew": "Co nowego",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge zaktualizowano do wersji {0}. Oto nowości:",
+  "CustomBossChallenge-DontShowAgain": "Nie pokazuj więcej"
 }

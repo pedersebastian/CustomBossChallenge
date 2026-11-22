@@ -176,11 +176,17 @@
   "CustomBossChallenge-Past Events Category": "過往活動",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "下載新的首領活動",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "遊戲啟動時，Boss建立器的過往活動清單會從模組網站（pedersebastian.github.io/CustomBossChallenge）下載最新的官方首領活動清單，這樣不必更新模組就能看到新活動。不會傳送任何個人資料。關閉後，清單只包含模組附帶的活動和先前下載的活動。",
+  "CustomBossChallenge-Updates Category": "更新",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "顯示新內容",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "模組更新後，第一次開啟Boss建立器時會顯示一次新版本的新內容。關閉後不會顯示。在該視窗中點選不再顯示也會關閉此項。",
   "CustomBossChallenge-TierTime": "第 {0} 階段",
   "CustomBossChallenge-TotalTime": "總計",
   "CustomBossChallenge-PenaltyTime": "懲罰",
   "CustomBossChallenge-TiersUsed": "已用升級等級",
   "CustomBossChallenge-CashUsed": "已用金錢",
   "CustomBossChallenge-RankedTime": "時間",
-  "CustomBossChallenge-RulesNoChanges": "無其他變更"
+  "CustomBossChallenge-RulesNoChanges": "無其他變更",
+  "CustomBossChallenge-WhatsNew": "新內容",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge已更新到{0}。新內容如下：",
+  "CustomBossChallenge-DontShowAgain": "不再顯示"
 }

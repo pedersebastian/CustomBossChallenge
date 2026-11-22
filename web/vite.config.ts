@@ -1,8 +1,12 @@
+import { readFileSync } from "node:fs";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   // Relative paths, so the built site works from any folder, e.g. GitHub Pages under /CustomBossChallenge/
   base: "./",
+  // What's new (#264): the mod's CHANGELOG.md, read when the site is built, as the text __CHANGELOG__. Read here
+  // rather than imported, so the dev server serves nothing outside web/.
+  define: { __CHANGELOG__: JSON.stringify(readFileSync(new URL("../CHANGELOG.md", import.meta.url), "utf8")) },
   server: { port: 5173, strictPort: true },
   // Four pages: the main page, the one that compares two setups, the one that makes them (#12) and the past boss
   // events (#213)

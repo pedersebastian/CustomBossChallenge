@@ -1,0 +1,53 @@
+{
+  "about": "How CHANGELOG.md is read for What's new (#264): UnitTests/ChangelogTests.cs (the mod's Config/Changelog.cs) and web/test/news.test.ts (the website's src/news/changelog.ts) read every case alike. Each entry is a version's section, newest first, with the points under its Added.",
+  "cases": [
+    {
+      "name": "a point with a title, issues and a text over several lines",
+      "markdown": "# Changelog\n\n## [Unreleased]\n\n### Added\n\n- **Difficulty stars** (#263): the Boss Creator shows a rating\n  from 1 to 10 stars.\n\n## [2.14.0] - 2026-11-22\n\n### Added\n\n- **Past events** (#212): an event opens with its rules.\n",
+      "entries": [
+        { "version": "Unreleased", "date": "", "added": [
+          { "title": "Difficulty stars", "refs": "#263", "text": "the Boss Creator shows a rating from 1 to 10 stars.", "forContributors": false }
+        ] },
+        { "version": "2.14.0", "date": "2026-11-22", "added": [
+          { "title": "Past events", "refs": "#212", "text": "an event opens with its rules.", "forContributors": false }
+        ] }
+      ]
+    },
+    {
+      "name": "points for contributors are marked, and only Added counts",
+      "markdown": "## [2.13.0] - 2026-11-17\n\n### Added\n\n- **An issue the day BTD6 updates** (#272, #19, for contributors): a daily workflow.\n- **Ranked practice**: the timer.\n\n### Changed\n\n- **Share codes version 6** (#250): codes change.\n\n### Fixed\n\n- **No more errors** (#228): fixed.\n",
+      "entries": [
+        { "version": "2.13.0", "date": "2026-11-17", "added": [
+          { "title": "An issue the day BTD6 updates", "refs": "#272, #19, for contributors", "text": "a daily workflow.", "forContributors": true },
+          { "title": "Ranked practice", "refs": "", "text": "the timer.", "forContributors": false }
+        ] }
+      ]
+    },
+    {
+      "name": "a version without Added, an empty Unreleased and a comment",
+      "markdown": "# Changelog\n\n<!--List any changes you make\nin the Unreleased section.-->\n\n## [Unreleased]\n\n## [2.12.1] - 2026-11-01\n\n### Fixed\n\n- **A fix**: done.\n\n## [2.12.0] - 2026-10-30\n\n### Added\n\n- A point without a title, `code` and **bold** in it.\n",
+      "entries": [
+        { "version": "Unreleased", "date": "", "added": [] },
+        { "version": "2.12.1", "date": "2026-11-01", "added": [] },
+        { "version": "2.12.0", "date": "2026-10-30", "added": [
+          { "title": "", "refs": "", "text": "A point without a title, `code` and **bold** in it.", "forContributors": false }
+        ] }
+      ]
+    },
+    {
+      "name": "Windows line endings, star bullets and points without a blank line between them",
+      "markdown": "## [2.11.0] - 2026-10-20\r\n### Added\r\n* **One**: first.\r\n* **Two** (#1): second,\r\n    over two lines.\r\n",
+      "entries": [
+        { "version": "2.11.0", "date": "2026-10-20", "added": [
+          { "title": "One", "refs": "", "text": "first.", "forContributors": false },
+          { "title": "Two", "refs": "#1", "text": "second, over two lines.", "forContributors": false }
+        ] }
+      ]
+    },
+    {
+      "name": "nothing to read",
+      "markdown": "",
+      "entries": []
+    }
+  ]
+}

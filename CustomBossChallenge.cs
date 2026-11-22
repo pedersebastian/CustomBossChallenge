@@ -20,6 +20,8 @@ public class CustomBossChallenge : BloonsTD6Mod
     public override void OnApplicationStart()
     {
         ModHelper.Msg<CustomBossChallenge>("CustomBossChallenge loaded!");
+        // Before anything of the mod writes to its folder: a fresh install has none (#264)
+        Menus.WhatsNew.OnGameStart(System.IO.Directory.Exists(Persistence.WhatsNewStore.ModFolder));
     }
 
     /// <summary>

@@ -176,11 +176,17 @@
   "CustomBossChallenge-Past Events Category": "Eerdere events",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Nieuwe boss-events downloaden",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "Als het spel start, downloadt de lijst met eerdere events van de Bossmaker de nieuwste lijst met officiële boss-events van de website van de mod (pedersebastian.github.io/CustomBossChallenge), zodat nieuwe events verschijnen zonder update van de mod. Er worden geen persoonsgegevens verstuurd. Uit heeft de lijst de events die met de mod meekwamen en de events die eerder zijn gedownload.",
+  "CustomBossChallenge-Updates Category": "Updates",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Nieuws tonen",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Na een update van de mod toont de Bossmaker de eerste keer dat je hem opent wat er nieuw is in de nieuwe versie, één keer. Uit wordt het nooit getoond. Niet meer tonen in dat venster zet dit ook uit.",
   "CustomBossChallenge-TierTime": "Niveau {0}",
   "CustomBossChallenge-TotalTime": "Totaal",
   "CustomBossChallenge-PenaltyTime": "Straf",
   "CustomBossChallenge-TiersUsed": "Gebruikte upgradeniveaus",
   "CustomBossChallenge-CashUsed": "Gebruikt geld",
   "CustomBossChallenge-RankedTime": "Tijd",
-  "CustomBossChallenge-RulesNoChanges": "Geen andere wijzigingen"
+  "CustomBossChallenge-RulesNoChanges": "Geen andere wijzigingen",
+  "CustomBossChallenge-WhatsNew": "Wat is er nieuw",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge is bijgewerkt naar {0}. Dit is er nieuw:",
+  "CustomBossChallenge-DontShowAgain": "Niet meer tonen"
 }

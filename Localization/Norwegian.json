@@ -176,11 +176,17 @@
   "CustomBossChallenge-Past Events Category": "Tidligere eventer",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Last ned nye boss-eventer",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "Når spillet starter, laster Boss-skaperens liste over tidligere eventer ned den nyeste listen over offisielle boss-eventer fra moddens nettside (pedersebastian.github.io/CustomBossChallenge), så nye eventer dukker opp uten en oppdatering av modden. Ingen personopplysninger blir sendt. Av har listen eventene modden kom med, og de den har lastet ned før.",
+  "CustomBossChallenge-Updates Category": "Oppdateringer",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Vis hva som er nytt",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Etter en oppdatering av modden viser Boss-skaperen hva som er nytt i den nye versjonen første gang du åpner den, én gang. Av blir det aldri vist. Ikke vis igjen i det vinduet slår også dette av.",
   "CustomBossChallenge-TierTime": "Nivå {0}",
   "CustomBossChallenge-TotalTime": "Totalt",
   "CustomBossChallenge-PenaltyTime": "Straff",
   "CustomBossChallenge-TiersUsed": "Oppgraderingsnivåer brukt",
   "CustomBossChallenge-CashUsed": "Penger brukt",
   "CustomBossChallenge-RankedTime": "Tid",
-  "CustomBossChallenge-RulesNoChanges": "Ingen andre endringer"
+  "CustomBossChallenge-RulesNoChanges": "Ingen andre endringer",
+  "CustomBossChallenge-WhatsNew": "Hva er nytt",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge er oppdatert til {0}. Dette er nytt:",
+  "CustomBossChallenge-DontShowAgain": "Ikke vis igjen"
 }

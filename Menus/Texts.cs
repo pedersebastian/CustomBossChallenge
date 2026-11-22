@@ -328,6 +328,12 @@ public static class Texts
 
     public static readonly string RulesNoChanges = Key(nameof(RulesNoChanges), "No other changes");
 
+    // The What's new popup (#264); its points come from CHANGELOG.md, in English
+    public static readonly string WhatsNew = Key(nameof(WhatsNew), "What's New");
+    public static readonly string WhatsNewIntro = Key(nameof(WhatsNewIntro),
+        "Custom Boss Challenge has been updated to {0}. Here is what's new:");
+    public static readonly string DontShowAgain = Key(nameof(DontShowAgain), "Don't Show Again");
+
     /// <summary>
     /// The name of a slider's row in the Rules panel's Modifiers list (#141), like the Boss Creator's
     /// </summary>
@@ -395,6 +401,13 @@ public static class Texts
     }
 
     public static string T(this string key, object arg) => string.Format(key.T(), arg);
+
+    /// <summary>
+    /// The text in the player's language as it is written, not yet shaped for Arabic: for a text that is shaped
+    /// together with others, like the What's new popup's
+    /// </summary>
+    public static string Raw(this string key, object arg) =>
+        string.Format(BTD_Mod_Helper.Extensions.StringExt.Localize(key), arg);
 
     public static string T(this string key, object arg0, object arg1) => string.Format(key.T(), arg0, arg1);
 

@@ -176,11 +176,17 @@
   "CustomBossChallenge-Past Events Category": "الأحداث السابقة",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "تنزيل أحداث الزعماء الجديدة",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "عند بدء اللعبة، تنزّل قائمة الأحداث السابقة في منشئ الزعماء أحدث قائمة لأحداث الزعماء الرسمية من موقع التعديل (pedersebastian.github.io/CustomBossChallenge)، لتظهر الأحداث الجديدة دون تحديث التعديل. لا تُرسل أي بيانات شخصية. عند الإيقاف، تحتوي القائمة على الأحداث المرفقة مع التعديل وتلك التي نُزّلت من قبل.",
+  "CustomBossChallenge-Updates Category": "التحديثات",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "عرض الجديد",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "بعد تحديث المود، يعرض منشئ الزعماء الجديد في الإصدار الجديد مرة واحدة عند فتحه لأول مرة. عند إيقافه لا يُعرض أبدًا. زر عدم العرض مرة أخرى في تلك النافذة يوقفه أيضًا.",
   "CustomBossChallenge-TierTime": "المستوى {0}",
   "CustomBossChallenge-TotalTime": "المجموع",
   "CustomBossChallenge-PenaltyTime": "العقوبة",
   "CustomBossChallenge-TiersUsed": "مستويات الترقية المستخدمة",
   "CustomBossChallenge-CashUsed": "المال المستخدم",
   "CustomBossChallenge-RankedTime": "الوقت",
-  "CustomBossChallenge-RulesNoChanges": "لا تغييرات أخرى"
+  "CustomBossChallenge-RulesNoChanges": "لا تغييرات أخرى",
+  "CustomBossChallenge-WhatsNew": "ما الجديد",
+  "CustomBossChallenge-WhatsNewIntro": "تم تحديث Custom Boss Challenge إلى {0}. إليك الجديد:",
+  "CustomBossChallenge-DontShowAgain": "عدم العرض مرة أخرى"
 }

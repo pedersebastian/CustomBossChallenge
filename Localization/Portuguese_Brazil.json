@@ -176,11 +176,17 @@
   "CustomBossChallenge-Past Events Category": "Eventos anteriores",
   "CustomBossChallenge-DownloadPastEvents Setting Name": "Baixar eventos de chefe novos",
   "CustomBossChallenge-DownloadPastEvents Setting Description": "Quando o jogo inicia, a lista de eventos anteriores do Criador de Chefes baixa a lista mais recente de eventos de chefe oficiais do site do mod (pedersebastian.github.io/CustomBossChallenge), para que eventos novos apareçam sem atualizar o mod. Nenhum dado pessoal é enviado. Desligada, a lista tem os eventos que vieram com o mod e os que foram baixados antes.",
+  "CustomBossChallenge-Updates Category": "Atualizações",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Mostrar novidades",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Depois de uma atualização do mod, a primeira vez que você abrir o Criador de Chefes mostra as novidades da nova versão, uma única vez. Desligado, elas nunca são mostradas. Não mostrar de novo nessa janela também desliga isto.",
   "CustomBossChallenge-TierTime": "Nível {0}",
   "CustomBossChallenge-TotalTime": "Total",
   "CustomBossChallenge-PenaltyTime": "Penalidade",
   "CustomBossChallenge-TiersUsed": "Níveis de melhoria usados",
   "CustomBossChallenge-CashUsed": "Dinheiro usado",
   "CustomBossChallenge-RankedTime": "Tempo",
-  "CustomBossChallenge-RulesNoChanges": "Nenhuma outra mudança"
+  "CustomBossChallenge-RulesNoChanges": "Nenhuma outra mudança",
+  "CustomBossChallenge-WhatsNew": "Novidades",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge foi atualizado para a {0}. Veja as novidades:",
+  "CustomBossChallenge-DontShowAgain": "Não mostrar de novo"
 }
