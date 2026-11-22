@@ -165,7 +165,16 @@ What could still show of Bloonarius, and how each is handled:
   by the game. The look hid them with the rest of Bloonarius's body; now it leaves that group drawn
   (`GildebloonLook.HideBody`) and shrinks Bloonarius's hidden rig onto Gildebloon (`OverlayScale`, `OverlayOffset`;
   Bloonarius's body is about twice Gildebloon's), a little bigger than its hull, so the coats lie on the hull and not
-  in it. `GildebloonOverlayTest` puts a Bloon Dissolver's glue and a sticky bomb on it. What a boss shows, found by
+  in it. The effects that coat a whole boss are shaped for Bloonarius's long body with fins, and no scaling laid them
+  tight on Gildebloon's round hull, so those are Gildebloon's own, modelled on its hull in
+  `tools/blender/gildebloon-boss.py` (groups `Overlay<name>` under `Hull`, hidden in Blender's renders): glue in its four
+  colours (yellow made lime to show on the gold, green, pink, pink with bubbles), goo bent onto the hull with wavy
+  edges, drips and a glob over the door; Unstable Concoction's purple acid spots with bubbles; fire as orange and
+  yellow cartoon flames; Laser Shock as pink lightning. `GildebloonLook.Coats` maps the game's overlay to the coat:
+  the coat shows while the game's is on, and the game's is kept from drawing. Sticky bombs, dynamite, drones, MOAB
+  Maim and the Skywarden's are the game's own on the shrunk rig. `GildebloonOverlayTest` puts a Bloon Dissolver's
+  glue, a Wizard's fire and a sticky bomb on it. The body file grew to 1.3 MB (279 parts), loaded in about 100 ms.
+  What a boss shows, found by
   scanning every tower's models for an overlay type (game 57.4): glue (Glue Gunner: yellow for most, green from
   Bloon Dissolver 3-x-x, pink from 0-0-3, pink with bubbles at 0-0-5; also the Desperado's Sheriff), sticky bombs
   (Ninja 0-0-4, Master Bomber 0-0-5, the Ninja Paragon's bomb tags), fire (Mortar, Wizard, Gwendolin, Buccaneer,

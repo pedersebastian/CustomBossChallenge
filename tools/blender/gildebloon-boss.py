@@ -471,6 +471,190 @@ tar_me = ellipsoid("Gilde_TarnishMesh", (0.2, 0.14, 0.014), TARNISH, 16, 6)
 for i, (x, y, sp) in enumerate(((-0.3, -0.55, 0.5), (0.35, -0.65, -0.2), (0.6, 0.05, 0.9), (-0.62, 0.1, 0.1),
                                 (0.1, 0.55, 1.3))):
     decal(f"Tarnish{i}", tar_me, tarnish, x, y, sp, lift=0.006)
+# ---- what towers put on it, in its own shape (#25, 2026-11-22). The game draws these on a boss from its overlay class,
+# and Gildebloon's is Bloonarius's: glue, acid, fire and laser shock shaped for Bloonarius's long body, which no scaling
+# lays tight on this round one. These are the same effects, made on the hull; each group is shown by the mod while the
+# game's own is on (GildebloonLook), and hidden in Blender's renders.
+import random as _random
+
+GLUE_YELLOW = toon("Gilde_GlueYellow", "#93a300", "#e3f04a", "#fbffb8", cuts=(0.35, 0.9))  # lime, to show on the gold
+GLUE_GREEN = toon("Gilde_GlueGreen", "#3f8a17", "#86cf38", "#cdf284", cuts=(0.35, 0.9))
+GLUE_PINK = toon("Gilde_GluePink", "#b01f6c", "#ff5aad", "#ffb6da", cuts=(0.35, 0.9))
+ACID = toon("Gilde_Acid", "#3e1f57", "#7a3db0", "#b886ea", cuts=(0.35, 0.9))
+BUBBLE = toon("Gilde_Bubble", "#b9c7d6", "#f2f7ff", "#ffffff", cuts=(0.3, 0.85))
+FIRE_OUT = toon("Gilde_FireOuter", "#c2360b", "#ff6a1a", "#ffa23d", cuts=(0.3, 0.85))
+FIRE_IN = toon("Gilde_FireInner", "#f2a20f", "#ffd84a", "#fff4b3", cuts=(0.3, 0.85))
+SHOCK = flat("Gilde_Shock", "#ff4fe3")
+SHOCK_CORE = flat("Gilde_ShockCore", "#fff0fd")
+
+
+def hull_dir(v):
+    """Where a direction from the hull's middle meets its surface, and the surface's normal there"""
+    k = math.sqrt((v.x / HULL.x) ** 2 + (v.y / HULL.y) ** 2 + (v.z / HULL.z) ** 2)
+    s = v / k
+    return s, Vector((s.x / HULL.x ** 2, s.y / HULL.y ** 2, s.z / HULL.z ** 2)).normalized()
+
+
+def hug_splat(name, mat, centre, radius, thick, seed, stretch=(1.0, 1.0), lift=0.012, rings=7, seg=28):
+    """A blob of goo lying on the hull round the direction `centre`: a dome bent onto the surface, with a wavy edge"""
+    r_ = _random.Random(seed)
+    c, n = hull_dir(Vector(centre))
+    t1 = n.cross(Vector((0, 0, 1)))
+    if t1.length < 1e-3:
+        t1 = Vector((1, 0, 0))
+    t1.normalize()
+    t2 = n.cross(t1).normalized()
+    ph = [r_.uniform(0, 6.3) for _ in range(3)]
+    bm = bmesh.new()
+    tip = bm.verts.new(c + n * (lift + thick))
+    prev = None
+    rows = []
+    for i in range(1, rings + 1):
+        rho = i / rings
+        row = []
+        for j in range(seg):
+            a = 2 * math.pi * j / seg
+            edge = 1 + 0.16 * math.sin(3 * a + ph[0]) + 0.09 * math.sin(5 * a + ph[1]) + 0.05 * math.sin(8 * a + ph[2])
+            d = radius * rho * edge
+            q = c + t1 * (math.cos(a) * d * stretch[0]) + t2 * (math.sin(a) * d * stretch[1])
+            s, sn = hull_dir(q)
+            h = lift + thick * max(0.0, 1 - rho ** 2) ** 0.6
+            row.append(bm.verts.new(s + sn * h))
+        rows.append(row)
+    for j in range(seg):
+        bm.faces.new((tip, rows[0][j], rows[0][(j + 1) % seg]))
+    for i in range(rings - 1):
+        for j in range(seg):
+            bm.faces.new((rows[i][j], rows[i + 1][j], rows[i + 1][(j + 1) % seg], rows[i][(j + 1) % seg]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    me = finish(bm, name, [mat])
+    # facing out: the first face's normal away from the hull's middle
+    f = me.polygons[0]
+    if f.normal.dot(f.center) < 0:
+        for p in me.polygons:
+            p.flip()
+    return me
+
+
+GLUE_SPOTS = [  # (direction from the hull's middle, radius, stretch): a coat over its top running down its sides
+    ((0.0, -0.15, 1.0), 0.62, (1.0, 1.1)), ((0.55, 0.45, 0.7), 0.42, (1.0, 1.0)), ((-0.6, 0.35, 0.65), 0.45, (1.0, 1.0)),
+    ((0.45, -0.75, 0.45), 0.36, (1.0, 1.0)), ((-0.5, -0.7, 0.4), 0.34, (1.0, 1.0)), ((0.0, 0.9, 0.5), 0.4, (1.2, 1.0)),
+    ((0.95, -0.05, 0.25), 0.3, (1.0, 1.0)), ((-0.95, 0.0, 0.2), 0.3, (1.0, 1.0)),
+]
+GLUE_DRIPS = [((0.62, -0.62, 0.05), 0.16), ((-0.75, -0.35, 0.0), 0.14), ((0.15, 1.05, 0.05), 0.15), ((-0.35, 0.95, -0.05), 0.12),
+              ((0.98, 0.35, -0.05), 0.13)]
+
+
+def glue_coat(group, key, mat, seed):
+    # a glob over the vault door too, as the game's glue covers a whole boss
+    obj(f"{key}DoorGlob", hug_splat(f"Gilde_{key}DoorGlob", mat, (0.05, -0.1, 1.0), 0.34, 0.05, seed + 90, (1.0, 0.9), lift=0.11),
+        group, line=0.014)
+    for i, (d, r, st) in enumerate(GLUE_SPOTS):
+        obj(f"{key}Splat{i}", hug_splat(f"Gilde_{key}Splat{i}", mat, d, r, 0.055, seed + i, st), group, line=0.014)
+    for i, (d, r) in enumerate(GLUE_DRIPS):
+        obj(f"{key}Drip{i}", hug_splat(f"Gilde_{key}Drip{i}", mat, d, r, 0.05, seed + 40 + i, (0.7, 1.5)), group, line=0.012)
+
+
+def bubbles(group, key, spots, size):
+    bub = ellipsoid(f"Gilde_{key}Bubble", (size, size, size), BUBBLE, 12, 8)
+    for i, d in enumerate(spots):
+        s, n = hull_dir(Vector(d))
+        obj(f"{key}Bubble{i}", bub, group, loc=s + n * (0.07 + size * 0.5), scale=0.7 + 0.15 * (i % 3), line=0.008)
+
+
+coat_groups = {}
+for key, mat, seed in (("GlueBasic", GLUE_YELLOW, 11), ("GlueDissolve", GLUE_GREEN, 23), ("GlueStronger", GLUE_PINK, 37),
+                       ("GlueStrongerDot", GLUE_PINK, 37)):
+    g = empty("Overlay" + key, hull)
+    glue_coat(g, key, mat, seed)
+    coat_groups[key] = g
+bubbles(coat_groups["GlueStrongerDot"], "GlueStrongerDot",
+        [(0.1, -0.2, 1.0), (-0.3, 0.2, 0.95), (0.4, 0.3, 0.85), (-0.15, -0.55, 0.8), (0.55, -0.35, 0.75), (-0.5, 0.55, 0.7)], 0.06)
+
+# Unstable Concoction: purple acid eating in, in smaller spots, bubbling
+acid = empty("OverlayUnstableConcoction", hull)
+_r = _random.Random(57)
+for i in range(13):
+    d = (_r.uniform(-0.9, 0.9), _r.uniform(-0.95, 0.95), _r.uniform(0.15, 1.0))
+    obj(f"AcidSplat{i}", hug_splat(f"Gilde_AcidSplat{i}", ACID, d, _r.uniform(0.16, 0.28), 0.035, 300 + i), acid, line=0.01)
+bubbles(acid, "Acid", [(0.2, 0.1, 1.0), (-0.45, -0.3, 0.8), (0.6, -0.5, 0.6), (-0.2, 0.7, 0.7), (0.7, 0.5, 0.5)], 0.05)
+coat_groups["UnstableConcoction"] = acid
+
+
+def flame_mesh(name, mat, w, h, bend, seed):
+    """A cartoon flame: a teardrop that tapers to a bent tip, standing on +z"""
+    r_ = _random.Random(seed)
+    bm = bmesh.new()
+    rows = []
+    n_rows, seg = 10, 12
+    for i in range(n_rows + 1):
+        t = i / n_rows
+        rad = w * math.sin(math.pi * min(1.0, t * 0.92 + 0.08)) ** 0.7 * (1 - t) ** 0.35
+        off = bend * t ** 2
+        row = []
+        for j in range(seg):
+            a = 2 * math.pi * j / seg
+            row.append(bm.verts.new((math.cos(a) * rad + off, math.sin(a) * rad * 0.7, t * h)))
+        rows.append(row)
+    for i in range(n_rows):
+        for j in range(seg):
+            bm.faces.new((rows[i][j], rows[i][(j + 1) % seg], rows[i + 1][(j + 1) % seg], rows[i + 1][j]))
+    bm.faces.new(list(reversed(rows[0])))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return finish(bm, name, [mat])
+
+
+fire = empty("OverlayFire", hull)
+FLAMES = [((0.35, 0.3, 1.0), 1.0), ((-0.4, 0.25, 1.0), 0.95), ((0.6, 0.4, 0.7), 0.9), ((-0.6, 0.45, 0.65), 0.95),
+          ((0.5, -0.65, 0.55), 0.8), ((-0.55, -0.6, 0.5), 0.85), ((0.95, -0.1, 0.25), 0.85), ((-0.95, 0.05, 0.25), 0.85),
+          ((0.1, 1.0, 0.35), 0.95), ((0.2, -1.0, 0.3), 0.7), ((0.75, 0.85, 0.3), 0.8), ((-0.7, 0.9, 0.3), 0.8),
+          ((0.0, 0.55, 0.9), 1.05)]
+for i, (d, size) in enumerate(FLAMES):
+    s, n = hull_dir(Vector(d))
+    up = (n + Vector((0, 0, 1.4))).normalized()  # flames lean up, the way fire goes
+    outer = obj(f"Flame{i}", flame_mesh(f"Gilde_Flame{i}", FIRE_OUT, 0.27 * size, 0.85 * size, 0.08 * (1 if i % 2 else -1), i),
+                fire, loc=s - n * 0.02, line=0.014)
+    outer.rotation_euler = up.to_track_quat("Z", "Y").to_euler()
+    # a smaller yellow one beside it: the core would hide inside the orange one
+    side = n.cross(Vector((0, 0, 1)))
+    side = (side if side.length > 1e-3 else Vector((1, 0, 0))).normalized() * (0.16 * size * (1 if i % 2 else -1))
+    s2, n2 = hull_dir(Vector(d) + side)
+    inner = obj(f"FlameCore{i}", flame_mesh(f"Gilde_FlameCore{i}", FIRE_IN, 0.17 * size, 0.55 * size, 0.05 * (-1 if i % 2 else 1), 50 + i),
+                fire, loc=s2 + n2 * 0.02, line=0.012)
+    inner.rotation_euler = (n2 + Vector((0, 0, 1.4))).normalized().to_track_quat("Z", "Y").to_euler()
+coat_groups["Fire"] = fire
+
+# Laser Shock: pink lightning crackling over it
+shock = empty("OverlayLaserShock", hull)
+BOLTS = [((-0.8, -0.5, 0.4), (0.7, 0.4, 0.6)), ((-0.3, 0.9, 0.4), (0.4, -0.85, 0.5)), ((0.9, -0.2, 0.3), (-0.1, 0.2, 1.0)),
+         ((-0.9, 0.2, 0.3), (-0.2, -0.3, 1.0))]
+_r = _random.Random(71)
+for i, (a, b) in enumerate(BOLTS):
+    pts = []
+    for k in range(9):
+        t = k / 8
+        d = Vector(a).lerp(Vector(b), t)
+        if 0 < k < 8:
+            d += Vector((_r.uniform(-0.18, 0.18), _r.uniform(-0.18, 0.18), _r.uniform(-0.05, 0.1)))
+        s, n = hull_dir(d)
+        pts.append(s + n * 0.05)
+    bm = bmesh.new()
+    core = bmesh.new()
+    for (p, q) in zip(pts, pts[1:]):
+        for target, rad in ((bm, 0.035), (core, 0.015)):
+            res = bmesh.ops.create_cone(target, cap_ends=True, segments=6, radius1=rad, radius2=rad, depth=(q - p).length)
+            rot = (q - p).normalized().to_track_quat("Z", "Y").to_matrix().to_4x4()
+            bmesh.ops.transform(target, matrix=Matrix.Translation((p + q) / 2) @ rot, verts=res["verts"])
+    obj(f"Shock{i}", finish(bm, f"Gilde_Shock{i}", [SHOCK], smooth=False), shock)
+    obj(f"ShockCore{i}", finish(core, f"Gilde_ShockCore{i}", [SHOCK_CORE], smooth=False), shock)
+coat_groups["LaserShock"] = shock
+
+# Not in the renders of its body (the sheet, the portraits): the mod shows them
+for g in coat_groups.values():
+    for o in [g] + list(g.children_recursive):
+        o.hide_render = True
+        o.visible_shadow = False
+
 # Elite: a red band and a crown of spikes round the door
 elite_band = empty("EliteBand", hull)
 band_z = 0.3

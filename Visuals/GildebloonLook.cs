@@ -90,6 +90,43 @@ public static class GildebloonLook
     public const string OverlaysName = "BloonariusOverlays";
 
     /// <summary>
+    /// The game's effects that coat the whole boss, shaped for Bloonarius's long body, and the coat on Gildebloon's own
+    /// body shown in their place (2026-11-22: no scaling laid them tight on its round hull). The rest (sticky bombs,
+    /// dynamite, drones, MOAB Maim, the Skywarden's...) are the game's own on the shrunk rig.
+    /// </summary>
+    public static readonly IReadOnlyDictionary<string, string> Coats = new Dictionary<string, string>
+    {
+        ["BloonariusGlueBasic"] = "GlueBasic", ["BloonariusGlueDissolve"] = "GlueDissolve",
+        ["BloonariusGlueStronger"] = "GlueStronger", ["BloonariusGlueStrongerDot"] = "GlueStrongerDot",
+        ["BloonariusUnstableConcoction"] = "UnstableConcoction", ["BloonariusFire"] = "Fire",
+        ["BloonariusLaserShockEffect"] = "LaserShock"
+    };
+
+    /// <summary>Shows Gildebloon's own coats while the game's are on, and keeps the game's coats from drawing</summary>
+    private static void ShowCoats(Shown look)
+    {
+        if (look.Body is not { } body || look.Overlays is not { } overlays) return;
+        for (var i = 0; i < overlays.childCount; i++)
+        {
+            var overlay = overlays.GetChild(i);
+            if (!Coats.TryGetValue(overlay.name, out var coat)) continue;
+            var on = overlay.gameObject.activeInHierarchy;
+            if (body.Coats.TryGetValue(coat, out var own) && own.activeSelf != on) own.SetActive(on);
+            if (!on) continue;
+            foreach (var renderer in overlay.GetComponentsInChildren<Renderer>())
+            {
+                if (renderer.forceRenderingOff) continue;
+                renderer.forceRenderingOff = true;
+                look.Hidden.Add(renderer);
+            }
+        }
+    }
+
+    /// <summary>Gildebloon's own coats shown now, for tests</summary>
+    public static List<string> CoatsShown =>
+        Boss?.Body?.Coats.Where(entry => entry.Value != null && entry.Value.activeSelf).Select(entry => entry.Key).OrderBy(name => name).ToList() ?? [];
+
+    /// <summary>
     /// The game puts towers' effects on a boss by its overlay class, and Gildebloon's is Bloonarius's (made from it): a
     /// glue coat, sticky bombs, fire, laser shock... shaped and placed for Bloonarius's body, which is about twice
     /// Gildebloon's (measured 2026-11-22 in the display's space: 68.8 x 61.9 x 71.0 around (5.4, 2.8, 1.1), Gildebloon's
@@ -261,6 +298,7 @@ public static class GildebloonLook
         look.Frames++;
         if (look.Look != null) HideBody(look, graphic.gameObject);
         FitOverlays(look, graphic.gameObject);
+        ShowCoats(look);
         if (!collector) Animate(look, bloon);
     }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BTD_Mod_Helper;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -51,7 +52,13 @@ public static class GildebloonBody
         public Transform?[] Parts = [];
         public GildebloonClipPlayer Player = null!;
         public bool Elite;
+
+        /// <summary>Its coats of what towers put on it (glue, acid, fire, laser shock), by name, hidden until on</summary>
+        public readonly Dictionary<string, GameObject> Coats = new();
     }
+
+    /// <summary>The coats a body has, by the name of their group in the file: "Overlay" and the game's overlay</summary>
+    public const string CoatPrefix = "Overlay";
 
     /// <summary>Reads the body; at the main menu, with Gildebloon's look</summary>
     public static void Load()
@@ -143,6 +150,12 @@ public static class GildebloonBody
         root.transform.localPosition = root.transform.localRotation * -new Vector3(hover.X, hover.Y, hover.Z) * size;
 
         var instance = new Instance {Root = root, Parts = parts, Player = new GildebloonClipPlayer(data), Elite = elite};
+        for (var i = 0; i < data.Parts.Count; i++)
+        {
+            if (!data.Parts[i].Name.StartsWith(CoatPrefix) || parts[i] is not { } coat) continue;
+            coat.gameObject.SetActive(false);
+            instance.Coats[data.Parts[i].Name.Substring(CoatPrefix.Length)] = coat.gameObject;
+        }
         Apply(instance);
         return instance;
     }

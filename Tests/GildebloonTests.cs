@@ -683,10 +683,11 @@ public class GildebloonTarnishTest : GildebloonTest
 
 /// <summary>
 /// What towers put on a boss shows on Gildebloon (#25): the game draws it in Bloonarius's overlays (Gildebloon's
-/// overlay class is Bloonarius's), which the look used to hide with Bloonarius's body. A Glue Gunner's green glue and a
-/// Ninja's sticky bomb show, shrunk onto Gildebloon's body.
+/// overlay class is Bloonarius's), which the look used to hide with Bloonarius's body. A Ninja's sticky bomb shows,
+/// on Bloonarius's rig shrunk onto Gildebloon; a Glue Gunner's green glue and a Wizard's fire show as Gildebloon's
+/// own coats in place of the game's, which are shaped for Bloonarius.
 /// </summary>
-[FullSuiteOnly("plays a game until glue and a sticky bomb are on it (about 30 s)")]
+[FullSuiteOnly("plays a game until glue, fire and a sticky bomb are on it (about 30 s)")]
 public class GildebloonOverlayTest : GildebloonTest
 {
     protected override IEnumerator RunOn()
@@ -707,6 +708,7 @@ public class GildebloonOverlayTest : GildebloonTest
         var position = manager.CurrentBoss!.Position;
         CreateTowerAt(bridge, new Vector2(position.X + 22, position.Y + 22), Game.instance.model.GetTowerFromId("GlueGunner-300"), costOverride: 0);
         CreateTowerAt(bridge, new Vector2(position.X - 22, position.Y + 22), Game.instance.model.GetTowerFromId("NinjaMonkey-004"), costOverride: 0);
+        CreateTowerAt(bridge, new Vector2(position.X, position.Y - 28), Game.instance.model.GetTowerFromId("WizardMonkey-030"), costOverride: 0);
 
         Transform? Overlay(string name)
         {
@@ -715,12 +717,19 @@ public class GildebloonOverlayTest : GildebloonTest
                 : display.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == name && t.parent?.name == Visuals.GildebloonLook.OverlaysName);
         }
 
-        foreach (var name in new[] {"BloonariusGlueDissolve", "BloonariusStickyBomb"})
+        // A sticky bomb is the game's own, drawn on it
+        yield return WaitFor(() => Overlay("BloonariusStickyBomb")?.gameObject.activeInHierarchy == true, "A sticky bomb on Gildebloon", 40);
+        var bomb = Overlay("BloonariusStickyBomb")!.GetComponentsInChildren<Renderer>().ToList();
+        Assert(bomb.Count > 0 && bomb.All(r => !r.forceRenderingOff), "The sticky bomb is drawn on Gildebloon");
+
+        // Glue and fire coat the whole boss: Gildebloon's own coat shows, the game's (Bloonarius-shaped) doesn't
+        foreach (var (name, coat) in new[] {("BloonariusGlueDissolve", "GlueDissolve"), ("BloonariusFire", "Fire")})
         {
-            yield return WaitFor(() => Overlay(name)?.gameObject.activeInHierarchy == true, $"{name} on Gildebloon", 40);
-            var renderers = Overlay(name)!.GetComponentsInChildren<Renderer>().ToList();
-            Assert(renderers.Count > 0 && renderers.All(r => !r.forceRenderingOff), $"{name} is drawn on Gildebloon");
+            yield return WaitFor(() => Overlay(name)?.gameObject.activeInHierarchy == true && Visuals.GildebloonLook.CoatsShown.Contains(coat),
+                $"{coat} on Gildebloon", 40);
+            Assert(Overlay(name)!.GetComponentsInChildren<Renderer>().All(r => r.forceRenderingOff), $"The game's {name} is hidden");
         }
+        Log($"coats shown: {string.Join(", ", Visuals.GildebloonLook.CoatsShown)}");
 
         // On its body: the overlays' rig is shrunk onto it
         var rig = Overlay("BloonariusGlueDissolve")!.parent.parent;
