@@ -366,6 +366,9 @@ public static class EditorRows
         if (text != null) text.margin = new Vector4(ListFrame * 3, 0, ListFrame * 3, 0);
     }
 
+    /// <summary>A white square with rounded corners, sliced, for a panel of any size</summary>
+    internal static Sprite RoundedFill => listFillSprite ??= RoundedSprite(false);
+
     /// <summary>
     /// A white square with rounded corners, or only its <see cref="ListFrame"/> wide edge, sliced so the corners keep
     /// their shape at any size

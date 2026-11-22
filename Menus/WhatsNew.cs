@@ -7,6 +7,8 @@ using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Persistence;
 using Il2CppAssets.Scripts.Unity.UI_New.Popups;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace CustomBossChallenge.Menus;
 
@@ -102,9 +104,115 @@ public static class WhatsNew
     /// The game's popup with <paramref name="body"/>, OK and Don't Show Again
     /// </summary>
     internal static void Show(string body) =>
-        PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter,
-            Texts.WhatsNew.T(), body, null, Texts.Ok.T(), new Action(TurnOff), Texts.DontShowAgain.T(),
-            Popup.TransitionAnim.Scale));
+        PopupScreen.instance.SafelyQueue(screen =>
+        {
+            var before = Popups().Select(popup => popup.Pointer).ToHashSet();
+            screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.WhatsNew.T(), body,
+                new Action(Unstyle), Texts.Ok.T(),
+                new Action(() =>
+                {
+                    Unstyle();
+                    TurnOff();
+                }), Texts.DontShowAgain.T(), Popup.TransitionAnim.Scale);
+            MelonLoader.MelonCoroutines.Start(StyleWhenShown(before));
+        });
+
+    /// <summary>The light blue card behind the popup's text, so the black text stands out from the blue popup</summary>
+    public static readonly Color CardColor = new(0.82f, 0.92f, 1f);
+
+    /// <summary>The popup's text colour on <see cref="CardColor"/></summary>
+    public static readonly Color TextColor = new(0.04f, 0.07f, 0.13f);
+
+    /// <summary>The name of the card's object, just before the popup's text</summary>
+    public const string CardName = "CbcWhatsNewCard";
+
+    /// <summary>The popup being shown with the card, and its text's own colour, to give back when it closes</summary>
+    private static (Popup Popup, Color Color)? styled;
+
+    private static Popup[] Popups() =>
+        PopupScreen.instance == null ? [] : PopupScreen.instance.GetComponentsInChildren<Popup>().ToArray();
+
+    /// <summary>
+    /// Waits for the popup <see cref="Show"/> opened, the one that wasn't there before, and gives it the card
+    /// </summary>
+    private static System.Collections.IEnumerator StyleWhenShown(HashSet<IntPtr> before)
+    {
+        var start = Time.realtimeSinceStartup;
+        while (Time.realtimeSinceStartup - start < 5)
+        {
+            var popup = Popups().FirstOrDefault(found => !before.Contains(found.Pointer) && found.body != null);
+            if (popup != null)
+            {
+                Style(popup);
+                break;
+            }
+            yield return null;
+        }
+        if (styled is not { } shown)
+        {
+            ModHelper.Warning<CustomBossChallenge>("The What's new popup wasn't found to give it its colours");
+            yield break;
+        }
+
+        // The popup lays its text out after it opens and scales it in: the card keeps to the text until it closes
+        var text = shown.Popup.body.rectTransform;
+        Transform? card;
+        while (shown.Popup != null && text != null && (card = text.parent.Find(CardName)) != null)
+        {
+            Follow(card.Cast<RectTransform>(), text);
+            yield return null;
+        }
+    }
+
+    /// <summary>The card where the text is, reaching <see cref="CardPadding"/> past it</summary>
+    private static void Follow(RectTransform card, RectTransform text)
+    {
+        card.pivot = text.pivot;
+        card.position = text.position;
+        card.sizeDelta = text.rect.size + new Vector2(CardPadding * 2, CardPadding);
+    }
+
+    private static void Style(Popup popup)
+    {
+        var body = popup.body;
+        var parent = body.transform.parent;
+        if (parent.Find(CardName) != null) return;
+
+        styled = (popup, body.color);
+        body.color = TextColor;
+
+        var card = new GameObject(CardName);
+        var rect = card.AddComponent<RectTransform>();
+        card.transform.SetParent(parent, false);
+        card.transform.SetSiblingIndex(body.transform.GetSiblingIndex());
+        card.AddComponent<LayoutElement>().ignoreLayout = true;
+        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+        Follow(rect, body.rectTransform);
+        var image = card.AddComponent<Image>();
+        image.sprite = EditorRows.RoundedFill;
+        image.type = Image.Type.Sliced;
+        // Corners as round as the popup's own
+        image.pixelsPerUnitMultiplier = (popup.GetComponentInParent<Canvas>()?.referencePixelsPerUnit ?? 100) / 300f;
+        image.color = CardColor;
+        image.raycastTarget = false;
+    }
+
+    /// <summary>How far the card reaches past the text on each side</summary>
+    private const float CardPadding = 40;
+
+    /// <summary>
+    /// The game uses its popups again for other texts, so the card goes and the text gets its colour back
+    /// </summary>
+    private static void Unstyle()
+    {
+        if (styled == null) return;
+        var (popup, color) = styled.Value;
+        styled = null;
+        if (popup == null || popup.body == null) return;
+        popup.body.color = color;
+        var card = popup.body.transform.parent.Find(CardName);
+        if (card != null) UnityEngine.Object.Destroy(card.gameObject);
+    }
 
     /// <summary>
     /// The points shown to a player who last saw <paramref name="since"/> (null: only this version's), newest first

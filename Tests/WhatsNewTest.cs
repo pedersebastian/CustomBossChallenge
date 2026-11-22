@@ -63,8 +63,23 @@ public class WhatsNewTest : ContinueTestBase
         Assert(expected.All(item => !item.Point.ForContributors), "Points for contributors are not for players");
         Assert(!popup.body.isTextOverflowing, $"What's new doesn't fit its popup: {body}");
         AssertEquals(WhatsNew.Store.Load(), WhatsNew.Current, "The version seen after the popup");
+        // Black text on a light blue card, which the popup doesn't keep for the game's other texts
+        var card = AssertNotNull(popup.body.transform.parent.Find(WhatsNew.CardName), "No light blue card behind the text")!;
+        AssertEquals(card.GetComponent<UnityEngine.UI.Image>().color, WhatsNew.CardColor, "The card's colour");
+        AssertEquals(card.GetSiblingIndex() + 1, popup.body.transform.GetSiblingIndex(), "The card is right behind the text");
+        AssertEquals(popup.body.color, WhatsNew.TextColor, "The text's colour");
+        var cardRect = LayoutChecks.ScreenRect(card.GetComponent<RectTransform>());
+        var textRect = LayoutChecks.ScreenRect(popup.body.rectTransform);
+        Assert(cardRect.Contains(textRect.min) && cardRect.Contains(textRect.max),
+            $"The card ({LayoutChecks.Describe(cardRect)}) must hold the text ({LayoutChecks.Describe(textRect)})");
         if (ScreenshotTour.Folder is {Length: > 0} folder) yield return ScreenshotTour.Capture(folder, "whats-new");
+        var shown = popup;
         yield return ClosePopup(popup, true);
+        if (shown != null && shown.body != null)
+        {
+            Assert(shown.body.transform.parent.Find(WhatsNew.CardName) == null, "The card stays on the popup after it closed");
+            Assert(shown.body.color != WhatsNew.TextColor, "The popup's text keeps the black after it closed");
+        }
         Assert(!turnedOff, "OK must leave Show What's New on");
 
         // Once per version: the next opening shows nothing. The other cases ask the Boss Creator's check again
