@@ -18,7 +18,7 @@ namespace CustomBossChallenge.Visuals;
 /// Gildebloon on the screen (#25):
 /// <list type="bullet">
 /// <item>its Vault under the game's boss panel: a gold coin with what it has stolen, and what went in last;</item>
-/// <item>what it takes and pays back, at the player's own cash: "-$700" (or "+$1,050") under the cash at the top left,
+/// <item>what it takes and pays back, at the player's own cash: "-$700" (or "+$840") under the cash at the top left,
 /// and coins flying from the cash to Gildebloon (or back), so it is plain where the money went;</item>
 /// <item>the Repossession at a skull: a big "Repossession!" with what it took under it, on the half of the screen
 /// Gildebloon isn't on, so it doesn't cover it;</item>

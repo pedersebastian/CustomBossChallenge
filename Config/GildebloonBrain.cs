@@ -33,7 +33,7 @@ public static class GildebloonBrain
 
     /// <summary>
     /// The share of the cash each theft takes: a share of what the player has, with no cap, so sitting on cash costs
-    /// (2026-11-21: the old caps, $150 a theft at tier 1, took 0.15 % of $100,000). It all comes back, half again, as
+    /// (2026-11-21: the old caps, $150 a theft at tier 1, took 0.15 % of $100,000). It all comes back, a fifth more, as
     /// the Payout when it is beaten.
     /// </summary>
     public const double TollShare = 0.02;
@@ -79,7 +79,7 @@ public static class GildebloonBrain
     public const int InterestQuietSeconds = 2;
 
     /// <summary>The Payout outside CHIMPS; in CHIMPS the player only gets the stolen cash back</summary>
-    public const double PayoutFactor = 1.5;
+    public const double PayoutFactor = 1.2;
 
     /// <summary>A Tax Collector that leaks takes a share of the player's cash, the bigger the bloon the more
     /// (<see cref="Gildebloon.CollectorKinds"/>); this if it is none of those</summary>

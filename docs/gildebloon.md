@@ -48,7 +48,7 @@ boss name through `BossList.Name`. The game itself only ever sees the string `bo
 - **What it takes** is a share of the cash with no cap (2026-11-21; the old caps took $150 a theft at tier 1, 0.15 % of
   $100,000): a Toll every 6 s takes 2 % (Elite 4 %), a skull 10 % (Elite 15 %). The Vault's shield is at most half
   the boss's health (`ShieldCapShare`), so a player with a lot of cash can still beat it; the Payout pays back all it
-  took, half again.
+  took and a fifth more (`PayoutFactor` 1.2; half again was too much, 2026-11-22), in CHIMPS only what it took.
 - **Shield per dollar by tier** (2026-11-22). Its health grows faster from tier to tier than a player's cash (tier 1:
   12,000 health at about round 40 with some $20,000; tier 5: 1.9 million at about round 120 with some $650,000), so at
   one point a dollar the Vault was up to 40 % of its health at tier 1 and about 1 % at tier 5.
@@ -66,7 +66,7 @@ boss name through `BossList.Name`. The game itself only ever sees the string `bo
 - `Patches/MixedBosses.cs` sets the game's boss type to "Gildebloon" before each of its tiers spawns, also when the
   whole setup is Gildebloon; `bossData.bossBloon` gets Bloonarius (`BossList.Host`).
 - `Visuals/GildebloonHud.cs` shows the Vault under the boss panel, and what it takes and pays back at the player's own
-  cash (top left): "-$700" under it and coins flying on the screen from the cash to Gildebloon (the Payout: "+$1,050"
+  cash (top left): "-$700" under it and coins flying on the screen from the cash to Gildebloon (the Payout: "+$840"
   and a shower of coins back). Before (2026-11-22) only "-$700" next to the Vault showed it, far from the cash.
 
 ## Its look (M4)
