@@ -404,7 +404,7 @@ public class BossCreatorTest : CustomBossTest
         yield return WaitForPopup(p => popup = p);
         Assert(popup.body.text.Contains(Texts.CodeInvalid.T()), $"Invalid code popup: {popup.body.text}");
         yield return ClosePopup(popup, true);
-        clipboard = "CBC7:abc";
+        clipboard = "CBC8:abc";
         section.PasteCode.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
         Assert(popup.body.text.Contains(Texts.CodeTooNew.T()), $"Newer code popup: {popup.body.text}");

@@ -23,6 +23,7 @@ public static class SetupCode
     public const string Version4Prefix = CodeFormat.Version4Prefix;
     public const string Version5Prefix = CodeFormat.Version5Prefix;
     public const string Version6Prefix = CodeFormat.Version6Prefix;
+    public const string Version7Prefix = CodeFormat.Version7Prefix;
     public const int PrefixLength = CodeFormat.PrefixLength;
     public const int MaxLength = CodeFormat.MaxLength;
     public const int MaxJsonLength = CodeFormat.MaxJsonLength;
@@ -44,12 +45,18 @@ public static class SetupCode
     /// <paramref name="dcm"/>
     /// </summary>
     public static string PrefixFor(BossOptions options, DailyChallengeModel? dcm = null) =>
-        NeedsVersion6(options, dcm) ? Version6Prefix
+        NeedsVersion7(options) ? Version7Prefix
+        : NeedsVersion6(options, dcm) ? Version6Prefix
         : NeedsVersion5(options) ? Version5Prefix
         : NeedsVersion4(options) ? Version4Prefix
         : NeedsVersion3(options) ? Version3Prefix
         : NeedsVersion2(options) ? Version2Prefix
         : Prefix;
+
+    /// <summary>
+    /// Whether the code holds the bosses a game picked for its Random tiers (#270), which version 6 readers drop
+    /// </summary>
+    public static bool NeedsVersion7(BossOptions options) => options.RandomTiers != null;
 
     /// <summary>
     /// Whether version 5 readers would change the setup's Boss Health or a tier's own health (#250)
@@ -107,7 +114,7 @@ public static class SetupCode
             if (payload["o"] is JObject optionsDiff) CodeFormat.Apply(optionsJson, CodeFormat.TypedOptions(optionsDiff));
             var raw = optionsJson.ToObject<BossOptions>(OptionsSerializer);
             if (raw == null) return false;
-            var decoded = raw.SanitizedFromCode();
+            var decoded = raw.SanitizedFromCode(CodeFormat.HoldsRandomTiers(code));
 
             var changes = ChallengeLimits.OptionChanges(raw, decoded);
             var model = Challenge(payload["c"] as JObject, decoded, changes, new List<string>());

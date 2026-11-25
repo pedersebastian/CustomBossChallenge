@@ -36,7 +36,9 @@ public static class CodeFormat
     /// The same goes for version 3, which has a different boss per tier (2.9), version 4, which has Boss Event
     /// Rounds, and version 5, which has the boss's own event rounds in CHIMPS (2.12): 2.11 reads every CHIMPS rounds
     /// value it doesn't know as a broken code. Version 6 has a Boss Health or a tier's own health that version 5 and
-    /// older would change (#250): below 10 %, above 2000 %, or a tier's on a step of 5.
+    /// older would change (#250): below 10 %, above 2000 %, or a tier's on a step of 5. Version 7 has the bosses a game
+    /// picked for its Random tiers, which the Boss Creator still shows as Random (#270): older readers would show the
+    /// bosses instead.
     /// <br/>
     /// Every version compares the options with the same defaults, Boss Event Rounds off, though a new setup has it on
     /// (#251): a code means the same setup in every version that reads it.
@@ -47,11 +49,12 @@ public static class CodeFormat
     public const string Version4Prefix = "CBC4:";
     public const string Version5Prefix = "CBC5:";
     public const string Version6Prefix = "CBC6:";
+    public const string Version7Prefix = "CBC7:";
 
     /// <summary>
     /// The prefixes this version reads
     /// </summary>
-    public static readonly string[] KnownPrefixes = [Prefix, Version2Prefix, Version3Prefix, Version4Prefix, Version5Prefix, Version6Prefix];
+    public static readonly string[] KnownPrefixes = [Prefix, Version2Prefix, Version3Prefix, Version4Prefix, Version5Prefix, Version6Prefix, Version7Prefix];
 
     /// <summary>
     /// The Boss Health range readers of version 5 and older keep a value in, as a multiplier, and the step they put a
@@ -69,6 +72,26 @@ public static class CodeFormat
         bossHealth < Version5MinBossHealth - 1e-6 || bossHealth > Version5MaxBossHealth + 1e-6 ||
         tierHealths.Any(health => health < Version5MinBossHealth * 100 - 1e-6 || health > Version5MaxBossHealth * 100 + 1e-6 ||
                                   health % Version5HealthStep != 0);
+    /// <summary>
+    /// The format version of a code (or of pasted text with one), like 6 for "CBC6:…", or 0 when it isn't a code
+    /// </summary>
+    public static int VersionOf(string? code)
+    {
+        var found = ExtractCode(code);
+        var colon = found.IndexOf(':');
+        return found.StartsWith(AnyVersionPrefix, StringComparison.Ordinal) && colon > AnyVersionPrefix.Length &&
+               int.TryParse(found.AsSpan(AnyVersionPrefix.Length, colon - AnyVersionPrefix.Length), NumberStyles.None,
+                   CultureInfo.InvariantCulture, out var version)
+            ? version
+            : 0;
+    }
+
+    /// <summary>
+    /// Whether the code's version holds which tiers were Random (#270); older readers dropped them, so a hand made
+    /// older code with them reads without them, like it did there
+    /// </summary>
+    public static bool HoldsRandomTiers(string? code) => VersionOf(code) >= 7;
+
     public const string AnyVersionPrefix = "CBC";
     public const int PrefixLength = 5;
 

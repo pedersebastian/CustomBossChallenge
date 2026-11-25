@@ -3,11 +3,22 @@
 // towers, Advanced Mode's tier bosses) stays as it was in the code.
 
 import { GAME, type Json, type JsonObject } from "../data/types";
-import { defaultOptions, newSetupOptions, effectiveSpawnRounds, entryOf, isMixed, type BossOptions, type SkullMode } from "@cbc/share-code";
+import {
+  defaultOptions,
+  newSetupOptions,
+  effectiveSpawnRounds,
+  entryOf,
+  isMixed,
+  wasRandom,
+  withoutRandomMark,
+  type BossOptions,
+  type SkullMode,
+} from "@cbc/share-code";
 import {
   FOLLOWS,
   MAX_SPEED,
   MIN_SPEED,
+  RANDOM,
   clampValue,
   resolveTiers,
   stepTier,
@@ -205,20 +216,31 @@ export function shownTier(setup: StudioSetup, tier: number): TierBoss {
   return entry.boss === null ? { ...entry, boss: setup.options.Boss, elite: setup.options.Elite } : entry;
 }
 
+/** Puts a tier's entry in the list; <picked> forgets that a code's game picked its boss at random (#270) */
+function putTier(setup: StudioSetup, tier: number, boss: TierBoss, picked: boolean): StudioSetup {
+  if (!isMixed(setup.options)) return setup;
+  const options = picked ? withoutRandomMark(setup.options, tier) : setup.options;
+  return withOptions({ ...setup, options }, { TierBosses: withTier(options.TierBosses, tier, boss) });
+}
+
 /** Gives a tier its own boss, or makes it follow the setup's with FOLLOWS (BossEditorSection.SetTierBoss) */
-export const setTierBoss = (setup: StudioSetup, tier: number, boss: TierBoss): StudioSetup =>
-  isMixed(setup.options) ? withOptions(setup, { TierBosses: withTier(setup.options.TierBosses, tier, boss) }) : setup;
+export const setTierBoss = (setup: StudioSetup, tier: number, boss: TierBoss): StudioSetup => putTier(setup, tier, boss, true);
 
 /** A boss or Random for a tier, keeping its Elite, speed, health and skulls (TierBossPicker.Pick) */
 export const pickTierBoss = (setup: StudioSetup, tier: number, choice: string): StudioSetup =>
   setTierBoss(setup, tier, { ...shownTier(setup, tier), boss: choice });
 
 /** The next or previous boss of a tier, as the arrows do on the Tier Preview (BossEditorSection.StepTierBoss) */
-export const stepTierBoss = (setup: StudioSetup, tier: number, direction: number): StudioSetup =>
-  setTierBoss(setup, tier, stepTier(entryOf(setup.options, tier), setup.options.Boss, setup.options.Elite, direction));
+export function stepTierBoss(setup: StudioSetup, tier: number, direction: number): StudioSetup {
+  // A boss a game picked at random steps on from Random, which the tier shows (#270)
+  const entry = entryOf(setup.options, tier);
+  const from = wasRandom(setup.options, tier) ? { ...entry, boss: RANDOM } : entry;
+  return setTierBoss(setup, tier, stepTier(from, setup.options.Boss, setup.options.Elite, direction));
+}
 
+/** Its Elite, speed, health or skulls: a boss a game picked at random stays one */
 const changeTier = (setup: StudioSetup, tier: number, change: Partial<TierBoss>): StudioSetup =>
-  setTierBoss(setup, tier, { ...shownTier(setup, tier), ...change });
+  putTier(setup, tier, { ...shownTier(setup, tier), ...change }, false);
 
 export const setTierElite = (setup: StudioSetup, tier: number, elite: boolean): StudioSetup => changeTier(setup, tier, { elite });
 

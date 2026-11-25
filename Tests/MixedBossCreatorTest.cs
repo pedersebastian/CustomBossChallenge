@@ -11,6 +11,7 @@ using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Unity.Menu;
 using Il2CppAssets.Scripts.Unity.UI_New;
 using Il2CppAssets.Scripts.Unity.UI_New.ChallengeEditor;
+using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using UnityEngine;
 using static CustomBossChallenge.Tests.TestUtils;
 using Object = UnityEngine.Object;
@@ -389,5 +390,135 @@ public class MixedBossCreatorTest : CustomBossTest
         section.SetAdvanced(true);
         AssertEquals(BossMode.Options.TierBosses, lineup, "Switching tabs on one setup keeps the lineup");
         section.ResetAll();
+    }
+}
+
+/// <summary>
+/// After a game with Random tiers the Boss Creator plays the setup again with the bosses Random picked, and copies a
+/// code with them (#270). The setup keeps its Random tiers; a pasted code shows those tiers as Random, Play keeps their
+/// bosses, and picking a boss for such a tier makes it a normal tier.
+/// </summary>
+public class LastGameBossesCreatorTest : CustomBossTest
+{
+    private string clipboard = "";
+
+    protected override IEnumerator Run()
+    {
+        var folder = Path.Combine(TempFolder, "LastGame");
+        var store = BossMode.Store;
+        var saved = BossMode.Saved;
+        BossMode.Store = new LastSetupStore(Path.Combine(folder, "LastSetup.json"));
+        BossMode.Saved = new SavedSetupsStore(Path.Combine(folder, "SavedSetups.json"));
+        Clipboard.Read = () => clipboard;
+        Clipboard.Write = text => clipboard = text;
+        try
+        {
+            yield return PlayAgain();
+        }
+        finally
+        {
+            BossMode.Store = store;
+            BossMode.Saved = saved;
+            Clipboard.Reset();
+            LastGame.Clear();
+            TierBossPicker.Current?.Hide();
+        }
+
+        yield return ToMainMenu();
+    }
+
+    private IEnumerator OpenCreator()
+    {
+        yield return ToMainMenu();
+        BossMode.Enter();
+        yield return WaitFor(() => BossEditorSection.Current?.Editor != null &&
+                                   MenuManager.instance.GetCurrentMenu()?.GetIl2CppType().Name == nameof(ChallengeEditor),
+            "Opening the Boss Creator", 30);
+        yield return new WaitForSecondsRealtime(1);
+    }
+
+    /// <summary>Presses a button that starts a game, and quits it back to the Boss Creator</summary>
+    private IEnumerator PlayAndQuit(UnityEngine.UI.Button button, Action check)
+    {
+        button.onClick.Invoke();
+        yield return WaitFor(() => InGame.instance?.bridge?.Simulation != null && !InGame.instance.quitting &&
+                                   MenuManager.instance?.IsTransitioning == false, "Loading the game", LoadTimeout);
+        yield return new WaitForSecondsRealtime(1);
+        check();
+        InGame.instance.QuitToMainMenu();
+        yield return WaitFor(() => InGame.instance == null && BossEditorSection.Current?.Editor != null &&
+                                   MenuManager.instance.GetCurrentMenu()?.GetIl2CppType().Name == nameof(ChallengeEditor) &&
+                                   !MenuManager.instance.IsTransitioning, "Back in the Boss Creator", 60);
+        yield return new WaitForSecondsRealtime(1);
+    }
+
+    private IEnumerator PlayAgain()
+    {
+        LastGame.Clear();
+        yield return OpenCreator();
+        var section = BossEditorSection.Current!;
+        section.ResetAll();
+        section.SetAdvanced(true);
+        section.SetTierBoss(2, new TierBoss(TierBossMath.Random, true));
+        section.SetTierBoss(4, new TierBoss(TierBossMath.Random, false));
+        section.Editor.dcm.disableSaves = true;
+        var setup = BossMode.Options;
+        Assert(!section.LastGameRow.activeSelf, "No last game's bosses before a game");
+
+        // Play: the Random tiers get their bosses, and back in the Boss Creator the row offers them again
+        BossOptions? played = null;
+        yield return PlayAndQuit(section.PlayButton, () => played = CustomBossState.ActiveOptions);
+        Assert(played is {HasRandom: false} && played.RandomTiers == "2,4", $"The game picked tiers 2 and 4: {played?.TierBosses}, {played?.RandomTiers}");
+        section = BossEditorSection.Current!;
+        AssertEquals(BossMode.Options, setup, "The setup keeps its Random tiers");
+        Assert(section.LastGameRow.activeSelf, "After a game with Random tiers the row is shown");
+        AssertEquals(section.FocusStops.Any(stop => stop.Name == "ReplayLineup"), true, "Tab reaches Play Again");
+
+        // Copy: a version 7 code with those bosses
+        section.CopyLineup.Button.onClick.Invoke();
+        Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
+        yield return WaitForPopup(found => popup = found);
+        var code = clipboard;
+        Assert(code.StartsWith(SetupCode.Version7Prefix), $"A version 7 code was copied: {code}");
+        Assert(SetupCode.TryDecode(code, out var fromCode, out _, out _), "The copied code loads");
+        AssertEquals(fromCode, played, "The copied code has the bosses the game picked");
+        yield return ClosePopup(popup!, true);
+        section.CopyCode.Button.onClick.Invoke();
+        yield return WaitForPopup(found => popup = found);
+        Assert(SetupCode.TryDecode(clipboard, out var plain, out _, out _) && plain == setup, "Copy still copies the setup, Random and all");
+        yield return ClosePopup(popup!, true);
+
+        // Play Again: the same bosses, and the setup is still the one with Random tiers
+        yield return PlayAndQuit(section.ReplayLineup.Button,
+            () => AssertEquals(CustomBossState.ActiveOptions, played, "Play Again has the same bosses"));
+        section = BossEditorSection.Current!;
+        AssertEquals(BossMode.Options, setup, "Play Again leaves the setup as it was");
+        Assert(section.LastGameRow.activeSelf, "The row stays after playing again");
+
+        // A changed setup is another setup: the row goes, and Undo brings it back
+        section.SetTierBoss(1, new TierBoss(nameof(BossType.Lych), false));
+        Assert(!section.LastGameRow.activeSelf, "A changed setup hides the last game's bosses");
+        BossHistory.Undo(section.Editor);
+        yield return null;
+        Assert(BossEditorSection.Current!.LastGameRow.activeSelf, "Undo brings the row back");
+
+        // The pasted code: its tiers show as Random, Play keeps their bosses
+        section = BossEditorSection.Current!;
+        clipboard = code;
+        section.PasteCode.Button.onClick.Invoke();
+        yield return WaitForPopup(found => popup = found);
+        yield return ClosePopup(popup!, true);
+        AssertEquals(BossMode.Options, played, "The pasted code's bosses");
+        Assert(!section.LastGameRow.activeSelf, "The pasted setup isn't the one the last game came from");
+        AssertEquals(section.Strip.Cards[1].SkullCount.Text.text, "?", "A tier Random picked keeps its skulls a secret");
+        AssertEquals(BossGameLauncher.Resolve(BossMode.Options), played, "Play keeps the pasted bosses");
+
+        // The picker shows Random ticked; picking a boss makes it a normal tier, the other stays Random
+        var picker = TierBossPicker.Open(section, 2);
+        var marker = picker.Choices[TierBossMath.Random].transform.Find(BossEditorSection.SelectedMarker);
+        Assert(marker != null && marker.gameObject.activeSelf, "The picker of a tier Random picked ticks Random");
+        picker.Pick(nameof(BossType.Phayze));
+        Assert(!BossMode.Options.WasRandom(2) && BossMode.Options.WasRandom(4), $"Tier 2 is a normal tier now: {BossMode.Options.RandomTiers}");
+        AssertEquals(BossMode.Options.BossId(2), "PhayzeElite2", "The picked boss keeps the tier's Elite");
     }
 }

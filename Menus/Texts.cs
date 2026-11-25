@@ -213,6 +213,16 @@ public static class Texts
     public static readonly string CopyLink = Key(nameof(CopyLink), "Copy Link");
     public static readonly string LinkCopied = Key(nameof(LinkCopied),
         "Link copied. It opens this setup on the Custom Boss Challenge website, and Paste reads it too.");
+
+    /// <summary>The row after a game with Random tiers, and the end screens' button (#270)</summary>
+    public static readonly string LastGameBosses = Key(nameof(LastGameBosses), "Last Game's Bosses");
+    public static readonly string LastGameBossesInfo = Key(nameof(LastGameBossesInfo),
+        "Your last game had Random tiers. Play Again starts a new game with the same bosses Random picked, still " +
+        "hidden until they arrive, while your setup keeps its Random tiers. Copy makes a code with those bosses: " +
+        "whoever pastes it sees Random on those tiers and gets the same bosses.");
+    public static readonly string PlayAgain = Key(nameof(PlayAgain), "Play Again");
+    public static readonly string CopyTheseBosses = Key(nameof(CopyTheseBosses), "Copy Code With These Bosses");
+
     public static readonly string LoadCodeQuestion = Key(nameof(LoadCodeQuestion),
         "Load this setup? Your current setup will be replaced.");
     public static readonly string CodeInvalid = Key(nameof(CodeInvalid),

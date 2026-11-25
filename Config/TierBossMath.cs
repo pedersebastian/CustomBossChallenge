@@ -273,6 +273,22 @@ public static class TierBossMath
         return random.Length > 0 ? string.Join(",", random) : null;
     }
 
+    /// <summary>
+    /// The tiers of both lists like "2,5", in order and without duplicates, or null when there are none
+    /// </summary>
+    public static string? MergeTierLists(string? first, string? second)
+    {
+        var tiers = ParseTierList(first).Concat(ParseTierList(second)).Distinct().OrderBy(tier => tier).ToArray();
+        return tiers.Length > 0 ? string.Join(",", tiers) : null;
+    }
+
+    /// <summary>The list like "2,5" without <paramref name="tier"/>, or null when none are left</summary>
+    public static string? WithoutTier(string? list, int tier)
+    {
+        var tiers = ParseTierList(list).Where(other => other != tier).ToArray();
+        return tiers.Length > 0 ? string.Join(",", tiers) : null;
+    }
+
     /// <summary>The tier numbers in a list like "2,5"; anything else is left out</summary>
     public static int[] ParseTierList(string? list) => string.IsNullOrWhiteSpace(list)
         ? []

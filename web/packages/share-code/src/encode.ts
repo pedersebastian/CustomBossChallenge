@@ -3,7 +3,7 @@
 // reads any raw deflate.
 
 import { DATA, type Json, type JsonObject } from "./data";
-import { PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFIX, VERSION5_PREFIX, VERSION6_PREFIX, filterChallenge } from "./decode";
+import { PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFIX, VERSION5_PREFIX, VERSION6_PREFIX, VERSION7_PREFIX, filterChallenge } from "./decode";
 import { parseTierBosses } from "./math/tierBosses";
 import { defaultOptions, optionsJson, readOptions, sanitize, type BossOptions } from "./options";
 import { UnsupportedBrowserError, canUseCodes } from "./support";
@@ -57,7 +57,7 @@ export function diff(value: Json, defaults: Json | undefined): Json | undefined 
 }
 
 /** The options brought into the Boss Creator's ranges first, so the mod reads back exactly what the code holds */
-export const normalized = (options: BossOptions): BossOptions => sanitize(readOptions(optionsJson(options)));
+export const normalized = (options: BossOptions): BossOptions => sanitize(readOptions(optionsJson(options)), true);
 
 /** The Boss Health range version 5 readers keep a value in, and the step they put a tier's own health on (#250) */
 const VERSION5_MIN_BOSS_HEALTH = 0.1;
@@ -80,6 +80,8 @@ export function needsVersion6(options: BossOptions, challenge?: JsonObject): boo
 
 /** SetupCode.PrefixFor: the oldest code version that holds everything in the options */
 export function prefixFor(options: BossOptions, challenge?: JsonObject): string {
+  // The bosses a game picked for its Random tiers, which version 6 readers drop (#270)
+  if (options.RandomTiers != null) return VERSION7_PREFIX;
   if (needsVersion6(options, challenge)) return VERSION6_PREFIX;
   if (options.ChimpsRounds === "Own") return VERSION5_PREFIX;
   if (options.BossEventRounds) return VERSION4_PREFIX;

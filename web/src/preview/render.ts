@@ -4,7 +4,7 @@ import { GAME, towerName } from "../data/types";
 import { announce, h } from "../dom";
 import { paragonsText } from "../math/paragons";
 import { playProblem, type Challenge } from "@cbc/share-code";
-import { SKULL_MODE_NAMES, bossOf, effectiveSpawnRounds, isMixed, tierBossName, tierSkullMode, type BossOptions } from "@cbc/share-code";
+import { SKULL_MODE_NAMES, bossOf, effectiveSpawnRounds, hideRandomPicks, isMixed, tierBossName, tierSkullMode, type BossOptions } from "@cbc/share-code";
 import { formatDecimals } from "@cbc/share-code/dotnet";
 import { formatPercent } from "@cbc/share-code/skulls";
 import { clampTiers, endRound, maxModelHealth } from "@cbc/share-code/tiers";
@@ -40,6 +40,8 @@ export const bossTitle = (options: BossOptions): string =>
 
 
 export function renderSetup(options: BossOptions, challenge: Challenge, compact = false): HTMLElement {
+  // Bosses a game picked at random stay a secret until they arrive (#270)
+  options = hideRandomPicks(options);
   const rounds = effectiveSpawnRounds(options);
   const problem = playProblem(challenge, rounds);
   const root = h("div", { class: "setup" });
@@ -131,6 +133,8 @@ function renderBadge(options: BossOptions): HTMLElement {
 
 /** A tier's own boss's portrait in Advanced Mode, Elite or not; a die for a Random tier, whose boss isn't known yet */
 export function tierPortrait(options: BossOptions, tier: number, name: string): Element {
+  // Bosses a game picked at random stay a secret until they arrive (#270)
+  options = hideRandomPicks(options);
   if (name.startsWith("Random")) return dice(24);
   const { boss, elite } = bossOf(options, tier);
   return portrait(boss, elite, 24, null);
@@ -142,6 +146,8 @@ export function tierPortrait(options: BossOptions, tier: number, name: string): 
  * which only knows Boss Speed and Boss Health, it says only when tiers are held to the game's health limit.
  */
 export function renderTiers(options: BossOptions, challenge: Challenge, notes?: string[]): HTMLElement {
+  // Bosses a game picked at random stay a secret until they arrive (#270)
+  options = hideRandomPicks(options);
   const cards = tierCards(options, challenge);
   const strip = h("div", { class: "tiers", role: "list" });
   for (const card of cards) {
@@ -191,6 +197,8 @@ export function renderTiers(options: BossOptions, challenge: Challenge, notes?: 
 
 /** The Skull Preview: the health bar with the skulls on it, like Menus/SkullStrip.cs (the Studio shows it too) */
 export function renderSkulls(options: BossOptions, shownTier = 1): HTMLElement {
+  // Bosses a game picked at random stay a secret until they arrive (#270)
+  options = hideRandomPicks(options);
   const { percents: shown, tier } = skulls(options, shownTier);
   const percents = shown ?? [];
   const bar = h(

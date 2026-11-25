@@ -1,4 +1,4 @@
-// @cbc/share-code: read, check and make Custom Boss Challenge share codes (CBC1: to CBC6:) exactly like the mod does
+// @cbc/share-code: read, check and make Custom Boss Challenge share codes (CBC1: to CBC7:) exactly like the mod does
 // (#98). The mod's own code is the reference: Persistence/CodeFormat.cs, SetupCode.cs, Config/BossOptions.cs,
 // ChallengeLimits.cs, TierMath.cs, SkullMath.cs and TierBossMath.cs. The test vectors in web/test are shared with the
 // mod's C# tests, so both sides read and write codes the same way.
@@ -21,6 +21,7 @@ export {
   VERSION4_PREFIX,
   VERSION5_PREFIX,
   VERSION6_PREFIX,
+  VERSION7_PREFIX,
   LINK_KEY,
   type Challenge,
   type CodeProblem,
@@ -52,7 +53,7 @@ export type { TierBoss } from "./math/tierBosses";
 export type { SetupFacts, SetupWarning, TierBase, Warning } from "./math/warnings";
 
 /** Every code prefix this version reads, oldest first */
-export const PREFIXES = ["CBC1:", "CBC2:", "CBC3:", "CBC4:", "CBC5:", "CBC6:"] as const;
+export const PREFIXES = ["CBC1:", "CBC2:", "CBC3:", "CBC4:", "CBC5:", "CBC6:", "CBC7:"] as const;
 
 /** The game version the package's data was taken from */
 export const gameVersion: string = DATA.gameVersion;
