@@ -332,7 +332,7 @@ public class MixedBossLineupTest : CustomBossTest
         Clipboard.Write = text => clipboard = text;
         try
         {
-            var setup = new BossOptions {Tiers = 3, TierBosses = "Lych,RandomElite,Random", SpawnRounds = "40,43,46"};
+            var setup = new BossOptions {Tiers = 3, TierBosses = "Lych,RandomElite,Random", SpawnRounds = "40, 43, 46"}.Sanitized();
             var dcm = BaseDcm();
             dcm.startRules.round = 38;
             dcm.startRules.lives = dcm.startRules.maxLives = 1;

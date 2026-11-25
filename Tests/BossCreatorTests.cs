@@ -99,7 +99,8 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 21, "Info buttons in the boss section");
+        // 22 with the Last Game's Bosses row (#270), hidden until a game with Random tiers
+        AssertEquals(infoButtons, 22, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
