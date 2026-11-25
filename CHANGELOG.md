@@ -51,6 +51,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Dropdown texts keep clear of their arrow** (#267): in the Past Events filters and the Saved Setups list a longer
   entry ran into the arrow, in English too. The year filter is a little wider, so "Every Year" fits in every language,
   and the Normal button of a past event no longer wraps a long translation onto two lines.
+- **A new setup's name is in your language** (#279): "Custom Lych", "Custom Elite Lych" and "Custom Boss Gauntlet" were
+  English in every language. They are now translated where the Challenge Editor's name field keeps the name, like the
+  example setups' names, and English otherwise. Changing the boss still renames a setup that has the name it was
+  given, in English or any other language.
 
 ## [2.14.0] - 2026-11-22
 
