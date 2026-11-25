@@ -299,11 +299,11 @@ public class BossCreatorTest : CustomBossTest
 
         // The name says Elite, and follows the Elite box too
         Assert(BossMode.Options.Elite, "Elite is on here");
-        AssertEquals(editor.chalName.text, "Custom Elite Vortex", "The name of an Elite boss");
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex, true), "The name of an Elite boss");
         section.Elite.SetChecked(false, true);
-        AssertEquals(editor.chalName.text, "Custom Vortex", "The name must follow Elite off");
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex), "The name must follow Elite off");
         section.Elite.SetChecked(true, true);
-        AssertEquals(editor.chalName.text, "Custom Elite Vortex", "The name must follow Elite on");
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex, true), "The name must follow Elite on");
         editor.chalName.text = "My boss";
         section.Elite.SetChecked(false, true);
         AssertEquals(editor.chalName.text, "My boss", "Elite must keep the player's own name");
