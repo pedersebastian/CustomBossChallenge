@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "Dodaje taką część normalnego zdrowia za każdy poziom po pierwszym, ponad własne wzrosty gry: +100 % daje poziomowi 2 ×2, poziomowi 3 ×3 i tak dalej. Każdy poziom powyżej 5 ma już ×1,5 zdrowia poprzedniego, więc poziom 7 ma ×2,25 zdrowia poziomu 5. 0 % zachowuje normalne zdrowie.",
   "CustomBossChallenge-TierPreview": "Podgląd poziomów",
   "CustomBossChallenge-TierPreviewInfo": "Każdy poziom z rundą, w której się pojawia, prędkością w porównaniu ze zwykłą grą i zdrowiem. Pomarańczowy to więcej niż w zwykłej grze, niebieski mniej.",
+  "CustomBossChallenge-Difficulty": "Trudność",
+  "CustomBossChallenge-DifficultyInfo": "Przybliżona ocena tego, jak trudny jest zestaw, od 1 do 10 gwiazdek, aby porównać zestawy i wybrać jeden do wypróbowania. Wyliczana jest z liczb zestawu: zdrowia i szybkości bossów, Elite, liczby poziomów oraz tego, jak wcześnie i jak gęsto przychodzą, czaszek, rund, mapy, trybu, poziomu trudności i zasad. Nie rozgrywa zestawu, więc twoja gra może wydawać się łatwiejsza lub trudniejsza.",
   "CustomBossChallenge-PerTier": "{0} % / poziom",
   "CustomBossChallenge-SpawnRounds": "Rundy Pojawienia",
   "CustomBossChallenge-SpawnRoundsInfo": "Runda, w której pojawia się każdy poziom, oddzielone przecinkami, np. 40, 60, 80. Brakujące rundy są ustawiane co 20 rund. Ostatnia runda gry jest przesuwana na po ostatnim poziomie, aby można było zagrać wszystkie poziomy.",
@@ -184,11 +186,17 @@
   "CustomBossChallenge-New Bosses Category": "Nowi bossowie",
   "CustomBossChallenge-IncludeGildebloon Setting Name": "Uwzględnij Gildebloona",
   "CustomBossChallenge-IncludeGildebloon Setting Description": "Dodaje do Boss Creatora Gildebloona, bossa stworzonego przez ten mod: złoty skarbiec, który kradnie twoje pieniądze, chowa się za zrobioną z nich tarczą i oddaje je po pokonaniu. Wyłączony nie może zostać wybrany, Losowo nigdy go nie wybiera, a konfiguracje i kody z nim proszą najpierw o włączenie tej opcji.",
+  "CustomBossChallenge-Updates Category": "Aktualizacje",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Pokazuj nowości",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Po aktualizacji moda przy pierwszym otwarciu Kreatora Bossów zobaczysz jeden raz, co nowego w nowej wersji. Wyłączone nigdy się nie pokazuje. Przycisk Nie pokazuj więcej w tym oknie też to wyłącza.",
   "CustomBossChallenge-TierTime": "Poziom {0}",
   "CustomBossChallenge-TotalTime": "Razem",
   "CustomBossChallenge-PenaltyTime": "Kara",
   "CustomBossChallenge-TiersUsed": "Użyte poziomy ulepszeń",
   "CustomBossChallenge-CashUsed": "Użyta gotówka",
   "CustomBossChallenge-RankedTime": "Czas",
-  "CustomBossChallenge-RulesNoChanges": "Brak innych zmian"
+  "CustomBossChallenge-RulesNoChanges": "Brak innych zmian",
+  "CustomBossChallenge-WhatsNew": "Co nowego",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge zaktualizowano do wersji {0}. Oto nowości:",
+  "CustomBossChallenge-DontShowAgain": "Nie pokazuj więcej"
 }

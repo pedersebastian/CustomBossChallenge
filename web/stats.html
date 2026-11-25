@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boss event stats · Custom Boss Challenge</title>
+    <meta
+      name="description"
+      content="The official BTD6 Boss Bloon Events since 2021 in numbers: events per boss, the waits between them, the maps and modes used most and how they were ranked."
+    />
+    <link rel="icon" type="image/png" href="./icon.png" />
+    <link rel="apple-touch-icon" href="./icon.png" />
+    <link rel="canonical" href="%VITE_SITE_URL%stats.html" />
+    <meta name="theme-color" content="#0c2a52" />
+
+        <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Custom Boss Challenge" />
+    <meta property="og:title" content="BTD6 boss event stats · Custom Boss Challenge" />
+    <meta property="og:description" content="Every official Boss Bloon Event since 2021 in numbers." />
+    <meta property="og:url" content="%VITE_SITE_URL%stats.html" />
+    <meta property="og:image" content="%VITE_SITE_URL%og-card.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Custom Boss Challenge logo with the words: build your own BTD6 boss fight" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BTD6 boss event stats · Custom Boss Challenge" />
+    <meta name="twitter:description" content="Every official Boss Bloon Event since 2021 in numbers." />
+    <meta name="twitter:image" content="%VITE_SITE_URL%og-card.png" />
+    <meta name="twitter:image:alt" content="Custom Boss Challenge logo with the words: build your own BTD6 boss fight" />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#top">Skip to content</a>
+    <header class="top">
+      <nav class="nav" aria-label="Main">
+        <a class="brand" href="./"><img src="./icon.png" alt="" width="40" height="40" /> Custom Boss Challenge</a>
+        <div class="nav-links">
+          <a href="./#codes">Read a code</a>
+          <a href="./compare.html">Compare</a>
+          <a href="./studio.html">Create</a>
+          <a href="./past-events.html">Past events</a>
+          <a href="./stats.html" aria-current="page">Stats</a>
+          <a href="./#examples">Try these</a>
+          <a href="./#features">Features</a>
+          <a href="./#install">Install</a>
+          <button type="button" class="nav-news" id="whats-new">What's new</button>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top" tabindex="-1">
+      <section class="panel">
+        <h1>Boss event stats</h1>
+        <p>
+          The official Boss Bloon Events since July 2021 in numbers, from the same archive as
+          <a href="./past-events.html">Past events</a>: how often each boss was on, how long since it was last, the maps
+          and modes used most, and how the events were ranked. The page updates when new events are archived.
+        </p>
+        <div id="stats" class="stats"></div>
+        <p class="small past-events-credits">
+          Events © Ninja Kiwi, from <a href="https://data.ninjakiwi.com/">Ninja Kiwi's Open Data</a>, with the events
+          archived by <a href="https://github.com/jxu/btd6-events">jxu/btd6-events</a>,
+          <a href="https://www.bloonswiki.com/">Blooncyclopedia</a> and the
+          <a href="https://bloons.fandom.com/">Bloons wiki on Fandom</a>. See
+          <a href="https://github.com/pedersebastian/CustomBossChallenge/tree/master/data/boss-events">the archive</a>.
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <a href="https://github.com/pedersebastian/CustomBossChallenge">Custom Boss Challenge on GitHub</a> ·
+        <span id="game-version"></span>
+      </p>
+      <p class="small">A fan-made mod. Not affiliated with or endorsed by Ninja Kiwi. Bloons TD 6 is a trademark of Ninja Kiwi. Boss art © Ninja Kiwi.</p>
+      <p class="small">
+        Visits are counted anonymously with <a href="https://www.goatcounter.com/">GoatCounter</a>, without cookies.
+        Share codes and searches are never sent.
+      </p>
+    </footer>
+
+    <script type="module" src="./src/stats.ts"></script>
+    <!-- Counts visits with GoatCounter: no cookies, and only the path is sent, never the codes after #. GoatCounter
+         skips localhost, so npm run dev isn't counted -->
+    <script data-goatcounter="https://pedersebastian.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  </body>
+</html>

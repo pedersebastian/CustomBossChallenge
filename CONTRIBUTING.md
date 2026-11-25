@@ -216,12 +216,36 @@ A release needs this report (see **Release version** below), so before tagging:
 2. Build Debug (`dotnet build -c Debug`) and run the full suite of in-game tests (without `CBC_SUITE` and
    `CBC_TESTS`).
 3. Commit `TestResults/ingame.json` with the version bump.
-4. Run `Check-Release.ps1` (below), then tag.
+4. Make the README's pictures again (below), look through the ones that changed, and commit them with
+   `TestResults/screenshots.json`.
+5. Run `Check-Release.ps1` (below), then tag. It warns when the pictures weren't made for this version.
 
-The screenshots in the README come from the `ScreenshotTour` test. It only runs in a windowed game (without
-`-batchmode`) started with the environment variable `CBC_SCREENSHOTS=<folder>`. To look at other screen formats, also
-set `CBC_RESOLUTIONS`, e.g. `1280x800,1024x768,1680x720,1920x540`: the tour is then taken once per size, each in a
-subfolder of `<folder>` named after the size.
+#### README pictures
+
+The pictures in the README (`docs/*.jpg`) come from the game, in one command (#269). It is a step before a release
+only, not for every change:
+
+```
+powershell -ExecutionPolicy Bypass -File tools/screenshots/Make-Screenshots.ps1
+```
+
+It needs the game closed and a Debug build in its `Mods` folder. It starts the game windowed with only this mod, runs
+`ScreenshotTour` and `TierLookTour` (a few minutes; leave the window alone), and makes every picture listed in
+`tools/screenshots/pictures.json` from their screenshots: scaled to 1280x720, cropped, or for `tier-look.jpg` a grid
+of tiers 5-10. The tour is always in English, at the size in `pictures.json` (1920x1080, so crops stay sharp), with
+fixed setups and names, and it doesn't touch the player's setups. Animations make every run a little different, so a
+picture only replaces the one in `docs/` when more of its pixels changed than its `tolerance` (1% unless
+`pictures.json` says otherwise); the table at the end says which ones changed, and git shows only those. Look at
+each changed picture before committing it. The script writes `TestResults/screenshots.json` with the mod's version,
+which `Check-Release.ps1` looks at to remind you when a release's pictures weren't made.
+`-SkipGame` makes the pictures again from the last run's screenshots (e.g. after changing a crop), `-Force` replaces
+all of them. A new picture in the README needs a capture in the tour and a line in `pictures.json`;
+`node --test "tools/screenshots/*.test.mjs"` (also run on GitHub) checks that the two lists match.
+
+`ScreenshotTour` only runs in a windowed game (without `-batchmode`) started with the environment variable
+`CBC_SCREENSHOTS=<folder>`. To look at other screen formats, also set `CBC_RESOLUTIONS`, e.g.
+`1280x800,1024x768,1680x720,1920x540`: the tour is then taken once per size, each in a subfolder of `<folder>` named
+after the size.
 
 ### Compatibility with other mods
 
@@ -275,6 +299,8 @@ guards (`[GuardPatch]`), so a bug report's `Latest.log` shows it.
 - **Website**: `npm test` and `npm run build` in `web/`, see below.
 - **Boss events**: `node --test "tools/boss-events/*.test.mjs"`, the tests of the boss events backfill and archiver,
   see below.
+- **Game version**: `node --test "tools/game-version/*.test.mjs"`, the tests of the daily check for a new BTD6 version,
+  see [Updating for a new BTD6 version](#updating-for-a-new-btd6-version).
 
 The first two are PowerShell scripts that also run locally in Windows PowerShell:
 
@@ -293,6 +319,14 @@ publishes anything.
 workflow by hand with a `tag`) it first runs all of `checks.yml`, the **Release version** check included, and only
 when every check passes does it build the DLL, publish it to Thunderstore and create the GitHub release. A tag whose
 checks fail releases nothing: fix the problem, delete the tag and push it again.
+
+**Players read the changelog** (#264). The mod is built with `CHANGELOG.md` inside it, and after an update the Boss
+Creator shows the new version's `### Added` points once, whole, in a What's new popup that scrolls. Only the newest
+release's points: a player who skipped versions finds the others under What's new in the website's menu, which reads
+the same file. So write each Added point for players, as `- **Short title** (#issue): text`, and add
+`for contributors` in the brackets, like `(#272, for contributors)`, for points players don't need: those are left out
+of both. A release is built before the workflow renames its Unreleased section, so the mod reads Unreleased as
+its own version when there is no section for it.
 
 Only a commit on the default branch can be released, and an existing tag must be on the commit the run builds, so tag
 a merged commit on `master`. The **build** job makes the DLL with a read-only token, on every push and pull request.
@@ -352,11 +386,40 @@ MelonLoader's assemblies.
 - `build.yml` is included. Its MelonLoader, Mod Helper and game assemblies aren't actions, so they are bumped by hand
   (see **Releases** above).
 
+## Updating for a new BTD6 version
+
+`.github/workflows/game-version.yml` runs every day (and by hand) and opens an issue with the label `game-update` when
+the game changes, so an update is noticed the same day:
+
+- **A new version.** When Steam's news for the game names an update newer than `WorksOnVersion` in
+  `ModHelperData.cs` (Ninja Kiwi posts one for every major update, like "Update 57.0!"), it opens "BTD6 58.0 is out".
+- **A new build.** Hotfixes (57.1, 57.2, ...) get no news post, so it also watches the build id of Steam's public
+  branch (from [steamcmd.net](https://www.steamcmd.net/)). A new build opens "New BTD6 build on Steam (…)": check the
+  version on the title screen, and close the issue if nothing changed. A new build while an update's issue is still
+  open is added to that issue, and a build issue becomes the version's issue when the news post comes a day later.
+
+The issues keep what was seen in hidden markers, so a version or build never opens a second issue, also after it was
+closed. The very first run opens and closes one issue for the build that was live then, which later ones are
+compared with. The script is `tools/game-version/check.mjs`; `node tools/game-version/check.mjs --dry-run` shows
+what it sees. Its tests are `node --test "tools/game-version/*.test.mjs"`. The workflow can only write issues.
+
+The issue lists the steps below as tasks; the script reads them from this list, so keep it a numbered list:
+
+1. Update the game, start it with the mod and look in `MelonLoader/Latest.log` for `[CustomBossChallenge]` lines from
+   `PatchCheck`: which patches are missing?
+2. If the Boss Creator button says a part is missing, find the renamed or moved method and fix the patch.
+3. Run the unit tests and the in-game tests (see [In-game tests](#in-game-tests)).
+4. Set `WorksOnVersion` in `ModHelperData.cs` to the new version (`VersionTest` checks that it matches the game).
+5. Check that an unfinished `Continue.json` from the old version still continues, or is put aside with a message (#13).
+6. When `doombubbles/btd6-ci-dependencies` has the new version, set `CI_DEPENDENCIES_REF` in `build.yml` (see
+   [Releases](#releases)).
+7. Add a changelog entry under **Fixed**, then make a patch release (x.y.**z**).
+
 ## Website
 
 `web/` is a small website (Vite + TypeScript, no framework) that reads share codes without the game, shows the setup
-like the Boss Creator does (Tier Preview, skulls, rules) and lists example codes. It has four pages: `index.html`,
-`compare.html` (two setups side by side), `past-events.html` (the past boss events, #213) and `studio.html`, the Studio (#12, #79), which makes and changes setups with
+like the Boss Creator does (Tier Preview, skulls, rules) and lists example codes. It has five pages: `index.html`,
+`compare.html` (two setups side by side), `past-events.html` (the past boss events, #213), `stats.html` (their stats, #265) and `studio.html`, the Studio (#12, #79), which makes and changes setups with
 the Boss Creator's controls (`web/src/studio/`), Advanced Mode's bosses per tier included (`tiers.ts`, #95), the
 Challenge Editor's rules (`rules.ts`, #97) and its tower restrictions (`towers.ts`, #128), held to `ChallengeLimits`
 with the same clamping the code reader uses. It is laid out like the Boss Creator (#133): rows with our own icons
@@ -372,7 +435,7 @@ Then open http://localhost:5173. To try the site on a phone, `npm run dev:lan` s
 and prints the address to open on the phone (on the same network). `npm test` runs its tests and `npm run build`
 puts the finished site in `web/dist`.
 
-The Past Events page (`past-events.html`, #213) loads `boss-events.json`, which isn't committed: run
+The Past Events page (`past-events.html`, #213) and the Stats page (`stats.html`, #265, numbers from `web/src/stats/compute.ts`) load `boss-events.json`, which isn't committed: run
 `npm run boss-events` once in `web/` to build it into `web/public/` from `data/boss-events/`, as `pages.yml` does
 before every deploy. The tests don't need it; they read the archive itself. The website's mapping
 (`web/packages/share-code/src/pastEvents.ts`) is a port of the mod's `Config/PastEventRules.cs`, and
@@ -441,6 +504,13 @@ $env:CBC_WEB_DATA = "<repo>\web\src\data"
 The names of maps, towers, modes and difficulties in `game.json` are the game's own texts, and the website is English,
 so writing the files needs the game in English (#218). In another language `WebDataTest` refuses to write them, and
 when it checks them it leaves those names out.
+
+The bosses' portraits (#206) are the one piece of the game's art on the website: `web/public/bosses/`, credited to
+Ninja Kiwi in every page's footer (`web/src/preview/portrait.ts` shows them, and the boss's first letter if one doesn't
+load). They come from the game through the in-game test `BossPortraitsTest`, which otherwise checks that every
+portrait still loads: run it windowed with `CBC_TESTS=BossPortraitsTest` and `CBC_PORTRAITS=<a scratch folder>`, then
+`python -I web/scripts/portraits.py <that folder> web/public/bosses` (needs Pillow). The folder's README has the
+details; `web/test/boss-portraits.test.ts` fails while a boss has no portraits.
 
 A shared link to the website shows a card with `web/public/og-card.png` (1200 × 630), the tags in `web/index.html`
 and the address in `web/.env` (`VITE_SITE_URL`, which link previews need in full; change it if the site moves). A
@@ -528,6 +598,17 @@ powershell -ExecutionPolicy Bypass -File .github/scripts/Check-Localization.ps1 
 ```
 
 (all languages without `-Language`). A fix to a translation alone, with English unchanged, needs nothing here.
+
+### Pseudo language
+
+To see whether a new or longer text still fits before anyone translates it, run `LanguageLayoutTest` with the made-up
+pseudo language (#267): start the game with `CBC_TESTS=LanguageLayoutTest` and `CBC_LANGUAGES=Pseudo` (add
+`CBC_SCREENSHOTS=<folder>` and leave out `-batchmode` for pictures). The game stays in English, but every text of the
+mod is about 40 % longer, accented and in brackets, made from `English.json` by `Config/PseudoLocalization.cs`, so
+`Speed per Tier` shows as `[Śpééd pér Tíér ~~~]`. The test then reports texts that are cut off, wrap, overflow or run
+into each other, and English words that are neither in a bracket nor one of the game's own texts: those never went
+through `Localization`. `CBC_LANGUAGES=German,Pseudo` checks both. It isn't part of the normal run, since its texts
+are longer than any real translation needs to fit.
 
 ## AI-assisted development
 

@@ -21,6 +21,8 @@ public class CustomBossChallenge : BloonsTD6Mod
     {
         ModHelper.Msg<CustomBossChallenge>("CustomBossChallenge loaded!");
         Config.Experimental.GildebloonSetting = () => Settings.IncludeGildebloon;
+        // Before anything of the mod writes to its folder: a fresh install has none (#264)
+        Menus.WhatsNew.OnGameStart(System.IO.Directory.Exists(Persistence.WhatsNewStore.ModFolder));
     }
 
     /// <summary>

@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "Legger til denne andelen av vanlig helse for hvert nivå etter det første, i tillegg til spillets egne økninger: +100 % gjør nivå 2 ×2, nivå 3 ×3 og så videre. Hvert nivå over 5 har allerede ×1,5 av helsen til nivået før, så nivå 7 har ×2,25 av nivå 5. 0 % beholder vanlig helse.",
   "CustomBossChallenge-TierPreview": "Nivåoversikt",
   "CustomBossChallenge-TierPreviewInfo": "Hvert nivå med runden det kommer på, farten sammenlignet med vanlig spill og livet. Oransje er mer enn vanlig spill, blått er mindre.",
+  "CustomBossChallenge-Difficulty": "Vanskelighetsgrad",
+  "CustomBossChallenge-DifficultyInfo": "Et grovt anslag over hvor vanskelig oppsettet er, fra 1 til 10 stjerner, for å sammenligne oppsett og velge ett å prøve. Det regnes ut fra tallene i oppsettet: bossenes liv og fart, Elite, hvor mange nivåer som kommer, hvor tidlig og hvor tett, hodeskallene, rundene, kartet, modusen, vanskelighetsgraden og reglene. Det spiller ikke oppsettet, så ditt eget spill kan føles lettere eller vanskeligere.",
   "CustomBossChallenge-PerTier": "{0} % / nivå",
   "CustomBossChallenge-SpawnRounds": "Spawn-runder",
   "CustomBossChallenge-SpawnRoundsInfo": "Runden hvert nivå kommer på, skilt med komma, f.eks. 40, 60, 80. Manglende runder fortsetter hver 20. runde. Spillets siste runde flyttes til etter det siste nivået, slik at alle nivåer kan spilles.",
@@ -184,11 +186,17 @@
   "CustomBossChallenge-New Bosses Category": "Nye bosser",
   "CustomBossChallenge-IncludeGildebloon Setting Name": "Ta med Gildebloon",
   "CustomBossChallenge-IncludeGildebloon Setting Description": "Legger Gildebloon, en boss laget av denne modden, til i Boss Creator: et gyllent hvelv som stjeler pengene dine, gjemmer seg bak et skjold av dem og betaler dem tilbake når det blir slått. Av kan den ikke velges, Tilfeldig velger den aldri, og oppsett og koder med den ber deg slå dette på først.",
+  "CustomBossChallenge-Updates Category": "Oppdateringer",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Vis hva som er nytt",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Etter en oppdatering av modden viser Boss-skaperen hva som er nytt i den nye versjonen første gang du åpner den, én gang. Av blir det aldri vist. Ikke vis igjen i det vinduet slår også dette av.",
   "CustomBossChallenge-TierTime": "Nivå {0}",
   "CustomBossChallenge-TotalTime": "Totalt",
   "CustomBossChallenge-PenaltyTime": "Straff",
   "CustomBossChallenge-TiersUsed": "Oppgraderingsnivåer brukt",
   "CustomBossChallenge-CashUsed": "Penger brukt",
   "CustomBossChallenge-RankedTime": "Tid",
-  "CustomBossChallenge-RulesNoChanges": "Ingen andre endringer"
+  "CustomBossChallenge-RulesNoChanges": "Ingen andre endringer",
+  "CustomBossChallenge-WhatsNew": "Hva er nytt",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge er oppdatert til {0}. Dette er nytt:",
+  "CustomBossChallenge-DontShowAgain": "Ikke vis igjen"
 }

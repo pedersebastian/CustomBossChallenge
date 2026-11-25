@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "Добавляет эту долю обычного здоровья за каждый уровень после первого, сверх собственного роста в игре: +100 % дают уровню 2 ×2, уровню 3 ×3 и так далее. Каждый уровень выше 5 и так имеет ×1,5 здоровья предыдущего, так что у уровня 7 ×2,25 здоровья уровня 5. 0 % сохраняет обычное здоровье.",
   "CustomBossChallenge-TierPreview": "Обзор уровней",
   "CustomBossChallenge-TierPreviewInfo": "Каждый уровень с раундом появления, скоростью по сравнению с обычной игрой и здоровьем. Оранжевый — больше, чем в обычной игре, синий — меньше.",
+  "CustomBossChallenge-Difficulty": "Сложность",
+  "CustomBossChallenge-DifficultyInfo": "Грубая оценка того, насколько сложна настройка, от 1 до 10 звёзд, чтобы сравнивать настройки и выбрать, какую попробовать. Она считается по числам настройки: здоровье и скорость боссов, Элита, сколько уровней, как рано и как часто они приходят, черепа, раунды, карта, режим, сложность и правила. Она не играет настройку, поэтому ваша игра может показаться легче или сложнее.",
   "CustomBossChallenge-PerTier": "{0} % / уровень",
   "CustomBossChallenge-SpawnRounds": "Раунды появления",
   "CustomBossChallenge-SpawnRoundsInfo": "Раунд, в который приходит каждый уровень, через запятую, например 40, 60, 80. Недостающие раунды продолжаются каждые 20 раундов. Последний раунд игры переносится после последнего уровня, чтобы можно было сыграть все уровни.",
@@ -184,11 +186,17 @@
   "CustomBossChallenge-New Bosses Category": "Новые боссы",
   "CustomBossChallenge-IncludeGildebloon Setting Name": "Добавить Gildebloon",
   "CustomBossChallenge-IncludeGildebloon Setting Description": "Добавляет в Boss Creator Gildebloon — босса, созданного этим модом: золотое хранилище, которое крадёт ваши деньги, прячется за щитом из них и возвращает их, когда его побеждают. Если выключено, его нельзя выбрать, «Случайно» никогда его не выбирает, а настройки и коды с ним просят сначала включить этот параметр.",
+  "CustomBossChallenge-Updates Category": "Обновления",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Показывать новое",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "После обновления мода при первом открытии Создателя боссов один раз показывается, что нового в новой версии. Если выключено, это не показывается никогда. Кнопка «Больше не показывать» в этом окне тоже выключает это.",
   "CustomBossChallenge-TierTime": "Уровень {0}",
   "CustomBossChallenge-TotalTime": "Итого",
   "CustomBossChallenge-PenaltyTime": "Штраф",
   "CustomBossChallenge-TiersUsed": "Использовано уровней улучшений",
   "CustomBossChallenge-CashUsed": "Потрачено денег",
   "CustomBossChallenge-RankedTime": "Время",
-  "CustomBossChallenge-RulesNoChanges": "Других изменений нет"
+  "CustomBossChallenge-RulesNoChanges": "Других изменений нет",
+  "CustomBossChallenge-WhatsNew": "Что нового",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge обновлён до версии {0}. Вот что нового:",
+  "CustomBossChallenge-DontShowAgain": "Больше не показывать"
 }

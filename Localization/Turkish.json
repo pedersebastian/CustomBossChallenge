@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "İlk kademeden sonraki her kademe için normal canın bu kadarını ekler, oyunun kendi artışlarına ek olarak: +%100, 2. kademeyi ×2, 3. kademeyi ×3 yapar ve böyle devam eder. 5'in üzerindeki her kademe zaten bir öncekinin ×1,5 canına sahiptir, yani 7. kademe 5. kademenin ×2,25 canına sahiptir. %0 normal canı korur.",
   "CustomBossChallenge-TierPreview": "Kademe Önizlemesi",
   "CustomBossChallenge-TierPreviewInfo": "Her kademe, geldiği tur, normal oyuna göre hızı ve canıyla. Turuncu normal oyundan fazla, mavi az demektir.",
+  "CustomBossChallenge-Difficulty": "Zorluk",
+  "CustomBossChallenge-DifficultyInfo": "Kurulumun ne kadar zor olduğuna dair 1 ile 10 yıldız arasında kaba bir tahmin; kurulumları karşılaştırmak ve denemek için birini seçmek içindir. Kurulumun sayılarından hesaplanır: bossların canı ve hızı, Elite, kaç kademe geldiği, ne kadar erken ve ne kadar sık geldiği, kafatasları, turlar, harita, mod, zorluk ve kurallar. Kurulumu oynamaz, bu yüzden kendi oyunun daha kolay ya da daha zor gelebilir.",
   "CustomBossChallenge-PerTier": "%{0} / kademe",
   "CustomBossChallenge-SpawnRounds": "Çıkış Turları",
   "CustomBossChallenge-SpawnRoundsInfo": "Her kademenin geldiği tur, virgülle ayrılmış, örn. 40, 60, 80. Eksik turlar her 20 turda bir devam eder. Oyunun son turu, tüm kademeler oynanabilsin diye son kademeden sonraya taşınır.",
@@ -184,11 +186,17 @@
   "CustomBossChallenge-New Bosses Category": "Yeni Bosslar",
   "CustomBossChallenge-IncludeGildebloon Setting Name": "Gildebloon'u Dahil Et",
   "CustomBossChallenge-IncludeGildebloon Setting Description": "Boss Creator'a bu modun yaptığı bir boss olan Gildebloon'u ekler: paranızı çalan, ondan yapılmış bir kalkanın arkasına saklanan ve yenildiğinde parayı geri ödeyen altın bir kasa. Kapalıyken seçilemez, Rastgele onu asla seçmez ve onu içeren kurulumlar ve kodlar önce bunu açmanızı ister.",
+  "CustomBossChallenge-Updates Category": "Güncellemeler",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Yenilikleri göster",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Mod güncellendikten sonra Boss Oluşturucu'yu ilk açtığında yeni sürümdeki yenilikler bir kez gösterilir. Kapalıyken hiç gösterilmez. O penceredeki Bir daha gösterme düğmesi de bunu kapatır.",
   "CustomBossChallenge-TierTime": "Kademe {0}",
   "CustomBossChallenge-TotalTime": "Toplam",
   "CustomBossChallenge-PenaltyTime": "Ceza",
   "CustomBossChallenge-TiersUsed": "Kullanılan geliştirme kademesi",
   "CustomBossChallenge-CashUsed": "Kullanılan para",
   "CustomBossChallenge-RankedTime": "Süre",
-  "CustomBossChallenge-RulesNoChanges": "Başka değişiklik yok"
+  "CustomBossChallenge-RulesNoChanges": "Başka değişiklik yok",
+  "CustomBossChallenge-WhatsNew": "Yenilikler",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge {0} sürümüne güncellendi. İşte yenilikler:",
+  "CustomBossChallenge-DontShowAgain": "Bir daha gösterme"
 }

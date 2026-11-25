@@ -12,7 +12,8 @@ type Side = "a" | "b";
 
 const SVG = "http://www.w3.org/2000/svg";
 
-function s<K extends keyof SVGElementTagNameMap>(tag: K, attributes: Record<string, string | number>, ...children: (Node | string)[]): SVGElementTagNameMap[K] {
+/** An SVG element, like h for HTML */
+export function s<K extends keyof SVGElementTagNameMap>(tag: K, attributes: Record<string, string | number>, ...children: (Node | string)[]): SVGElementTagNameMap[K] {
   const element = document.createElementNS(SVG, tag);
   for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, String(value));
   element.append(...children);

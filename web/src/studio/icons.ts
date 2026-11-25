@@ -1,5 +1,6 @@
 // The Studio's row icons (#133): small line drawings of our own, in the text colour, so each row reads like the Boss
-// Creator's (an icon, the name, the control and Reset). No art from the game's files (#96).
+// Creator's (an icon, the name, the control and Reset). No art from the game's files (#96): the bosses'
+// portraits (#206) are the one exception, credited to Ninja Kiwi in the footer.
 
 const SVG = "http://www.w3.org/2000/svg";
 

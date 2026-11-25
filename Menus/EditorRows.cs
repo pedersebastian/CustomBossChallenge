@@ -364,7 +364,20 @@ public static class EditorRows
         // The entries keep clear of the frame
         var text = dropdown.Dropdown.itemText;
         if (text != null) text.margin = new Vector4(ListFrame * 3, 0, ListFrame * 3, 0);
+
+        // The shown entry keeps clear of the arrow: a longer one ran into it in every language (#267)
+        var caption = dropdown.Dropdown.captionText;
+        var arrow = dropdown.transform.Find("Arrow")?.GetComponent<RectTransform>();
+        if (caption != null && arrow != null)
+        {
+            var arrowLeft = caption.transform.InverseTransformPoint(arrow.TransformPoint(new Vector3(arrow.rect.xMin, 0))).x;
+            var room = Mathf.Max(0, caption.rectTransform.rect.xMax - arrowLeft + ListFrame);
+            caption.margin = new Vector4(ListFrame * 3, caption.margin.y, room, caption.margin.w);
+        }
     }
+
+    /// <summary>A white square with rounded corners, sliced, for a panel of any size</summary>
+    internal static Sprite RoundedFill => listFillSprite ??= RoundedSprite(false);
 
     /// <summary>
     /// A white square with rounded corners, or only its <see cref="ListFrame"/> wide edge, sliced so the corners keep

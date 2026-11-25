@@ -81,6 +81,14 @@ public static class Texts
     public static readonly string TierPreviewInfo = Key(nameof(TierPreviewInfo),
         "Every tier with the round it arrives on, its speed compared to the normal game and its health. Orange is " +
         "more than the normal game, blue is less.");
+
+    /// <summary>The difficulty rating under the Tier Preview (#263)</summary>
+    public static readonly string Difficulty = Key(nameof(Difficulty), "Difficulty");
+    public static readonly string DifficultyInfo = Key(nameof(DifficultyInfo),
+        "A rough estimate of how hard the setup is, from 1 to 10 stars, to compare setups and pick one to try. It is " +
+        "worked out from the setup's numbers: the bosses' health and speed, Elite, how many tiers come, how early and " +
+        "how close together, the skulls, the rounds, the map, the mode, the difficulty and the rules. It doesn't play " +
+        "the setup, so your own game may feel easier or harder.");
     public static readonly string PerTier = Key(nameof(PerTier), "{0} % / tier");
 
     public static readonly string BossEventRounds = Key(nameof(BossEventRounds), "Boss Event Rounds");
@@ -328,6 +336,12 @@ public static class Texts
 
     public static readonly string RulesNoChanges = Key(nameof(RulesNoChanges), "No other changes");
 
+    // The What's new popup (#264); its points come from CHANGELOG.md, in English
+    public static readonly string WhatsNew = Key(nameof(WhatsNew), "What's New");
+    public static readonly string WhatsNewIntro = Key(nameof(WhatsNewIntro),
+        "Custom Boss Challenge has been updated to {0}. Here is what's new:");
+    public static readonly string DontShowAgain = Key(nameof(DontShowAgain), "Don't Show Again");
+
     /// <summary>
     /// The name of a slider's row in the Rules panel's Modifiers list (#141), like the Boss Creator's
     /// </summary>
@@ -395,6 +409,13 @@ public static class Texts
     }
 
     public static string T(this string key, object arg) => string.Format(key.T(), arg);
+
+    /// <summary>
+    /// The text in the player's language as it is written, not yet shaped for Arabic: for a text that is shaped
+    /// together with others, like the What's new popup's
+    /// </summary>
+    public static string Raw(this string key, object arg) =>
+        string.Format(BTD_Mod_Helper.Extensions.StringExt.Localize(key), arg);
 
     public static string T(this string key, object arg0, object arg1) => string.Format(key.T(), arg0, arg1);
 

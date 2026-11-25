@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "Agrega esta parte de la vida normal por cada nivel después del primero, además de los aumentos propios del juego: +100 % deja el nivel 2 en ×2, el nivel 3 en ×3 y así sucesivamente. Cada nivel por encima del 5 ya tiene ×1,5 la vida del anterior, así que el nivel 7 tiene ×2,25 la vida del nivel 5. 0 % mantiene la vida normal.",
   "CustomBossChallenge-TierPreview": "Vista previa de niveles",
   "CustomBossChallenge-TierPreviewInfo": "Cada nivel con la ronda en la que llega, su velocidad comparada con el juego normal y su vida. Naranja es más que el juego normal, azul es menos.",
+  "CustomBossChallenge-Difficulty": "Dificultad",
+  "CustomBossChallenge-DifficultyInfo": "Una estimación aproximada de lo difícil que es la configuración, de 1 a 10 estrellas, para comparar configuraciones y elegir una para probar. Se calcula a partir de los números de la configuración: la salud y la velocidad de los jefes, Élite, cuántos niveles llegan, qué tan pronto y qué tan seguidos, las calaveras, las rondas, el mapa, el modo, la dificultad y las reglas. No juega la configuración, así que tu propia partida puede sentirse más fácil o más difícil.",
   "CustomBossChallenge-PerTier": "{0} % / nivel",
   "CustomBossChallenge-SpawnRounds": "Rondas de aparición",
   "CustomBossChallenge-SpawnRoundsInfo": "La ronda en la que llega cada nivel, separadas por comas, p. ej. 40, 60, 80. Las rondas que falten continúan cada 20 rondas. La última ronda del juego se mueve después del último nivel para que se puedan jugar todos los niveles.",
@@ -184,11 +186,17 @@
   "CustomBossChallenge-New Bosses Category": "Nuevos jefes",
   "CustomBossChallenge-IncludeGildebloon Setting Name": "Incluir Gildebloon",
   "CustomBossChallenge-IncludeGildebloon Setting Description": "Agrega a Gildebloon, un jefe creado por este mod, al Boss Creator: una bóveda dorada que te roba el dinero, se esconde tras un escudo hecho con él y lo devuelve cuando es derrotada. Desactivado, no se puede elegir, Aleatorio nunca lo elige, y las configuraciones y códigos que lo usan te piden activar esto primero.",
+  "CustomBossChallenge-Updates Category": "Actualizaciones",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Mostrar novedades",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Después de una actualización del mod, la primera vez que abras el Creador de jefes verás las novedades de la nueva versión, una sola vez. Desactivado, no se muestran nunca. No volver a mostrar en esa ventana también lo desactiva.",
   "CustomBossChallenge-TierTime": "Nivel {0}",
   "CustomBossChallenge-TotalTime": "Total",
   "CustomBossChallenge-PenaltyTime": "Penalización",
   "CustomBossChallenge-TiersUsed": "Niveles de mejora usados",
   "CustomBossChallenge-CashUsed": "Dinero usado",
   "CustomBossChallenge-RankedTime": "Tiempo",
-  "CustomBossChallenge-RulesNoChanges": "Ningún otro cambio"
+  "CustomBossChallenge-RulesNoChanges": "Ningún otro cambio",
+  "CustomBossChallenge-WhatsNew": "Novedades",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge se actualizó a la {0}. Estas son las novedades:",
+  "CustomBossChallenge-DontShowAgain": "No volver a mostrar"
 }

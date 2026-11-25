@@ -362,6 +362,8 @@ public class WebDataTest : CustomBossTest
                 })),
                 ["skulls"] = new JArray((SkullStrip.Skulls(options).Percents ?? Array.Empty<float>()).Select(SkullStrip.Format).Cast<object>()),
                 ["playProblem"] = BossEditorSection.PlayProblem(dcm!, options) is null ? null : "yes",
+                // The difficulty rating under the Tier Preview (#263)
+                ["difficulty"] = DifficultyRating.Stars(TierStrip.Facts(options, dcm, Game.instance.model)),
                 // The warnings the Tier Preview shows, with what they name (#186)
                 ["warnings"] = new JArray(SetupWarnings.Check(TierStrip.Facts(options, dcm, Game.instance.model)).Select(warning =>
                     new JObject

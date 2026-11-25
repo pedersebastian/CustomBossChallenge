@@ -33,6 +33,8 @@ To build your own tools for share codes, see the [share-code package](web/packag
     not, or Random (see [Advanced Mode](#advanced-mode)).
   - **Tier Preview**: a card per tier with the round it arrives on, its speed and its health, orange with ▲ where
     it is harder than the normal game and blue with ▼ where it is easier.
+  - **Difficulty**: 1 to 10 stars under the Tier Preview, a rough estimate of how hard the setup is from its bosses,
+    tiers, rounds, skulls, map and rules, to compare setups. The website shows the same stars.
   - **Boss Speed** and **Boss Health** sliders, using the game's own boss multipliers (the same ones Ninja Kiwi uses
     for weekly events such as "Vortex at 150% speed").
   - **Boss Tiers** from 1 to 10. Tiers above 5 are copies of tier 5, each with ×1.5 the health of the tier before
@@ -374,7 +376,9 @@ asks for:
 
 How to build the mod from source and run its automated tests is described in
 [CONTRIBUTING.md](https://github.com/pedersebastian/CustomBossChallenge/blob/master/CONTRIBUTING.md) (the
-**Contributing** tab on GitHub).
+**Contributing** tab on GitHub). What to do when BTD6 gets a new version is in
+[Updating for a new BTD6 version](https://github.com/pedersebastian/CustomBossChallenge/blob/master/CONTRIBUTING.md#updating-for-a-new-btd6-version);
+a daily check opens an issue for it the day the update comes out.
 
 ## AI disclaimer
 

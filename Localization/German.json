@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "Fügt für jede Stufe nach der ersten diesen Anteil der normalen Gesundheit hinzu, zusätzlich zu den eigenen Schritten des Spiels: +100 % macht Stufe 2 ×2, Stufe 3 ×3 und so weiter. Jede Stufe über 5 hat schon ×1,5 der Gesundheit der vorigen, also hat Stufe 7 ×2,25 der Gesundheit von Stufe 5. 0 % behält die normale Gesundheit.",
   "CustomBossChallenge-TierPreview": "Stufenvorschau",
   "CustomBossChallenge-TierPreviewInfo": "Jede Stufe mit der Runde, in der sie kommt, ihrem Tempo im Vergleich zum normalen Spiel und ihrer Gesundheit. Orange ist mehr als im normalen Spiel, Blau weniger.",
+  "CustomBossChallenge-Difficulty": "Schwierigkeit",
+  "CustomBossChallenge-DifficultyInfo": "Eine grobe Schätzung, wie schwer das Setup ist, von 1 bis 10 Sternen, um Setups zu vergleichen und eines zum Ausprobieren zu wählen. Sie wird aus den Zahlen des Setups berechnet: Leben und Tempo der Bosse, Elite, wie viele Stufen kommen, wie früh und wie dicht hintereinander, die Totenköpfe, die Runden, die Karte, der Modus, der Schwierigkeitsgrad und die Regeln. Sie spielt das Setup nicht, daher kann sich dein eigenes Spiel leichter oder schwerer anfühlen.",
   "CustomBossChallenge-PerTier": "{0} % / Stufe",
   "CustomBossChallenge-SpawnRounds": "Spawn-Runden",
   "CustomBossChallenge-SpawnRoundsInfo": "Die Runde, in der jede Stufe erscheint, durch Kommas getrennt, z. B. 40, 60, 80. Fehlende Runden folgen im Abstand von 20 Runden. Die letzte Runde des Spiels wird hinter die letzte Stufe verschoben, damit alle Stufen gespielt werden können.",
@@ -184,11 +186,17 @@
   "CustomBossChallenge-New Bosses Category": "Neue Bosse",
   "CustomBossChallenge-IncludeGildebloon Setting Name": "Gildebloon einbeziehen",
   "CustomBossChallenge-IncludeGildebloon Setting Description": "Fügt dem Boss Creator Gildebloon hinzu, einen Boss aus dieser Mod: ein goldener Tresor, der dein Geld stiehlt, sich hinter einem Schild daraus versteckt und es zurückzahlt, wenn er besiegt wird. Ausgeschaltet kann er nicht gewählt werden, Zufall wählt ihn nie, und Setups und Codes mit ihm bitten dich, dies zuerst einzuschalten.",
+  "CustomBossChallenge-Updates Category": "Updates",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Neuigkeiten zeigen",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Nach einem Update der Mod zeigt der Boss-Ersteller beim ersten Öffnen einmal, was in der neuen Version neu ist. Aus wird es nie gezeigt. Nicht mehr zeigen in diesem Fenster schaltet das auch aus.",
   "CustomBossChallenge-TierTime": "Stufe {0}",
   "CustomBossChallenge-TotalTime": "Gesamt",
   "CustomBossChallenge-PenaltyTime": "Strafe",
   "CustomBossChallenge-TiersUsed": "Verwendete Upgrade-Stufen",
   "CustomBossChallenge-CashUsed": "Verwendetes Geld",
   "CustomBossChallenge-RankedTime": "Zeit",
-  "CustomBossChallenge-RulesNoChanges": "Keine weiteren Änderungen"
+  "CustomBossChallenge-RulesNoChanges": "Keine weiteren Änderungen",
+  "CustomBossChallenge-WhatsNew": "Neuigkeiten",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge wurde auf {0} aktualisiert. Das ist neu:",
+  "CustomBossChallenge-DontShowAgain": "Nicht mehr zeigen"
 }

@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "Lisää tämän osuuden normaalista kestävyydestä jokaista ensimmäisen jälkeistä tasoa kohden, pelin omien askelten lisäksi: +100 % tekee tasosta 2 ×2, tasosta 3 ×3 ja niin edelleen. Jokaisella yli 5:n tasolla on jo ×1,5 edellisen tason kestävyydestä, joten tasolla 7 on ×2,25 tason 5 kestävyydestä. 0 % pitää normaalin kestävyyden.",
   "CustomBossChallenge-TierPreview": "Tasojen esikatselu",
   "CustomBossChallenge-TierPreviewInfo": "Jokainen taso, sen saapumiskierros, nopeus normaaliin peliin verrattuna ja kestävyys. Oranssi on enemmän kuin normaalissa pelissä, sininen vähemmän.",
+  "CustomBossChallenge-Difficulty": "Vaikeus",
+  "CustomBossChallenge-DifficultyInfo": "Karkea arvio siitä, kuinka vaikea asetelma on, 1–10 tähteä, jotta voit verrata asetelmia ja valita kokeiltavan. Se lasketaan asetelman luvuista: pomojen kestävyys ja nopeus, Elite, kuinka monta tasoa tulee, kuinka aikaisin ja kuinka tiheästi, kallot, kierrokset, kartta, pelitila, vaikeustaso ja säännöt. Se ei pelaa asetelmaa, joten oma pelisi voi tuntua helpommalta tai vaikeammalta.",
   "CustomBossChallenge-PerTier": "{0} % / taso",
   "CustomBossChallenge-SpawnRounds": "Ilmestymiskierrokset",
   "CustomBossChallenge-SpawnRoundsInfo": "Kierros, jolla kukin taso saapuu, pilkuilla erotettuna, esim. 40, 60, 80. Puuttuvat kierrokset jatkuvat 20 kierroksen välein. Pelin viimeinen kierros siirretään viimeisen tason jälkeen, jotta kaikki tasot voi pelata.",
@@ -184,11 +186,17 @@
   "CustomBossChallenge-New Bosses Category": "Uudet pomot",
   "CustomBossChallenge-IncludeGildebloon Setting Name": "Sisällytä Gildebloon",
   "CustomBossChallenge-IncludeGildebloon Setting Description": "Lisää Boss Creatoriin Gildebloonin, tämän modin tekemän pomon: kultaisen holvin, joka varastaa rahasi, piiloutuu niistä tehdyn kilven taakse ja maksaa ne takaisin, kun se lyödään. Pois päältä sitä ei voi valita, Satunnainen ei koskaan valitse sitä, ja sitä käyttävät asetelmat ja koodit pyytävät ottamaan tämän ensin käyttöön.",
+  "CustomBossChallenge-Updates Category": "Päivitykset",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "Näytä uutuudet",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "Modin päivityksen jälkeen Pomoluoja näyttää uuden version uutuudet, kun avaat sen ensimmäisen kerran, vain kerran. Pois päältä niitä ei näytetä koskaan. Ikkunan Älä näytä uudelleen -painike kytkee tämän myös pois.",
   "CustomBossChallenge-TierTime": "Taso {0}",
   "CustomBossChallenge-TotalTime": "Yhteensä",
   "CustomBossChallenge-PenaltyTime": "Rangaistus",
   "CustomBossChallenge-TiersUsed": "Käytetyt päivitystasot",
   "CustomBossChallenge-CashUsed": "Käytetyt rahat",
   "CustomBossChallenge-RankedTime": "Aika",
-  "CustomBossChallenge-RulesNoChanges": "Ei muita muutoksia"
+  "CustomBossChallenge-RulesNoChanges": "Ei muita muutoksia",
+  "CustomBossChallenge-WhatsNew": "Uutta",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge on päivitetty versioon {0}. Tässä uutuudet:",
+  "CustomBossChallenge-DontShowAgain": "Älä näytä uudelleen"
 }

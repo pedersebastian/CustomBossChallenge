@@ -106,6 +106,11 @@ public sealed class TierStrip
     public ModHelperPanel Panel => strip;
 
     /// <summary>
+    /// The difficulty rating under the strip (#263), shown with the warnings: never on a read-only strip
+    /// </summary>
+    public DifficultyStars? Difficulty { get; set; }
+
+    /// <summary>
     /// A card was clicked while the tiers can have bosses of their own, with its tier
     /// </summary>
     public Action<int>? CardClicked { get; set; }
@@ -354,6 +359,7 @@ public sealed class TierStrip
 
         // The warnings are for the Boss Creator, before Play
         Warnings = ReadOnly ? new List<Warning>() : SetupWarnings.Check(facts);
+        if (!ReadOnly) Difficulty?.Show(facts);
         for (var i = 0; i < Warnings.Count && i < Notes.Count; i++) EditorRows.SetText(Notes[i].Text, Texts.Warning(Warnings[i]));
         LayOut(tiers, Math.Min(Warnings.Count, Notes.Count));
         return !Mathf.Approximately(height, Row.GetComponent<RectTransform>().sizeDelta.y);
@@ -437,16 +443,32 @@ public sealed class TierStrip
         var modifiers = dcm.bloonModifiers;
         var health = modifiers?.healthMultipliers;
         var (noInstas, limitedPowers) = Creator.PastEventSetups.EventOnlyRules(dcm);
+        // The towers, not the heroes, and those that can't be placed at all, for the difficulty rating (#263)
+        int allTowers = 0, bannedTowers = 0;
+        if (dcm.towers != null)
+        {
+            foreach (var tower in dcm.towers)
+            {
+                if (tower == null || tower.isHero) continue;
+                allTowers++;
+                if (tower.max == 0) bannedTowers++;
+            }
+        }
+
         return facts with
         {
             NoInstas = noInstas,
             LimitedPowers = limitedPowers,
             StartRound = dcm.startRules?.round ?? facts.StartRound,
             Difficulty = dcm.difficulty ?? facts.Difficulty,
+            MapDifficulty = MapDifficulty(dcm.map),
             Mode = dcm.mode ?? facts.Mode,
             Lives = dcm.startRules?.lives ?? facts.Lives,
             Cash = dcm.startRules?.cash ?? facts.Cash,
             MaxTowers = dcm.maxTowers,
+            MaxParagons = dcm.maxParagons,
+            AllTowers = allTowers,
+            BannedTowers = bannedTowers,
             BloonSpeed = modifiers?.speedMultiplier ?? 1,
             MoabSpeed = modifiers?.moabSpeedMultiplier ?? 1,
             BossSpeed = modifiers?.bossSpeedMultiplier ?? 1,
@@ -460,6 +482,22 @@ public sealed class TierStrip
             AllRegrow = modifiers?.allRegen ?? false,
             AllFortified = modifiers?.allFortified ?? false
         };
+    }
+
+    /// <summary>
+    /// The group of <paramref name="map"/> in the game's map list, like "Expert", or "" when the game doesn't know it
+    /// </summary>
+    public static string MapDifficulty(string? map)
+    {
+        if (string.IsNullOrEmpty(map)) return "";
+        var maps = Il2CppAssets.Scripts.Data.GameData.Instance?.mapSet?.Maps?.items;
+        if (maps == null) return "";
+        foreach (var details in maps)
+        {
+            if (details != null && details.id == map) return details.difficulty.ToString();
+        }
+
+        return "";
     }
 
     /// <summary>

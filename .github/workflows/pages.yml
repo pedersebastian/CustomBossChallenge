@@ -10,6 +10,8 @@ on:
       - master
     paths:
       - 'web/**'
+      # The menu's What's new reads it (#264)
+      - 'CHANGELOG.md'
       - 'data/boss-events/**'
       - 'tools/boss-events/**'
       - '.github/workflows/pages.yml'

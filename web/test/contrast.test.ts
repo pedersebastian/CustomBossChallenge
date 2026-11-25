@@ -42,6 +42,8 @@ describe("contrast", () => {
     // The Studio's i buttons: dark on blue, white on the darker blue under the mouse
     ["--outline", "--blue"],
     ["--text", "--sea-end"],
+    // What's new (#264): the versions' dates and the note under "Coming in the next version"
+    ["--muted", "--panel"],
   ])("%s on %s is at least 4.5:1", (text, background) => {
     expect(contrast(token(text), token(background))).toBeGreaterThanOrEqual(4.5);
   });
@@ -58,6 +60,8 @@ describe("contrast", () => {
   it.each([
     ["--gold", "--sea"],
     ["--green", "--card"],
+    // The dot on What's new (#264) in its dark ring
+    ["--orange", "--outline"],
   ])("%s against %s is at least 3:1", (part, background) => {
     expect(contrast(token(part), token(background))).toBeGreaterThanOrEqual(3);
   });

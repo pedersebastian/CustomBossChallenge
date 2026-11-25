@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "在第一階之後，每一階都增加這個比例的正常生命值，疊加在遊戲本身的提升之上：+100 % 使第 2 階 ×2、第 3 階 ×3，依此類推。5 階以上的每一階本來就有上一階 ×1.5 的生命值，所以第 7 階是第 5 階的 ×2.25。0 % 保持正常生命值。",
   "CustomBossChallenge-TierPreview": "階段預覽",
   "CustomBossChallenge-TierPreviewInfo": "每一階出現的回合、與正常遊戲相比的速度以及生命值。橙色表示高於正常遊戲，藍色表示低於。",
+  "CustomBossChallenge-Difficulty": "難度",
+  "CustomBossChallenge-DifficultyInfo": "對這個設定有多難的大約估計，1到10顆星，用來比較設定並挑一個來試。它根據設定的數值算出：Boss的生命值和速度、精英、有幾階以及來得多早、間隔多近、骷髏、回合、地圖、模式、難度和規則。它並不會實際玩這個設定，所以你自己玩時可能會覺得更容易或更難。",
   "CustomBossChallenge-PerTier": "{0} % / 階",
   "CustomBossChallenge-SpawnRounds": "出現回合",
   "CustomBossChallenge-SpawnRoundsInfo": "每一階出現的回合，以逗號分隔，例如 40, 60, 80。未填寫的回合每隔20回合繼續。遊戲的最後一回合會被移到最後一階之後，以便打完所有階。",
@@ -184,11 +186,17 @@
   "CustomBossChallenge-New Bosses Category": "新首領",
   "CustomBossChallenge-IncludeGildebloon Setting Name": "包含 Gildebloon",
   "CustomBossChallenge-IncludeGildebloon Setting Description": "將本模組製作的首領 Gildebloon 加入 Boss Creator：一座會偷走你的現金、躲在用這些現金做成的護盾後面、被擊敗時再把錢還給你的金色金庫。關閉時無法選擇它，隨機也不會選到它，含有它的設定和代碼會先請你開啟此選項。",
+  "CustomBossChallenge-Updates Category": "更新",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "顯示新內容",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "模組更新後，第一次開啟Boss建立器時會顯示一次新版本的新內容。關閉後不會顯示。在該視窗中點選不再顯示也會關閉此項。",
   "CustomBossChallenge-TierTime": "第 {0} 階段",
   "CustomBossChallenge-TotalTime": "總計",
   "CustomBossChallenge-PenaltyTime": "懲罰",
   "CustomBossChallenge-TiersUsed": "已用升級等級",
   "CustomBossChallenge-CashUsed": "已用金錢",
   "CustomBossChallenge-RankedTime": "時間",
-  "CustomBossChallenge-RulesNoChanges": "無其他變更"
+  "CustomBossChallenge-RulesNoChanges": "無其他變更",
+  "CustomBossChallenge-WhatsNew": "新內容",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge已更新到{0}。新內容如下：",
+  "CustomBossChallenge-DontShowAgain": "不再顯示"
 }

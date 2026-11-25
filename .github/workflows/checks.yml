@@ -93,6 +93,22 @@ jobs:
       - name: Test the boss events backfill and archiver on saved samples
         run: node --test "tools/boss-events/*.test.mjs"
 
+  game-version:
+    name: Game version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Test the check for a new BTD6 version on saved samples
+        run: node --test "tools/game-version/*.test.mjs"
+
+      - name: Check that the screenshot script makes every README picture
+        run: node --test "tools/screenshots/*.test.mjs"
+
   release:
     name: Release version
     if: inputs.tag != '' || startsWith(github.ref, 'refs/tags/')

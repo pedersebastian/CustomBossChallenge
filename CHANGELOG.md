@@ -9,6 +9,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Difficulty stars** (#263): the Boss Creator shows a difficulty rating from 1 to 10 stars under the Tier Preview,
+  and the website shows it with every setup: on the home page, in the Studio and in Compare. It is a rough estimate
+  from the setup's numbers: each tier's health and speed weighted by how late it comes, the boss (Phayze and Lych
+  count for more than Bloonarius), Elite, the number of tiers, how early they arrive and how close together, the
+  skulls, Boss Event Rounds
+  and the CHIMPS events' rounds, the map, the mode and difficulty, lives, cash, max towers and paragons, banned towers and the
+  other rules. Its i says it is an estimate. The mod and the website share the formula, checked by shared test cases;
+  most past Elite events get 5 to 7 stars, most normal ones 1 to 3, and 10 is left for setups harder than
+  any event so far.
+- **What's new after an update** (#264): the first time the Boss Creator opens after the mod is updated, a popup in the
+  game's own look shows what the new version added, once, in a list that scrolls. Not on a fresh install, and never
+  twice for the same version; Don't Show Again in the popup, or Show What's New in Mod Settings, turns it off. The
+  website has a What's new button in its menu with the newest versions' news, from the same changelog, and a dot on it
+  after a release.
+- **Boss event stats on the website** (#265): a new Stats page, linked in the menu and from Past Events, shows the
+  official boss events in numbers: events per boss, normal and Elite, the days since each boss was last on, a timeline
+  since July 2021, the difficulty stars of #263 for every event (averages per boss and per year, and the hardest
+  events), how the events were ranked each year and the maps and modes used most, per boss and per year. Every chart
+  has its numbers in a table, and the page follows the archive as events are added. The website's Past Events list
+  shows each level's difficulty stars too, and can be sorted newest, oldest, hardest or easiest first.
+- **An issue the day BTD6 updates** (#272, #19, for contributors): a daily GitHub workflow watches Steam's news for a
+  new version and Steam's public build for hotfixes, and opens an issue with the update checklist, once per version
+  or build. The checklist is a new section of CONTRIBUTING.md, *Updating for a new BTD6 version*.
+- **README pictures from the game** (#269, for contributors): `tools/screenshots/Make-Screenshots.ps1` runs the
+  screenshot tour in the game and makes every picture in `docs/` from it, in English, at a fixed size, with fixed
+  setups, and only replaces a picture that really changed. The tour now also takes the Rules panels, the Share Code
+  row and the Tier Preview. It is a step before a release only: it writes `TestResults/screenshots.json`, and
+  `Check-Release.ps1` warns when a release's pictures weren't made, as a reminder to look through them.
+- **Pseudo language** (#267, for contributors): `CBC_LANGUAGES=Pseudo` runs `LanguageLayoutTest` with every text of
+  the mod about 40 % longer, accented and in brackets, to find texts that would be cut off in a longer translation
+  and English that skips the localization. The test now also reports one-line labels that wrap and dropdown texts
+  that run into their arrow, in every language. It found the English-only default setup names, filed as #279.
+
+### Fixed
+
+- **Past Events show CHIMPS by its name** (#267): an event in CHIMPS mode showed the game's internal "Clicks" in its
+  details and in the mode filter, in every language.
+- **Dropdown texts keep clear of their arrow** (#267): in the Past Events filters and the Saved Setups list a longer
+  entry ran into the arrow, in English too. The year filter is a little wider, so "Every Year" fits in every language,
+  and the Normal button of a past event no longer wraps a long translation onto two lines.
+
 ## [2.14.0] - 2026-11-22
 
 ### Added

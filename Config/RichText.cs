@@ -30,6 +30,13 @@ public static class RichText
         string.Concat(Tokens(text ?? "").Where(token => !token.IsTag).Select(token => token.Text));
 
     /// <summary>
+    /// <paramref name="text"/> with <paramref name="change"/> applied to each part between its tags; the tags stay as
+    /// they are
+    /// </summary>
+    public static string MapText(string text, Func<string, string> change) =>
+        string.Concat(Tokens(text).Select(token => token.IsTag ? token.Text : change(token.Text)));
+
+    /// <summary>
     /// The text to give TextMeshPro, laying out right to left, so that it shows <paramref name="shown"/> from left to
     /// right with its tags working: the parts in reverse order, each part's letters reversed, and each pair of tags
     /// turned around so that it opens before what it wraps. Without tags it is <paramref name="shown"/> reversed, the

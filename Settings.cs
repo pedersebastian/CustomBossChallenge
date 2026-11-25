@@ -89,4 +89,26 @@ public class Settings : ModSettings
         icon = VanillaSprites.GoldenBloonIcon,
         modifyOption = option => option.gameObject.SetActive(Config.Experimental.Gildebloon)
     };
+
+    public const string UpdatesName = "Updates";
+
+    public static readonly ModSettingCategory Updates = new(UpdatesName)
+    {
+        order = 3,
+        collapsed = false,
+        icon = VanillaSprites.GiftBoxIcon
+    };
+
+    /// <summary>
+    /// Whether the Boss Creator shows what's new after an update of the mod (#264); its popup's Don't Show Again
+    /// turns this off
+    /// </summary>
+    public static readonly ModSettingBool ShowWhatsNew = new(true)
+    {
+        category = Updates,
+        displayName = "Show What's New",
+        description = "After an update of the mod, the first time you open the Boss Creator shows what's new in the " +
+                      "new version, once. Off, it is never shown. Don't Show Again in that popup turns this off too.",
+        icon = VanillaSprites.GiftBoxIcon
+    };
 }

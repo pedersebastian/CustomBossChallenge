@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "يضيف هذه النسبة من الصحة العادية لكل مستوى بعد الأول، فوق زيادات اللعبة نفسها: +100 % تجعل المستوى 2 ×2 والمستوى 3 ×3 وهكذا. كل مستوى فوق 5 لديه أصلًا ×1.5 من صحة المستوى الذي قبله، فالمستوى 7 لديه ×2.25 من صحة المستوى 5. 0 % يبقي الصحة العادية.",
   "CustomBossChallenge-TierPreview": "معاينة المستويات",
   "CustomBossChallenge-TierPreviewInfo": "كل مستوى مع الجولة التي يظهر فيها، وسرعته مقارنة باللعبة العادية، وصحته. البرتقالي أكثر من اللعبة العادية، والأزرق أقل.",
+  "CustomBossChallenge-Difficulty": "الصعوبة",
+  "CustomBossChallenge-DifficultyInfo": "تقدير تقريبي لمدى صعوبة الإعداد، من نجمة واحدة إلى 10 نجوم، لمقارنة الإعدادات واختيار واحد لتجربته. يُحسب من أرقام الإعداد: صحة الزعماء وسرعتهم، والنخبة، وعدد المستويات ومدى تبكيرها وتقاربها، والجماجم، والجولات، والخريطة، والوضع، والصعوبة، والقواعد. لا يلعب الإعداد فعلًا، لذا قد تبدو لعبتك أسهل أو أصعب.",
   "CustomBossChallenge-PerTier": "{0} % / مستوى",
   "CustomBossChallenge-SpawnRounds": "جولات الظهور",
   "CustomBossChallenge-SpawnRoundsInfo": "الجولة التي يصل فيها كل مستوى، مفصولة بفواصل، مثل 40, 60, 80. الجولات الناقصة تستمر كل 20 جولة. تُنقل الجولة الأخيرة في اللعبة إلى ما بعد المستوى الأخير حتى يمكن لعب كل المستويات.",
@@ -184,11 +186,17 @@
   "CustomBossChallenge-New Bosses Category": "زعماء جدد",
   "CustomBossChallenge-IncludeGildebloon Setting Name": "تضمين Gildebloon",
   "CustomBossChallenge-IncludeGildebloon Setting Description": "يضيف Gildebloon، وهو زعيم صنعه هذا التعديل، إلى Boss Creator: خزنة ذهبية تسرق أموالك وتختبئ خلف درع مصنوع منها وتعيدها عند هزيمتها. عند الإيقاف لا يمكن اختياره، ولا يختاره «عشوائي» أبدًا، وتطلب منك الإعدادات والرموز التي تحتويه تفعيل هذا أولًا.",
+  "CustomBossChallenge-Updates Category": "التحديثات",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "عرض الجديد",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "بعد تحديث المود، يعرض منشئ الزعماء الجديد في الإصدار الجديد مرة واحدة عند فتحه لأول مرة. عند إيقافه لا يُعرض أبدًا. زر عدم العرض مرة أخرى في تلك النافذة يوقفه أيضًا.",
   "CustomBossChallenge-TierTime": "المستوى {0}",
   "CustomBossChallenge-TotalTime": "المجموع",
   "CustomBossChallenge-PenaltyTime": "العقوبة",
   "CustomBossChallenge-TiersUsed": "مستويات الترقية المستخدمة",
   "CustomBossChallenge-CashUsed": "المال المستخدم",
   "CustomBossChallenge-RankedTime": "الوقت",
-  "CustomBossChallenge-RulesNoChanges": "لا تغييرات أخرى"
+  "CustomBossChallenge-RulesNoChanges": "لا تغييرات أخرى",
+  "CustomBossChallenge-WhatsNew": "ما الجديد",
+  "CustomBossChallenge-WhatsNewIntro": "تم تحديث Custom Boss Challenge إلى {0}. إليك الجديد:",
+  "CustomBossChallenge-DontShowAgain": "عدم العرض مرة أخرى"
 }

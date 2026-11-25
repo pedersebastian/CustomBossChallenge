@@ -25,6 +25,8 @@
   "CustomBossChallenge-HealthPerTierInfo": "첫 단계 이후 단계마다 기본 체력의 이 비율을 더합니다. 게임 자체의 증가에 더해집니다. +100 %면 2단계는 ×2, 3단계는 ×3이 되는 식입니다. 5단계를 넘는 각 단계는 이미 이전 단계 체력의 ×1.5를 가지므로, 7단계는 5단계의 ×2.25입니다. 0 %는 기본 체력을 유지합니다.",
   "CustomBossChallenge-TierPreview": "단계 미리보기",
   "CustomBossChallenge-TierPreviewInfo": "각 단계가 나오는 라운드, 기본 게임과 비교한 속도, 체력입니다. 주황색은 기본 게임보다 많고, 파란색은 적습니다.",
+  "CustomBossChallenge-Difficulty": "난이도",
+  "CustomBossChallenge-DifficultyInfo": "설정이 얼마나 어려운지 1~10개의 별로 나타낸 대략적인 추정치로, 설정을 비교하고 시도할 설정을 고르는 데 쓸 수 있습니다. 보스의 체력과 속도, 엘리트, 단계 수와 등장 시점 및 간격, 해골, 라운드, 맵, 모드, 난이도, 규칙 등 설정의 수치로 계산합니다. 실제로 플레이하는 것은 아니므로 직접 해 보면 더 쉽거나 더 어렵게 느껴질 수 있습니다.",
   "CustomBossChallenge-PerTier": "{0} % / 단계",
   "CustomBossChallenge-SpawnRounds": "등장 라운드",
   "CustomBossChallenge-SpawnRoundsInfo": "각 단계가 등장하는 라운드를 ','로 구분해 입력합니다(예: 40, 60, 80). 빠진 라운드는 20라운드마다 이어집니다. 모든 단계를 플레이할 수 있도록 게임의 마지막 라운드는 마지막 단계 뒤로 옮겨집니다.",
@@ -184,11 +186,17 @@
   "CustomBossChallenge-New Bosses Category": "새 보스",
   "CustomBossChallenge-IncludeGildebloon Setting Name": "Gildebloon 포함",
   "CustomBossChallenge-IncludeGildebloon Setting Description": "이 모드가 만든 보스 Gildebloon을 Boss Creator에 추가합니다. 돈을 훔치고, 그 돈으로 만든 방패 뒤에 숨으며, 처치되면 돈을 돌려주는 황금 금고입니다. 끄면 선택할 수 없고, 무작위로도 선택되지 않으며, 이 보스가 있는 설정과 코드는 먼저 이 옵션을 켜라고 안내합니다.",
+  "CustomBossChallenge-Updates Category": "업데이트",
+  "CustomBossChallenge-ShowWhatsNew Setting Name": "새 기능 보기",
+  "CustomBossChallenge-ShowWhatsNew Setting Description": "모드를 업데이트한 뒤 보스 크리에이터를 처음 열 때 새 버전의 새 기능을 한 번 보여 줍니다. 끄면 보여 주지 않습니다. 그 창의 다시 보지 않기를 눌러도 꺼집니다.",
   "CustomBossChallenge-TierTime": "{0}단계",
   "CustomBossChallenge-TotalTime": "합계",
   "CustomBossChallenge-PenaltyTime": "페널티",
   "CustomBossChallenge-TiersUsed": "사용한 업그레이드 티어",
   "CustomBossChallenge-CashUsed": "사용한 돈",
   "CustomBossChallenge-RankedTime": "시간",
-  "CustomBossChallenge-RulesNoChanges": "다른 변경 없음"
+  "CustomBossChallenge-RulesNoChanges": "다른 변경 없음",
+  "CustomBossChallenge-WhatsNew": "새 기능",
+  "CustomBossChallenge-WhatsNewIntro": "Custom Boss Challenge가 {0}(으)로 업데이트되었습니다. 새 기능:",
+  "CustomBossChallenge-DontShowAgain": "다시 보지 않기"
 }
