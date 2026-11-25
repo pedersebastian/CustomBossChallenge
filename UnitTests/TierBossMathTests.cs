@@ -163,9 +163,57 @@ public class TierBossMathTests
             new BossOptions {Tiers = tiers, TierBosses = tierBosses, RandomTiers = randomTiers}.Sanitized().RandomTiers);
 
     [Fact]
-    public void Options_from_a_code_never_have_Random_tiers() =>
+    public void Options_from_a_code_before_version_7_never_have_Random_tiers() =>
         Assert.Null(new BossOptions {Tiers = 3, TierBosses = "Lych,Vortex,Phayze", RandomTiers = "2"}
             .SanitizedFromCode().RandomTiers);
+
+    [Fact]
+    public void Options_from_a_version_7_code_keep_their_Random_tiers_in_range() =>
+        Assert.Equal("2,3", new BossOptions {Tiers = 3, TierBosses = "Lych,Vortex,Phayze", RandomTiers = "3,2,2,8"}
+            .SanitizedFromCode(keepRandomTiers: true).RandomTiers);
+
+    [Fact]
+    public void Tier_lists_merge_and_lose_a_tier()
+    {
+        Assert.Equal("1,2,5", TierBossMath.MergeTierLists("5,2", "1,2"));
+        Assert.Equal("3", TierBossMath.MergeTierLists(null, "3"));
+        Assert.Null(TierBossMath.MergeTierLists(null, ""));
+        Assert.Equal("2", TierBossMath.WithoutTier("2,5", 5));
+        Assert.Null(TierBossMath.WithoutTier("5", 5));
+        Assert.Equal("5", TierBossMath.WithoutTier("5", 3));
+    }
+
+    [Fact]
+    public void Resolving_keeps_the_bosses_an_earlier_game_picked()
+    {
+        // A code with the bosses a game picked for tiers 2 and 3, and tier 4 Random again (#270)
+        var options = new BossOptions {Tiers = 4, TierBosses = "Lych,Vortex,PhayzeElite,Random", RandomTiers = "2,3"};
+        var resolved = options.ResolveRandom(new System.Random(3));
+        Assert.Equal("Lych,Vortex,PhayzeElite", string.Join(",", resolved.TierBosses!.Split(',').Take(3)));
+        Assert.DoesNotContain("Random", resolved.TierBosses);
+        Assert.Equal("2,3,4", resolved.RandomTiers);
+        Assert.Equal(resolved, resolved.ResolveRandom(new System.Random(9)));
+    }
+
+    [Fact]
+    public void Bosses_a_game_picked_can_be_shown_as_Random_again()
+    {
+        var options = new BossOptions {Tiers = 3, TierBosses = "Lych,VortexElite@150/100,Phayze#4", RandomTiers = "2,3"};
+        var hidden = options.WithRandomPicksHidden();
+        Assert.Equal("Lych,RandomElite@150/100,Random#4", hidden.TierBosses);
+        Assert.Null(hidden.RandomTiers);
+        Assert.Same(hidden, hidden.WithRandomPicksHidden());
+    }
+
+    [Fact]
+    public void Picking_a_boss_forgets_that_the_tier_was_Random()
+    {
+        var options = new BossOptions {Tiers = 3, TierBosses = "Lych,Vortex,Phayze", RandomTiers = "2,3"};
+        Assert.True(options.WasRandom(2));
+        Assert.Equal("3", options.WithoutRandomMark(2).RandomTiers);
+        Assert.Null(options.WithoutRandomMark(2).WithoutRandomMark(3).RandomTiers);
+        Assert.Same(options, options.WithoutRandomMark(1));
+    }
 
     [Fact]
     public void Each_tier_keeps_its_speed_and_health()

@@ -11,7 +11,7 @@ import {
   spawnRounds,
 } from "./math/tiers";
 import { clamp, toLowerAscii } from "./math/dotnet";
-import { FOLLOWS, normalizeTierBosses, tierEntry, tierPercents, type TierBoss } from "./math/tierBosses";
+import { FOLLOWS, RANDOM, normalizeTierBosses, parseTierList, tierEntry, tierPercents, withTier, type TierBoss } from "./math/tierBosses";
 
 export const SKULL_MODES = ["Vanilla", "EvenlySpaced", "Custom"] as const;
 export type SkullMode = (typeof SKULL_MODES)[number];
@@ -44,6 +44,11 @@ export interface BossOptions {
   SpawnRounds: string | null;
   /** The boss of each tier in Advanced Mode, or null for the same boss on every tier (codes from 2.9, CBC3) */
   TierBosses?: string | null;
+  /**
+   * The tiers whose bosses a game picked at random, like "2,5", in a code with those bosses (CBC7, #270): they show as
+   * Random until the boss arrives
+   */
+  RandomTiers?: string | null;
   /** The boss events' own rounds, in Standard and in Advanced Mode (codes from 2.10, CBC4) */
   BossEventRounds: boolean;
   /**
@@ -82,6 +87,7 @@ export function optionsJson(options: BossOptions): JsonObject {
   if (options.ExtraTierHealth != null) json.ExtraTierHealth = options.ExtraTierHealth;
   json.SpawnRounds = options.SpawnRounds;
   if (options.TierBosses != null) json.TierBosses = options.TierBosses;
+  if (options.RandomTiers != null) json.RandomTiers = options.RandomTiers;
   json.BossEventRounds = options.BossEventRounds;
   // DefaultValueHandling.Ignore in the mod: Newest is left out, so codes without it stay the same
   if (options.ChimpsRounds !== undefined && options.ChimpsRounds !== "Newest") json.ChimpsRounds = options.ChimpsRounds;
@@ -185,6 +191,7 @@ export function readOptions(json: JsonObject): RawOptions {
     SpawnRounds: toNullableString(get("SpawnRounds"), "SpawnRounds"),
     ExtraTierHealth: get("ExtraTierHealth") === null ? null : toInt(get("ExtraTierHealth"), "ExtraTierHealth"),
     TierBosses: toNullableString(get("TierBosses"), "TierBosses"),
+    RandomTiers: hasOwn(json, "RandomTiers") ? toNullableString(json.RandomTiers, "RandomTiers") : null,
     BossEventRounds: boolean(get("BossEventRounds"), "BossEventRounds"),
     // Not in the defaults the website knows, as the mod leaves it out of them
     ChimpsRounds: hasOwn(json, "ChimpsRounds") ? toEnum(json.ChimpsRounds, CHIMPS_ROUNDS, "ChimpsRounds") : "Newest",
@@ -196,8 +203,13 @@ const hasOwn = (json: JsonObject, key: string): boolean => Object.prototype.hasO
 const enumName = (value: string | number, names: readonly string[], fallback: string): string =>
   typeof value === "string" ? value : Number.isInteger(value) && value >= 0 && value < names.length ? names[value] : fallback;
 
-/** BossOptions.Sanitized: every value in the range the Boss Creator allows */
-export function sanitize(raw: RawOptions): BossOptions {
+/**
+ * BossOptions.Sanitized: every value in the range the Boss Creator allows. RandomTiers is only kept when the code's
+ * version holds it (CBC7, #270), like BossOptions.SanitizedFromCode; older readers dropped it.
+ */
+export function sanitize(raw: RawOptions, keepRandomTiers = false): BossOptions {
+  const tierBosses = normalizeTierBosses(raw.TierBosses);
+  const randomTiers = keepRandomTiers ? sanitizedRandomTiers(raw.RandomTiers, tierBosses, clampTiers(raw.Tiers)) : null;
   return {
     Boss: enumName(raw.Boss, BOSSES, DEFAULTS.Boss),
     Elite: raw.Elite,
@@ -212,11 +224,45 @@ export function sanitize(raw: RawOptions): BossOptions {
         : raw.HealthPerTier,
     ),
     SpawnRounds: normalizeRounds(raw.SpawnRounds),
-    TierBosses: normalizeTierBosses(raw.TierBosses),
+    TierBosses: tierBosses,
+    // Left out when there is none, like the mod's JSON leaves it out
+    ...(randomTiers != null ? { RandomTiers: randomTiers } : {}),
     BossEventRounds: raw.BossEventRounds,
     ChimpsRounds: enumName(raw.ChimpsRounds, CHIMPS_ROUNDS, "Newest") as ChimpsRounds,
     ExtraTierHealth: null,
   };
+}
+
+/** BossOptions.SanitizedRandomTiers: in order, without duplicates and tiers past Tiers, or null in Standard Mode */
+function sanitizedRandomTiers(list: string | null | undefined, tierBosses: string | null, tiers: number): string | null {
+  if (tierBosses == null) return null;
+  const random = [...new Set(parseTierList(list).filter((tier) => tier <= tiers))].sort((a, b) => a - b);
+  return random.length > 0 ? random.join(",") : null;
+}
+
+/** BossOptions.WasRandom: whether a game picked the tier's boss at random, so it is a secret until it arrives (#270) */
+export const wasRandom = (options: BossOptions, tier: number): boolean =>
+  parseTierList(options.RandomTiers).includes(tier);
+
+/**
+ * The options as a player sees them before the game: a tier whose boss a game picked at random shows as Random, with its
+ * Elite, speed, health and skulls, so the boss stays a secret until it arrives (#270), like the Boss Creator's Tier
+ * Preview. Options without such tiers come back as they are.
+ */
+export function hideRandomPicks(options: BossOptions): BossOptions {
+  const picked = parseTierList(options.RandomTiers);
+  if (!isMixed(options) || picked.length === 0) return options;
+  let list: string | null | undefined = options.TierBosses;
+  for (const tier of picked) list = withTier(list, tier, { ...tierEntry(list, tier), boss: RANDOM });
+  return { ...options, TierBosses: list };
+}
+
+/** BossOptions.WithoutRandomMark: the options without the mark that a game picked the tier's boss at random */
+export function withoutRandomMark(options: BossOptions, tier: number): BossOptions {
+  if (!wasRandom(options, tier)) return options;
+  const left = parseTierList(options.RandomTiers).filter((other) => other !== tier);
+  const { RandomTiers: _, ...rest } = options;
+  return left.length > 0 ? { ...rest, RandomTiers: left.join(",") } : rest;
 }
 
 /** The skull thresholds (0-1, descending) the options ask for, or null to keep the vanilla skulls */

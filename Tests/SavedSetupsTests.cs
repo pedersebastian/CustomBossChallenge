@@ -74,7 +74,7 @@ public class SavedSetupsStoreTest : CustomBossTest
                 "{\"Version\":1,\"Setups\":[{\"Name\":\"Good\",\"Code\":\"" + SetupCode.Encode(lych, lychDcm) + "\"}," +
                 "{\"Name\":\"\",\"Code\":\"CBC1:x\"},{\"Name\":\"good\",\"Code\":\"CBC1:x\"},{\"Name\":\"  Good \\n\",\"Code\":\"CBC1:x\"}," +
                 "{\"Name\":\"Broken\",\"Code\":\"not a code\"}," +
-                "{\"Name\":\"Future\",\"Code\":\"CBC7:abc\"},{\"Name\":\"Wild\",\"Code\":\"" +
+                "{\"Name\":\"Future\",\"Code\":\"CBC8:abc\"},{\"Name\":\"Wild\",\"Code\":\"" +
                 SetupCode.Pack("{\"o\":{\"Tiers\":9999},\"c\":{}}") + "\"},null]}");
             AssertEquals(string.Join(", ", store.All.Select(entry => entry.Name)), "Broken, Future, Good, Wild", "Readable entries");
             Assert(store.TryLoad("Good", out var good, out _, out _) && good == lych, "A good entry next to damaged ones");

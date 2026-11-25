@@ -217,6 +217,25 @@
       "challenge": {}
     },
     {
+      "name": "advanced, bosses a game picked",
+      "code": "CBC7:LcyxCoNAEEXRf3n1QNZomqlCwC5FEEkvOqBgdmBnFXXZfw-GdBcunAQFJ7STBANX9KuHmomB8dz7kd4aomz1PEW5Fzd3KZ2j19jth9D5QWg6P-jnb-BKJQinUa_iY6OLHwwcwyKZ0INTzl8",
+      "options": {
+        "Boss": "Bloonarius",
+        "Elite": false,
+        "SkullMode": "Vanilla",
+        "SkullCount": 3,
+        "CustomSkulls": "75, 50, 25",
+        "Tiers": 4,
+        "SpeedPerTier": 0,
+        "HealthPerTier": 0,
+        "SpawnRounds": null,
+        "TierBosses": "Lych,VortexElite@150/300,Phayze,Lych",
+        "RandomTiers": "2,3",
+        "BossEventRounds": true
+      },
+      "challenge": {}
+    },
+    {
       "name": "no paragons",
       "code": "CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTa3VUUoGSeYmVgQkFiWm5-cVK1kZ1NYCAA",
       "options": {

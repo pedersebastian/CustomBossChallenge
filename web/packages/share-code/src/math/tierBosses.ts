@@ -131,6 +131,24 @@ export function parseTierBosses(list: string | null | undefined): TierBoss[] {
   return list.split(",").slice(0, MAX_TIERS).map(parseToken);
 }
 
+/**
+ * The tier numbers in a list like "2,5" (TierBossMath.ParseTierList): each item trimmed and read as a whole number like
+ * int.TryParse, kept from 1 to 10; anything else is left out
+ */
+export function parseTierList(list: string | null | undefined): number[] {
+  if (list == null || isNullOrWhiteSpace(list)) return [];
+  return list
+    .split(",")
+    .map((token) => {
+      const trimmed = netTrim(token);
+      // Trimmed already, so like int.TryParse only a sign and ASCII digits are left
+      if (!/^[+-]?[0-9]+$/.test(trimmed)) return 0;
+      const tier = Number(trimmed);
+      return Number.isInteger(tier) && tier >= -2_147_483_648 && tier <= 2_147_483_647 ? tier : 0;
+    })
+    .filter((tier) => tier >= 1 && tier <= MAX_TIERS);
+}
+
 const tokenOf = (tier: TierBoss): string =>
   (tier.boss === null ? "" : tier.boss + (tier.elite ? ELITE : "")) +
   (tier.speed === NORMAL && tier.health === NORMAL ? "" : `${VALUES_MARK}${tier.speed}/${tier.health}`) +

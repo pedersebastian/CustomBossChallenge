@@ -63,7 +63,7 @@ describe("codes the website makes", () => {
   });
 
   it("covers every prefix", () => {
-    expect(new Set([...examples, ...generated].map((code) => code.slice(0, 5)))).toEqual(new Set(["CBC1:", "CBC2:", "CBC3:", "CBC4:", "CBC6:"]));
+    expect(new Set([...examples, ...generated].map((code) => code.slice(0, 5)))).toEqual(new Set(["CBC1:", "CBC2:", "CBC3:", "CBC4:", "CBC6:", "CBC7:"]));
   });
 
   it("makes an empty payload for a new setup", async () => {
@@ -97,6 +97,9 @@ describe("prefixFor", () => {
     [{ TierBosses: "Lych@100/15" }, "CBC6:"],
     [{ TierBosses: "Lych@100/2500", BossEventRounds: true }, "CBC6:"],
     [{ TierBosses: "Lych@100/250" }, "CBC3:"],
+    // The bosses a game picked for its Random tiers (#270)
+    [{ TierBosses: "Lych,Vortex", Tiers: 2, RandomTiers: "2" }, "CBC7:"],
+    [{ TierBosses: "Lych@100/15", RandomTiers: "1" }, "CBC7:"],
   ])("%j gives %s", (change, prefix) => {
     expect(prefixFor({ ...base, ...change })).toBe(prefix);
   });

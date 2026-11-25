@@ -86,6 +86,19 @@ public class MixedBossCodeTest : CustomBossTest
         Assert(SetupCode.Encode(options with {TierBosses = null}, dcm).StartsWith(SetupCode.Version2Prefix),
             "Without bosses per tier the code stays version 2");
 
+        // The bosses a game picked for its Random tier are a version 7 code, which keeps them and which tier was
+        // Random (#270); a game of it keeps them, and the tier stays a secret until its boss arrives
+        var picked = options.ResolveRandom(new System.Random(3));
+        var pickedCode = SetupCode.Encode(picked, dcm);
+        Assert(pickedCode.StartsWith(SetupCode.Version7Prefix), $"The bosses a game picked must be a version 7 code: {pickedCode}");
+        Assert(SetupCode.TryDecode(pickedCode, out var readPicked, out _, out _), "The version 7 code did not load");
+        AssertEquals(readPicked, picked, "The bosses a game picked, read from the code");
+        Assert(readPicked.WasRandom(3) && !readPicked.HasRandom, $"Tier 3 was Random and has its boss: {readPicked.TierBosses}");
+        AssertEquals(BossGameLauncher.Resolve(readPicked), picked, "A game of the code has the same bosses");
+        Assert(SetupCode.TryDecode(SetupCode.Version6Prefix + pickedCode[SetupCode.PrefixLength..], out var asVersion6, out _, out _),
+            "The same contents read as version 6");
+        AssertEquals(asVersion6.RandomTiers, null, "Version 6 drops which tiers were Random, like older versions did");
+
         // A game with bosses per tier is continued with the same bosses, from a file older versions leave alone
         var store = new ContinueStore(System.IO.Path.Combine(TempFolder, "Mixed", "Continue.json"));
         var resolved = options.ResolveRandom(new System.Random(7));
@@ -125,6 +138,8 @@ public class MixedBossGameTest : CustomBossTest
         dcm.startRules.lives = dcm.startRules.maxLives = 5000;
         dcm.bloonModifiers.healthMultipliers.boss = 0.05f;
         dcm.disableMK = true;
+        // As if continued: the victory screen offers a code with these bosses (#270)
+        LastGame.Remember(null, options, dcm);
         yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, options));
 
         var gameModel = InGame.instance.GetGameModel();
@@ -245,6 +260,15 @@ public class MixedBossGameTest : CustomBossTest
         Assert(presented >= options.Tiers - 1, $"The map effects were checked for {presented} tiers");
         Assert(early > 0, "The next boss's effects never came before the boss itself");
         AssertEquals(secretKept, 1, "The Random tier's effects waited for its boss");
+
+        Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen? victory = null;
+        yield return WaitFor(() => (victory = Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen>()) != null,
+            "Opening the victory screen", 60);
+        yield return new WaitForSecondsRealtime(1);
+        var lineupButton = victory!.transform.Find(Visuals.LineupButton.Name);
+        Assert(lineupButton != null && lineupButton.gameObject.activeInHierarchy,
+            "The victory screen of a game with a Random tier offers a code with its bosses");
+        LastGame.Clear();
         yield return ToMainMenu();
         AssertEquals(Visuals.BossHud.Lineup, null, "The line-up is gone outside the game");
     }
@@ -292,6 +316,58 @@ public class MixedBossGameTest : CustomBossTest
             AssertEquals(glow != null && glow.gameObject.activeSelf, secret && options.BossOf(i + 1).Elite,
                 $"Die glow of tier {i + 1} during tier {tier}");
         }
+    }
+}
+
+/// <summary>
+/// The defeat screen of a game with Random tiers copies a code with the bosses Random picked (#270), one that a game
+/// without Random tiers doesn't offer; the code is version 7 and reads back as those bosses
+/// </summary>
+public class MixedBossLineupTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        var clipboard = "";
+        Clipboard.Read = () => clipboard;
+        Clipboard.Write = text => clipboard = text;
+        try
+        {
+            var setup = new BossOptions {Tiers = 3, TierBosses = "Lych,RandomElite,Random", SpawnRounds = "40, 43, 46"}.Sanitized();
+            var dcm = BaseDcm();
+            dcm.startRules.round = 38;
+            dcm.startRules.lives = dcm.startRules.maxLives = 1;
+            var played = BossGameLauncher.Resolve(setup);
+            LastGame.Remember(setup, played, dcm);
+            Assert(LastGame.CanReplay(setup) && !LastGame.CanReplay(setup with {Tiers = 4}),
+                "The Boss Creator offers the last game's bosses only for the setup that game was started from");
+            yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, played));
+            AssertEquals(LastGame.Lineup(CustomBossState.ActiveOptions)?.Options, played, "The game being played has the bosses to share");
+
+            Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen? screen = null;
+            yield return LoseAndOpenDefeatScreen(found => screen = found);
+            var button = screen!.transform.Find(Visuals.LineupButton.Name);
+            Assert(button != null && button.gameObject.activeInHierarchy, "The defeat screen offers a code with these bosses");
+            button!.GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
+            yield return WaitForPopup(found => popup = found);
+            Assert(clipboard.StartsWith(SetupCode.Version7Prefix), $"A version 7 code was copied: {clipboard}");
+            Assert(SetupCode.TryDecode(clipboard, out var read, out var readDcm, out _), "The copied code loads");
+            AssertEquals(read, played, "The copied code has the bosses Random picked");
+            AssertEquals(readDcm?.startRules.round, 38, "The copied code has the game's rules");
+            yield return ClosePopup(popup!, true);
+
+            // A game without Random tiers has nothing new to share
+            LastGame.Remember(setup with {TierBosses = "Lych,Vortex,Phayze"}, setup with {TierBosses = "Lych,Vortex,Phayze"}, dcm);
+            Visuals.LineupButton.Show(screen);
+            Assert(!button.gameObject.activeSelf, "No code with these bosses for a game without Random tiers");
+        }
+        finally
+        {
+            LastGame.Clear();
+            Clipboard.Reset();
+        }
+
+        yield return ToMainMenu();
     }
 }
 

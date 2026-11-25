@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Play again with the same Random bosses** (#270): after a game with Random tiers in Advanced Mode, the Boss Creator
+  has a Last Game's Bosses row. Play Again plays the setup once more with the bosses Random picked last time, while
+  the setup keeps its Random tiers, and Copy makes a share code with those bosses. The victory and defeat screens
+  copy that code too, and the game's own Restart already keeps the bosses. Whoever pastes such a code sees Random on
+  those tiers, in the Boss Creator, in the game until each boss arrives and on the website, and Play gives the same
+  bosses; picking another boss for such a tier makes it a normal tier again. These codes start with `CBC7:`, so
+  older versions of the mod ask for an update instead of showing the bosses; the website reads them.
+
 - **Difficulty stars** (#263): the Boss Creator shows a difficulty rating from 1 to 10 stars under the Tier Preview,
   and the website shows it with every setup: on the home page, in the Studio and in Compare. It is a rough estimate
   from the setup's numbers: each tier's health and speed weighted by how late it comes, the boss (Phayze and Lych

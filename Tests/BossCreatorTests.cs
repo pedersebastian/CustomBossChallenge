@@ -99,7 +99,8 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 21, "Info buttons in the boss section");
+        // 22 with the Last Game's Bosses row (#270), hidden until a game with Random tiers
+        AssertEquals(infoButtons, 22, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
@@ -404,7 +405,7 @@ public class BossCreatorTest : CustomBossTest
         yield return WaitForPopup(p => popup = p);
         Assert(popup.body.text.Contains(Texts.CodeInvalid.T()), $"Invalid code popup: {popup.body.text}");
         yield return ClosePopup(popup, true);
-        clipboard = "CBC7:abc";
+        clipboard = "CBC8:abc";
         section.PasteCode.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
         Assert(popup.body.text.Contains(Texts.CodeTooNew.T()), $"Newer code popup: {popup.body.text}");
