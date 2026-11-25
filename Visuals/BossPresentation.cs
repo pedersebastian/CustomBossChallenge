@@ -18,7 +18,7 @@ namespace CustomBossChallenge.Visuals;
 /// <see cref="Patches.MixedBosses"/> has switched the type by then.
 /// <br/>
 /// Only what the game put on the map is swapped, so a map or an accessibility setting without the effects stays
-/// without them. While the first tier's boss is a secret, the effects are only switched off, so they can be swapped
+/// without them. While a boss Random picked is a secret, the effects are only switched off, so they can be swapped
 /// and switched on again when it arrives (#283).
 /// </summary>
 public static class BossPresentation

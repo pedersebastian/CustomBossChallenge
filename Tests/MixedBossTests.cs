@@ -224,14 +224,17 @@ public class MixedBossGameTest : CustomBossTest
                 if (Time.realtimeSinceStartup >= nextRoundAt)
                 {
                     beaten = null;
-                    // A Random boss keeps its secret: the map keeps the beaten boss's effects until it arrives
+                    // A Random boss keeps its secret: the map has no boss effects until it arrives (#283)
                     var secret = options.WasRandom(beatenTier + 1) && manager.CurrentBoss == null;
-                    var next = options.BossOf(secret ? beatenTier : beatenTier + 1).Boss.ToString();
+                    var next = options.BossOf(beatenTier + 1).Boss.ToString();
                     var effects = BossPresentationTest.Names();
                     Log($"tier {beatenTier} beaten on round {round + 1}, round {InGame.instance.bridge.GetCurrentRound() + 1}: {effects}" +
                         (manager.CurrentBoss == null ? ", next boss not here yet" : ""));
-                    Assert(Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(next)),
-                        $"The round after tier {beatenTier} was beaten shows {next}'s effects: {effects}");
+                    if (secret)
+                        AssertEquals(effects, "", $"The round after tier {beatenTier} was beaten shows no boss effects before the Random tier {beatenTier + 1}");
+                    else
+                        Assert(Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(next)),
+                            $"The round after tier {beatenTier} was beaten shows {next}'s effects: {effects}");
                     if (manager.CurrentBoss == null && !secret) early++;
                     if (secret) secretKept++;
                 }
@@ -259,7 +262,7 @@ public class MixedBossGameTest : CustomBossTest
         AssertEquals(passed, skulls.Length, $"Tier {highestTier} used every one of its skulls");
         Assert(presented >= options.Tiers - 1, $"The map effects were checked for {presented} tiers");
         Assert(early > 0, "The next boss's effects never came before the boss itself");
-        AssertEquals(secretKept, 1, "The Random tier's effects waited for its boss");
+        AssertEquals(secretKept, 1, "The map hid the boss effects before the Random tier's boss");
 
         Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen? victory = null;
         yield return WaitFor(() => (victory = Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen>()) != null,
@@ -411,8 +414,8 @@ public class MixedBossRandomTest : CustomBossTest
 }
 
 /// <summary>
-/// A boss Random picked stays a secret until it arrives (#283): before a Random first tier the map has no boss
-/// effects, also after a restart, and the defeat screen shows a die, with the Elite glow for a Random Elite tier,
+/// A boss Random picked stays a secret until it arrives (#283): before a Random first tier, and from the round after
+/// the boss before a Random tier is beaten, the map has no boss effects, also after a restart, and the defeat screen shows a die, with the Elite glow for a Random Elite tier,
 /// whether the game is lost before the first boss or between bosses
 /// </summary>
 [FullSuiteOnly("loses a game with Random tiers twice, with a restart (about 30 s)")]
@@ -466,9 +469,14 @@ public class MixedBossSecretTest : CustomBossTest
             // Lost between bosses, before the Random Elite tier 2 arrives
             manager.CurrentBoss?.Destroy();
             CustomBossState.OnBossDefeated(1);
+            yield return new WaitForSecondsRealtime(0.5f);
+            Assert(!Patches.MixedBosses.PresentedHidden && Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(first)),
+                $"Right after tier 1 is beaten the map keeps its effects: {BossPresentationTest.Names()}");
+            // The next round: no boss effects before the Random tier 2 (what the round start patch calls)
+            Patches.MixedBosses.OnRoundStart();
+            AssertNoEffects("The round after tier 1 is beaten");
             yield return LoseAndOpenDefeatScreen(found => screen = found);
-            Assert(Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(first)),
-                $"The map keeps tier 1's effects until tier 2 arrives: {BossPresentationTest.Names()}");
+            AssertNoEffects("Lost before tier 2");
             AssertDie(screen!, die.Image, resolved, 2);
         }
         finally
