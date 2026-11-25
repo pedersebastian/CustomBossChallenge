@@ -224,14 +224,17 @@ public class MixedBossGameTest : CustomBossTest
                 if (Time.realtimeSinceStartup >= nextRoundAt)
                 {
                     beaten = null;
-                    // A Random boss keeps its secret: the map keeps the beaten boss's effects until it arrives
+                    // A Random boss keeps its secret: the map has no boss effects until it arrives (#283)
                     var secret = options.WasRandom(beatenTier + 1) && manager.CurrentBoss == null;
-                    var next = options.BossOf(secret ? beatenTier : beatenTier + 1).Boss.ToString();
+                    var next = options.BossOf(beatenTier + 1).Boss.ToString();
                     var effects = BossPresentationTest.Names();
                     Log($"tier {beatenTier} beaten on round {round + 1}, round {InGame.instance.bridge.GetCurrentRound() + 1}: {effects}" +
                         (manager.CurrentBoss == null ? ", next boss not here yet" : ""));
-                    Assert(Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(next)),
-                        $"The round after tier {beatenTier} was beaten shows {next}'s effects: {effects}");
+                    if (secret)
+                        AssertEquals(effects, "", $"The round after tier {beatenTier} was beaten shows no boss effects before the Random tier {beatenTier + 1}");
+                    else
+                        Assert(Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(next)),
+                            $"The round after tier {beatenTier} was beaten shows {next}'s effects: {effects}");
                     if (manager.CurrentBoss == null && !secret) early++;
                     if (secret) secretKept++;
                 }
@@ -259,7 +262,7 @@ public class MixedBossGameTest : CustomBossTest
         AssertEquals(passed, skulls.Length, $"Tier {highestTier} used every one of its skulls");
         Assert(presented >= options.Tiers - 1, $"The map effects were checked for {presented} tiers");
         Assert(early > 0, "The next boss's effects never came before the boss itself");
-        AssertEquals(secretKept, 1, "The Random tier's effects waited for its boss");
+        AssertEquals(secretKept, 1, "The map hid the boss effects before the Random tier's boss");
 
         Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen? victory = null;
         yield return WaitFor(() => (victory = Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen>()) != null,
@@ -407,5 +410,102 @@ public class MixedBossRandomTest : CustomBossTest
         AssertEquals(model.bossBloonType, resolved.BossOf(1).Boss.ToString(), "After a restart the game is tier 1's boss again");
         AssertEquals(model.bossEliteMode, resolved.BossOf(1).Elite, "Elite after a restart");
         yield return ToMainMenu();
+    }
+}
+
+/// <summary>
+/// A boss Random picked stays a secret until it arrives (#283): before a Random first tier, and from the round after
+/// the boss before a Random tier is beaten, the map has no boss effects, also after a restart, and the defeat screen shows a die, with the Elite glow for a Random Elite tier,
+/// whether the game is lost before the first boss or between bosses
+/// </summary>
+[FullSuiteOnly("loses a game with Random tiers twice, with a restart (about 30 s)")]
+public class MixedBossSecretTest : CustomBossTest
+{
+    protected override IEnumerator Run()
+    {
+        var resolved = BossGameLauncher.Resolve(new BossOptions {Tiers = 2, TierBosses = "Random,RandomElite", SpawnRounds = "40, 43"}.Sanitized());
+        Assert(resolved.WasRandom(1) && resolved.WasRandom(2), $"Both tiers were Random: {resolved.RandomTiers}");
+        var dcm = BaseDcm();
+        dcm.startRules.round = 38;
+        dcm.startRules.lives = dcm.startRules.maxLives = 1;
+        yield return LoadIntoGame(BossGameLauncher.BuildInGameData(dcm, resolved));
+
+        // The die to compare the defeat screen's portrait with, once its sprite has loaded
+        var die = BTD_Mod_Helper.Api.Components.ModHelperImage.Create(new BTD_Mod_Helper.Api.Components.Info("SecretTestDie"),
+            BTD_Mod_Helper.Api.Enums.VanillaSprites.RandomIcon);
+        try
+        {
+            // The game adds its boss effects a moment after the map loads
+            yield return new WaitForSecondsRealtime(3);
+            AssertNoEffects("Before the first tier");
+
+            Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen? screen = null;
+            yield return LoseAndOpenDefeatScreen(found => screen = found);
+            AssertDie(screen!, die.Image, resolved, 1);
+
+            // A restart keeps the secret
+            var simulation = InGame.instance.bridge.Simulation.Pointer;
+            InGame.instance.RunRestart();
+            var start = Time.realtimeSinceStartup;
+            while (InGame.instance == null || InGame.instance.bridge?.Simulation == null ||
+                   InGame.instance.bridge.Simulation.Pointer == simulation || InGame.instance.bridge.Simulation.GameOver)
+            {
+                if (Time.realtimeSinceStartup - start > 30) Fail("The game did not restart");
+                yield return new WaitForSecondsRealtime(0.25f);
+            }
+            yield return new WaitForSecondsRealtime(3);
+            AssertNoEffects("After a restart");
+
+            // Tier 1 arrives: its effects show
+            var manager = InGame.instance.bridge.Simulation.map.spawner.bossBloonManager;
+            manager.SpawnBoss(1, false);
+            yield return new WaitForSecondsRealtime(1.5f);
+            var first = resolved.BossOf(1).Boss.ToString();
+            Assert(!Patches.MixedBosses.PresentedHidden, "The map shows the boss effects once tier 1 arrives");
+            Assert(Visuals.BossPresentation.MapEffects.Length > 0 && Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(first)),
+                $"Tier 1's map effects are {first}'s: {BossPresentationTest.Names()}");
+            AssertEquals(Visuals.BossHud.DefeatSecretTier(), 0, "Tier 1 is no secret once it arrived");
+
+            // Lost between bosses, before the Random Elite tier 2 arrives
+            manager.CurrentBoss?.Destroy();
+            CustomBossState.OnBossDefeated(1);
+            yield return new WaitForSecondsRealtime(0.5f);
+            Assert(!Patches.MixedBosses.PresentedHidden && Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(first)),
+                $"Right after tier 1 is beaten the map keeps its effects: {BossPresentationTest.Names()}");
+            // The next round: no boss effects before the Random tier 2 (what the round start patch calls)
+            Patches.MixedBosses.OnRoundStart();
+            AssertNoEffects("The round after tier 1 is beaten");
+            yield return LoseAndOpenDefeatScreen(found => screen = found);
+            AssertNoEffects("Lost before tier 2");
+            AssertDie(screen!, die.Image, resolved, 2);
+        }
+        finally
+        {
+            Object.Destroy(die.gameObject);
+        }
+
+        yield return ToMainMenu();
+    }
+
+    private void AssertNoEffects(string when)
+    {
+        Assert(Patches.MixedBosses.PresentedHidden, $"{when} the map hides the boss effects");
+        Assert(Visuals.BossPresentation.MapEffectCount > 0, $"{when} the map still has the game's boss effects, switched off");
+        AssertEquals(BossPresentationTest.Names(), "", $"{when} the map shows no boss effects");
+    }
+
+    private void AssertDie(Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen screen, UnityEngine.UI.Image die,
+        BossOptions options, int tier)
+    {
+        var (boss, elite) = options.BossOf(tier);
+        AssertEquals(Visuals.BossHud.DefeatSecretTier(), tier, $"Tier {tier} is still a secret");
+        Log($"tier {tier} ({boss}{(elite ? " Elite" : "")}): defeat screen portrait {screen.bossIcon.sprite?.name}, die {die.sprite?.name}");
+        Assert(die.sprite != null && screen.bossIcon.sprite?.name == die.sprite.name,
+            $"The defeat screen shows a die for tier {tier}, not {screen.bossIcon.sprite?.name}");
+        var glow = screen.bossIcon.transform.parent.Find($"{BossEditorSection.EliteGlowName}{screen.bossIcon.name}");
+        AssertEquals(glow != null && glow.gameObject.activeSelf, elite, $"The die's Elite glow for tier {tier}");
+        var named = screen.GetComponentsInChildren<Il2CppTMPro.TMP_Text>()
+            .Select(text => text.text).Where(text => text.Contains(boss.ToString())).ToList();
+        Assert(named.Count == 0, $"Nothing on the defeat screen names {boss}: {string.Join(" | ", named)}");
     }
 }
