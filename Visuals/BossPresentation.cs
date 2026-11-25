@@ -18,15 +18,19 @@ namespace CustomBossChallenge.Visuals;
 /// <see cref="Patches.MixedBosses"/> has switched the type by then.
 /// <br/>
 /// Only what the game put on the map is swapped, so a map or an accessibility setting without the effects stays
-/// without them.
+/// without them. While the first tier's boss is a secret, the effects are only switched off, so they can be swapped
+/// and switched on again when it arrives (#283).
 /// </summary>
 public static class BossPresentation
 {
     private const string AmbientSuffix = "AmbientMapFx(Clone)";
     private const string TrackSuffix = "TrackFx(Clone)";
 
-    /// <summary>The boss whose map effects were put on the map with this id, so they are swapped only once</summary>
-    private static (int Map, BossType Boss)? shown;
+    /// <summary>
+    /// The boss whose map effects were put on the map with this id, so they are swapped only once; no boss when they
+    /// were switched off
+    /// </summary>
+    private static (int Map, BossType? Boss)? shown;
 
     /// <summary>The boss music playing now, or null</summary>
     public static string? MusicPlaying
@@ -40,7 +44,7 @@ public static class BossPresentation
 
     /// <summary>
     /// Puts the map's ambient and track effects of <paramref name="boss"/> in place of the ones there now, if they
-    /// differ
+    /// differ, and switches them on
     /// </summary>
     public static void ShowMapEffects(BossType boss)
     {
@@ -74,6 +78,8 @@ public static class BossPresentation
                 foreach (var old in tracks) Object.Destroy(old);
                 loader.AddAsset(track, position);
             }
+
+            foreach (var effect in Effects(map)) effect.SetActive(true);
         }
         catch (Exception e)
         {
@@ -82,14 +88,41 @@ public static class BossPresentation
     }
 
     /// <summary>
+    /// Switches off the boss effects on the map, so it shows no boss's (#283). Effects the game adds later are
+    /// switched off on the next call, so this is called again every <see cref="CheckInterval"/>.
+    /// </summary>
+    public static void HideMapEffects()
+    {
+        try
+        {
+            var map = MapRoot();
+            if (map == null) return;
+            var effects = Effects(map);
+            if (effects.Length == 0) return;
+            shown = (map.GetInstanceID(), null);
+            foreach (var effect in effects)
+            {
+                if (effect.activeSelf) effect.SetActive(false);
+            }
+        }
+        catch (Exception e)
+        {
+            ModHelper.Warning<CustomBossChallenge>($"Couldn't hide the boss map effects: {e.Message}");
+        }
+    }
+
+    /// <summary>
     /// How often <see cref="Patches.MixedBosses.KeepPresentation"/> looks at the map, in seconds of real time
     /// </summary>
     public const float CheckInterval = 0.5f;
 
-    /// <summary>The names of the boss effects on the map now, for the tests and the log</summary>
+    /// <summary>The names of the boss effects the map shows now (the ones switched on), for the tests and the log</summary>
     public static string[] MapEffects => MapRoot() is { } map
-        ? Effects(map).Select(effect => effect.name).OrderBy(name => name).ToArray()
+        ? Effects(map).Where(effect => effect.activeSelf).Select(effect => effect.name).OrderBy(name => name).ToArray()
         : Array.Empty<string>();
+
+    /// <summary>How many boss effects the map has, shown or switched off, for the tests</summary>
+    public static int MapEffectCount => MapRoot() is { } map ? Effects(map).Length : 0;
 
     private static Transform? MapRoot() =>
         UI.instance?.mapLoader?.bossAmbientFx?.transform.parent ?? GameObject.Find("Map")?.transform;

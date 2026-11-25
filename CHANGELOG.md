@@ -63,6 +63,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   English in every language. They are now translated where the Challenge Editor's name field keeps the name, like the
   example setups' names, and English otherwise. Changing the boss still renames a setup that has the name it was
   given, in English or any other language.
+- **A Random boss stays a secret until it arrives** (#283): losing before a Random tier's boss arrived showed that
+  boss on the defeat screen; it now shows the die, with the Elite glow for Random Elite, like the boss line-up. And
+  when the first tier is Random, the map no longer shows that boss's effects around the map and at the spawn point
+  from the start: it has no boss effects until the boss arrives.
 
 ## [2.14.0] - 2026-11-22
 

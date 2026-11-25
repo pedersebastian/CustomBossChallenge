@@ -68,10 +68,11 @@ public static class MixedBosses
 
     /// <summary>
     /// Whether the boss of <paramref name="tier"/> is still a secret: the game picked it at random, and it hasn't
-    /// arrived yet. Its portraits show a die, and the map keeps the effects of the boss before it until it arrives.
+    /// arrived yet. Its portraits show a die, on the defeat screen too, and the map keeps the effects of the boss before
+    /// it until it arrives, or has none before a first tier like that (#283).
     /// </summary>
     public static bool IsSecret(BossBloonManager manager, BossOptions options, int tier) =>
-        options.WasRandom(tier) && tier > ArrivedTier(manager);
+        options.IsSecret(tier, ArrivedTier(manager));
 
     /// <summary>
     /// Makes the game model and the game's boss data say the boss of <paramref name="tier"/>
@@ -103,18 +104,35 @@ public static class MixedBosses
     internal static void AfterSpawn(BossBloonManager manager, int tier)
     {
         if (MixedOptions is not { } options) return;
-        Present(options, tier);
+        Present(options, tier, false);
         Spawned?.Invoke(tier);
     }
 
     /// <summary>The tier whose boss's map effects are shown now, or 0 before a custom game with tier bosses</summary>
     public static int Presented { get; private set; }
 
-    private static void Present(BossOptions options, int tier)
+    /// <summary>
+    /// Whether the map shows no boss effects, because the boss of <see cref="Presented"/> is still a secret: a first
+    /// tier the game picked at random, which has no boss before it whose effects the map could keep (#283)
+    /// </summary>
+    public static bool PresentedHidden { get; private set; }
+
+    private static void Present(BossOptions options, int tier, bool hidden)
     {
         Presented = tier;
-        Visuals.BossPresentation.ShowMapEffects(options.BossOf(tier).Boss);
+        PresentedHidden = hidden;
+        ApplyPresentation(options);
     }
+
+    private static void ApplyPresentation(BossOptions options)
+    {
+        if (PresentedHidden) Visuals.BossPresentation.HideMapEffects();
+        else Visuals.BossPresentation.ShowMapEffects(options.BossOf(Presented).Boss);
+    }
+
+    /// <summary>Shows the effects of <paramref name="tier"/>'s boss, or none while that boss is a secret</summary>
+    private static void Present(BossBloonManager manager, BossOptions options, int tier) =>
+        Present(options, tier, IsSecret(manager, options, tier));
 
     /// <summary>
     /// A round has started: once a boss is beaten, the map shows the next boss's effects from the next round on, even
@@ -126,16 +144,16 @@ public static class MixedBosses
         var manager = InGame.instance?.bridge?.Simulation?.map?.spawner?.bossBloonManager;
         if (manager == null) return;
         var next = ShownTier(manager, options);
-        Present(options, IsSecret(manager, options, next) ? PresentedTier(manager, options) : next);
+        Present(manager, options, IsSecret(manager, options, next) ? PresentedTier(manager, options) : next);
     }
 
     /// <summary>
     /// Keeps the map's boss effects those of the boss shown, also when the game adds its own a moment after the map
-    /// loads, as it does when a game is continued
+    /// loads, as it does when a game is continued, and without any while the boss is a secret
     /// </summary>
     internal static void KeepPresentation()
     {
-        if (MixedOptions is { } options && Presented > 0) Visuals.BossPresentation.ShowMapEffects(options.BossOf(Presented).Boss);
+        if (MixedOptions is { } options && Presented > 0) ApplyPresentation(options);
     }
 
     /// <summary>
@@ -147,6 +165,6 @@ public static class MixedBosses
     {
         if (MixedOptions is not { } options) return;
         SetType(manager.sim?.model, options, ShownTier(manager, options));
-        if (loaded) Present(options, PresentedTier(manager, options));
+        if (loaded) Present(manager, options, PresentedTier(manager, options));
     }
 }

@@ -215,6 +215,20 @@ public class TierBossMathTests
         Assert.Same(options, options.WithoutRandomMark(1));
     }
 
+    [Theory]
+    [InlineData(1, 0, false)] // Never Random
+    [InlineData(2, 0, true)] // Random, before the first boss
+    [InlineData(2, 1, true)] // Random, the boss before it has arrived
+    [InlineData(2, 2, false)] // Random, arrived
+    [InlineData(3, 2, true)]
+    [InlineData(3, 3, false)]
+    public void A_Random_tier_is_a_secret_until_its_boss_arrives(int tier, int arrivedTier, bool secret)
+    {
+        var options = new BossOptions {Tiers = 3, TierBosses = "Lych,Vortex,Phayze", RandomTiers = "2,3"};
+        Assert.Equal(secret, options.IsSecret(tier, arrivedTier));
+        Assert.False((options with {RandomTiers = null}).IsSecret(tier, arrivedTier));
+    }
+
     [Fact]
     public void Each_tier_keeps_its_speed_and_health()
     {

@@ -111,7 +111,7 @@ public static class RulesSummary
     {
         var entry = options.EntryOf(tier);
         var (boss, elite) = options.BossOf(tier);
-        var secret = options.WasRandom(tier) && tier > arrivedTier;
+        var secret = options.IsSecret(tier, arrivedTier);
         var skulls = entry.Skulls != SkullMode.Vanilla
             ? Skulls(entry.Skulls, entry.SkullCount, entry.CustomSkulls)
             : Skulls(options.SkullMode, options.SkullCount, options.CustomSkulls);

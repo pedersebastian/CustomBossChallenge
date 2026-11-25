@@ -64,6 +64,12 @@ public sealed record BossOptions
     public bool WasRandom(int tier) => System.Array.IndexOf(TierBossMath.ParseTierList(RandomTiers), tier) >= 0;
 
     /// <summary>
+    /// Whether the boss of <paramref name="tier"/> is still a secret once the bosses up to
+    /// <paramref name="arrivedTier"/> have arrived: the game picked it at random and it hasn't arrived yet (#270, #283)
+    /// </summary>
+    public bool IsSecret(int tier, int arrivedTier) => tier > arrivedTier && WasRandom(tier);
+
+    /// <summary>
     /// These options as the player sees them before the game: a tier whose boss a game picked at random is Random again,
     /// with its Elite, speed, health and skulls, so nothing shown gives the boss away (#270). The website shows codes
     /// the same way (hideRandomPicks).
