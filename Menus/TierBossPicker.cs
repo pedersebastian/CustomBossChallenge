@@ -338,7 +338,7 @@ public sealed class TierBossPicker
         if (!CustomSkulls.InputField.isFocused) CustomSkulls.SetText(shown.CustomSkulls, false);
         refreshing = false;
 
-        Skulls.Show(Creator.BossMode.Options, Tier);
+        Skulls.Show(Creator.BossMode.Options.WithRandomPicksHidden(), Tier);
         Layout(shown);
     }
 

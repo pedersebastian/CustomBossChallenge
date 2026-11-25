@@ -63,6 +63,20 @@ public sealed record BossOptions
     /// <summary>Whether the game picked the boss of <paramref name="tier"/> at random when it started</summary>
     public bool WasRandom(int tier) => System.Array.IndexOf(TierBossMath.ParseTierList(RandomTiers), tier) >= 0;
 
+    /// <summary>
+    /// These options as the player sees them before the game: a tier whose boss a game picked at random is Random again,
+    /// with its Elite, speed, health and skulls, so nothing shown gives the boss away (#270). The website shows codes
+    /// the same way (hideRandomPicks).
+    /// </summary>
+    public BossOptions WithRandomPicksHidden() => !Mixed || RandomTiers == null
+        ? this
+        : this with
+        {
+            TierBosses = TierBossMath.ParseTierList(RandomTiers).Aggregate(TierBosses,
+                (list, tier) => TierBossMath.With(list, tier, TierBossMath.Entry(list, tier) with {Boss = TierBossMath.Random})),
+            RandomTiers = null
+        };
+
     /// <summary>These options without the mark that <paramref name="tier"/>'s boss was picked at random</summary>
     public BossOptions WithoutRandomMark(int tier) =>
         WasRandom(tier) ? this with {RandomTiers = TierBossMath.WithoutTier(RandomTiers, tier)} : this;

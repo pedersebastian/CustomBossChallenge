@@ -196,6 +196,16 @@ public class TierBossMathTests
     }
 
     [Fact]
+    public void Bosses_a_game_picked_can_be_shown_as_Random_again()
+    {
+        var options = new BossOptions {Tiers = 3, TierBosses = "Lych,VortexElite@150/100,Phayze#4", RandomTiers = "2,3"};
+        var hidden = options.WithRandomPicksHidden();
+        Assert.Equal("Lych,RandomElite@150/100,Random#4", hidden.TierBosses);
+        Assert.Null(hidden.RandomTiers);
+        Assert.Same(hidden, hidden.WithRandomPicksHidden());
+    }
+
+    [Fact]
     public void Picking_a_boss_forgets_that_the_tier_was_Random()
     {
         var options = new BossOptions {Tiers = 3, TierBosses = "Lych,Vortex,Phayze", RandomTiers = "2,3"};

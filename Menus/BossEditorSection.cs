@@ -1783,7 +1783,8 @@ public sealed class BossEditorSection
     {
         // The boss's own skulls follow the boss and Elite
         Skulls.Show(BossMode.Options);
-        Strip.Show(BossMode.Options, Editor.dcm, BossMode.Options.WasRandom);
+        // A code's bosses that a game picked at random stay a secret here too (#270)
+        Strip.Show(BossMode.Options.WithRandomPicksHidden(), Editor.dcm);
         LastGameRow.SetActive(LastGame.CanReplay(BossMode.Options));
         if (!refreshing) FitIfChanged();
     }
@@ -1839,7 +1840,7 @@ public sealed class BossEditorSection
         Skulls.Row.SetActive(!options.Mixed);
         ShowSpawnRounds();
         // A code's bosses that a game picked at random stay a secret here too (#270)
-        Strip.Show(options, Editor.dcm, options.WasRandom);
+        Strip.Show(options.WithRandomPicksHidden(), Editor.dcm);
         Skulls.Show(options);
         LastGameRow.SetActive(LastGame.CanReplay(options));
     }
