@@ -262,6 +262,12 @@ public static class GildebloonHud
 
     private static RectTransform Canvas() => canvasRect!;
 
+    /// <summary>
+    /// Whether the Vault is on this match's canvas. Cash can be taken before it is (a Tax Collector leaking right after
+    /// the match loads, while the template's pictures still load), and the canvas of an earlier match is destroyed.
+    /// </summary>
+    private static bool OnMatchCanvas => panel != null && canvasRect != null;
+
     /// <summary>Where on the canvas a point on the map is</summary>
     private static Vector3? OnCanvas(Vector3 world)
     {
@@ -278,7 +284,7 @@ public static class GildebloonHud
 
     private static void CashPop(string text, Color color)
     {
-        if (popTemplate == null || CashText() is not { } cash || CashPoint() is not { } at) return;
+        if (popTemplate == null || !OnMatchCanvas || CashText() is not { } cash || CashPoint() is not { } at) return;
         var made = Object.Instantiate(popTemplate, Canvas(), false);
         made.SetActive(true);
         var item = made.GetComponent<RectTransform>();
@@ -294,7 +300,7 @@ public static class GildebloonHud
 
     private static void Fly(int coins, bool toCash)
     {
-        if (coinTemplate == null || CashPoint() == null) return;
+        if (coinTemplate == null || !OnMatchCanvas || CashPoint() == null) return;
         for (var i = 0; i < coins; i++)
         {
             var made = Object.Instantiate(coinTemplate, Canvas(), false);
@@ -311,7 +317,7 @@ public static class GildebloonHud
     private static void UpdateFlights()
     {
         if (Flights.Count == 0) return;
-        if (panel == null || canvasRect == null)
+        if (!OnMatchCanvas)
         {
             Clear();
             return;
