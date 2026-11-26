@@ -68,6 +68,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   map no longer gives it away either: when the first tier is Random, it showed that boss's effects around the map and
   at the spawn point from the start, and a later Random tier kept the beaten boss's effects. Now the map has no boss
   effects until a Random boss arrives, from the start or from the round after the boss before it is beaten.
+- **Boss Event Rounds is said once in the Rules panel**: outside CHIMPS the pause screen's Rules box showed both the
+  game's own Custom Rounds tile and a Boss Event Rounds tile for the same thing. Now it shows Custom Rounds only, like
+  a real boss event; in CHIMPS the Boss Event Rounds tile stays, as the mod brings the CHIMPS events' rounds itself.
 
 ## [2.14.0] - 2026-11-22
 
