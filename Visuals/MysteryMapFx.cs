@@ -293,6 +293,14 @@ public static class MysteryMapFx
         return root;
     }
 
+    /// <summary>
+    /// The queue the dice are drawn at, for the tests. They lie on the track where the game's track effect lies, and
+    /// are drawn like most of those (Bloonarius's, Diamondback's and Lych's at render queue 1999-2000, under the track's
+    /// start arrows; only Phayze's particles are drawn over them, 2026-11-26). The same for every boss, so the order
+    /// gives none away.
+    /// </summary>
+    public static int DiceQueue => solid != null ? solid.renderQueue : -1;
+
     private static Transform Part(Transform parent, string name, Mesh mesh, Material material, Vector3 position)
     {
         var part = new GameObject(name);

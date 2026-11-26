@@ -117,7 +117,11 @@ public class MysteryMapFxTest : CustomBossTest
         if (ambient.transform.parent?.GetComponent<Camera>() is not {orthographic: true}) return $"{map}: the haze isn't on the map's camera";
         if (ambient.GetComponentsInChildren<MeshRenderer>().Length <= 5) return $"{map}: the haze has no pips";
         if (Enumerable.Range(0, 3).Count(i => track.transform.Find($"DieSpot{i}") != null) != 3) return $"{map}: not three dice";
+        // Drawn like most of the game's track effects (Bloonarius's, Diamondback's, Lych's: render queue 1999-2000)
+        if (MysteryMapFx.DiceQueue != (int) UnityEngine.Rendering.RenderQueue.Geometry)
+            return $"{map}: the dice are drawn at queue {MysteryMapFx.DiceQueue}";
         if (BossPresentation.TrackEffectPosition is not { } at) return $"{map}: the game's track effect is gone";
+        // On the track, where the game's track effect is
         var off = Vector3.Distance(track.transform.position, at);
         return off < 1 ? null : $"{map}: the dice are {off:0.0} away from the game's track effect";
     }
