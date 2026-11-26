@@ -88,7 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a real boss event; in CHIMPS the Boss Event Rounds tile stays, as the mod brings the CHIMPS events' rounds itself.
 - **Tier Preview warnings stay readable in Arabic** (#291): a short warning, like the one for Boss Event Rounds in
   CHIMPS, shrank below the readable size on one line, because the Arabic letters are taller. It now gets a second line
-  instead.
+  instead. In Russian, a warning on two lines touched the one below it; it sits a little higher now.
 
 ## [2.14.0] - 2026-11-22
 

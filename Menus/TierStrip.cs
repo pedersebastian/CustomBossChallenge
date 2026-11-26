@@ -298,7 +298,9 @@ public sealed class TierStrip
             // A line of text at full size is a bit taller than a step, so a wrapped warning also takes the gap below it
             note.RectTransform.sizeDelta = new Vector2(note.RectTransform.sizeDelta.x,
                 noteRows > 1 ? noteRows * NoteStep + 16 : NoteHeight);
-            note.RectTransform.anchoredPosition = new Vector2(0, (noteRows > 1 ? 4 : 18) + below * NoteStep);
+            // A wrapped warning sits a little higher, where there is room, so its second line keeps clear of the next
+            // warning's letters in fonts with long tails, like Russian's
+            note.RectTransform.anchoredPosition = new Vector2(0, (noteRows > 1 ? 8 : 18) + below * NoteStep);
             below += noteRows;
         }
 

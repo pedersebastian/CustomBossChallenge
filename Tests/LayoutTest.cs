@@ -264,7 +264,13 @@ public class LayoutTest : CustomBossTest
                 var letters = LettersRect(line.Text);
                 Expect(Inside(letters, row), $"{format}: the warning '{line.Text.text}' ({Describe(letters)}) is outside the Tier Preview ({Describe(row)})");
                 Expect(!cards.Any(card => Overlap(card, letters)), $"{format}: the warning '{line.Text.text}' ({Describe(letters)}) covers a tier card");
-                Expect(!shown.Any(other => Overlap(other, letters)), $"{format}: the warning '{line.Text.text}' ({Describe(letters)}) covers another warning");
+                if (shown.FirstOrDefault(other => Overlap(other, letters)) is var covered && covered != default)
+                {
+                    Expect(false, $"{format}: the warning '{line.Text.text}' ({Describe(letters)}) covers another warning " +
+                                  $"({Describe(covered)}); lines: " + string.Join(", ", lines.Select((note, i) =>
+                                      $"{section.Strip.NoteRows[i]} row(s) at {note.Text.fontSize:0.#}, {note.Text.textInfo.lineCount} line(s), " +
+                                      $"{Describe(LettersRect(note.Text))}")));
+                }
                 shown.Add(letters);
             }
 
