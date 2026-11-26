@@ -41,6 +41,8 @@
     <ItemGroup>
         <EmbeddedResource Include="Config\RoundSets\chimpsbloonarius.json" LogicalName="CustomBossChallenge.chimpsbloonarius.json" />
         <EmbeddedResource Include="Config\RoundSets\chimpsboss.json" LogicalName="CustomBossChallenge.chimpsboss.json" />
+        <!-- The map effects of a boss that is still a secret, modelled in Blender: tools/blender/build-mystery.py (#285) -->
+        <EmbeddedResource Include="Bundles\mystery-fx.mesh.gz" LogicalName="CustomBossChallenge.mystery-fx.mesh.gz" />
     </ItemGroup>
 
     <!-- The website is its own project. Only the data it gets from the game is built in, so WebDataTest can check it,

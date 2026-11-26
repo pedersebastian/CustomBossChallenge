@@ -33,6 +33,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         _ = Patches.PatchCheck.AllInPlace;
         Patches.ConflictReport.LogOnce();
         Visuals.TierLookApplier.Prepare();
+        Visuals.MysteryMapFx.Load();
         Persistence.PastEvents.Start();
     }
 
@@ -49,6 +50,7 @@ public class CustomBossChallenge : BloonsTD6Mod
             Visuals.BossHud.Update();
         });
         Guarded("ranked timer", () => Visuals.RankedHud.Update());
+        Guarded("mystery map effects", Visuals.MysteryMapFx.Update);
         if (Time.realtimeSinceStartup >= nextPresentationCheck)
         {
             nextPresentationCheck = Time.realtimeSinceStartup + Visuals.BossPresentation.CheckInterval;

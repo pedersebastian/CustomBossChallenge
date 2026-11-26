@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Mystery map effects for a secret boss** (#285): while a boss Random picked is still a secret, the map shows the
+  mod's own effects in place of the boss's: a soft haze coming in from the screen's edges with a few pips twinkling in
+  it, and three small dice at the boss's spawn point that hop, tumble and land on new faces now and then, in the
+  colours of the Random die. They go when the boss arrives, and a map or accessibility setting without boss effects
+  gets none of them either. Modelled in Blender (`tools/blender/mystery-fx.py`).
+
 - **Play again with the same Random bosses** (#270): after a game with Random tiers in Advanced Mode, the Boss Creator
   has a Last Game's Bosses row. Play Again plays the setup once more with the bosses Random picked last time, while
   the setup keeps its Random tiers, and Copy makes a share code with those bosses. The victory and defeat screens

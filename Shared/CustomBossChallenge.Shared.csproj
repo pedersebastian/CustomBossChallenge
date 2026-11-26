@@ -38,6 +38,7 @@
         <Compile Include="..\Config\ShownNumber.cs" Link="Mod\ShownNumber.cs" />
         <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />
         <Compile Include="..\Config\TierLook.cs" Link="Mod\TierLook.cs" />
+        <Compile Include="..\Visuals\MysteryMeshData.cs" Link="Mod\MysteryMeshData.cs" />
         <Compile Include="..\Config\TierMath.cs" Link="Mod\TierMath.cs" />
         <Compile Include="..\Config\TierBossMath.cs" Link="Mod\TierBossMath.cs" />
         <Compile Include="..\Config\UndoHistory.cs" Link="Mod\UndoHistory.cs" />

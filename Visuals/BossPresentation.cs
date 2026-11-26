@@ -19,12 +19,13 @@ namespace CustomBossChallenge.Visuals;
 /// <br/>
 /// Only what the game put on the map is swapped, so a map or an accessibility setting without the effects stays
 /// without them. While a boss Random picked is a secret, the effects are only switched off, so they can be swapped
-/// and switched on again when it arrives (#283).
+/// and switched on again when it arrives (#283), and the mod's own mystery effects take their place (#285,
+/// <see cref="MysteryMapFx"/>).
 /// </summary>
 public static class BossPresentation
 {
-    private const string AmbientSuffix = "AmbientMapFx(Clone)";
-    private const string TrackSuffix = "TrackFx(Clone)";
+    internal const string AmbientSuffix = "AmbientMapFx(Clone)";
+    internal const string TrackSuffix = "TrackFx(Clone)";
 
     /// <summary>
     /// The boss whose map effects were put on the map with this id, so they are swapped only once; no boss when they
@@ -48,6 +49,7 @@ public static class BossPresentation
     /// </summary>
     public static void ShowMapEffects(BossType boss)
     {
+        MysteryMapFx.Hide();
         try
         {
             var loader = UI.instance?.mapLoader;
@@ -88,8 +90,9 @@ public static class BossPresentation
     }
 
     /// <summary>
-    /// Switches off the boss effects on the map, so it shows no boss's (#283). Effects the game adds later are
-    /// switched off on the next call, so this is called again every <see cref="CheckInterval"/>.
+    /// Switches off the boss effects on the map, so it shows no boss's (#283), and shows the mystery effects in their
+    /// place (#285). Effects the game adds later are switched off on the next call, so this is called again every
+    /// <see cref="CheckInterval"/>.
     /// </summary>
     public static void HideMapEffects()
     {
@@ -104,6 +107,7 @@ public static class BossPresentation
             {
                 if (effect.activeSelf) effect.SetActive(false);
             }
+            MysteryMapFx.Show(map, effects);
         }
         catch (Exception e)
         {
@@ -123,6 +127,12 @@ public static class BossPresentation
 
     /// <summary>How many boss effects the map has, shown or switched off, for the tests</summary>
     public static int MapEffectCount => MapRoot() is { } map ? Effects(map).Length : 0;
+
+    /// <summary>Where the game's track effect is, shown or switched off, for the tests</summary>
+    public static Vector3? TrackEffectPosition => MapRoot() is { } map &&
+                                                  Effects(map).FirstOrDefault(effect => effect.name.EndsWith(TrackSuffix)) is { } track
+        ? track.transform.position
+        : null;
 
     private static Transform? MapRoot() =>
         UI.instance?.mapLoader?.bossAmbientFx?.transform.parent ?? GameObject.Find("Map")?.transform;
