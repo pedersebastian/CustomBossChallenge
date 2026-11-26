@@ -2157,6 +2157,11 @@ input:focus-visible {
   contain-intrinsic-size: auto 190px;
 }
 
+/* While a link jumps to an event (#271), every row is drawn, so the jump knows where the event is */
+.past-events-list.measuring .past-event {
+  content-visibility: visible;
+}
+
 /* An event without rules: a faded badge, and its name in the muted colour (opacity would take the dates under 4.5:1) */
 .past-event.no-rules .past-event-badge {
   opacity: 0.6;
@@ -2169,6 +2174,25 @@ input:focus-visible {
 .past-event-body {
   flex: 1;
   min-width: 0;
+}
+
+/* The event a link points at (#271): marked in gold; the mark shows where the keyboard is, so no outline on top */
+.past-event.linked {
+  box-shadow: 0 0 0 3px var(--gold);
+  scroll-margin-top: 12px;
+}
+
+.past-event.linked:focus {
+  outline: none;
+}
+
+/* The name and the dates, with Copy event link beside them, or under them on a narrow screen */
+.past-event-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: baseline;
+  justify-content: space-between;
 }
 
 .past-event-name {
