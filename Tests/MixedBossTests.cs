@@ -206,6 +206,8 @@ public class MixedBossGameTest : CustomBossTest
                 Log($"tier {tier}: map effects {string.Join(", ", effects)}, music {Visuals.BossPresentation.MusicPlaying}");
                 Assert(effects.Length > 0 && effects.All(effect => effect.StartsWith(presentedBoss.ToString())),
                     $"Tier {tier}'s map effects are {presentedBoss}'s: {string.Join(", ", effects)}");
+                Assert(Visuals.MysteryMapFx.Ambient == null && Visuals.MysteryMapFx.Track == null,
+                    $"Tier {tier} arrived: no mystery effects (#285)");
                 presented++;
             }
 
@@ -231,7 +233,12 @@ public class MixedBossGameTest : CustomBossTest
                     Log($"tier {beatenTier} beaten on round {round + 1}, round {InGame.instance.bridge.GetCurrentRound() + 1}: {effects}" +
                         (manager.CurrentBoss == null ? ", next boss not here yet" : ""));
                     if (secret)
+                    {
                         AssertEquals(effects, "", $"The round after tier {beatenTier} was beaten shows no boss effects before the Random tier {beatenTier + 1}");
+                        // ...but the mystery effects in their place (#285)
+                        var problem = MysteryMapFxTest.ShownProblem($"The round after tier {beatenTier} was beaten");
+                        Assert(problem == null, problem ?? "");
+                    }
                     else
                         Assert(Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(next)),
                             $"The round after tier {beatenTier} was beaten shows {next}'s effects: {effects}");
@@ -464,6 +471,7 @@ public class MixedBossSecretTest : CustomBossTest
             Assert(!Patches.MixedBosses.PresentedHidden, "The map shows the boss effects once tier 1 arrives");
             Assert(Visuals.BossPresentation.MapEffects.Length > 0 && Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(first)),
                 $"Tier 1's map effects are {first}'s: {BossPresentationTest.Names()}");
+            Assert(Visuals.MysteryMapFx.Ambient == null && Visuals.MysteryMapFx.Track == null, "No mystery effects once tier 1 arrives");
             AssertEquals(Visuals.BossHud.DefeatSecretTier(), 0, "Tier 1 is no secret once it arrived");
 
             // Lost between bosses, before the Random Elite tier 2 arrives
@@ -492,6 +500,9 @@ public class MixedBossSecretTest : CustomBossTest
         Assert(Patches.MixedBosses.PresentedHidden, $"{when} the map hides the boss effects");
         Assert(Visuals.BossPresentation.MapEffectCount > 0, $"{when} the map still has the game's boss effects, switched off");
         AssertEquals(BossPresentationTest.Names(), "", $"{when} the map shows no boss effects");
+        // The mystery effects in their place (#285)
+        var problem = MysteryMapFxTest.ShownProblem(when);
+        Assert(problem == null, problem ?? "");
     }
 
     private void AssertDie(Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen screen, UnityEngine.UI.Image die,
