@@ -37,6 +37,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         Config.Gildebloon.Register(Il2CppAssets.Scripts.Unity.Game.instance.model);
         // Loading from a bundle during a match crashes the game; at the main menu it works, like TierGlow's shader
         if (Config.Experimental.Gildebloon) Visuals.GildebloonLook.Load();
+        Visuals.MysteryMapFx.Load();
         Persistence.PastEvents.Start();
     }
 
@@ -57,6 +58,7 @@ public class CustomBossChallenge : BloonsTD6Mod
         Guarded("Gildebloon look", Visuals.GildebloonLook.Update);
         Guarded("Gildebloon's money", Visuals.GildebloonMapLook.Update);
         Guarded("Gildebloon's Repossession", Visuals.GildebloonSeizeLook.Update);
+        Guarded("mystery map effects", Visuals.MysteryMapFx.Update);
         if (Time.realtimeSinceStartup >= nextPresentationCheck)
         {
             nextPresentationCheck = Time.realtimeSinceStartup + Visuals.BossPresentation.CheckInterval;

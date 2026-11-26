@@ -1,9 +1,11 @@
 // The Past Events page (#213): every official boss event, newest first, with a search and filters for the boss, the
 // year and the mode, like the Boss Creator's Past Events window (#146). Each event opens in the Studio, normal or
 // Elite, or is copied as a code or a link. Each level shows its difficulty stars (#263), and the list can be sorted by them.
-// The search, the filters and the order are in the address after #, so a filtered list can be shared.
+// The search, the filters and the order are in the address after #, so a filtered list can be shared, and so is one
+// event: #event=<id> opens the page on it (#271).
 
 import {
+  ANY_EVENT,
   canUseCodes,
   data,
   encode,
@@ -24,7 +26,7 @@ import {
 } from "@cbc/share-code";
 import { linkTo, replaceAddress, studioLinkTo } from "../code/link";
 import { GAME } from "../data/types";
-import { NO_AUTOFILL, announce, copyWithFeedback, h } from "../dom";
+import { NO_AUTOFILL, announce, copyWithFeedback, focusWithoutScroll, h, scrollToElement } from "../dom";
 import { MAX_STARS } from "@cbc/share-code/difficulty";
 import { MOD_TEXTS, fillText } from "../modTexts";
 import { starsText } from "../preview/difficulty";
@@ -56,7 +58,7 @@ export function eventDates(event: PastEvent): string {
   return `${event.datesGuessed ? "~" : ""}${start === end ? start : `${start} - ${end}`}`;
 }
 
-const QUERY_KEYS = ["q", "boss", "year", "mode", "sort"];
+const QUERY_KEYS = ["event", "q", "boss", "year", "mode", "sort"];
 
 /** The orders the list can be in; newest first is the default and isn't written in the address */
 export const SORTS = ["newest", "oldest", "hardest", "easiest"] as const;
@@ -69,8 +71,36 @@ const SORT_NAMES: Record<PastEventSort, string> = {
   easiest: "Easiest first",
 };
 
+const paramsOf = (hash: string): URLSearchParams => new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : "");
+
 /** The sort in the address as written, or null without one */
-const sortParam = (hash: string): string | null => new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : "").get("sort");
+const sortParam = (hash: string): string | null => paramsOf(hash).get("sort");
+
+/** The one event the address points at, #event=Lych47_m5zq59de (the archive's id), or null without one */
+export function eventFromHash(hash = location.hash): string | null {
+  return paramsOf(hash).get("event")?.trim() || null;
+}
+
+/** The link to one event that Copy event link copies: this page with only #event=<id> */
+export function eventLink(id: string, page = location.href): string {
+  const url = new URL(page);
+  url.hash = new URLSearchParams({ event: id }).toString();
+  return url.href;
+}
+
+/**
+ * The query with the filters that would hide the event taken out, each on its own: a link to a Lych event with
+ * #boss=lych&year=1999 keeps the boss and drops the year. The search goes when its words don't find the event.
+ */
+export function queryShowing(event: PastEvent, query: PastEventQuery, search: () => string): PastEventQuery {
+  const keeps = (only: Partial<PastEventQuery>) => matchesPastEvent(event, { ...ANY_EVENT, ...only }, search);
+  return {
+    text: keeps({ text: query.text }) ? query.text : "",
+    boss: keeps({ boss: query.boss }) ? query.boss : null,
+    year: keeps({ year: query.year }) ? query.year : null,
+    mode: keeps({ mode: query.mode }) ? query.mode : null,
+  };
+}
 
 /** The order in the address: #sort=hardest; newest first for none or one this version doesn't know */
 export function sortFromHash(hash = location.hash): PastEventSort {
@@ -110,7 +140,7 @@ export function sortPastEvents(events: readonly PastEvent[], sort: PastEventSort
 }
 
 /**
- * Whether the address's # holds a search: empty (every event) or with q, boss, year, mode or sort. Another # like the skip
+ * Whether the address's # holds a search: empty (every event) or with event, q, boss, year, mode or sort. Another # like the skip
  * link's #top isn't one, and leaves the search as it is.
  */
 export function isQueryHash(hash = location.hash): boolean {
@@ -131,8 +161,10 @@ export function queryFromHash(hash = location.hash): PastEventQuery {
   };
 }
 
-export function hashForQuery(query: PastEventQuery, sort: PastEventSort = "newest"): string {
+/** The address's # for the search, the filters, the order and the one event; the event is written first */
+export function hashForQuery(query: PastEventQuery, sort: PastEventSort = "newest", event: string | null = null): string {
   const params = new URLSearchParams();
+  if (event) params.set("event", event);
   if (query.text) params.set("q", query.text);
   if (query.boss) params.set("boss", query.boss);
   if (query.year) params.set("year", String(query.year));
@@ -142,9 +174,9 @@ export function hashForQuery(query: PastEventQuery, sort: PastEventSort = "newes
   return text ? `#${text}` : "";
 }
 
-/** The page's address with this query and order, for the address bar */
-const addressFor = (query: PastEventQuery, sort: PastEventSort): string =>
-  location.pathname + location.search + hashForQuery(query, sort);
+/** The page's address with this query, order and event, for the address bar */
+const addressFor = (query: PastEventQuery, sort: PastEventSort, event: string | null = null): string =>
+  location.pathname + location.search + hashForQuery(query, sort, event);
 
 /** The level's stars, lit in gold and the rest dimmed, like the Studio's */
 export function renderStars(stars: number): HTMLElement {
@@ -261,6 +293,17 @@ function level(
   return { row, prepare: () => void prepare().catch(() => {}) };
 }
 
+/** The event's Copy event link: a link to this page on the event, which works without codes too */
+function copyEventLink(event: PastEvent): HTMLElement {
+  const copy = h(
+    "button",
+    { class: "button small past-event-link", type: "button", "aria-label": `Copy event link: ${event.displayName}` },
+    "Copy event link",
+  );
+  copy.addEventListener("click", () => void copyWithFeedback(copy, eventLink(event.id), "Link copied!"));
+  return copy;
+}
+
 function renderEvent(event: PastEvent, all: Map<string, PastEvent>, codesWork: boolean, ratings: EventRatings): HTMLElement {
   const boss = pastEventBoss(event.bossKey);
   const replacedBy = event.replacedBy.map((id) => all.get(id)?.displayName ?? id);
@@ -276,11 +319,16 @@ function renderEvent(event: PastEvent, all: Map<string, PastEvent>, codesWork: b
       "div",
       { class: "past-event-body" },
       h(
-        "h2",
-        { class: "past-event-name" },
-        event.displayName,
-        " ",
-        h("span", { class: "past-event-dates" }, eventDates(event)),
+        "div",
+        { class: "past-event-head" },
+        h(
+          "h2",
+          { class: "past-event-name" },
+          event.displayName,
+          " ",
+          h("span", { class: "past-event-dates" }, eventDates(event)),
+        ),
+        copyEventLink(event),
       ),
       h("p", { class: "past-event-details" }, details(event)),
       replacedBy.length > 0 ? h("p", { class: "past-event-replaced" }, fillText(MOD_TEXTS.PastEventReplacedBy, replacedBy.join(", "))) : null,
@@ -300,6 +348,12 @@ function renderEvent(event: PastEvent, all: Map<string, PastEvent>, codesWork: b
     for (const type of ["pointerenter", "focusin", "touchstart"]) article.addEventListener(type, prepare, { passive: true });
   }
   return article;
+}
+
+/** What the page says for a link to an event it doesn't have; a long id is cut short */
+export function unknownEventText(id: string): string {
+  const shown = id.length > 60 ? `${id.slice(0, 60)}…` : id;
+  return `The linked event "${shown}" isn't in the list, so the list shows every event the filters allow. Check the link, or reload the page for the newest list.`;
 }
 
 function select(label: string, choices: [string, string][], value: string | null): HTMLSelectElement {
@@ -343,6 +397,8 @@ export async function setUpPastEvents(
 
   const events = newestFirst(read.file.events);
   const byId = new Map(events.map((event) => [event.id, event]));
+  // A link's id is found in any case too, as a chat app may change it
+  const byLowerId = new Map(events.map((event) => [event.id.toLowerCase(), event]));
   const codesWork = canUseCodes();
   const searchTexts = new Map(events.map((event) => [event.id, searchText(event, shownName)]));
   const bosses = data.bosses.filter((boss) => events.some((event) => event.bossKey === boss.toLowerCase()));
@@ -356,14 +412,25 @@ export async function setUpPastEvents(
     year: read.year !== null && years.includes(read.year) ? read.year : null,
     mode: modes.find((m) => m.toLowerCase() === read.mode?.toLowerCase()) ?? null,
   });
+  /** The event the address points at, while the visitor hasn't changed the list (#271) */
+  let linked: string | null = null;
+  /** The id of a link to an event that isn't in the list */
+  let unknown: string | null = null;
   const fromAddress = (): PastEventQuery => {
     const read = queryFromHash();
-    const shown = known(read);
-    // A sort this version doesn't know is taken out of the address too
+    let shown = known(read);
+    const wanted = eventFromHash();
+    const event = wanted === null ? undefined : byId.get(wanted) ?? byLowerId.get(wanted.toLowerCase());
+    // The filters that would hide the linked event are taken out
+    if (event) shown = queryShowing(event, shown, () => searchTexts.get(event.id) ?? "");
+    linked = event?.id ?? null;
+    unknown = event ? null : wanted;
+    // A sort this version doesn't know, or an unknown event, is taken out of the address too
     const written = sortParam(location.hash);
     const sortShown = sortFromHash();
-    if (hashForQuery(shown) !== hashForQuery(read) || (written !== null && written !== sortShown)) {
-      replaceAddress(addressFor(shown, sortShown));
+    if (hashForQuery(shown) !== hashForQuery(read) || (written !== null && written !== sortShown)
+      || paramsOf(location.hash).get("event") !== linked) {
+      replaceAddress(addressFor(shown, sortShown, linked));
     }
     return shown;
   };
@@ -397,6 +464,7 @@ export async function setUpPastEvents(
   const count = h("p", { class: "past-events-count" });
   const list = h("div", { class: "past-events-list" });
   const empty = h("p", { class: "muted past-events-empty" }, MOD_TEXTS.PastEventsNoMatch);
+  const unknownNote = h("p", { class: "warning past-events-unknown", hidden: "" });
 
   const rendered = new Map<string, HTMLElement>();
   const rowOf = (event: PastEvent): HTMLElement => {
@@ -416,12 +484,43 @@ export async function setUpPastEvents(
     list.replaceChildren(...shown.map(rowOf));
     count.textContent = fillText(MOD_TEXTS.PastEventsCount, shown.length, events.length);
     empty.hidden = shown.length > 0;
+    unknownNote.hidden = unknown === null;
+    unknownNote.textContent = unknown === null ? "" : unknownEventText(unknown);
     clearTimeout(countTimer);
-    countTimer = setTimeout(() => announce(count.textContent ?? ""), COUNT_DELAY);
+    const heard = [unknownNote.hidden ? "" : unknownNote.textContent, count.textContent ?? ""].filter((part) => part).join(" ");
+    countTimer = setTimeout(() => announce(heard), COUNT_DELAY);
   }
 
+  /**
+   * Brings the linked event into view, marked, with the keyboard on it. A page opened from a link jumps there, like a
+   * link to an anchor, also in a tab opened in the background; a link followed on the open page scrolls there,
+   * smoothly unless the visitor asked for less motion.
+   */
+  let marked: HTMLElement | null = null;
+  function reveal(smooth: boolean): void {
+    marked?.classList.remove("linked");
+    marked = linked === null ? null : rendered.get(linked) ?? null;
+    if (!marked) return;
+    marked.classList.add("linked");
+    if (smooth) {
+      // The rows off the screen are only guessed at (content-visibility), and drawn as the scroll passes them, so it
+      // would end beside the event: they are drawn for a few frames first, and the browser then remembers their size
+      list.classList.add("measuring");
+      scrollToElement(marked);
+      requestAnimationFrame(() => requestAnimationFrame(() => list.classList.remove("measuring")));
+    } else {
+      marked.scrollIntoView({ behavior: "instant" });
+    }
+    focusWithoutScroll(marked);
+  }
+
+  /** A change the visitor makes leaves the linked event: the address and the list then follow the filters */
   function update(change: Partial<PastEventQuery>): void {
     query = { ...query, ...change };
+    linked = null;
+    unknown = null;
+    marked?.classList.remove("linked");
+    marked = null;
     replaceAddress(addressFor(query, sort));
     show();
   }
@@ -446,14 +545,16 @@ export async function setUpPastEvents(
     year.value = query.year ? String(query.year) : "";
     mode.value = query.mode ?? "";
     show();
+    reveal(true);
   };
   window.addEventListener("hashchange", follow);
 
   root.replaceChildren(h("div", { class: "past-events-filters" }, search, boss, year, mode, order, count));
   // Without CompressionStream no code can be made; the list still shows the events
   if (!codesWork) root.append(h("p", { class: "warning" }, UNSUPPORTED_REASON));
-  root.append(list, empty);
+  root.append(unknownNote, list, empty);
   show();
+  reveal(false);
   return () => {
     window.removeEventListener("hashchange", follow);
     clearTimeout(countTimer);

@@ -57,6 +57,21 @@ The look itself (colours per boss, strength per tier) is in `Config/TierLook.cs`
 every boss next to each other when the game is started with `CBC_SCREENSHOTS=<folder>` (`CBC_TIERLOOK_BOSSES=Lych,Vortex`
 picks bosses).
 
+### The mystery map effects
+
+The haze and dice a secret Random boss shows on the map (#285) are modelled in Blender. The game can't load a model
+from an asset bundle, so `tools/blender/export-mystery.py` writes the meshes to `Bundles/mystery-fx.mesh.gz` (format in
+the script; the toon shading is baked into UVs on a ramp the mod makes), which is committed and built into the DLL, and
+the mod animates them (`Visuals/MysteryMapFx.cs`). After changing `tools/blender/mystery-fx.py`, rebuild it:
+
+```
+"C:\Program Files\Blender Foundation\Blender <version>\blender.exe" --background --factory-startup --python tools/blender/build-mystery.py
+```
+
+or, in an open Blender with its MCP add-on, `python tools/blender/run-in-blender.py tools/blender/mystery-fx.py` and then
+`export-mystery.py`. The headless build also saves `tools/blender/mystery-fx.blend`. `MysteryMeshDataTests` checks the
+file, `MysteryMapFxTest` the effects in the game.
+
 ## Running the tests
 
 ### Unit tests
@@ -89,7 +104,7 @@ Share codes are also tested with random data, in F# with [FsCheck](https://fsche
 `PropertyTests/`. Thousands of random setups the Boss Creator can make, and broken codes, check that:
 
 - a code reads back as exactly the setup it was made from, and encoding that setup again gives the same code;
-- codes use the oldest version that holds the setup (`CBC1:` to `CBC7:`; `CBC7:` has the mod's own boss Gildebloon, docs/gildebloon.md), and only characters chat apps leave
+- codes use the oldest version that holds the setup (`CBC1:` to `CBC8:`; `CBC8:` has the mod's own boss Gildebloon, docs/gildebloon.md), and only characters chat apps leave
   alone;
 - broken codes (cut short, changed, junk, too big once unpacked) are refused as `Invalid` or `TooNew` and never throw;
 - a hand made challenge only keeps the fields `CodeFormat.ChallengeFields` allows, with their types, and nothing the

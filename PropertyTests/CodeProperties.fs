@@ -50,18 +50,21 @@ let ``Encoding a code's setup again gives the same code`` () =
     |> check
 
 [<Fact>]
-let ``Codes use version 2, 3, 4 and 6 exactly when they need it, and only characters chats leave alone`` () =
+let ``Codes use version 2, 3, 4, 6 and 7 exactly when they need it, and only characters chats leave alone`` () =
     Prop.forAll setups (fun setup ->
         let code = encode setup
         let mixed = not (isNull setup.Options["TierBosses"])
         let perTier = setup.Options.Value<int>("SpeedPerTier") <> 0 || setup.Options.Value<int>("HealthPerTier") <> 0
         let eventRounds = setup.Options.Value<bool>("BossEventRounds")
         // Boss Health or a tier's own health version 5 would change (#250)
-        let health = needsVersion6 setup.Options setup.Challenge
-        (code.StartsWith(CodeFormat.Version6Prefix) = health |@ "version 6")
-        .&. (code.StartsWith(CodeFormat.Version4Prefix) = (eventRounds && not health) |@ "version 4")
-        .&. (code.StartsWith(CodeFormat.Version3Prefix) = (mixed && not eventRounds && not health) |@ "version 3")
-        .&. (code.StartsWith(CodeFormat.Version2Prefix) = (perTier && not mixed && not eventRounds && not health) |@ "version 2")
+        // The bosses a game picked for its Random tiers (#270)
+        let picked = holdsRandomTiers setup.Options
+        let health = needsVersion6 setup.Options setup.Challenge && not picked
+        (code.StartsWith(CodeFormat.Version7Prefix) = picked |@ "version 7")
+        .&. (code.StartsWith(CodeFormat.Version6Prefix) = health |@ "version 6")
+        .&. (code.StartsWith(CodeFormat.Version4Prefix) = (eventRounds && not health && not picked) |@ "version 4")
+        .&. (code.StartsWith(CodeFormat.Version3Prefix) = (mixed && not eventRounds && not health && not picked) |@ "version 3")
+        .&. (code.StartsWith(CodeFormat.Version2Prefix) = (perTier && not mixed && not eventRounds && not health && not picked) |@ "version 2")
         .&. (code.Length <= CodeFormat.MaxLength |@ "too long to be read")
         .&. (code[CodeFormat.PrefixLength ..] |> Seq.forall (fun c -> System.Char.IsAsciiLetterOrDigit c || c = '-' || c = '_')
              |@ code))

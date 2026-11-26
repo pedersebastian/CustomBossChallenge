@@ -67,6 +67,16 @@ const SETUPS: [string, StudioSetup][] = [
   ["highest boss health", make((s) => edit.setBossHealth(s, 5000))],
   ["boss health on a step of 5", make((s) => edit.setBossEventRounds(s, false), (s) => edit.setBossHealth(s, 125))],
   ["advanced, tier health on a step of 5", make(toAdvanced, (s) => edit.setTierHealth(s, 1, 255), (s) => edit.setTierHealth(s, 2, 4200))],
+  // A code with the bosses a game picked for its Random tiers (#270), changed in the Studio, is version 7
+  [
+    "advanced, bosses a game picked",
+    make(
+      advanced("Lych,VortexElite@120/300,Phayze,Diamondback", 4),
+      (s) => ({ ...s, options: { ...s.options, RandomTiers: "2,3,4" } }),
+      (s) => edit.setTierSpeed(s, 2, 150),
+      (s) => edit.pickTierBoss(s, 4, "Lych"),
+    ),
+  ],
   ["no paragons", make((s) => edit.setParagonSlider(s, 0))],
   ["three paragons", make((s) => edit.setParagonSlider(s, 3))],
   ["one tier", make((s) => edit.setTiers(s, 1))],
@@ -214,7 +224,7 @@ describe("codes the website makes for the mod", () => {
   });
 
   it("cover every prefix", async () => {
-    expect(new Set((await made()).map((entry) => entry.code.slice(0, 5)))).toEqual(new Set(["CBC1:", "CBC2:", "CBC3:", "CBC4:", "CBC6:"]));
+    expect(new Set((await made()).map((entry) => entry.code.slice(0, 5)))).toEqual(new Set(["CBC1:", "CBC2:", "CBC3:", "CBC4:", "CBC6:", "CBC7:"]));
   });
 
   it.each(SETUPS)("%s is read back on the website as made", async (_, setup) => {

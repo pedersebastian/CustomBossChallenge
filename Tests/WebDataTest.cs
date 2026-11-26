@@ -391,6 +391,20 @@ public class WebDataTest : CustomBossTest
     }
 
     /// <summary>
+    /// A default name the mod gave in the player's language (#279), as the website gives it: in English
+    /// </summary>
+    private static string EnglishDefaultName(string name)
+    {
+        if (name == BossMode.MixedName) return DefaultNameTexts.English.MixedName;
+        foreach (var boss in Enum.GetValues<BossType>())
+        {
+            if (name == BossMode.DefaultName(boss)) return DefaultNames.For(DefaultNameTexts.English, boss.ToString());
+            if (name == BossMode.DefaultName(boss, true)) return DefaultNames.For(DefaultNameTexts.English, boss.ToString(), true);
+        }
+        return name;
+    }
+
+    /// <summary>
     /// The challenge values the website shows, named like the challenge's own JSON
     /// </summary>
     private static JObject Challenge(DailyChallengeModel dcm)
@@ -401,7 +415,7 @@ public class WebDataTest : CustomBossTest
         var health = modifiers.healthMultipliers;
         return new JObject
         {
-            ["name"] = dcm.name == PlayerDefaultName ? "" : dcm.name,
+            ["name"] = dcm.name == PlayerDefaultName ? "" : EnglishDefaultName(dcm.name),
             ["map"] = dcm.map,
             ["difficulty"] = dcm.difficulty,
             ["mode"] = dcm.mode,

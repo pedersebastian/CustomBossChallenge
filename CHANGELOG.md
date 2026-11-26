@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Mystery map effects for a secret boss** (#285): while a boss Random picked is still a secret, the map shows the
+  mod's own effects in place of the boss's: a soft haze coming in from the screen's edges with a few pips twinkling in
+  it, and three small dice at the boss's spawn point that hop, tumble and land on new faces now and then, in the
+  colours of the Random die. They go when the boss arrives, and a map or accessibility setting without boss effects
+  gets none of them either. Modelled in Blender (`tools/blender/mystery-fx.py`).
+
+- **Play again with the same Random bosses** (#270): after a game with Random tiers in Advanced Mode, the Boss Creator
+  has a Last Game's Bosses row. Play Again plays the setup once more with the bosses Random picked last time, while
+  the setup keeps its Random tiers, and Copy makes a share code with those bosses. The victory and defeat screens
+  copy that code too, and the game's own Restart already keeps the bosses. Whoever pastes such a code sees Random on
+  those tiers, in the Boss Creator, in the game until each boss arrives and on the website, and Play gives the same
+  bosses; picking another boss for such a tier makes it a normal tier again. These codes start with `CBC7:`, so
+  older versions of the mod ask for an update instead of showing the bosses; the website reads them.
+
 - **Difficulty stars** (#263): the Boss Creator shows a difficulty rating from 1 to 10 stars under the Tier Preview,
   and the website shows it with every setup: on the home page, in the Studio and in Compare. It is a rough estimate
   from the setup's numbers: each tier's health and speed weighted by how late it comes, the boss (Phayze and Lych
@@ -31,6 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   events), how the events were ranked each year and the maps and modes used most, per boss and per year. Every chart
   has its numbers in a table, and the page follows the archive as events are added. The website's Past Events list
   shows each level's difficulty stars too, and can be sorted newest, oldest, hardest or easiest first.
+- **A link to one past event** (#271): every event on the website's Past Events page has a Copy event link button,
+  for a link like `past-events.html#event=Lych47_m5zq59de` to post on Discord or Reddit. The link opens the page on
+  that event, marked and with the keyboard on it, and clears only the filters that would hide it; it works with the
+  search, filters and order in the address too. A link to an event the list doesn't have shows the list with a note.
 - **An issue the day BTD6 updates** (#272, #19, for contributors): a daily GitHub workflow watches Steam's news for a
   new version and Steam's public build for hotfixes, and opens an issue with the update checklist, once per version
   or build. The checklist is a new section of CONTRIBUTING.md, *Updating for a new BTD6 version*.
@@ -51,6 +69,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Dropdown texts keep clear of their arrow** (#267): in the Past Events filters and the Saved Setups list a longer
   entry ran into the arrow, in English too. The year filter is a little wider, so "Every Year" fits in every language,
   and the Normal button of a past event no longer wraps a long translation onto two lines.
+- **A new setup's name is in your language** (#279): "Custom Lych", "Custom Elite Lych" and "Custom Boss Gauntlet" were
+  English in every language. They are now translated where the Challenge Editor's name field keeps the name, like the
+  example setups' names, and English otherwise. Changing the boss still renames a setup that has the name it was
+  given, in English or any other language.
+- **A Random boss stays a secret until it arrives** (#283): losing before a Random tier's boss arrived showed that
+  boss on the defeat screen; it now shows the die, with the Elite glow for Random Elite, like the boss line-up. The
+  map no longer gives it away either: when the first tier is Random, it showed that boss's effects around the map and
+  at the spawn point from the start, and a later Random tier kept the beaten boss's effects. Now the map has no boss
+  effects until a Random boss arrives, from the start or from the round after the boss before it is beaten.
+- **Boss Event Rounds is said once in the Rules panel**: outside CHIMPS the pause screen's Rules box showed both the
+  game's own Custom Rounds tile and a Boss Event Rounds tile for the same thing. Now it shows Custom Rounds only, like
+  a real boss event; in CHIMPS the Boss Event Rounds tile stays, as the mod brings the CHIMPS events' rounds itself.
 
 ## [2.14.0] - 2026-11-22
 

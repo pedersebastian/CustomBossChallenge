@@ -92,7 +92,8 @@ internal static class InGameData_SetupBossChallenge_Arrived
 }
 
 /// <summary>
-/// The defeat screen says every tier has 20 rounds; custom games tell the rounds their tiers really had
+/// The defeat screen says every tier has 20 rounds; custom games tell the rounds their tiers really had, and show a die
+/// for a boss Random picked that hasn't arrived yet (#283)
 /// </summary>
 [HarmonyPatch(typeof(BossDefeatScreen), nameof(BossDefeatScreen.Open))]
 internal static class BossDefeatScreen_Open
@@ -100,6 +101,9 @@ internal static class BossDefeatScreen_Open
     [HarmonyPostfix]
     internal static void Postfix(BossDefeatScreen __instance)
     {
+        // First, as the screen is reused by games outside the mod, which must not keep the die's Elite glow
+        Visuals.BossHud.ShowDefeatPortrait(__instance);
+
         var options = CustomBossState.ActiveOptions;
         if (!CustomBossState.IsActive || options == null || InGame.instance?.bridge == null) return;
 

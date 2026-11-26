@@ -104,6 +104,9 @@ let options: Gen<JObject> =
         let! rounds = spawnRounds
         let! perTier = tierBosses
         let! eventRounds = Gen.frequency [ 3, Gen.constant false; 1, Gen.constant true ]
+        // A code with the bosses a game picked for its Random tiers (#270): some tiers, in order
+        let! picked = Gen.subListOf [ 1 .. tiers ]
+        let! keepPicked = Gen.frequency [ 3, Gen.constant false; 1, Gen.constant true ]
         let json =
             JObject(
                 JProperty("Boss", boss),
@@ -118,6 +121,8 @@ let options: Gen<JObject> =
                 JProperty("BossEventRounds", eventRounds)
             )
         perTier |> Option.iter (fun list -> json["TierBosses"] <- JValue list)
+        if perTier.IsSome && keepPicked && not picked.IsEmpty then
+            json["RandomTiers"] <- JValue(picked |> List.sort |> List.map string |> String.concat ",")
         return json
     }
 
@@ -223,8 +228,13 @@ let needsVersion6 (options: JObject) (challenge: JObject) =
     let tiers = if mixed options then options.Value<string>("TierBosses") else null
     CodeFormat.NeedsVersion6(bossHealth, TierBossMath.Parse(tiers) |> Seq.map (fun tier -> tier.Health))
 
+/// The bosses a game picked for its Random tiers, which version 6 readers drop (#270)
+let holdsRandomTiers (options: JObject) =
+    not (isNull options["RandomTiers"]) && options["RandomTiers"].Type <> JTokenType.Null
+
 let prefix (options: JObject) (challenge: JObject) =
-    if needsVersion6 options challenge then CodeFormat.Version6Prefix
+    if holdsRandomTiers options then CodeFormat.Version7Prefix
+    elif needsVersion6 options challenge then CodeFormat.Version6Prefix
     elif options.Value<string>("ChimpsRounds") = "Own" then CodeFormat.Version5Prefix
     elif options.Value<bool>("BossEventRounds") then CodeFormat.Version4Prefix
     elif mixed options then CodeFormat.Version3Prefix

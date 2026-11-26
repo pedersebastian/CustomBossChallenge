@@ -145,6 +145,15 @@ public sealed class BossEditorSection
     private List<string> savedNames = new();
 
     public ModHelperButton CopyCode { get; private set; } = null!;
+
+    /// <summary>
+    /// The row that plays the last game's setup again with the bosses Random picked, or copies its code (#270); shown
+    /// while the setup is the one that game was started from
+    /// </summary>
+    public GameObject LastGameRow { get; private set; } = null!;
+
+    public ModHelperButton ReplayLineup { get; private set; } = null!;
+    public ModHelperButton CopyLineup { get; private set; } = null!;
     public ModHelperButton PasteCode { get; private set; } = null!;
 
     /// <summary>Opens the Past Events window (#146), with how many events there are</summary>
@@ -510,6 +519,12 @@ public sealed class BossEditorSection
         CopyCode = ShareButton(shareRow, "CopyCode", shareX, Texts.CopyCode.T(), OnCopyCode);
         PasteCode = ShareButton(shareRow, "PasteCode", shareX + 640, Texts.PasteCode.T(), OnPasteCode);
 
+        // After a game with Random tiers: that game's bosses again, or in a code (#270)
+        LastGameRow = EditorRows.LabelRow(template, rows, "LastGameRow", Texts.LastGameBosses.T(), VanillaSprites.RandomIcon);
+        ReplayLineup = ShareButton(LastGameRow, "ReplayLineup", shareX, Texts.PlayAgain.T(), OnReplayLineup);
+        CopyLineup = ShareButton(LastGameRow, "CopyLineup", shareX + 640, Texts.CopyCode.T(), OnCopyLineup);
+        LastGameRow.SetActive(false);
+
         // The official boss events, in a window of their own (#146)
         var eventsRow = EditorRows.LabelRow(template, rows, "PastEventsRow", Texts.PastEvents.T(), VanillaSprites.BossChallenge);
         var eventsLeft = EditorRows.ControlX - EditorRows.ControlWidth / 2;
@@ -550,6 +565,7 @@ public sealed class BossEditorSection
         EditorRows.AddInfo(skullStripRow, Texts.SkullPreview, Texts.SkullPreviewInfo);
         EditorRows.AddInfo(savedRow, Texts.SavedSetups, Texts.SavedSetupsInfo);
         EditorRows.AddInfo(shareRow, Texts.ShareCode, Texts.ShareCodeInfo);
+        EditorRows.AddInfo(LastGameRow, Texts.LastGameBosses, Texts.LastGameBossesInfo);
         EditorRows.AddInfo(eventsRow, Texts.PastEvents, Texts.PastEventsInfo);
 
         // The Tier Preview sits right under the boss, where in Advanced Mode its cards pick the bosses, and Max Paragons,
@@ -776,6 +792,8 @@ public sealed class BossEditorSection
         focusStops.Add(FocusStop.ForButton("DeleteSetup", DeleteSetup.Button));
         focusStops.Add(FocusStop.ForButton("CopyCode", CopyCode.Button));
         focusStops.Add(FocusStop.ForButton("PasteCode", PasteCode.Button));
+        focusStops.Add(FocusStop.ForButton("ReplayLineup", ReplayLineup.Button));
+        focusStops.Add(FocusStop.ForButton("CopyLineup", CopyLineup.Button));
         focusStops.Add(FocusStop.ForButton("BrowseEvents", BrowseEvents.Button));
         focusStops.Add(FocusStop.ForButton("Play", PlayButton));
     }
@@ -794,21 +812,41 @@ public sealed class BossEditorSection
     private void OnCopyCode()
     {
         Editor.ApplyUiSettingsToDCM();
-        var code = SetupCode.Encode(BossMode.Options, Editor.dcm);
+        CopyCodeOf(BossMode.Options, Editor.dcm, listeners.Of(CopyLink));
+    }
+
+    /// <summary>
+    /// Copies a code of the setup with the bosses Random picked in the last game: those tiers still show as Random
+    /// until the boss arrives, and Play keeps the bosses (#270)
+    /// </summary>
+    private void OnCopyLineup()
+    {
+        if (!LastGame.CanReplay(BossMode.Options) || LastGame.Played is not { } played) return;
+        Editor.ApplyUiSettingsToDCM();
+        CopyCodeOf(played, Editor.dcm, listeners.Of(() => CopyLinkOf(played, Editor.dcm)));
+    }
+
+    /// <summary>
+    /// Copies the code of a setup and says so, with a button that copies a link instead
+    /// </summary>
+    internal static void CopyCodeOf(BossOptions options, DailyChallengeModel dcm, Action copyLink)
+    {
+        var code = SetupCode.Encode(options, dcm);
         Clipboard.Write(code);
-        ModHelper.Msg<CustomBossChallenge>(
-            $"Copied a share code ({code.Length} characters): {Describe(BossMode.Options, Editor.dcm)}");
+        ModHelper.Msg<CustomBossChallenge>($"Copied a share code ({code.Length} characters): {Describe(options, dcm)}");
         PopupScreen.instance.SafelyQueue(screen => screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.ShareCode.T(),
-            Texts.CodeCopied.T(code.Length), null, Texts.Ok.T(), listeners.Of(CopyLink), Texts.CopyLink.T(),
+            Texts.CodeCopied.T(code.Length), null, Texts.Ok.T(), copyLink, Texts.CopyLink.T(),
             Popup.TransitionAnim.Scale));
     }
 
     /// <summary>
     /// Replaces the copied code with a link that opens it on the website
     /// </summary>
-    internal void CopyLink()
+    internal void CopyLink() => CopyLinkOf(BossMode.Options, Editor.dcm);
+
+    internal static void CopyLinkOf(BossOptions options, DailyChallengeModel dcm)
     {
-        var link = CodeFormat.Link(SetupCode.Encode(BossMode.Options, Editor.dcm));
+        var link = CodeFormat.Link(SetupCode.Encode(options, dcm));
         Clipboard.Write(link);
         ModHelper.Msg<CustomBossChallenge>($"Copied a link to the setup ({link.Length} characters)");
         PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(Texts.LinkCopied.T(), null));
@@ -1488,10 +1526,14 @@ public sealed class BossEditorSection
     /// Undo
     /// </summary>
     /// <param name="control">The control that changes, so a slider's run of changes is one step for Undo, or null</param>
-    public void SetTierBoss(int tier, TierBoss boss, string? control = null)
+    /// <param name="picked">
+    /// Whether the player picked the tier's boss (or Random), which forgets that a code's game picked it at random (#270)
+    /// </param>
+    public void SetTierBoss(int tier, TierBoss boss, string? control = null, bool picked = false)
     {
         if (!BossMode.Options.Mixed) return;
-        var changed = BossMode.Options with {TierBosses = TierBossMath.With(BossMode.Options.TierBosses, tier, boss)};
+        var options = picked ? BossMode.Options.WithoutRandomMark(tier) : BossMode.Options;
+        var changed = options with {TierBosses = TierBossMath.With(options.TierBosses, tier, boss)};
         if (changed == BossMode.Options) return;
         BossHistory.RecordChange(Editor, control);
         BossMode.Options = changed;
@@ -1505,9 +1547,12 @@ public sealed class BossEditorSection
     {
         var options = BossMode.Options;
         if (!options.Mixed) return;
-        var next = TierBossMath.Step(options.EntryOf(tier), BossList.Name(options.Boss), options.Elite, direction);
+        // A boss a game picked at random steps on from Random, which the tier shows, without giving the boss away (#270)
+        var entry = options.EntryOf(tier);
+        var from = options.WasRandom(tier) ? entry with {Boss = TierBossMath.Random} : entry;
+        var next = TierBossMath.Step(from, BossList.Name(options.Boss), options.Elite, direction);
         BossHistory.RecordChange(Editor, TierStopName(tier));
-        BossMode.Options = options with {TierBosses = TierBossMath.With(options.TierBosses, tier, next)};
+        BossMode.Options = options.WithoutRandomMark(tier) with {TierBosses = TierBossMath.With(options.TierBosses, tier, next)};
         ShowBoss();
     }
 
@@ -1752,7 +1797,9 @@ public sealed class BossEditorSection
     {
         // The boss's own skulls follow the boss and Elite
         Skulls.Show(BossMode.Options);
-        Strip.Show(BossMode.Options, Editor.dcm);
+        // A code's bosses that a game picked at random stay a secret here too (#270)
+        Strip.Show(BossMode.Options.WithRandomPicksHidden(), Editor.dcm);
+        LastGameRow.SetActive(LastGame.CanReplay(BossMode.Options));
         if (!refreshing) FitIfChanged();
     }
 
@@ -1806,8 +1853,10 @@ public sealed class BossEditorSection
         customSkullsRow.SetActive(!options.Mixed && options.SkullMode == Config.SkullMode.Custom);
         Skulls.Row.SetActive(!options.Mixed);
         ShowSpawnRounds();
-        Strip.Show(options, Editor.dcm);
+        // A code's bosses that a game picked at random stay a secret here too (#270)
+        Strip.Show(options.WithRandomPicksHidden(), Editor.dcm);
         Skulls.Show(options);
+        LastGameRow.SetActive(LastGame.CanReplay(options));
     }
 
     /// <summary>
@@ -1883,20 +1932,34 @@ public sealed class BossEditorSection
         appliedHeight = height;
     }
 
-    private void OnPlay()
+    private void OnPlay() => StartGame(BossMode.Options);
+
+    /// <summary>
+    /// Plays the setup again with the bosses Random picked in the last game (#270). The setup itself stays as it is.
+    /// </summary>
+    private void OnReplayLineup()
+    {
+        if (!LastGame.CanReplay(BossMode.Options) || LastGame.Played is not { } played) return;
+        ModHelper.Msg<CustomBossChallenge>("Playing the last game's bosses again");
+        StartGame(played, BossMode.Options);
+    }
+
+    /// <param name="options">The options to play: the setup's, or the last game's bosses for it</param>
+    /// <param name="setup">The setup <paramref name="options"/> were picked for, when they are the last game's</param>
+    private void StartGame(BossOptions options, BossOptions? setup = null)
     {
         Editor.ValidateInputFields();
         Editor.ApplyUiSettingsToDCM();
 
         var dcm = Editor.dcm;
-        var problem = PlayProblem(dcm, BossMode.Options);
+        var problem = PlayProblem(dcm, options);
         if (problem != null)
         {
             PopupScreen.instance.SafelyQueue(screen => screen.ShowOkPopup(LanguageText.ForGameText(problem), null));
             return;
         }
 
-        BossGameLauncher.Launch(dcm, BossMode.Options);
+        BossGameLauncher.Launch(dcm, options, setup);
     }
 
     /// <summary>

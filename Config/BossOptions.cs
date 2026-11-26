@@ -53,12 +53,39 @@ public sealed record BossOptions
     /// <summary>
     /// The tiers that were Random before <see cref="ResolveRandom"/> picked their bosses, like "2,5", or null. The game
     /// keeps those bosses a secret until they arrive.
+    /// <br/>
+    /// A code with the bosses a game picked (#270) keeps it too, so the Boss Creator shows those tiers as Random while
+    /// Play keeps their bosses. Picking another boss for such a tier forgets it (<see cref="WithoutRandomMark"/>).
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public string? RandomTiers { get; init; }
 
     /// <summary>Whether the game picked the boss of <paramref name="tier"/> at random when it started</summary>
     public bool WasRandom(int tier) => System.Array.IndexOf(TierBossMath.ParseTierList(RandomTiers), tier) >= 0;
+
+    /// <summary>
+    /// Whether the boss of <paramref name="tier"/> is still a secret once the bosses up to
+    /// <paramref name="arrivedTier"/> have arrived: the game picked it at random and it hasn't arrived yet (#270, #283)
+    /// </summary>
+    public bool IsSecret(int tier, int arrivedTier) => tier > arrivedTier && WasRandom(tier);
+
+    /// <summary>
+    /// These options as the player sees them before the game: a tier whose boss a game picked at random is Random again,
+    /// with its Elite, speed, health and skulls, so nothing shown gives the boss away (#270). The website shows codes
+    /// the same way (hideRandomPicks).
+    /// </summary>
+    public BossOptions WithRandomPicksHidden() => !Mixed || RandomTiers == null
+        ? this
+        : this with
+        {
+            TierBosses = TierBossMath.ParseTierList(RandomTiers).Aggregate(TierBosses,
+                (list, tier) => TierBossMath.With(list, tier, TierBossMath.Entry(list, tier) with {Boss = TierBossMath.Random})),
+            RandomTiers = null
+        };
+
+    /// <summary>These options without the mark that <paramref name="tier"/>'s boss was picked at random</summary>
+    public BossOptions WithoutRandomMark(int tier) =>
+        WasRandom(tier) ? this with {RandomTiers = TierBossMath.WithoutTier(RandomTiers, tier)} : this;
 
     /// <summary>
     /// The boss events' own rounds instead of the default ones (#80), moved to the tiers' Spawn Rounds. In Advanced
@@ -210,10 +237,13 @@ public sealed record BossOptions
     }
 
     /// <summary>
-    /// A copy for options read from a share code: <see cref="Sanitized"/>, and without <see cref="RandomTiers"/>, which
-    /// only a game that started fills in (#236). The website reads codes the same way.
+    /// A copy for options read from a share code: <see cref="Sanitized"/>. Only codes with the bosses a game picked
+    /// (version 7, #270) keep <see cref="RandomTiers"/>; older versions never wrote it and their readers drop it (#236),
+    /// so a code means the same setup in every version that reads it. The website reads codes the same way.
     /// </summary>
-    public BossOptions SanitizedFromCode() => (this with {RandomTiers = null}).Sanitized();
+    /// <param name="keepRandomTiers">Whether the code's version holds <see cref="RandomTiers"/></param>
+    public BossOptions SanitizedFromCode(bool keepRandomTiers = false) =>
+        (keepRandomTiers ? this : this with {RandomTiers = null}).Sanitized();
 
     /// <summary>
     /// What the given tier was set to: the setup's boss, a boss of its own, or Random
@@ -264,14 +294,14 @@ public sealed record BossOptions
 
     /// <summary>
     /// These options with a concrete boss for every tier: Random tiers get a boss picked by <paramref name="random"/>,
-    /// and <see cref="RandomTiers"/> remembers which they were.
-    /// Options without different bosses per tier come back as they are.
+    /// and <see cref="RandomTiers"/> remembers which they were, along with the tiers it already had: bosses a code kept
+    /// from an earlier game (#270). Options without different bosses per tier come back as they are.
     /// </summary>
     public BossOptions ResolveRandom(System.Random random) => Mixed
         ? this with
         {
             TierBosses = TierBossMath.Resolve(TierBosses, BossList.Name(Boss), Elite, Tiers, random.Next),
-            RandomTiers = TierBossMath.RandomTiers(TierBosses, Tiers)
+            RandomTiers = TierBossMath.MergeTierLists(RandomTiers, TierBossMath.RandomTiers(TierBosses, Tiers))
         }
         : this;
 

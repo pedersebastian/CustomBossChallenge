@@ -3,7 +3,7 @@
 // A boss goes on a tier by dragging it there, by picking a tier and then a boss (on a phone too), or with the arrows on
 // a tier's card. The bosses and the tiers show the bosses' portraits (#206), Elite on an Elite tier, and a die for Random.
 
-import { SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, tierBossName, type SkullMode } from "@cbc/share-code";
+import { SKULL_MODES, SKULL_MODE_NAMES, effectiveSpawnRounds, hideRandomPicks, tierBossName, type SkullMode } from "@cbc/share-code";
 import { announce, h } from "../dom";
 import { formatDecimals } from "@cbc/share-code/dotnet";
 import type { Challenge } from "@cbc/share-code";
@@ -219,13 +219,15 @@ export function setUpTierEditor(
     if (selected > tiers) selected = tiers;
     const rounds = effectiveSpawnRounds(setup.options);
     // Each card's speed and health as the Tier Preview shows them, with Boss Speed and Boss Health on top
-    const values = tierCards(setup.options, { bossSpeed: edit.bossSpeed(setup) / 100, bossHealth: edit.bossHealth(setup) / 100 } as Challenge);
+    // Bosses a game picked at random, from a code, show as Random until the game reaches them (#270)
+    const shownOptions = hideRandomPicks(setup.options);
+    const values = tierCards(shownOptions, { bossSpeed: edit.bossSpeed(setup) / 100, bossHealth: edit.bossHealth(setup) / 100 } as Challenge);
 
     cards.forEach((card, i) => {
       const tier = i + 1;
       card.hidden = tier > tiers;
       const shown = edit.shownTier(setup, tier);
-      const name = tierBossName(setup.options, tier);
+      const name = tierBossName(shownOptions, tier);
       const own = shown.speed === NORMAL && shown.health === NORMAL ? "" : `${shown.speed} % speed, ${shown.health} % health`;
       const skulls = shown.skulls === "Vanilla" ? "" : shown.skulls === "EvenlySpaced" ? `${shown.skullCount} skulls` : "Custom skulls";
       const card_ = values[i];
@@ -233,7 +235,7 @@ export function setUpTierEditor(
         h("span", { class: "studio-tier-number" }, `T${tier}`),
         h("span", { class: "studio-tier-round" }, `R${rounds[i] ?? ""}`),
         // Long names break where their parts meet, "Bloon-arius", never anywhere
-        h("span", { class: "studio-tier-boss" }, tierPortrait(setup.options, tier, name), breakable(name)),
+        h("span", { class: "studio-tier-boss" }, tierPortrait(shownOptions, tier, name), breakable(name)),
         // Like the Tier Preview's cards: the speed compared with the normal game, and the health
         card_ ? h("span", { class: "studio-tier-values" }, `×${formatDecimals(card_.speed, 2)} · ${card_.health}`) : "",
         // Its own speed and health on one short line; the card's label says them in words
@@ -248,10 +250,10 @@ export function setUpTierEditor(
     });
 
     paletteHelp.textContent = `Drag a boss onto a tier, or pick a tier and then a boss. Now picking for tier ${selected}. On a tier, the arrow keys step its boss and Delete makes it follow the setup's boss.`;
-    const chosen = edit.shownTier(setup, selected).boss;
+    const chosen = edit.shownTier({ ...setup, options: shownOptions }, selected).boss;
     for (const chip of chips) chip.setAttribute("aria-pressed", String(chip.dataset.boss === chosen));
 
-    heading.textContent = `Tier ${selected}: ${tierBossName(setup.options, selected)}`;
+    heading.textContent = `Tier ${selected}: ${tierBossName(shownOptions, selected)}`;
     for (const control of panelControls) control.sync(setup);
     const mode = edit.shownTier(setup, selected).skulls;
     tierSkullCount.row.hidden = mode !== "EvenlySpaced";

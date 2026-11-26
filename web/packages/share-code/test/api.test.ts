@@ -22,6 +22,9 @@ describe("the public API", () => {
       { ...defaultOptions(), BossEventRounds: true, ChimpsRounds: "Own" as const },
       // A tier's own health version 5 would change (#250)
       { ...defaultOptions(), Tiers: 2, TierBosses: tierBosses.formatTierBosses(tierBosses.parseTierBosses("Lych@100/4200")) },
+      // The bosses a game picked for its Random tiers (#270)
+      { ...defaultOptions(), Tiers: 3, TierBosses: "Vortex,LychElite,Phayze", RandomTiers: "2,3" },
+      // The mod's own boss Gildebloon (#25)
       { ...defaultOptions(), Boss: "Gildebloon", Elite: true },
     ];
     const made = await Promise.all(setups.map((options) => encode(options)));

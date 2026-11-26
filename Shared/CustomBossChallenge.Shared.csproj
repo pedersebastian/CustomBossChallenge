@@ -35,11 +35,13 @@
         <Compile Include="..\Config\RichText.cs" Link="Mod\RichText.cs" />
         <Compile Include="..\Config\RulesSummary.cs" Link="Mod\RulesSummary.cs" />
         <Compile Include="..\Config\SetupWarnings.cs" Link="Mod\SetupWarnings.cs" />
+        <Compile Include="..\Config\DefaultNames.cs" Link="Mod\DefaultNames.cs" />
         <Compile Include="..\Config\DifficultyRating.cs" Link="Mod\DifficultyRating.cs" />
         <Compile Include="..\Config\ShownBrackets.cs" Link="Mod\ShownBrackets.cs" />
         <Compile Include="..\Config\ShownNumber.cs" Link="Mod\ShownNumber.cs" />
         <Compile Include="..\Config\SkullMath.cs" Link="Mod\SkullMath.cs" />
         <Compile Include="..\Config\TierLook.cs" Link="Mod\TierLook.cs" />
+        <Compile Include="..\Visuals\MysteryMeshData.cs" Link="Mod\MysteryMeshData.cs" />
         <Compile Include="..\Config\TierMath.cs" Link="Mod\TierMath.cs" />
         <Compile Include="..\Config\TierBossMath.cs" Link="Mod\TierBossMath.cs" />
         <Compile Include="..\Visuals\GildebloonBodyData.cs" Link="Mod\GildebloonBodyData.cs" />

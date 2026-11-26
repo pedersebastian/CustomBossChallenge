@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using BTD_Mod_Helper;
 using CustomBossChallenge.Config;
@@ -187,12 +188,53 @@ public static class BossMode
     /// The challenge name a new setup gets, e.g. "Custom Lych" or "Custom Elite Lych"
     /// </summary>
     public static string DefaultName(Il2CppAssets.Scripts.Data.Boss.BossType boss, bool elite = false) =>
-        elite ? $"Custom Elite {BossList.Name(boss)}" : $"Custom {BossList.Name(boss)}";
+        DefaultNames.For(PlayerNameTexts, BossList.Name(boss), elite);
 
     /// <summary>
     /// The name a setup with a different boss per tier gets
     /// </summary>
-    public const string MixedName = "Custom Boss Gauntlet";
+    public static string MixedName => DefaultNames.Mixed(PlayerNameTexts);
+
+    /// <summary>The default names in the player's language, as the name field would get them</summary>
+    private static DefaultNameTexts PlayerNameTexts => new(Raw(Texts.DefaultName), Raw(Texts.DefaultEliteName),
+        Raw(Texts.MixedName));
+
+    private static string Raw(string key) => BTD_Mod_Helper.Extensions.StringExt.Localize(key);
+
+    /// <summary>
+    /// The default names in every language the mod has, so a name given in another language is still known as one
+    /// </summary>
+    private static List<DefaultNameTexts>? allNameTexts;
+
+    private static List<DefaultNameTexts> AllNameTexts => allNameTexts ??= LoadAllNameTexts();
+
+    private static List<DefaultNameTexts> LoadAllNameTexts()
+    {
+        const string prefix = "CustomBossChallenge.Localization.";
+        var assembly = typeof(BossMode).Assembly;
+        var all = new List<DefaultNameTexts>();
+        foreach (var resource in assembly.GetManifestResourceNames()
+                     .Where(name => name.StartsWith(prefix, System.StringComparison.Ordinal) && name.EndsWith(".json")))
+        {
+            try
+            {
+                using var stream = assembly.GetManifestResourceStream(resource);
+                if (stream == null) continue;
+                using var reader = new System.IO.StreamReader(stream);
+                var table = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
+                if (table == null) continue;
+                string Text(string key, string english) => table.TryGetValue(key, out var text) ? text : english;
+                all.Add(new DefaultNameTexts(Text(Texts.DefaultName, DefaultNameTexts.English.Name),
+                    Text(Texts.DefaultEliteName, DefaultNameTexts.English.EliteName),
+                    Text(Texts.MixedName, DefaultNameTexts.English.MixedName)));
+            }
+            catch (System.Exception e)
+            {
+                ModHelper.Warning<CustomBossChallenge>($"Couldn't read the default names in {resource}: {e.Message}");
+            }
+        }
+        return all;
+    }
 
     /// <summary>
     /// The challenge name a new setup with these options gets
@@ -205,8 +247,8 @@ public static class BossMode
     /// made up counts too.
     /// </summary>
     public static bool IsDefaultName(string? name) =>
-        name == MixedName || RandomNames.IsGenerated(name) || BossList.All
-            .Any(boss => name == DefaultName(boss) || name == DefaultName(boss, true));
+        RandomNames.IsGenerated(name) || DefaultNames.IsDefault(name, AllNameTexts.Append(PlayerNameTexts),
+            BossList.AllNames);
 
     /// <summary>
     /// What a describing name for the setup looks at

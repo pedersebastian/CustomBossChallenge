@@ -318,12 +318,14 @@ public sealed class TierBossPicker
     public void Show()
     {
         var shown = Shown();
+        // A boss a game picked at random, from a code, shows as Random until the game reaches it (#270)
+        var ticked = Creator.BossMode.Options.WasRandom(Tier) ? TierBossMath.Random : shown.Boss;
         foreach (var (choice, button) in Choices)
         {
             button.Image.SetSprite(choice == TierBossMath.Random
                 ? VanillaSprites.RandomIcon
                 : BossEditorSection.Portrait(BossList.TryParse(choice, out var boss) ? boss : BossType.Bloonarius, shown.Elite));
-            button.transform.Find(BossEditorSection.SelectedMarker)?.gameObject.SetActive(choice == shown.Boss);
+            button.transform.Find(BossEditorSection.SelectedMarker)?.gameObject.SetActive(choice == ticked);
             if (choice == TierBossMath.Random) BossEditorSection.ShowEliteGlow(button, shown.Elite);
         }
 
@@ -336,7 +338,7 @@ public sealed class TierBossPicker
         if (!CustomSkulls.InputField.isFocused) CustomSkulls.SetText(shown.CustomSkulls, false);
         refreshing = false;
 
-        Skulls.Show(Creator.BossMode.Options, Tier);
+        Skulls.Show(Creator.BossMode.Options.WithRandomPicksHidden(), Tier);
         Layout(shown);
     }
 
@@ -345,7 +347,7 @@ public sealed class TierBossPicker
     /// </summary>
     public void Pick(string choice)
     {
-        section.SetTierBoss(Tier, Shown() with {Boss = choice, Elite = Elite.Toggle.isOn});
+        section.SetTierBoss(Tier, Shown() with {Boss = choice, Elite = Elite.Toggle.isOn}, picked: true);
         Hide();
     }
 

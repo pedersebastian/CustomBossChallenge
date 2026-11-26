@@ -121,6 +121,30 @@ public static class BossHud
     }
 
     /// <summary>
+    /// The defeat screen shows the boss of the tier being played, the one alive or else the next one: a die while that
+    /// one is a secret, with the Elite glow behind it for a Random Elite tier, like the line-up (#283). The screen is
+    /// reused, so the glow is switched off again otherwise.
+    /// </summary>
+    public static void ShowDefeatPortrait(Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen screen)
+    {
+        var icon = screen.bossIcon;
+        if (icon == null) return;
+        var tier = DefeatSecretTier();
+        if (tier > 0) icon.SetSprite(VanillaSprites.RandomIcon);
+        BossEditorSection.ShowEliteGlow(icon, tier > 0 && MixedOptions!.BossOf(tier).Elite);
+    }
+
+    /// <summary>The tier whose boss the defeat screen hides behind a die; 0 when it shows the boss</summary>
+    internal static int DefeatSecretTier()
+    {
+        var options = MixedOptions;
+        var manager = Manager;
+        if (options == null || manager == null) return 0;
+        var tier = MixedBosses.ShownTier(manager, options);
+        return MixedBosses.IsSecret(manager, options, tier) ? tier : 0;
+    }
+
+    /// <summary>
     /// Builds, refreshes or removes the line-up and fades the banner; called every frame
     /// </summary>
     /// <param name="now">Look now, not only every <see cref="CheckInterval"/></param>

@@ -52,6 +52,8 @@
         <EmbeddedResource Include="Bundles\gildebloon-map.gba.gz" LogicalName="CustomBossChallenge.gildebloon-map.gba.gz" />
         <!-- The padlock over a tower Gildebloon seized: tools/blender/build-padlock.py (#25) -->
         <EmbeddedResource Include="Bundles\gildebloon-padlock.gba.gz" LogicalName="CustomBossChallenge.gildebloon-padlock.gba.gz" />
+        <!-- The map effects of a boss that is still a secret, modelled in Blender: tools/blender/build-mystery.py (#285) -->
+        <EmbeddedResource Include="Bundles\mystery-fx.mesh.gz" LogicalName="CustomBossChallenge.mystery-fx.mesh.gz" />
     </ItemGroup>
 
     <!-- The website is its own project. Only the data it gets from the game is built in, so WebDataTest can check it,

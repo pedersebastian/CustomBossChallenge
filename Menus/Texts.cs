@@ -186,6 +186,13 @@ public static class Texts
     public static readonly string DeleteSetupQuestion = Key(nameof(DeleteSetupQuestion), "Delete the saved setup {0}?");
     public static readonly string LoadSetupQuestion = Key(nameof(LoadSetupQuestion),
         "Load this saved setup? Your current setup will be replaced.");
+    /// <summary>
+    /// The name a new setup gets; {0} is the boss's English name, like Lych. A name the Challenge Editor's name field
+    /// would change, e.g. one with 'ø' or '-', is shown in English instead (#279), so keep to ASCII letters where you can.
+    /// </summary>
+    public static readonly string DefaultName = Key(nameof(DefaultName), Config.DefaultNameTexts.English.Name);
+    public static readonly string DefaultEliteName = Key(nameof(DefaultEliteName), Config.DefaultNameTexts.English.EliteName);
+    public static readonly string MixedName = Key(nameof(MixedName), Config.DefaultNameTexts.English.MixedName);
     public static readonly string ExampleSetups = Key(nameof(ExampleSetups), "Example Setups");
     public static readonly string ExampleLabel = Key(nameof(ExampleLabel), "Example: {0}");
     public static readonly string LoadExampleQuestion = Key(nameof(LoadExampleQuestion),
@@ -213,6 +220,16 @@ public static class Texts
     public static readonly string CopyLink = Key(nameof(CopyLink), "Copy Link");
     public static readonly string LinkCopied = Key(nameof(LinkCopied),
         "Link copied. It opens this setup on the Custom Boss Challenge website, and Paste reads it too.");
+
+    /// <summary>The row after a game with Random tiers, and the end screens' button (#270)</summary>
+    public static readonly string LastGameBosses = Key(nameof(LastGameBosses), "Last Game's Bosses");
+    public static readonly string LastGameBossesInfo = Key(nameof(LastGameBossesInfo),
+        "Your last game had Random tiers. Play Again starts a new game with the same bosses Random picked, still " +
+        "hidden until they arrive, while your setup keeps its Random tiers. Copy makes a code with those bosses: " +
+        "whoever pastes it sees Random on those tiers and gets the same bosses.");
+    public static readonly string PlayAgain = Key(nameof(PlayAgain), "Play Again");
+    public static readonly string CopyTheseBosses = Key(nameof(CopyTheseBosses), "Copy Code With These Bosses");
+
     public static readonly string LoadCodeQuestion = Key(nameof(LoadCodeQuestion),
         "Load this setup? Your current setup will be replaced.");
     public static readonly string CodeInvalid = Key(nameof(CodeInvalid),

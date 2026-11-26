@@ -100,7 +100,8 @@ public class BossCreatorTest : CustomBossTest
         {
             if (info.name == EditorRows.InfoName) infoButtons++;
         }
-        AssertEquals(infoButtons, 21, "Info buttons in the boss section");
+        // 22 with the Last Game's Bosses row (#270), hidden until a game with Random tiers
+        AssertEquals(infoButtons, 22, "Info buttons in the boss section");
 
         section.Tiers.Row.transform.Find($"Image/{EditorRows.InfoName}").GetComponent<Button>().onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
@@ -300,11 +301,11 @@ public class BossCreatorTest : CustomBossTest
 
         // The name says Elite, and follows the Elite box too
         Assert(BossMode.Options.Elite, "Elite is on here");
-        AssertEquals(editor.chalName.text, "Custom Elite Vortex", "The name of an Elite boss");
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex, true), "The name of an Elite boss");
         section.Elite.SetChecked(false, true);
-        AssertEquals(editor.chalName.text, "Custom Vortex", "The name must follow Elite off");
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex), "The name must follow Elite off");
         section.Elite.SetChecked(true, true);
-        AssertEquals(editor.chalName.text, "Custom Elite Vortex", "The name must follow Elite on");
+        AssertEquals(editor.chalName.text, BossMode.DefaultName(BossType.Vortex, true), "The name must follow Elite on");
         editor.chalName.text = "My boss";
         section.Elite.SetChecked(false, true);
         AssertEquals(editor.chalName.text, "My boss", "Elite must keep the player's own name");
@@ -405,7 +406,7 @@ public class BossCreatorTest : CustomBossTest
         yield return WaitForPopup(p => popup = p);
         Assert(popup.body.text.Contains(Texts.CodeInvalid.T()), $"Invalid code popup: {popup.body.text}");
         yield return ClosePopup(popup, true);
-        clipboard = "CBC8:abc";
+        clipboard = "CBC9:abc";
         section.PasteCode.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
         Assert(popup.body.text.Contains(Texts.CodeTooNew.T()), $"Newer code popup: {popup.body.text}");

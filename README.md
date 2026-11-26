@@ -77,7 +77,8 @@ To build your own tools for share codes, see the [share-code package](web/packag
 - **Your setup in the Rules panel** (#140): in a custom game, the pause screen's **Rules** button shows what you
   play against, also after loading a share code or continuing a game. The Boss Creator's sliders are rows of the
   **Modifiers** list after the game's Boss Health and Boss Speed. The **Rules** box shows the rest with the game's
-  look, after the game's own rules: the boss with its portrait, Boss Event Rounds, the tiers as the Tier Preview's
+  look, after the game's own rules: the boss with its portrait, Boss Event Rounds in CHIMPS
+  (in other modes the game's own Custom Rounds says it, like in a boss event), the tiers as the Tier Preview's
   cards with the round each arrives on (in Advanced Mode with each tier's boss), and the skulls on a health bar like
   the Skull Preview. A boss picked at random shows as a die until it arrives.
 - **Translated** into every language BTD6 supports (English, Arabic, Chinese Simplified and Traditional, Danish,
@@ -138,7 +139,10 @@ Pick the **Advanced** tab at the top of the Boss section, next to **Standard**, 
 Boss Type is hidden and every tier starts with the boss it had; the cards in the **Tier Preview** right below become
 buttons, each with a small pencil. Click one to pick that tier's boss from every boss, **Elite** or not, or **Random** for a surprise that is
 picked when the game starts (and stays the same through restarts, retries and Continue). In the game a Random
-tier stays a die in the boss line-up and the boss panel until its boss arrives. With the keyboard, the
+tier stays a die in the boss line-up and the boss panel until its boss arrives. After such a game, the Boss Creator
+has a **Last Game's Bosses** row: **Play Again** plays the setup once more with the same bosses Random picked, and
+**Copy** makes a code with them, so friends get the same line-up, still shown as Random until each boss arrives. The
+victory and defeat screens have that code too (**Copy Code With These Bosses**). With the keyboard, the
 arrows step a card's boss, Enter opens the picker and Delete puts the tier back to the boss it started with.
 Going back to **Standard** brings the Boss Type back and keeps your choices, so **Advanced** brings them back too.
 
@@ -236,8 +240,9 @@ player can't make in the Challenge Editor or the Boss Creator are ignored, and a
 (or `NaN` or `Infinity`) doesn't load at all.
 
 Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, `CBC3:` when they use Advanced Mode,
-`CBC4:` when they use Boss Event Rounds, `CBC5:` when they play the boss's own event rounds in CHIMPS, or `CBC6:` when
-Boss Health or a tier's own health is below 10 %, above 2000 % or (a tier's) on a step of 5 %; a setup that uses several
+`CBC4:` when they use Boss Event Rounds, `CBC5:` when they play the boss's own event rounds in CHIMPS, `CBC6:` when
+Boss Health or a tier's own health is below 10 %, above 2000 % or (a tier's) on a step of 5 %, or `CBC7:` when they hold
+the bosses a game picked for its Random tiers; a setup that uses several
 of them gets the highest, so that older versions of the mod ask for an update instead of loading them without those
 settings. They only contain what differs from the defaults, with Boss Event Rounds off, so they are usually a few
 hundred characters. A new, unchanged setup, which has Boss Event Rounds on, gives a `CBC4:` code like this one:

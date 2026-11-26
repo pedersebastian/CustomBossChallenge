@@ -24,6 +24,7 @@ public static class SetupCode
     public const string Version5Prefix = CodeFormat.Version5Prefix;
     public const string Version6Prefix = CodeFormat.Version6Prefix;
     public const string Version7Prefix = CodeFormat.Version7Prefix;
+    public const string Version8Prefix = CodeFormat.Version8Prefix;
     public const int PrefixLength = CodeFormat.PrefixLength;
     public const int MaxLength = CodeFormat.MaxLength;
     public const int MaxJsonLength = CodeFormat.MaxJsonLength;
@@ -45,7 +46,8 @@ public static class SetupCode
     /// <paramref name="dcm"/>
     /// </summary>
     public static string PrefixFor(BossOptions options, DailyChallengeModel? dcm = null) =>
-        NeedsVersion7(options) ? Version7Prefix
+        NeedsVersion8(options) ? Version8Prefix
+        : NeedsVersion7(options) ? Version7Prefix
         : NeedsVersion6(options, dcm) ? Version6Prefix
         : NeedsVersion5(options) ? Version5Prefix
         : NeedsVersion4(options) ? Version4Prefix
@@ -54,9 +56,14 @@ public static class SetupCode
         : Prefix;
 
     /// <summary>
-    /// Whether the code has a boss that version 6 readers don't know: the mod's own Gildebloon (#25)
+    /// Whether the code has a boss that version 7 readers don't know: the mod's own Gildebloon (#25)
     /// </summary>
-    public static bool NeedsVersion7(BossOptions options) => options.UsesGildebloon;
+    public static bool NeedsVersion8(BossOptions options) => options.UsesGildebloon;
+
+    /// <summary>
+    /// Whether the code holds the bosses a game picked for its Random tiers (#270), which version 6 readers drop
+    /// </summary>
+    public static bool NeedsVersion7(BossOptions options) => options.RandomTiers != null;
 
     /// <summary>
     /// Whether version 5 readers would change the setup's Boss Health or a tier's own health (#250)
@@ -114,7 +121,7 @@ public static class SetupCode
             if (payload["o"] is JObject optionsDiff) CodeFormat.Apply(optionsJson, CodeFormat.TypedOptions(optionsDiff));
             var raw = optionsJson.ToObject<BossOptions>(OptionsSerializer);
             if (raw == null) return false;
-            var decoded = raw.SanitizedFromCode();
+            var decoded = raw.SanitizedFromCode(CodeFormat.HoldsRandomTiers(code));
 
             var changes = ChallengeLimits.OptionChanges(raw, decoded);
             var model = Challenge(payload["c"] as JObject, decoded, changes, new List<string>());

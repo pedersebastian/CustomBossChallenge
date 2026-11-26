@@ -14,9 +14,10 @@ export const VERSION3_PREFIX = "CBC3:";
 export const VERSION4_PREFIX = "CBC4:";
 export const VERSION5_PREFIX = "CBC5:";
 export const VERSION6_PREFIX = "CBC6:";
-/** Codes with the mod's own boss Gildebloon (#25) */
 export const VERSION7_PREFIX = "CBC7:";
-const KNOWN_PREFIXES = [PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFIX, VERSION5_PREFIX, VERSION6_PREFIX, VERSION7_PREFIX];
+/** Codes with the mod's own boss Gildebloon (#25) */
+export const VERSION8_PREFIX = "CBC8:";
+const KNOWN_PREFIXES = [PREFIX, VERSION2_PREFIX, VERSION3_PREFIX, VERSION4_PREFIX, VERSION5_PREFIX, VERSION6_PREFIX, VERSION7_PREFIX, VERSION8_PREFIX];
 const PREFIX_LENGTH = 5;
 const ITEMS_KEY = "$items";
 
@@ -347,7 +348,7 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
     if (trimmed.startsWith("CBC") && trimmed.length > 4 && /\d/.test(trimmed[3])) {
       return fail("TooNew", "This code comes from a newer version of Custom Boss Challenge.");
     }
-    return fail("Invalid", "This isn't a Boss Creator code. Codes start with CBC1:, CBC2:, CBC3:, CBC4:, CBC5:, CBC6: or CBC7:.");
+    return fail("Invalid", "This isn't a Boss Creator code. Codes start with CBC1:, CBC2:, CBC3:, CBC4:, CBC5:, CBC6:, CBC7: or CBC8:.");
   }
   // Not "damaged": the code may be fine, the browser can't unpack it
   if (!canUseCodes()) return fail("Unsupported", UNSUPPORTED_REASON);
@@ -360,7 +361,8 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
 
     const optionsJsonValue = optionsJson(defaultOptions());
     if (isObject(payload.o)) apply(optionsJsonValue, typedOptions(payload.o));
-    const options = sanitize(readOptions(optionsJsonValue));
+    // Only CBC7 and newer hold which tiers were Random (#270); older readers dropped them (CodeFormat.HoldsRandomTiers)
+    const options = sanitize(readOptions(optionsJsonValue), [VERSION7_PREFIX, VERSION8_PREFIX].some((prefix) => trimmed.startsWith(prefix)));
 
     const challengeJson = clone(DATA.defaultChallenge);
     if (isObject(payload.c)) apply(challengeJson, filterChallenge(payload.c, DATA.defaultChallenge));
@@ -377,7 +379,7 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
  * encode(options, json), for a browser without CompressionStream too. The Stats page rates the past events with it (#265).
  */
 export function readSetup(options: BossOptions, json: JsonObject): { options: BossOptions; challenge: Challenge } {
-  const read = sanitize(readOptions(optionsJson(options)));
+  const read = sanitize(readOptions(optionsJson(options)), options.RandomTiers != null);
   const challengeJson = clone(DATA.defaultChallenge);
   apply(challengeJson, filterChallenge(json, DATA.defaultChallenge));
   return { options: read, challenge: readChallenge(challengeJson, read) };

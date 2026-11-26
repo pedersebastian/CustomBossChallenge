@@ -49,10 +49,16 @@ public static class BossGameLauncher
     /// <summary>
     /// Leaves the Boss Creator and loads the custom game
     /// </summary>
-    public static void Launch(DailyChallengeModel editorDcm, BossOptions options)
+    /// <param name="setup">
+    /// The Boss Creator's setup the game is played from, when <paramref name="options"/> are the bosses an earlier game
+    /// picked for it (#270)
+    /// </param>
+    public static void Launch(DailyChallengeModel editorDcm, BossOptions options, BossOptions? setup = null)
     {
+        var resolved = Resolve(options);
+        LastGame.Remember(setup ?? options, resolved, editorDcm);
         BossMode.Exit();
-        BuildInGameData(editorDcm, Resolve(options));
+        BuildInGameData(editorDcm, resolved);
         UI.instance.LoadGame(null, null, null, false, false);
     }
 
@@ -61,6 +67,7 @@ public static class BossGameLauncher
     /// </summary>
     public static void Continue(ContinueGame game)
     {
+        LastGame.Remember(null, game.Options, game.Dcm);
         BossMode.Exit();
         BuildInGameData(game.Dcm, game.Options);
 

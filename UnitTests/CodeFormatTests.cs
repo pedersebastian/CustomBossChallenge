@@ -53,13 +53,15 @@ public class CodeFormatTests
     });
 
     /// <summary>The options as SetupCode.TryDecode reads them</summary>
-    private static JObject Read(JObject diff) => JObject.FromObject(ReadOptions(diff), OptionsSerializer);
+    /// <param name="keepRandomTiers">Whether the code's version holds RandomTiers (#270)</param>
+    private static JObject Read(JObject diff, bool keepRandomTiers = false) =>
+        JObject.FromObject(ReadOptions(diff, keepRandomTiers), OptionsSerializer);
 
-    private static BossOptions ReadOptions(JObject diff)
+    private static BossOptions ReadOptions(JObject diff, bool keepRandomTiers = false)
     {
         var json = JObject.FromObject(new BossOptions(), OptionsSerializer);
         CodeFormat.Apply(json, CodeFormat.TypedOptions(diff));
-        return json.ToObject<BossOptions>(OptionsSerializer)!.SanitizedFromCode();
+        return json.ToObject<BossOptions>(OptionsSerializer)!.SanitizedFromCode(keepRandomTiers);
     }
 
     /// <summary>
@@ -190,7 +192,7 @@ public class CodeFormatTests
         Assert.True(CodeFormat.TryUnpack(code, out var payload, out var problem, out var error), $"{name}: {problem} {error}");
 
         // The options the website meant, after the mod's own typing and Sanitized
-        var read = Read((JObject?) payload["o"] ?? new JObject());
+        var read = Read((JObject?) payload["o"] ?? new JObject(), CodeFormat.HoldsRandomTiers(code));
         Assert.True(JToken.DeepEquals(JObject.Parse(options), read), $"{name}: expected {options}, got {read.ToString(Formatting.None)}");
 
         // Every challenge change is one a code may make, so the mod drops none of them
@@ -238,6 +240,7 @@ public class CodeFormatTests
     [InlineData(CodeFormat.Version5Prefix)]
     [InlineData(CodeFormat.Version6Prefix)]
     [InlineData(CodeFormat.Version7Prefix)]
+    [InlineData(CodeFormat.Version8Prefix)]
     public void Every_known_version_is_read(string prefix)
     {
         Assert.True(CodeFormat.TryUnpack(CodeFormat.Pack("{\"o\":{},\"c\":{}}", prefix), out _, out var problem, out _));
@@ -247,7 +250,7 @@ public class CodeFormatTests
     [Fact]
     public void A_link_to_a_newer_code_still_says_it_is_too_new()
     {
-        Assert.False(CodeFormat.TryUnpack(CodeFormat.WebsiteUrl + "#code=CBC8:abc", out _, out var problem, out _));
+        Assert.False(CodeFormat.TryUnpack(CodeFormat.WebsiteUrl + "#code=CBC9:abc", out _, out var problem, out _));
         Assert.Equal(CodeProblem.TooNew, problem);
     }
 
@@ -266,4 +269,26 @@ public class CodeFormatTests
     public void Health_version_5_would_change_needs_version_6(double bossHealth, string tierHealths, bool needed) =>
         Assert.Equal(needed, CodeFormat.NeedsVersion6(bossHealth,
             tierHealths.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse)));
+
+    [Theory]
+    [InlineData("CBC7:abc", 7)]
+    [InlineData("CBC12:abc", 12)]
+    [InlineData("  CBC1:abc ", 1)]
+    [InlineData(CodeFormat.WebsiteUrl + "#code=CBC7:abc", 7)]
+    [InlineData("CBCx:abc", 0)]
+    [InlineData("CBC:abc", 0)]
+    [InlineData("hello", 0)]
+    [InlineData(null, 0)]
+    public void The_version_of_a_code(string? code, int version) => Assert.Equal(version, CodeFormat.VersionOf(code));
+
+    [Fact]
+    public void Only_version_7_keeps_which_tiers_were_Random()
+    {
+        // Version 6 readers drop RandomTiers (#236), so a hand made older code with it still reads without it (#270)
+        var diff = JObject.Parse("{\"Tiers\":3,\"TierBosses\":\"Lych,Vortex,Phayze\",\"RandomTiers\":\"3, 2,2,9\"}");
+        Assert.Null(ReadOptions(diff).RandomTiers);
+        Assert.Equal("2,3", ReadOptions(diff, CodeFormat.HoldsRandomTiers("CBC7:x")).RandomTiers);
+        Assert.False(CodeFormat.HoldsRandomTiers("CBC6:x"));
+        Assert.True(CodeFormat.HoldsRandomTiers("CBC8:x"));
+    }
 }
