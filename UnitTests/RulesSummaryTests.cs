@@ -206,11 +206,20 @@ public class RulesSummaryTests
     }
 
     [Fact]
-    public void The_view_shows_spawn_rounds_as_tier_cards_and_event_rounds_as_a_tile()
+    public void The_view_shows_spawn_rounds_as_tier_cards_and_event_rounds_as_a_tile_in_CHIMPS()
     {
-        var view = RulesSummary.View(new BossOptions {Tiers = 6, SpawnRounds = "41", BossEventRounds = true, SpeedPerTier = 5});
+        var options = new BossOptions {Tiers = 6, SpawnRounds = "41", BossEventRounds = true, SpeedPerTier = 5};
+        var view = RulesSummary.View(options, chimps: true);
         Assert.Equal("Boss,BossEventRounds", Tiles(view));
         Assert.True(view.TierStrip);
+    }
+
+    [Fact]
+    public void Outside_CHIMPS_event_rounds_have_no_tile_and_no_No_changes_either()
+    {
+        // The game's own Custom Rounds tile says it, like in a boss event; it is still a change, so no No changes tile
+        Assert.Equal("Boss", Tiles(RulesSummary.View(new BossOptions {BossEventRounds = true})));
+        Assert.Equal("Boss,BossEventRounds", Tiles(RulesSummary.View(new BossOptions {BossEventRounds = true}, chimps: true)));
     }
 
     [Fact]

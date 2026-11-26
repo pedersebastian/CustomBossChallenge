@@ -77,7 +77,8 @@ To build your own tools for share codes, see the [share-code package](web/packag
 - **Your setup in the Rules panel** (#140): in a custom game, the pause screen's **Rules** button shows what you
   play against, also after loading a share code or continuing a game. The Boss Creator's sliders are rows of the
   **Modifiers** list after the game's Boss Health and Boss Speed. The **Rules** box shows the rest with the game's
-  look, after the game's own rules: the boss with its portrait, Boss Event Rounds, the tiers as the Tier Preview's
+  look, after the game's own rules: the boss with its portrait, Boss Event Rounds in CHIMPS
+  (in other modes the game's own Custom Rounds says it, like in a boss event), the tiers as the Tier Preview's
   cards with the round each arrives on (in Advanced Mode with each tier's boss), and the skulls on a health bar like
   the Skull Preview. A boss picked at random shows as a die until it arrives.
 - **Translated** into every language BTD6 supports (English, Arabic, Chinese Simplified and Traditional, Danish,

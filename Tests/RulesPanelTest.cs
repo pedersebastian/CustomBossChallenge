@@ -40,8 +40,9 @@ public class RulesPanelTest : RulesPanelTestBase
         yield return Play(options, dcm);
         yield return OpenRules();
         AssertView(options, "changed setup", fitsView: false, gameTiles: 2);
+        // Boss Event Rounds has no tile of its own outside CHIMPS: the game's Custom Rounds tile says it
         AssertEquals(string.Join(",", RulesPanel.Tiles(RulesSummary.View(options)).Select(tile => tile.Label)),
-            $"{Visuals.BossHud.Name(BossType.Vortex, true)},{Texts.BossEventRounds.T()}", "Tiles");
+            Visuals.BossHud.Name(BossType.Vortex, true), "Tiles");
 
         var folder = System.Environment.GetEnvironmentVariable("CBC_SCREENSHOTS");
         if (!string.IsNullOrWhiteSpace(folder)) yield return ScreenshotTour.Capture(folder, "rules-panel");
@@ -167,7 +168,7 @@ public abstract class RulesPanelTestBase : CustomBossTest
     protected void AssertView(BossOptions options, string when, int arrivedTier = 0, bool fitsView = true, int gameTiles = 0)
     {
         var screen = AssertNotNull(Screen(), $"Rules panel open ({when})")!;
-        var view = RulesSummary.View(options, arrivedTier);
+        var view = RulesSummary.View(options, arrivedTier, screen.dcm.mode == BossOptions.ChimpsMode);
         var content = screen.gameRuleContent;
         var children = Enumerable.Range(0, content.childCount).Select(i => content.GetChild(i)).ToList();
 

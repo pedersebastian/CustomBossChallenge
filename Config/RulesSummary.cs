@@ -136,12 +136,14 @@ public static class RulesSummary
 
     /// <summary>
     /// What the Rules box shows for <paramref name="options"/>, from the same lines as <see cref="Rules"/>. Evenly
-    /// spaced skulls are a row of the Modifiers list and get the skull bar too, like custom ones.
+    /// spaced skulls are a row of the Modifiers list and get the skull bar too, like custom ones. Boss Event Rounds is a
+    /// tile in CHIMPS only: in the other modes the game's own Custom Rounds tile says it, like in a boss event.
     /// </summary>
-    public static RulesView View(BossOptions options, int arrivedTier = int.MaxValue)
+    public static RulesView View(BossOptions options, int arrivedTier = int.MaxValue, bool chimps = false)
     {
         var lines = Lines(options, arrivedTier);
-        var tiles = lines.Where(line => line.Kind is RuleLine.Boss or RuleLine.BossEventRounds or RuleLine.NoChanges).ToList();
+        var tiles = lines.Where(line => line.Kind is RuleLine.Boss or RuleLine.NoChanges ||
+                                        line.Kind == RuleLine.BossEventRounds && chimps).ToList();
         var strip = lines.Any(line => line.Kind is RuleLine.SpawnRounds or RuleLine.Tier);
         var skulls = lines.Where(line => line.Kind == RuleLine.Skulls).Select(line => (SummaryLine?) line).FirstOrDefault();
         var secret = lines.Where(line => line.Kind == RuleLine.Tier && (bool) line.Args[4])

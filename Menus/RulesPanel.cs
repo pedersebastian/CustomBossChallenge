@@ -17,8 +17,9 @@ namespace CustomBossChallenge.Menus;
 /// <summary>
 /// The boss options of a custom game in the game's Challenge Rules panel, which the pause screen's Rules button opens
 /// (#140). The Boss Creator's sliders are rows of its Modifiers list (#141). Its Rules box shows the rest with the game's
-/// look (#147): the boss, Boss Event Rounds and No changes as tiles after the game's own rule tiles, then the tiers as
-/// the Tier Preview's cards and the skulls as the Skull Preview's bar. <see cref="RulesSummary.View"/> says what is
+/// look (#147): the boss, Boss Event Rounds (in CHIMPS only; elsewhere the game's own Custom Rounds tile says it) and
+/// No changes as tiles after the game's own rule tiles, then the tiers as the Tier Preview's cards and the skulls as the
+/// Skull Preview's bar. <see cref="RulesSummary.View"/> says what is
 /// shown; the game's own rules (towers, cash, lives, rounds, modifiers) stay as they are.
 /// </summary>
 public static class RulesPanel
@@ -121,7 +122,7 @@ public static class RulesPanel
         ShowModifiers(screen, options);
         LogLayout(content.gameObject);
 
-        var view = RulesSummary.View(options, ArrivedTier());
+        var view = RulesSummary.View(options, ArrivedTier(), screen.dcm.mode == BossOptions.ChimpsMode);
         ShowTiles(screen, view);
         ShowStrips(screen, options, view);
     }
