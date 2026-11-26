@@ -39,6 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   events), how the events were ranked each year and the maps and modes used most, per boss and per year. Every chart
   has its numbers in a table, and the page follows the archive as events are added. The website's Past Events list
   shows each level's difficulty stars too, and can be sorted newest, oldest, hardest or easiest first.
+- **A link to one past event** (#271): every event on the website's Past Events page has a Copy event link button,
+  for a link like `past-events.html#event=Lych47_m5zq59de` to post on Discord or Reddit. The link opens the page on
+  that event, marked and with the keyboard on it, and clears only the filters that would hide it; it works with the
+  search, filters and order in the address too. A link to an event the list doesn't have shows the list with a note.
 - **An issue the day BTD6 updates** (#272, #19, for contributors): a daily GitHub workflow watches Steam's news for a
   new version and Steam's public build for hotfixes, and opens an issue with the update checklist, once per version
   or build. The checklist is a new section of CONTRIBUTING.md, *Updating for a new BTD6 version*.

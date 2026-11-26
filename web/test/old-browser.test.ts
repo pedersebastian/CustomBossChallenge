@@ -86,7 +86,7 @@ describe("the pages without the streams", () => {
     expect(rejections).toEqual([]);
   });
 
-  it("Past Events lists the events, says why no code can be made, and turns its buttons off", async () => {
+  it("Past Events lists the events, says why no code can be made, and turns its code buttons off", async () => {
     const root = h("div");
     document.body.append(root);
     const file = JSON.stringify({ formatVersion: 1, generated: "2026-11-16T00:00:00Z", events: pastEventCases.events });
@@ -95,9 +95,13 @@ describe("the pages without the streams", () => {
 
     expect(root.querySelectorAll(".past-event").length).toBe(pastEventCases.events.length);
     expect(root.querySelector(".warning")!.textContent).toBe(UNSUPPORTED_REASON);
-    const buttons = [...root.querySelectorAll<HTMLButtonElement>(".past-event button")];
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>(".past-event-level button")];
     expect(buttons.length).toBeGreaterThan(0);
     expect(buttons.every((button) => button.disabled)).toBe(true);
+    // A link to the event needs no code (#271)
+    const eventLinks = [...root.querySelectorAll<HTMLButtonElement>(".past-event-link")];
+    expect(eventLinks).toHaveLength(pastEventCases.events.length);
+    expect(eventLinks.every((button) => !button.disabled)).toBe(true);
     expect(rejections).toEqual([]);
   });
 });

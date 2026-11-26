@@ -1,11 +1,26 @@
 // @vitest-environment happy-dom
 // The Past Events page in a browser (#213): it lists the events newest first, filters them, keeps the search and the
-// filters in the address, makes the code the mod reads, and says when the list can't be loaded
+// filters in the address, makes the code the mod reads, and says when the list can't be loaded; a link opens it on one
+// event (#271)
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ANY_EVENT, decode, newestFirst, readPastEvents, type PastEvent } from "@cbc/share-code";
 import { h } from "../src/dom";
-import { hashForQuery, queryFromHash, ratingsOf, safeSource, setUpPastEvents, shownName, sortFromHash, sortPastEvents } from "../src/pastEvents/list";
+import {
+  eventFromHash,
+  eventLink,
+  hashForQuery,
+  isQueryHash,
+  queryFromHash,
+  queryShowing,
+  ratingsOf,
+  safeSource,
+  setUpPastEvents,
+  shownName,
+  sortFromHash,
+  sortPastEvents,
+  unknownEventText,
+} from "../src/pastEvents/list";
 import { rate } from "../src/pastEvents/rating";
 import cases from "./past-event-cases.json";
 
@@ -303,5 +318,136 @@ describe("the difficulty on Past events", () => {
     expect(hashForQuery(ANY_EVENT, "newest")).toBe("");
     expect(sortFromHash("#sort=oldest")).toBe("oldest");
     expect(sortFromHash("#sort=nope")).toBe("newest");
+  });
+});
+
+describe("a link to one past event (#271)", () => {
+  const LYCH = "Lych47_m5zq59de";
+  const read = readPastEvents(FILE);
+  if (read.problem !== "None") throw new Error(read.error);
+  const lych = read.file.events.find((event) => event.id === LYCH)!;
+
+  async function openAt(hash: string) {
+    history.replaceState(null, "", `/past-events.html${hash}`);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    return page();
+  }
+  const scrolled: { id: string | undefined; behavior: ScrollBehavior | undefined }[] = [];
+  beforeEach(() => {
+    scrolled.length = 0;
+    vi.spyOn(Element.prototype, "scrollIntoView").mockImplementation(function (this: Element, options?: boolean | ScrollIntoViewOptions) {
+      scrolled.push({ id: (this as HTMLElement).dataset.id, behavior: typeof options === "object" ? options.behavior : undefined });
+    });
+  });
+  const unknownNote = (root: HTMLElement) => root.querySelector<HTMLElement>(".past-events-unknown")!;
+
+  it("reads and writes the event in the address, first and next to the other keys", () => {
+    expect(eventFromHash(`#event=${LYCH}&sort=hardest`)).toBe(LYCH);
+    expect(eventFromHash("#event=")).toBeNull();
+    expect(eventFromHash("#boss=lych")).toBeNull();
+    expect(isQueryHash(`#event=${LYCH}`)).toBe(true);
+    expect(hashForQuery({ ...ANY_EVENT, boss: "lych" }, "hardest", LYCH)).toBe(`#event=${LYCH}&boss=lych&sort=hardest`);
+    expect(hashForQuery(ANY_EVENT, "newest", "a b&c")).toBe("#event=a+b%26c");
+    expect(eventFromHash(hashForQuery(ANY_EVENT, "newest", "a b&c"))).toBe("a b&c");
+    expect(eventLink(LYCH, "https://example.org/cbc/past-events.html?x=1#boss=lych")).toBe(
+      `https://example.org/cbc/past-events.html?x=1#event=${LYCH}`,
+    );
+  });
+
+  it("takes out only the filters that would hide the event", () => {
+    const search = () => "lych47 tinkerton";
+    expect(queryShowing(lych, { text: "tinker", boss: "lych", year: 2025, mode: "Clicks" }, search))
+      .toEqual({ text: "tinker", boss: "lych", year: 2025, mode: null });
+    expect(queryShowing(lych, { text: "nothing", boss: "bloonarius", year: 2021, mode: null }, search)).toEqual(ANY_EVENT);
+  });
+
+  it("opens on the event: shown, scrolled to, marked and with the keyboard on it", async () => {
+    const root = await openAt(`#event=${LYCH}`);
+    const row = root.querySelector<HTMLElement>(`[data-id="${LYCH}"]`)!;
+    expect(rows(root)).toHaveLength(cases.events.length);
+    expect(row.classList.contains("linked")).toBe(true);
+    expect(root.querySelectorAll(".linked")).toHaveLength(1);
+    expect(document.activeElement).toBe(row);
+    // Opened from a link it jumps, like a link to an anchor
+    expect(scrolled).toEqual([{ id: LYCH, behavior: "instant" }]);
+    expect(location.hash).toBe(`#event=${LYCH}`);
+    expect(unknownNote(root).hidden).toBe(true);
+  });
+
+  it("scrolls smoothly to a link followed on the open page, but not under reduced motion", async () => {
+    await page();
+    goTo(`#event=${LYCH}`);
+    expect(scrolled).toEqual([{ id: LYCH, behavior: "smooth" }]);
+    expect(document.querySelector(".past-events-list")!.classList.contains("measuring")).toBe(true);
+    await vi.waitFor(() => expect(document.querySelector(".past-events-list")!.classList.contains("measuring")).toBe(false));
+
+    scrolled.length = 0;
+    vi.stubGlobal("matchMedia", (query: string) => ({ matches: query.includes("reduce") }));
+    goTo("#event=Diamondback8_mvaa404d");
+    expect(scrolled).toEqual([{ id: "Diamondback8_mvaa404d", behavior: "auto" }]);
+    expect(document.activeElement).toBe(document.querySelector('[data-id="Diamondback8_mvaa404d"]'));
+  });
+
+  it("keeps the other keys, but clears the filters that would hide the event", async () => {
+    const root = await openAt(`#mode=Clicks&event=${LYCH}&boss=lych&sort=hardest`);
+    expect(location.hash).toBe(`#event=${LYCH}&boss=lych&sort=hardest`);
+    const [boss, , mode] = root.querySelectorAll<HTMLSelectElement>(".past-events-filter");
+    expect(boss.value).toBe("lych");
+    expect(mode.value).toBe("");
+    expect(root.querySelector<HTMLSelectElement>('select[aria-label="Sort"]')!.value).toBe("hardest");
+    expect(root.querySelector(`[data-id="${LYCH}"]`)!.classList.contains("linked")).toBe(true);
+  });
+
+  it("finds the id in any case and writes it as the archive has it", async () => {
+    const root = await openAt(`#event=${LYCH.toUpperCase()}`);
+    expect(root.querySelector(`[data-id="${LYCH}"]`)!.classList.contains("linked")).toBe(true);
+    expect(location.hash).toBe(`#event=${LYCH}`);
+  });
+
+  it("shows the whole list and a note for an id it doesn't know, and takes it out of the address", async () => {
+    const root = await openAt("#event=NoSuchEvent99");
+    expect(rows(root)).toHaveLength(cases.events.length);
+    expect(unknownNote(root).hidden).toBe(false);
+    expect(unknownNote(root).textContent).toBe(unknownEventText("NoSuchEvent99"));
+    expect(unknownNote(root).textContent).toContain('"NoSuchEvent99"');
+    expect(root.querySelector(".linked")).toBeNull();
+    expect(scrolled).toEqual([]);
+    expect(location.hash).toBe("");
+    expect(unknownEventText("x".repeat(500)).length).toBeLessThan(250);
+
+    // Another link to a known event takes the note away
+    goTo(`#event=${LYCH}`);
+    expect(unknownNote(root).hidden).toBe(true);
+    expect(root.querySelector(".linked")!.getAttribute("data-id")).toBe(LYCH);
+  });
+
+  it("follows a link to an event while open, and lets go of it when the visitor changes the list", async () => {
+    const root = await page();
+    expect(root.querySelector(".linked")).toBeNull();
+    goTo("#event=Diamondback8_mvaa404d&boss=lych");
+    expect(root.querySelector(".linked")!.getAttribute("data-id")).toBe("Diamondback8_mvaa404d");
+    expect(location.hash).toBe("#event=Diamondback8_mvaa404d");
+
+    const [boss] = root.querySelectorAll<HTMLSelectElement>(".past-events-filter");
+    boss.value = "lych";
+    boss.dispatchEvent(new Event("change"));
+    expect(location.hash).toBe("#boss=lych");
+    expect(root.querySelector(".linked")).toBeNull();
+  });
+
+  it("has a Copy event link on every event, codes or not, that copies the link to it", async () => {
+    vi.stubGlobal("CompressionStream", undefined);
+    const root = await page();
+    for (const row of rows(root)) {
+      const copy = row.querySelector<HTMLButtonElement>(".past-event-link")!;
+      expect(copy.textContent).toBe("Copy event link");
+      expect(copy.disabled).toBe(false);
+    }
+    const copy = root.querySelector(`[data-id="${LYCH}"]`)!.querySelector<HTMLButtonElement>(".past-event-link")!;
+    expect(copy.getAttribute("aria-label")).toBe("Copy event link: Lych47");
+    copy.click();
+    await vi.waitFor(() => expect(copied).toHaveLength(1));
+    expect(copied[0]).toBe(eventLink(LYCH));
+    expect(new URL(copied[0]).hash).toBe(`#event=${LYCH}`);
   });
 });
