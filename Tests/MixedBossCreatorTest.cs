@@ -479,7 +479,8 @@ public class LastGameBossesCreatorTest : CustomBossTest
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
         yield return WaitForPopup(found => popup = found);
         var code = clipboard;
-        Assert(code.StartsWith(SetupCode.Version7Prefix), $"A version 7 code was copied: {code}");
+        // Version 8 when Random picked the mod's own Gildebloon, which the player may have switched on (#25)
+        Assert(code.StartsWith(SetupCode.PrefixFor(played!)) && CodeFormat.HoldsRandomTiers(code), $"A version 7 code was copied: {code}");
         Assert(SetupCode.TryDecode(code, out var fromCode, out _, out _), "The copied code loads");
         AssertEquals(fromCode, played, "The copied code has the bosses the game picked");
         yield return ClosePopup(popup!, true);

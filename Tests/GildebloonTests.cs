@@ -342,7 +342,8 @@ public class GildebloonBrainTest : GildebloonTest
         menu.SelectTower(farmView);
         yield return new WaitForSecondsRealtime(1);
         var line = AssertNotNull(Visuals.GildebloonHud.SeizedLine, "The selected farm's time left shows")!;
-        Assert(line.StartsWith("Repossessed: "), $"Seized line: {line}");
+        Assert(Enumerable.Range(1, GildebloonBrain.SeizeSeconds).Any(seconds => line == Texts.GildebloonSeizedFor.T(seconds)),
+            $"Seized line: {line}");
         var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
         if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, "gildebloon-tower-menu");
         Assert(!Visuals.GildebloonHud.Panel!.gameObject.activeSelf, "The Vault makes way for the tower menu");
@@ -747,7 +748,10 @@ public class GildebloonOverlayTest : GildebloonTest
         {
             yield return WaitFor(() => Overlay(name)?.gameObject.activeInHierarchy == true && Visuals.GildebloonLook.CoatsShown.Contains(coat),
                 $"{coat} on Gildebloon", 40);
-            Assert(Overlay(name)!.GetComponentsInChildren<Renderer>().All(r => r.forceRenderingOff), $"The game's {name} is hidden");
+            // The look hides the game's coat when it comes on and then every few frames, so parts the game adds a moment
+            // later are hidden at the next look
+            yield return WaitFor(() => Overlay(name)?.GetComponentsInChildren<Renderer>().All(r => r.forceRenderingOff) == true,
+                $"The game's {name} is hidden", 2);
         }
         Log($"coats shown: {string.Join(", ", Visuals.GildebloonLook.CoatsShown)}");
 

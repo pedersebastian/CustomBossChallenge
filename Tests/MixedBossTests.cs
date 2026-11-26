@@ -90,7 +90,9 @@ public class MixedBossCodeTest : CustomBossTest
         // Random (#270); a game of it keeps them, and the tier stays a secret until its boss arrives
         var picked = options.ResolveRandom(new System.Random(3));
         var pickedCode = SetupCode.Encode(picked, dcm);
-        Assert(pickedCode.StartsWith(SetupCode.Version7Prefix), $"The bosses a game picked must be a version 7 code: {pickedCode}");
+        // Version 8 when Random picked the mod's own Gildebloon, which the player may have switched on (#25)
+        Assert(pickedCode.StartsWith(SetupCode.PrefixFor(picked)) && CodeFormat.HoldsRandomTiers(pickedCode),
+            $"The bosses a game picked must be a version 7 code: {pickedCode}");
         Assert(SetupCode.TryDecode(pickedCode, out var readPicked, out _, out _), "The version 7 code did not load");
         AssertEquals(readPicked, picked, "The bosses a game picked, read from the code");
         Assert(readPicked.WasRandom(3) && !readPicked.HasRandom, $"Tier 3 was Random and has its boss: {readPicked.TierBosses}");
@@ -360,7 +362,9 @@ public class MixedBossLineupTest : CustomBossTest
             button!.GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
             Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
             yield return WaitForPopup(found => popup = found);
-            Assert(clipboard.StartsWith(SetupCode.Version7Prefix), $"A version 7 code was copied: {clipboard}");
+            // Version 8 when Random picked the mod's own Gildebloon, which the player may have switched on (#25)
+            Assert(clipboard.StartsWith(SetupCode.PrefixFor(played)) && CodeFormat.HoldsRandomTiers(clipboard),
+                $"A version 7 code was copied: {clipboard}");
             Assert(SetupCode.TryDecode(clipboard, out var read, out var readDcm, out _), "The copied code loads");
             AssertEquals(read, played, "The copied code has the bosses Random picked");
             AssertEquals(readDcm?.startRules.round, 38, "The copied code has the game's rules");

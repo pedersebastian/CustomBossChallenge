@@ -27,6 +27,8 @@ public static class GildebloonScreens
     public static void Defeat(BossDefeatScreen screen)
     {
         if (CustomBossState.ActiveOptions is not { } options || !CustomBossState.IsActive) return;
+        // A boss Random picked that hasn't arrived stays a die, its name unsaid, even when it is Gildebloon (#283)
+        if (BossHud.DefeatSecretTier() > 0) return;
         var (boss, elite) = options.BossOf(CustomBossState.HighestDefeatedTier + 1);
         Show(screen.gameObject, screen.bossIcon, boss, elite);
     }

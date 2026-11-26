@@ -188,6 +188,10 @@ The in-game tests come in two suites (#246):
 - **Full suite**, about 38 minutes: start the game without `CBC_SUITE` and `CBC_TESTS`. Only its receipt counts
   for a release.
 - `CBC_TESTS` alone runs only the tests it names, e.g. while working on them.
+- `CBC_LANGUAGE=Arabic` (any of the game's languages) runs every test in that language and puts the player's own
+  back after each test. The tests must pass in every language: compare with the mod's texts (`Texts.X.T()`), never
+  with English written into the test. Run the quick suite in Arabic now and then, and after changing texts a test
+  looks at.
 
 A new test is in the quick suite. If it takes more than about 20 seconds, mark it `[FullSuiteOnly]`, with the reason,
 so the quick suite stays under 15 minutes. `Tests/TestSuite.cs` has the rules.
