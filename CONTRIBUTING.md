@@ -168,6 +168,23 @@ The in-game tests come in two suites (#246):
   for a release.
 - `CBC_TESTS` alone runs only the tests it names, e.g. while working on them.
 
+#### Tests in every language
+
+The tests must pass whatever language the game is in (#291). `CBC_LANGUAGE=Arabic` (any language the game has, or
+`Monkey` for its joke Monkey Cipher) runs every test in that language: `Tests/TestLanguage.cs` switches the game to
+it before each test and puts the player's own back after it. `.github/scripts/Run-InGameTests.ps1` runs the tests in
+several languages one after the other and prints a table of what failed, e.g.
+`-Language Arabic -Suite full`, or `-Language All` for the quick suite in every language (about 3 hours).
+
+- **Compare what the game shows with the mod's texts, through `Tests/ScreenText.cs`**: `text.Shown()` against
+  `ScreenText.Plain(Texts.X.T())`, or `text.Shows(part)`. Never compare `TMP_Text.text` directly, and never with
+  English written into the test. The game keeps a right-to-left text reversed, so in Arabic `40` is `04` in `.text`,
+  and the mod leaves the tags out of popups and lists there (`LanguageText.ForGameText`). `Shown()` turns it back and
+  leaves the tags out.
+- Run the quick suite in Arabic after changing a text a test looks at, and before a release. Run all languages now
+  and then.
+- The receipt says which language the run was in (`language`). A full run counts for a release in any language.
+
 A new test is in the quick suite. If it takes more than about 20 seconds, mark it `[FullSuiteOnly]`, with the reason,
 so the quick suite stays under 15 minutes. `Tests/TestSuite.cs` has the rules.
 

@@ -56,8 +56,10 @@ public class ExampleSetupsTest : CustomBossTest
         AssertEquals(dropdown.options.Count, ExampleSetups.All.Count, "The examples in an empty list");
         for (var i = 0; i < ExampleSetups.All.Count; i++)
         {
+            // In Arabic the list has no tags, so no color either (LanguageText.ForGameText): the label marks it (#291)
             var line = dropdown.options[i].text;
-            Assert(line.Contains(label) && line.Contains(ExampleSetups.All[i].Name) && line.Contains(BossEditorSection.ExampleColor),
+            Assert(line.Contains(label) && line.Contains(ExampleSetups.All[i].Name) &&
+                   (LanguageText.RightToLeft || line.Contains(BossEditorSection.ExampleColor)),
                 $"Example line {i} must be marked as an example: {line}");
         }
 
@@ -76,7 +78,7 @@ public class ExampleSetupsTest : CustomBossTest
                 $"{example.EnglishName} can be loaded but not deleted");
             section.LoadSetup.Button.onClick.Invoke();
             yield return WaitForPopup(p => popup = p);
-            Assert(popup.body.text.Contains(example.Description), $"Load popup of {example.EnglishName}: {popup.body.text}");
+            Assert(popup.body.Shows(example.Description), $"Load popup of {example.EnglishName}: {popup.body.Shown()}");
             yield return ClosePopup(popup, true);
             AssertEquals(BossMode.Options, example.Options, $"Loaded options of {example.EnglishName}");
             AssertEquals(editor!.dcm.name, example.SetupName, $"Loaded name of {example.EnglishName}");
@@ -108,7 +110,8 @@ public class ExampleSetupsTest : CustomBossTest
         AssertEquals(dropdown.options.Count, 1 + ExampleSetups.All.Count, "The saved setup and the examples");
         AssertEquals(section.SelectedSetup, last.SetupName, "The saved setup is picked");
         Assert(section.DeleteSetup.Button.interactable, "The player's own setup can be deleted");
-        Assert(!dropdown.options[0].text.Contains(BossEditorSection.ExampleColor), "The saved setup isn't marked as an example");
+        Assert(!dropdown.options[0].text.Contains(label) && !dropdown.options[0].text.Contains(BossEditorSection.ExampleColor),
+            "The saved setup isn't marked as an example");
 
         // An example's name follows the boss like a default name, through Random as well as a boss button
         foreach (var randomly in new[] {false, true})

@@ -421,7 +421,7 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? infoPopup = null;
         yield return WaitFor(() => (infoPopup = Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()) != null,
             "Opening the CHIMPS info popup");
-        Assert(infoPopup!.body.text.Contains(Menus.Texts.ChimpsRoundsInfo.T()), $"CHIMPS info popup text: {infoPopup.body.text}");
+        Assert(infoPopup!.body.Shows(Menus.Texts.ChimpsRoundsInfo.T()), $"CHIMPS info popup text: {infoPopup.body.Shown()}");
         AssertEquals(Menus.Texts.ChimpsRoundsInfo.T().Split("\n\n").Length, 5, "Both CHIMPS sets, the boss rounds and the boss's own rounds");
         infoPopup.TryHidePop();
         yield return new WaitForSecondsRealtime(1);
@@ -429,7 +429,7 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         Assert(chimpsRounds.TemplatePanel.RectTransform.sizeDelta.y >= 4 * Menus.BossEditorSection.ChimpsItemHeight,
             $"The opened list has room for all four entries: {chimpsRounds.TemplatePanel.RectTransform.sizeDelta.y}");
         Assert(chimpsRounds.TemplatePanel.transform.Find(Menus.EditorRows.ListFrameName) != null, "The opened list has its frame");
-        AssertEquals(chimpsRounds.Dropdown.captionText.text, Menus.Texts.ChimpsRoundsNewest.T(),
+        AssertEquals(chimpsRounds.Dropdown.captionText.Shown(), ScreenText.Plain(Menus.Texts.ChimpsRoundsNewest.T()),
             $"The entry's text as it is, not taken for a key (option '{chimpsRounds.Dropdown.options[1].text}')");
         AssertEquals(chimpsRounds.Dropdown.value, 1, "Ticked shows the newest CHIMPS rounds");
         // The mode change becomes its own Undo step once the editor's rules are looked at again

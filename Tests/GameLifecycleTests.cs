@@ -95,7 +95,7 @@ public class BossNotDefeatedTest : CustomBossTest
             if (Time.realtimeSinceStartup - start > 30) Fail("The defeat screen did not open");
             yield return new WaitForSecondsRealtime(0.25f);
         }
-        AssertEquals(screen.ranOutOfTimeSubTxt.text, Texts.OutOfTimeTier.T(1, 1), "Out of time text on the defeat screen");
+        AssertEquals(screen.ranOutOfTimeSubTxt.Shown(), ScreenText.Plain(Texts.OutOfTimeTier.T(1, 1)), "Out of time text on the defeat screen");
 
         // Lost on the round the tier arrived on: retrying that round and its checkpoint would be the same
         Assert(screen.retryButton.gameObject.activeSelf, "Retry Last Round is offered");
@@ -143,9 +143,9 @@ public class RetryTest : CustomBossTest
         Assert(lostRound is > 40 and < 43, $"Lost on round {lostRound}, after the checkpoint and before tier 2");
         Assert(screen!.retryButton.gameObject.activeSelf, "Retry Last Round is offered");
         Assert(screen.continueButton.gameObject.activeSelf, "Retry From Checkpoint is offered");
-        AssertEquals(screen.retryCostTxt.text, Texts.Free.T(), "Retry Last Round cost");
-        AssertEquals(screen.continueCostTxt.text, Texts.Free.T(), "Retry From Checkpoint cost");
-        AssertEquals(screen.continueDescTxt.text, Texts.RetryFromRound.T(40), "Retry From Checkpoint text");
+        AssertEquals(screen.retryCostTxt.Shown(), ScreenText.Plain(Texts.Free.T()), "Retry Last Round cost");
+        AssertEquals(screen.continueCostTxt.Shown(), ScreenText.Plain(Texts.Free.T()), "Retry From Checkpoint cost");
+        AssertEquals(screen.continueDescTxt.Shown(), ScreenText.Plain(Texts.RetryFromRound.T(40)), "Retry From Checkpoint text");
 
         // Opening the screen again doesn't wrap its buttons again (#112)
         var wrapped = Patches.BossDefeatScreen_Open.Wrapped;
@@ -209,7 +209,7 @@ public class RetryFirstRoundTest : CustomBossTest
         var lostRound = InGame.instance.bridge.GetCurrentRound() + 1;
         AssertEquals(lostRound, firstRound, "Lost on the first round played");
         Assert(screen!.retryButton.gameObject.activeSelf, "Retry Last Round is offered on the first round played");
-        AssertEquals(screen.retryCostTxt.text, Texts.Free.T(), "Retry Last Round cost");
+        AssertEquals(screen.retryCostTxt.Shown(), ScreenText.Plain(Texts.Free.T()), "Retry Last Round cost");
 
         screen.retryButton.onClick.Invoke();
         yield return WaitForResume();

@@ -178,7 +178,7 @@ public abstract class RulesPanelTestBase : CustomBossTest
         AssertEquals(ours.Count, expected.Count, $"Boss tiles in the Rules box ({when})");
         for (var i = 0; i < expected.Count; i++)
         {
-            AssertEquals(ours[i].Find("Layout/Lbl").GetComponent<TMP_Text>().text, expected[i].Label, $"Tile {i + 1} ({when})");
+            AssertEquals(ours[i].Find("Layout/Lbl").GetComponent<TMP_Text>().Shown(), ScreenText.Plain(expected[i].Label), $"Tile {i + 1} ({when})");
             Assert(ours[i].gameObject.activeInHierarchy, $"Tile {i + 1} shown ({when})");
             Assert(ours[i].GetComponentsInChildren<UnityEngine.UI.Button>().All(button => !button.enabled), $"Tile {i + 1} takes no focus ({when})");
         }
@@ -253,9 +253,11 @@ public abstract class RulesPanelTestBase : CustomBossTest
         AssertEquals(ourRows.Count, expected.Count, $"Boss Creator rows in the Modifiers list ({when})");
         for (var i = 0; i < expected.Count; i++)
         {
-            var label = ourRows[i].Find("Layout/Lbl").GetComponent<TMP_Text>().text;
-            var value = ourRows[i].Find("Layout/Value").GetComponent<TMP_Text>().text;
-            AssertEquals($"{label} {value}", $"{expected[i].Label} {expected[i].Value}", $"Modifier row {i + 1} ({when})");
+            var label = ourRows[i].Find("Layout/Lbl").GetComponent<TMP_Text>().Shown();
+            var value = ourRows[i].Find("Layout/Value").GetComponent<TMP_Text>().Shown();
+            // Label and value apart: in Arabic the space between them doesn't keep their order (#291)
+            AssertEquals((label, value), (ScreenText.Plain(expected[i].Label), ScreenText.Plain(expected[i].Value)),
+                $"Modifier row {i + 1} ({when})");
             Assert(ourRows[i].gameObject.activeInHierarchy, $"Modifier row {i + 1} shown ({when})");
         }
         var gameRows = rows.Where(row => row.name != RulesPanel.ModifierName && row.gameObject.activeSelf).ToList();

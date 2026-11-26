@@ -18,7 +18,8 @@ public class LocalizationTest : CustomBossTest
     public const string ResourcePrefix = "CustomBossChallenge.Localization.";
 
     /// <summary>
-    /// The languages BTD6 supports (apart from the joke Monkey Cipher)
+    /// The languages BTD6 supports, apart from the joke Monkey Cipher: the mod has no translation for it, so it shows
+    /// the mod's English there. <c>CBC_LANGUAGE=Monkey</c> runs the tests in it all the same (#291).
     /// </summary>
     public static readonly string[] Languages =
     {
@@ -46,8 +47,9 @@ public class LocalizationTest : CustomBossTest
         var active = LocalizationManager.Instance.ActiveLanguage.ToString();
         if (Languages.Contains(active))
         {
-            AssertEquals(Texts.BossCreator.T(), Load(active)[Texts.BossCreator], $"Boss Creator in {active}");
-            AssertEquals(Texts.BossTiersInfo.T(), Load(active)[Texts.BossTiersInfo], $"Boss Tiers info in {active}");
+            // In Arabic the mod's texts come shaped, like the game's own (#244)
+            AssertEquals(Texts.BossCreator.T(), LanguageText.Shape(Load(active)[Texts.BossCreator]), $"Boss Creator in {active}");
+            AssertEquals(Texts.BossTiersInfo.T(), LanguageText.Shape(Load(active)[Texts.BossTiersInfo]), $"Boss Tiers info in {active}");
         }
         Log($"active language {active}: {Texts.BossCreator.T()}");
         yield break;

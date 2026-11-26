@@ -47,7 +47,7 @@ public class MainMenuButtonTest : CustomBossTest
         AssertEquals(sprite!.name, "CustomBossChallenge-" + MainMenuButton.LogoName, "Button icon");
 
         var label = AssertNotNull(button.GetComponentInChildren<ModHelperText>(true), "No label");
-        AssertEquals(label.Text.text, MainMenuButton.Label, "Label");
+        AssertEquals(label.Text.Shown(), ScreenText.Plain(MainMenuButton.Label), "Label");
 
         var panel = AssertNotNull(mainMenu.GetComponentInChildren<MainMenuEventPanel>(true), "No event column");
         var column = panel.GetComponent<RectTransform>();

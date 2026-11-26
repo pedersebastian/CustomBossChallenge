@@ -313,7 +313,7 @@ public class UnusableContinueTest : ContinueTestBase
             ClickBossCreator();
             Popup? popup = null;
             yield return WaitForPopup(found => popup = found);
-            Assert(popup!.body.text.Contains(name) && popup.body.text.Contains("42"), $"Popup for a lost game: {popup.body.text}");
+            Assert(popup!.body.Shows(name) && popup.body.Shows("42"), $"Popup for a lost game: {popup.body.Shown()}");
             Assert(!store.Exists && File.Exists(store.BrokenPath), "The unusable game must be moved aside");
             yield return ClosePopup(popup, true);
             yield return WaitForBossCreator();
@@ -332,7 +332,7 @@ public class UnusableContinueTest : ContinueTestBase
             File.WriteAllText(store.FilePath, "{ not json");
             ClickBossCreator();
             yield return WaitForPopup(found => popup = found);
-            Assert(popup!.body.text.Contains(Path.GetFileName(store.BrokenPath)), $"Popup for a broken file: {popup.body.text}");
+            Assert(popup!.body.Shows(Path.GetFileName(store.BrokenPath)), $"Popup for a broken file: {popup.body.Shown()}");
             yield return ClosePopup(popup, true);
             yield return WaitForBossCreator();
             yield return ToMainMenu();
@@ -384,9 +384,9 @@ public class ContinueTest : ContinueTestBase
         ClickBossCreator();
         Popup? popup = null;
         yield return WaitForPopup(found => popup = found);
-        AssertEquals(popup!.body.text, MainMenuButton.UnfinishedGameText(game), "Unfinished game popup");
+        AssertEquals(popup!.body.Shown(), ScreenText.Plain(MainMenuButton.UnfinishedGameText(game)), "Unfinished game popup");
         if (ScreenshotTour.Folder is { Length: > 0 } folder) yield return ScreenshotTour.Capture(folder, "continue-popup");
-        Assert(popup.body.text.Contains("Continue Test") && popup.body.text.Contains(latest.ToString()), $"Popup text: {popup.body.text}");
+        Assert(popup.body.Shows("Continue Test") && popup.body.Shows(latest.ToString()), $"Popup text: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         yield return WaitForLoadedGame();
 
@@ -462,7 +462,7 @@ public class ContinueRetryTest : ContinueTestBase
         AssertEquals(InGame.instance.bridge.GetCurrentRound() + 1, lostRound, "Lost round of the continued game");
         Assert(screen!.retryButton.gameObject.activeSelf, "Retry Last Round is offered");
         Assert(screen.continueButton.gameObject.activeSelf, "Retry From Checkpoint is offered");
-        AssertEquals(screen.continueDescTxt.text, Texts.RetryFromRound.T(40), "Retry From Checkpoint text");
+        AssertEquals(screen.continueDescTxt.Shown(), ScreenText.Plain(Texts.RetryFromRound.T(40)), "Retry From Checkpoint text");
         screen.continueButton.onClick.Invoke();
         yield return WaitForResume();
         AssertEquals(InGame.instance.bridge.GetCurrentRound() + 1, 40, "Round after Retry From Checkpoint");

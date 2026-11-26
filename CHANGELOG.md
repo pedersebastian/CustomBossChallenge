@@ -61,6 +61,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the mod about 40 % longer, accented and in brackets, to find texts that would be cut off in a longer translation
   and English that skips the localization. The test now also reports one-line labels that wrap and dropdown texts
   that run into their arrow, in every language. It found the English-only default setup names, filed as #279.
+- **In-game tests in every language** (#291, for contributors): `CBC_LANGUAGE=Arabic`, or any other language of the
+  game including `Monkey`, runs every in-game test in that language, and `.github/scripts/Run-InGameTests.ps1` runs
+  them in several languages one after the other. The tests compare what the game shows with the mod's own texts
+  through `Tests/ScreenText.cs`, which reads Arabic the way the game shows it, so they no longer only pass in English
+  and Norwegian. The test receipt says which language the run was in.
 
 ### Fixed
 

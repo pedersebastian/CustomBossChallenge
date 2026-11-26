@@ -58,7 +58,7 @@ public class PastEventsTest : CustomBossTest
         yield return new WaitForSecondsRealtime(1);
         var section = BossEditorSection.Current!;
 
-        var label = section.BrowseEvents.GetComponentInChildren<Il2CppTMPro.TMP_Text>().text;
+        var label = section.BrowseEvents.GetComponentInChildren<Il2CppTMPro.TMP_Text>().Shown();
         Assert(label.Contains(file.Events.Count.ToString()), $"The row says how many events there are: {label}");
 
         section.BrowseEvents.Button.onClick.Invoke();
@@ -90,7 +90,7 @@ public class PastEventsTest : CustomBossTest
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup popup = null!;
         AssertNotNull(browser.ButtonFor(lych, false), "Lych 47 opens as normal")!.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains(lych.DisplayName), $"The popup names the event: {popup.body.text}");
+        Assert(popup.body.Shows(lych.DisplayName), $"The popup names the event: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         yield return null;
         Assert(PastEventsBrowser.Current == null, "Loading the event closes the window");
