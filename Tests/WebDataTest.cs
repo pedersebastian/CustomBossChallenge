@@ -65,7 +65,7 @@ public class WebDataTest : CustomBossTest
 
         foreach (var (file, json) in data)
         {
-            Assert(!json.ToString().Contains(PlayerDefaultName), $"{file} contains the player's name");
+            Assert(PlayerDefaultName.Length == 0 || !json.ToString().Contains(PlayerDefaultName), $"{file} contains the player's name");
         }
 
         var folder = System.Environment.GetEnvironmentVariable(EnvironmentVariable);
@@ -109,11 +109,41 @@ public class WebDataTest : CustomBossTest
                 current = WithoutNames(current);
             }
             Assert(committed != null && JToken.DeepEquals(committed, current),
-                $"web/src/data/{file} is out of date: run the tests with {EnvironmentVariable}=<repo>/web/src/data " +
-                "and rebuild (see CONTRIBUTING.md)");
+                $"web/src/data/{file} is out of date ({FirstDifference(committed, current)}): run the tests with " +
+                $"{EnvironmentVariable}=<repo>/web/src/data and rebuild (see CONTRIBUTING.md)");
         }
 
         yield break;
+    }
+
+    /// <summary>Where two JSON values first differ, with both sides, so a failure says what changed</summary>
+    private static string FirstDifference(JToken? committed, JToken current)
+    {
+        if (committed == null) return "not in the mod";
+        if (committed.Type != current.Type) return $"{current.Path}: {committed} in the file, {current} now";
+        switch (committed)
+        {
+            case JObject before:
+                var after = (JObject) current;
+                foreach (var property in before.Properties().Select(p => p.Name).Union(after.Properties().Select(p => p.Name)))
+                {
+                    if (!after.ContainsKey(property)) return $"{before[property]!.Path}: gone now";
+                    if (!before.ContainsKey(property)) return $"{after[property]!.Path}: new now";
+                    if (!JToken.DeepEquals(before[property], after[property])) return FirstDifference(before[property], after[property]!);
+                }
+                break;
+            case JArray beforeItems:
+                var afterItems = (JArray) current;
+                if (beforeItems.Count != afterItems.Count) return $"{current.Path}: {beforeItems.Count} items in the file, {afterItems.Count} now";
+                for (var i = 0; i < beforeItems.Count; i++)
+                {
+                    if (!JToken.DeepEquals(beforeItems[i], afterItems[i])) return FirstDifference(beforeItems[i], afterItems[i]);
+                }
+                break;
+            default:
+                return $"{current.Path}: {committed} in the file, {current} now";
+        }
+        return "the same";
     }
 
     /// <summary>
@@ -244,7 +274,12 @@ public class WebDataTest : CustomBossTest
         return challenge;
     }
 
-    private static string PlayerDefaultName => DailyChallengeModel.CreateDefaultEditorModel().name;
+    /// <summary>
+    /// As a code reads it back: cleaned, like a name the player typed. In Arabic the game's name is the player's
+    /// with a space after it (#291).
+    /// </summary>
+    private static string PlayerDefaultName =>
+        ChallengeLimits.CleanName(DailyChallengeModel.CreateDefaultEditorModel().name, "");
 
     /// <summary>
     /// The mod's example setups (<see cref="ExampleSetups"/>), in English, as codes the website lets players copy

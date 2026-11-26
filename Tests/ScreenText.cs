@@ -25,6 +25,12 @@ public static class ScreenText
     /// </summary>
     public static string Plain(string? text) => RichText.Strip(text);
 
+    /// <summary>
+    /// A mod text that the game or Mod Helper looks up itself, by its key (a modifier's title, Mod Settings and their
+    /// info popups): it shows as the translation is written, without the shaping <c>Texts.X.T()</c> gives Arabic (#292)
+    /// </summary>
+    public static string ByGame(string key) => Plain(BTD_Mod_Helper.Extensions.StringExt.Localize(key));
+
     /// <summary>Whether <paramref name="text"/> shows <paramref name="part"/></summary>
     public static bool Shows(this TMP_Text text, string part) =>
         text.Shown().Contains(Plain(part), StringComparison.Ordinal);

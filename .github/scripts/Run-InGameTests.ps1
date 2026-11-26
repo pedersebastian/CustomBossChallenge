@@ -77,7 +77,10 @@ $results = foreach ($name in $languages) {
     Copy-Item $log $kept -Force
     $lines = Get-Content $kept
     $failed = @($lines | Select-String '\] CustomBossChallenge-(\w+) failed$' | ForEach-Object { $_.Matches[0].Groups[1].Value })
-    $passed = @($lines | Select-String '\] CustomBossChallenge-(\w+) succeeded$').Count
+    # A test left out of the run is reported as succeeded too: only those that started count
+    $ran = @($lines | Select-String '\[CustomBossChallenge\] (\w+): starting$' | ForEach-Object { $_.Matches[0].Groups[1].Value })
+    $passed = @($lines | Select-String '\] CustomBossChallenge-(\w+) succeeded$' |
+        Where-Object { $_.Matches[0].Groups[1].Value -in $ran }).Count
     $summary = ($lines | Select-String 'Ran \d+ test\(s\)' | Select-Object -Last 1)
     [pscustomobject]@{
         Language = $name

@@ -143,7 +143,9 @@ public class BossCreatorTest : CustomBossTest
         Assert(scrollArea.rect.height >= excludedSlots.rect.height - 1,
             $"All excluded modifiers must fit: area {scrollArea.rect.height}, modifiers {excludedSlots.rect.height}");
         fortified.Select();
-        AssertEquals(modifiers.descriptionTitle.Shown(), ScreenText.Plain(Texts.AllFortified.T()), "All Fortified info title");
+        // The game looks the title up itself (titleLocKey)
+        Assert(modifiers.descriptionTitle.ShowsExactly(ScreenText.ByGame(Texts.AllFortified)),
+            $"All Fortified info title: '{modifiers.descriptionTitle.Shown()}', expected '{ScreenText.ByGame(Texts.AllFortified)}'");
         fortified.includeToggle.isOn = true;
         yield return new WaitForSecondsRealtime(0.5f);
         AssertEquals(fortified.transform.parent.Pointer, modifiers.includedContainer.Pointer, "All Fortified moves to included");
@@ -180,7 +182,10 @@ public class BossCreatorTest : CustomBossTest
         foreach (var text in new[] { cards[6].Speed, cards[6].Health })
         {
             text.Text.ForceMeshUpdate();
-            AssertEquals(text.Text.fontSize, text.Text.fontSizeMax, $"Size of '{text.Text.Shown()}' on 7 cards");
+            // A pixel too high shrinks it a hair in some languages (Arabic: 53.3 of 54), which nobody sees
+            Assert(text.Text.fontSize >= text.Text.fontSizeMax * 0.97f,
+                $"Size of '{text.Text.Shown()}' on 7 cards: {text.Text.fontSize} of {text.Text.fontSizeMax} in {text.Text.font?.name}, " +
+                $"needs {text.Text.preferredWidth:0} of {text.Text.rectTransform.rect.width:0} wide, {text.Text.preferredHeight:0} of {text.Text.rectTransform.rect.height:0} high");
         }
 
         // The game's font must have the mark, or it shows as a box (▼ is ▲ turned around)

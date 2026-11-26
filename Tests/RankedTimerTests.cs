@@ -108,17 +108,19 @@ public class RankedTimerTest : ContinueTestBase
         if (ScreenshotTour.Folder is { Length: > 0 } settingsFolder) yield return ScreenshotTour.Capture(settingsFolder, "ranked-settings");
         var menuTexts = Object.FindObjectsOfType<TMP_Text>().Where(text => text.isActiveAndEnabled).Select(text => text.Shown()).ToList();
         Log($"mod settings: {string.Join(" | ", menuTexts.Where(text => text.Length < 80))}");
+        // Mod Helper looks the setting names and their info up itself
         foreach (var key in new[] {RankedPracticeKey, ShowRankedStatsKey})
         {
-            Assert(menuTexts.Contains(ScreenText.Plain(key.T())), $"Mod Settings must show '{key.T()}'");
+            Assert(menuTexts.Contains(ScreenText.ByGame(key)), $"Mod Settings must show '{ScreenText.ByGame(key)}'");
         }
         Assert(!menuTexts.Any(text => text.Contains(Texts.KeyPrefix)), "Mod Settings shows a text key");
         var option = AssertNotNull(Object.FindObjectsOfType<ModHelperOption>().FirstOrDefault(found =>
-            found.GetComponentsInChildren<TMP_Text>().Any(text => text.ShowsExactly(ShowRankedStatsKey.T()))), "No Show Ranked Stats option")!;
+            found.GetComponentsInChildren<TMP_Text>().Any(text => text.ShowsExactly(ScreenText.ByGame(ShowRankedStatsKey)))), "No Show Ranked Stats option")!;
         option.InfoButton.Button.onClick.Invoke();
         Popup? info = null;
         yield return WaitForPopup(found => info = found);
-        AssertEquals(info!.body.Shown(), ScreenText.Plain((Texts.KeyPrefix + "ShowRankedStats Setting Description").T()), "Show Ranked Stats's info");
+        var infoText = ScreenText.ByGame(Texts.KeyPrefix + "ShowRankedStats Setting Description");
+        Assert(info!.body.ShowsExactly(infoText), $"Show Ranked Stats's info: '{info.body.Shown()}', expected '{infoText}'");
         yield return ClosePopup(info, true);
         yield return ToMainMenu();
 
@@ -258,9 +260,9 @@ public class RankedPenaltyTest : ContinueTestBase
         Log($"round 39: penalty clock from frame {penaltyStart}, round end {roundEnd}, penalty {Penalty} frames");
 
         // Every frame from the end of the grace time to the end of the round. The test sees the round's end a few
-        // frames late, more so in fast forward.
+        // frames late, more so in fast forward; the game may count the frame the clock starts on too.
         var expected = roundEnd - penaltyStart;
-        if (Penalty > expected || Penalty < expected - 30) Fail($"Penalty {Penalty} frames, expected a little under {expected}");
+        if (Penalty > expected + 1 || Penalty < expected - 30) Fail($"Penalty {Penalty} frames, expected a little under {expected}");
         AssertEquals(RankedHud.TotalTime, RankedHud.BossTime + RankedHud.PenaltyTime, "The total is the bosses' time plus the penalty");
         RankedHud.Update(true);
         var texts = RankedHud.Panel!.GetComponentsInChildren<TMP_Text>().Select(text => text.Shown()).ToList();

@@ -265,10 +265,11 @@ public sealed class TierStrip
         var size = text.fontSize;
         text.enableAutoSizing = false;
         text.fontSize = NoteMinFontSize;
-        var width = text.GetPreferredValues(text.text, float.PositiveInfinity, float.PositiveInfinity).x;
+        var preferred = text.GetPreferredValues(text.text, float.PositiveInfinity, float.PositiveInfinity);
         text.fontSize = size;
         text.enableAutoSizing = true;
-        return width <= note.RectTransform.sizeDelta.x ? 1 : MaxNoteRows;
+        // A font with taller letters, like Arabic's, can be too high for one line even when the text is short enough
+        return preferred.x <= note.RectTransform.sizeDelta.x && preferred.y <= NoteHeight ? 1 : MaxNoteRows;
     }
 
     /// <summary>

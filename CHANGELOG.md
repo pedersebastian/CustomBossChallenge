@@ -86,6 +86,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Boss Event Rounds is said once in the Rules panel**: outside CHIMPS the pause screen's Rules box showed both the
   game's own Custom Rounds tile and a Boss Event Rounds tile for the same thing. Now it shows Custom Rounds only, like
   a real boss event; in CHIMPS the Boss Event Rounds tile stays, as the mod brings the CHIMPS events' rounds itself.
+- **Tier Preview warnings stay readable in Arabic** (#291): a short warning, like the one for Boss Event Rounds in
+  CHIMPS, shrank below the readable size on one line, because the Arabic letters are taller. It now gets a second line
+  instead.
 
 ## [2.14.0] - 2026-11-22
 
