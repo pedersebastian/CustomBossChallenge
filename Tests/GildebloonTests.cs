@@ -317,7 +317,10 @@ public class GildebloonBrainTest : GildebloonTest
         Assert(Visuals.GildebloonHud.Repossessions > 0, "The Repossession was shown");
         var banner = AssertNotNull(Visuals.GildebloonHud.Banner, "The Repossession banner shows")!;
         Log($"banner: {banner.Replace('\n', '/')}; frozen {GildebloonBrain.FrozenCount}, padlocks {Visuals.GildebloonSeizeLook.PadlockCount}");
-        Assert(banner.StartsWith("Repossession!") && banner.Contains("1 Banana Farm locked for 12 s"), $"Banner: {banner}");
+        // In the player's language, which need not be English
+        var repossessionTitle = Texts.GildebloonRepossessionTitle.T();
+        var oneFarm = Texts.GildebloonFarmLocked.T(GildebloonBrain.SeizeSeconds);
+        Assert(banner.StartsWith(repossessionTitle) && banner.Contains(oneFarm), $"Banner: {banner}");
         Assert(Visuals.GildebloonHud.CashShown > 0, "What it took showed at the cash");
         Assert(Visuals.GildebloonSeizeLook.RingsShown > 0, "The ring showed how far it reached");
         AssertEquals(Visuals.GildebloonSeizeLook.PadlockCount, GildebloonBrain.SeizedCount + GildebloonBrain.FrozenCount, "A padlock over each seized tower");
@@ -326,11 +329,12 @@ public class GildebloonBrainTest : GildebloonTest
         // The banner says what it took, a line each, in the right form
         string Lines(double cash, int frozen, int farms) =>
             string.Join(" / ", Visuals.GildebloonHud.BannerLines(new GildebloonBrain.Repossession(cash, frozen, farms, 50, boss)));
-        AssertEquals(Lines(2400, 1, 0), "-$2,400 / 1 tower frozen for 3 s", "One tower");
-        AssertEquals(Lines(2400, 30, 2), "-$2,400 / 30 towers frozen for 3 s / 2 Banana Farms locked for 12 s", "Many towers and farms");
-        AssertEquals(Lines(80, 0, 1), "-$80 / 1 Banana Farm locked for 12 s", "One farm");
+        AssertEquals(Lines(2400, 1, 0), $"-$2,400 / {Texts.GildebloonTowerFrozen.T(GildebloonBrain.FreezeSeconds)}", "One tower");
+        AssertEquals(Lines(2400, 30, 2), $"-$2,400 / {Texts.GildebloonTowersFrozen.T(30, GildebloonBrain.FreezeSeconds)} / " +
+            Texts.GildebloonFarmsLocked.T(2, GildebloonBrain.SeizeSeconds), "Many towers and farms");
+        AssertEquals(Lines(80, 0, 1), $"-$80 / {oneFarm}", "One farm");
         AssertEquals(Visuals.GildebloonHud.BannerText(new GildebloonBrain.Repossession(80, 0, 0, 50, boss)),
-            "Repossession!\n<size=60%>-$80</size>", "Only cash");
+            repossessionTitle + "\n<size=60%>-$80</size>", "Only cash");
 
         // The Vault lies under the tower menu, like the boss panel (#25)
         var menu = Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu.TowerSelectionMenu.instance;
