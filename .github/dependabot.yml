@@ -12,9 +12,9 @@ updates:
         update-types: [minor, patch]
 
   - package-ecosystem: nuget
+    # /Shared also has .config/dotnet-tools.json: dotnet-stryker, the mutation tests' tool (#268). Not /, whose
+    # CustomBossChallenge.csproj imports the game's btd6.targets, which isn't on GitHub.
     directories:
-      # / for .config/dotnet-tools.json: dotnet-stryker, the mutation tests' tool (#268)
-      - /
       - /Shared
       - /UnitTests
       - /PropertyTests

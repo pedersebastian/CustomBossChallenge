@@ -98,6 +98,12 @@ describe("in the setup view", () => {
   });
 });
 
+/**
+ * Every click above starts making the code in the background. Wait for it, or it can finish after this file's
+ * test page is gone and fail with "document is not defined" (it did on GitHub once).
+ */
+const settle = (studio: ReturnType<typeof setUpStudio>): Promise<void> => studio.flush();
+
 describe("in the Studio's boss row", () => {
   it("shows every boss's portrait, and the chosen one's Elite portrait when Elite is ticked", async () => {
     const form = h("form");
@@ -116,6 +122,7 @@ describe("in the Studio's boss row", () => {
     form.querySelector<HTMLButtonElement>('.studio-boss[data-boss="Lych"]')!.click();
     expect(src("Lych")).toBe("./bosses/LychElite.webp");
     expect(src("Bloonarius")).toBe("./bosses/Bloonarius.webp");
+    await settle(studio);
   });
 
   it("shows the portraits on Advanced Mode's bosses and tiers, and a die for Random", async () => {
@@ -138,5 +145,6 @@ describe("in the Studio's boss row", () => {
     (chip("Random") as HTMLButtonElement).click();
     expect(tierSrc(2)).toBeUndefined();
     expect(form.querySelector('.studio-tier[data-tier="2"] .studio-tier-boss svg.dice')).not.toBeNull();
+    await settle(studio);
   });
 });

@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   // Relative paths, so the built site works from any folder, e.g. GitHub Pages under /CustomBossChallenge/
@@ -15,6 +15,6 @@ export default defineConfig({
       input: { main: "index.html", compare: "compare.html", studio: "studio.html", pastEvents: "past-events.html", stats: "stats.html" },
     },
   },
-  // CSS on, so a test can read style.css as text
-  test: { environment: "node", css: true },
+  // CSS on, so a test can read style.css as text. Not the copy of web/ that mutation testing (#268) runs in.
+  test: { environment: "node", css: true, exclude: [...configDefaults.exclude, ".stryker-tmp/**"] },
 });

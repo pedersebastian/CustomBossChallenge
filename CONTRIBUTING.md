@@ -140,11 +140,11 @@ format, or look at the weekly report.
 - **Mod math** (Stryker.NET): the pure math in `Config/` (`TierMath`, `TierBossMath`, `SkullMath`, `RankedTime`,
   `ParagonMath.Slider`, `HealthSteps`, `BossRoundsMath`, `BossRowMath`, `DifficultyRating`, `ShownNumber`), built from
   `Shared/` and checked by `UnitTests` and `PropertyTests`. No game needed. Settings and the file list in
-  `Shared/stryker-config.json`. From the repo root:
+  `Shared/stryker-config.json`, the tool's version in `Shared/.config/dotnet-tools.json`. In `Shared/`:
 
   ```
   dotnet tool restore
-  cd Shared; dotnet stryker; cd ..
+  dotnet stryker
   ```
 
   The report is in `Shared/StrykerOutput/<time>/reports/mutation-report.html`. To try one file, add
