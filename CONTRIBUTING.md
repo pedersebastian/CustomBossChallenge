@@ -136,7 +136,8 @@ format, or look at the weekly report.
   `npm run mutation -- --mutate src/preview/timeline.ts`. `scripts/mutation.mjs` first copies `CHANGELOG.md`,
   `Localization/` and `data/` into `web/.stryker-tmp/`, since Stryker runs the tests in a copy of `web/` there and
   some tests read those files. The tests run with `vitest.stryker.config.mjs`, which points `@cbc/share-code` at that
-  copy: `node_modules` links to the real package, which Stryker never changes.
+  copy: `node_modules` links to the real package, which Stryker never changes. Mutants in code that runs once when a module loads
+  (`ignoreStatic`) are left out: each would run every test, which more than doubles the time.
 - **Mod math** (Stryker.NET): the pure math in `Config/` (`TierMath`, `TierBossMath`, `SkullMath`, `RankedTime`,
   `ParagonMath.Slider`, `HealthSteps`, `BossRoundsMath`, `BossRowMath`, `DifficultyRating`, `ShownNumber`), built from
   `Shared/` and checked by `UnitTests` and `PropertyTests`. No game needed. Settings and the file list in

@@ -11,6 +11,9 @@ export default {
   htmlReporter: { fileName: "reports/mutation/index.html" },
   jsonReporter: { fileName: "reports/mutation/mutation.json" },
   coverageAnalysis: "perTest",
+  // Changes to code that runs once, when a module loads (tables, constants), must run every test: about a quarter of
+  // the mutants but more than half the time. Left out, a run takes well under half as long.
+  ignoreStatic: true,
   thresholds: { high: 80, low: 60, break: null },
   tempDirName: ".stryker-tmp",
   // Stryker rewrites tsconfig.json in its sandbox with the typescript package's JS API, which TypeScript 7 (the native
