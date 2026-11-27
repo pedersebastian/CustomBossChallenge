@@ -10,10 +10,13 @@ import base from "./vite.config.ts";
 const packageFolder = new URL("./packages/share-code/", import.meta.url);
 const { exports } = JSON.parse(readFileSync(new URL("package.json", packageFolder), "utf8"));
 
+/** text as a regular expression that matches exactly that text */
+const escapeRegExp = (text) => text.replace(/[\\^$.*+?()[\]{}|/-]/g, "\\$&");
+
 // Whole names only (^...$), so "@cbc/share-code" doesn't also catch "@cbc/share-code/tiers"
 const alias = Object.entries(exports)
   .map(([subpath, file]) => ({
-    find: new RegExp(`^@cbc/share-code${subpath.slice(1).replace(/[/.-]/g, "\\$&")}$`),
+    find: new RegExp(`^${escapeRegExp(`@cbc/share-code${subpath.slice(1)}`)}$`),
     replacement: fileURLToPath(new URL(file, packageFolder)),
   }));
 
