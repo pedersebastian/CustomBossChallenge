@@ -136,7 +136,8 @@ format, or look at the weekly report.
   `npm run mutation -- --mutate src/preview/timeline.ts`. `scripts/mutation.mjs` first copies `CHANGELOG.md`,
   `Localization/` and `data/` into `web/.stryker-tmp/`, since Stryker runs the tests in a copy of `web/` there and
   some tests read those files. The tests run with `vitest.stryker.config.mjs`, which points `@cbc/share-code` at that
-  copy: `node_modules` links to the real package, which Stryker never changes.
+  copy: `node_modules` links to the real package, which Stryker never changes. Mutants in code that runs once when a module loads
+  (`ignoreStatic`) are left out: each would run every test, which more than doubles the time.
 - **Mod math** (Stryker.NET): the pure math in `Config/` (`TierMath`, `TierBossMath`, `SkullMath`, `RankedTime`,
   `ParagonMath.Slider`, `HealthSteps`, `BossRoundsMath`, `BossRowMath`, `DifficultyRating`, `ShownNumber`), built from
   `Shared/` and checked by `UnitTests` and `PropertyTests`. No game needed. Settings and the file list in
@@ -149,7 +150,10 @@ format, or look at the weekly report.
 
   The report is in `Shared/StrykerOutput/<time>/reports/mutation-report.html`. To try one file, add
   `--mutate ../Config/SkullMath.cs`. Stryker.NET also compiles mutants of the other files in `Shared/` and prints
-  compile warnings for some of them; only the listed files are tested and counted.
+  compile warnings for some of them; only the listed files are tested and counted. Mutants of `static readonly` fields (like
+  `TierBoss.Bosses` or a `Regex`) survive in some runs and not in others, since the field is set once per test process;
+  the score can move by a few percent from that alone. `"coverage-analysis": "all"` would fix it, but runs every test
+  for every mutant, which takes hours.
 
 `.github/workflows/mutation.yml` runs both every Sunday and by hand (Actions → Mutation tests → Run workflow), and
 uploads each HTML report as an artifact. It never fails on a low score. When a survivor matters, add a test that fails

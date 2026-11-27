@@ -136,6 +136,16 @@
         ]
       },
       "warnings": ["StartRoundClose", "HealthCapped", "SameTiers", "HardSetup"]
+    },
+    {
+      "name": "Exactly hard enough: 1 life, Cash 0, 5 towers and no Monkey Knowledge",
+      "facts": { "Lives": 1, "Cash": 0, "MaxTowers": 5, "NoKnowledge": true },
+      "warnings": ["HardSetup"]
+    },
+    {
+      "name": "Just short of hard: the same with Cash 400",
+      "facts": { "Lives": 1, "Cash": 400, "MaxTowers": 5, "NoKnowledge": true },
+      "warnings": []
     }
   ]
 }

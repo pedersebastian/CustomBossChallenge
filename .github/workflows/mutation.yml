@@ -16,7 +16,8 @@ jobs:
   website:
     name: Share code and preview (Stryker)
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    # About 1.5 hours on a fast PC; Stryker writes the report only at the end, so a run cut short has none
+    timeout-minutes: 180
     defaults:
       run:
         working-directory: web
