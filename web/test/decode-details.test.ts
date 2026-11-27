@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { cleanName, decode, defaultOptions, extractCode, filterChallenge, readSetup, unescapeDataString } from "@cbc/share-code";
 import { GAME } from "../src/data/types";
 
-const NOT_A_CODE = "This isn't a Boss Creator code. Codes start with CBC1:, CBC2:, CBC3:, CBC4:, CBC5:, CBC6: or CBC7:.";
+const NOT_A_CODE = "This isn't a Boss Creator code. Codes start with CBC.";
 
 describe("the reason a code can't be read", () => {
   it.each([
