@@ -94,11 +94,12 @@ public class PastEventsDownloadTest : CustomBossTest
                 "Opening the Challenge Editor");
             yield return new WaitForSecondsRealtime(1);
             var section = BossEditorSection.Current!;
-            var label = section.BrowseEvents.GetComponentInChildren<Il2CppTMPro.TMP_Text>().text;
+            var label = section.BrowseEvents.GetComponentInChildren<Il2CppTMPro.TMP_Text>().Shown();
             Assert(label.Contains((builtInCount + 1).ToString()), $"The row's count after the download: {label}");
-            var upToDate = Texts.PastEventsUpToDate.T("").Trim().TrimEnd(',', ' ');
-            Assert(section.PastEventsStatus.Text.text.Contains(upToDate),
-                $"The row says the list is up to date: {section.PastEventsStatus.Text.text}");
+            // The whole line, with its date: a language may put the date anywhere in it (#291)
+            var upToDate = Texts.PastEventsUpToDate.T(Texts.Date(PastEvents.Current!.Generated.UtcDateTime));
+            Assert(section.PastEventsStatus.Text.Shows(upToDate),
+                $"The row says the list is up to date: {section.PastEventsStatus.Text.Shown()}");
             MenuManager.instance.Back();
             yield return ToMainMenu();
         }

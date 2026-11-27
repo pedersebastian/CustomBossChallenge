@@ -65,13 +65,8 @@ public class WhatsNewTest : ContinueTestBase
 
         popup = AssertNotNull(popup, "No What's new popup after an update")!;
         var text = ScrollText(popup);
-        Assert(text.text.Contains(Texts.WhatsNewIntro.Raw(WhatsNew.Current)), $"What's new says which version: {text.text}");
-        foreach (var (_, point) in expected)
-        {
-            // Every point whole, not cut short
-            Assert(text.text.Contains($"<b>{Changelog.ToRichText(point.Title)}</b>: {Changelog.ToRichText(point.Text)}"),
-                $"What's new must show '{point.Title}' whole: {text.text}");
-        }
+        // The version and every point whole, not cut short, as the mod writes them in the game's language (#291)
+        Assert(text.Shows(WhatsNew.Body(expected)), $"What's new must show the version and every point whole: {text.Shown()}");
         if (ScreenshotTour.Folder is {Length: > 0} folder) yield return ScreenshotTour.Capture(folder, "whats-new");
         yield return ClosePopup(popup, true);
         AssertRestored(popup);

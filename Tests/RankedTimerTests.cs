@@ -38,8 +38,8 @@ public class RankedTimerTest : ContinueTestBase
         AssertEquals(panel != null && panel.gameObject.activeInHierarchy, shown, $"Ranked panel shown {when}");
         if (panel == null) return;
 
-        var texts = panel.GetComponentsInChildren<TMP_Text>().Select(text => text.text ?? "").ToList();
-        var expected = RankedHud.PanelLines().SelectMany(line => new[] {line.Label, line.Value}).ToList();
+        var texts = panel.GetComponentsInChildren<TMP_Text>().Select(text => text.Shown()).ToList();
+        var expected = RankedHud.PanelLines().SelectMany(line => new[] {line.Label, line.Value}).Select(ScreenText.Plain).ToList();
         AssertEquals(string.Join(" | ", texts), string.Join(" | ", expected), $"Ranked panel {when}");
 
         var rect = LayoutChecks.ScreenRect(panel.RectTransform);
@@ -106,19 +106,21 @@ public class RankedTimerTest : ContinueTestBase
         ModSettingsMenu.Open(ModContent.GetInstance<CustomBossChallenge>());
         yield return new WaitForSecondsRealtime(3);
         if (ScreenshotTour.Folder is { Length: > 0 } settingsFolder) yield return ScreenshotTour.Capture(settingsFolder, "ranked-settings");
-        var menuTexts = Object.FindObjectsOfType<TMP_Text>().Where(text => text.isActiveAndEnabled).Select(text => text.text ?? "").ToList();
+        var menuTexts = Object.FindObjectsOfType<TMP_Text>().Where(text => text.isActiveAndEnabled).Select(text => text.Shown()).ToList();
         Log($"mod settings: {string.Join(" | ", menuTexts.Where(text => text.Length < 80))}");
+        // Mod Helper looks the setting names and their info up itself
         foreach (var key in new[] {RankedPracticeKey, ShowRankedStatsKey})
         {
-            Assert(menuTexts.Contains(key.T()), $"Mod Settings must show '{key.T()}'");
+            Assert(menuTexts.Contains(ScreenText.ByGame(key)), $"Mod Settings must show '{ScreenText.ByGame(key)}'");
         }
         Assert(!menuTexts.Any(text => text.Contains(Texts.KeyPrefix)), "Mod Settings shows a text key");
         var option = AssertNotNull(Object.FindObjectsOfType<ModHelperOption>().FirstOrDefault(found =>
-            found.GetComponentsInChildren<TMP_Text>().Any(text => text.text == ShowRankedStatsKey.T())), "No Show Ranked Stats option")!;
+            found.GetComponentsInChildren<TMP_Text>().Any(text => text.ShowsExactly(ScreenText.ByGame(ShowRankedStatsKey)))), "No Show Ranked Stats option")!;
         option.InfoButton.Button.onClick.Invoke();
         Popup? info = null;
         yield return WaitForPopup(found => info = found);
-        AssertEquals(info!.body.text, (Texts.KeyPrefix + "ShowRankedStats Setting Description").T(), "Show Ranked Stats's info");
+        var infoText = ScreenText.ByGame(Texts.KeyPrefix + "ShowRankedStats Setting Description");
+        Assert(info!.body.ShowsExactly(infoText), $"Show Ranked Stats's info: '{info.body.Shown()}', expected '{infoText}'");
         yield return ClosePopup(info, true);
         yield return ToMainMenu();
 
@@ -206,8 +208,8 @@ public class RankedTimerTest : ContinueTestBase
         {
             if (LayoutChecks.Overlap(summaryRect, other)) Fail($"The victory summary covers {name}: {LayoutChecks.Describe(summaryRect)} / {LayoutChecks.Describe(other)}");
         }
-        var texts = summary.GetComponentsInChildren<TMP_Text>().Select(text => text.text ?? "").ToList();
-        var expected = RankedHud.SummaryLines(total).SelectMany(line => new[] {line.Label, line.Value}).ToList();
+        var texts = summary.GetComponentsInChildren<TMP_Text>().Select(text => text.Shown()).ToList();
+        var expected = RankedHud.SummaryLines(total).SelectMany(line => new[] {line.Label, line.Value}).Select(ScreenText.Plain).ToList();
         AssertEquals(string.Join(" | ", texts), string.Join(" | ", expected), "Victory summary");
         AssertEquals(RankedHud.SummaryLines(total).Count, options.Tiers + 3 + (RankedHud.PenaltyTime > TimeSpan.Zero ? 1 : 0),
             "A line per tier, then total, tiers and cash");
@@ -258,12 +260,12 @@ public class RankedPenaltyTest : ContinueTestBase
         Log($"round 39: penalty clock from frame {penaltyStart}, round end {roundEnd}, penalty {Penalty} frames");
 
         // Every frame from the end of the grace time to the end of the round. The test sees the round's end a few
-        // frames late, more so in fast forward.
+        // frames late, more so in fast forward; the game may count the frame the clock starts on too.
         var expected = roundEnd - penaltyStart;
-        if (Penalty > expected || Penalty < expected - 30) Fail($"Penalty {Penalty} frames, expected a little under {expected}");
+        if (Penalty > expected + 1 || Penalty < expected - 30) Fail($"Penalty {Penalty} frames, expected a little under {expected}");
         AssertEquals(RankedHud.TotalTime, RankedHud.BossTime + RankedHud.PenaltyTime, "The total is the bosses' time plus the penalty");
         RankedHud.Update(true);
-        var texts = RankedHud.Panel!.GetComponentsInChildren<TMP_Text>().Select(text => text.text).ToList();
+        var texts = RankedHud.Panel!.GetComponentsInChildren<TMP_Text>().Select(text => text.Shown()).ToList();
         Assert(texts.Contains("+" + RankedTime.Format(RankedHud.PenaltyTime)), $"The panel shows the penalty: {string.Join(" | ", texts)}");
 
         // Waiting between rounds is no penalty

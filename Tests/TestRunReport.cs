@@ -80,6 +80,8 @@ public static class TestRunReport
                 ["sourceHash"] = metadata.GetValueOrDefault("CBC.SourceHash", ""),
                 // Only a full run counts for a release, not the quick suite (#246)
                 ["suite"] = TestSuite.Name,
+                // CBC_LANGUAGE, or the player's own language the tests ran in (#291)
+                ["language"] = (TestLanguage.Wanted ?? Il2CppNinjaKiwi.Localization.LocalizationManager.Instance.ActiveLanguage).ToString(),
                 ["passed"] = tests.Count(test => test.Suceeded && !Skipped.ContainsKey(test.Name) && !NeedsOwnRun.ContainsKey(test.Name)),
                 ["failed"] = new JArray(tests.Where(test => test.Failed).Select(test => (object) test.Name)),
                 ["skipped"] = new JObject(Skipped.Select(skip => new JProperty(skip.Key, skip.Value))),

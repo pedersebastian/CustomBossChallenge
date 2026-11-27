@@ -105,7 +105,7 @@ public class PatchCheckTest : CustomBossTest
             button.onClick.Invoke();
             Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
             yield return WaitForPopup(p => popup = p);
-            Assert(popup!.body.text.Contains("Btd6Player.SetBossChallengeRecord"), $"Popup: {popup.body.text}");
+            Assert(popup!.body.Shows("Btd6Player.SetBossChallengeRecord"), $"Popup: {popup.body.Shown()}");
             yield return ClosePopup(popup, true);
             Assert(!BossMode.Active, "The Boss Creator must stay closed while a patch is missing");
             Assert(MenuManager.instance.GetCurrentMenu()?.Is<MainMenu>() == true, "The main menu must stay open");

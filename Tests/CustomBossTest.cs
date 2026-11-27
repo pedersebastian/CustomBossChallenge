@@ -55,10 +55,17 @@ public abstract class CustomBossTest : ModTest
         Log("starting");
         var started = UnityEngine.Time.realtimeSinceStartup;
         yield return RunSafely(ToMainMenu());
+        // CBC_LANGUAGE=Arabic runs the test in that language: tests must pass in any language (TestLanguage)
+        yield return RunSafely(TestLanguage.Switch());
         // The player's own map saves (their unfinished games) must come out of every test as they went in
         var savedMaps = RetryTest.SavedMaps(true);
         yield return RunSafely(Run());
         yield return RunSafely(SavedMapsUnchanged(savedMaps));
+        if (TestLanguage.Switched)
+        {
+            yield return RunSafely(ToMainMenu());
+            yield return RunSafely(TestLanguage.Restore());
+        }
         Log($"done in {UnityEngine.Time.realtimeSinceStartup - started:0}s");
 
         Visuals.RankedHud.ShowRankedStatsOverride = null;

@@ -312,7 +312,7 @@ public class MixedBossGameTest : CustomBossTest
 
         var banner = AssertNotNull(Visuals.BossHud.Banner, $"No banner for tier {tier}")!;
         Assert(banner.gameObject.activeSelf, $"The banner shows when tier {tier} arrives");
-        AssertEquals(Visuals.BossHud.BannerText!.Text.text, Texts.TierArrives.T(tier, Visuals.BossHud.Name(boss, elite)),
+        AssertEquals(Visuals.BossHud.BannerText!.Text.Shown(), ScreenText.Plain(Texts.TierArrives.T(tier, Visuals.BossHud.Name(boss, elite))),
             "Banner text");
 
         if (!Visuals.BossHud.LineupShown) return;
@@ -520,7 +520,7 @@ public class MixedBossSecretTest : CustomBossTest
         var glow = screen.bossIcon.transform.parent.Find($"{BossEditorSection.EliteGlowName}{screen.bossIcon.name}");
         AssertEquals(glow != null && glow.gameObject.activeSelf, elite, $"The die's Elite glow for tier {tier}");
         var named = screen.GetComponentsInChildren<Il2CppTMPro.TMP_Text>()
-            .Select(text => text.text).Where(text => text.Contains(boss.ToString())).ToList();
+            .Select(text => text.Shown()).Where(text => text.Contains(boss.ToString())).ToList();
         Assert(named.Count == 0, $"Nothing on the defeat screen names {boss}: {string.Join(" | ", named)}");
     }
 }

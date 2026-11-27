@@ -80,7 +80,7 @@ public class PastEventRulesTest : CustomBossTest
 
         var index = section.Strip.Warnings.FindIndex(w => w.Kind == SetupWarning.EventRules);
         Assert(index >= 0 && section.Strip.Notes[index].gameObject.activeSelf, "The Tier Preview says the event's rules are on");
-        AssertEquals(section.Strip.Notes[index].Text.text, Texts.EventNoInstasPowers.T(), "What the Tier Preview says");
+        AssertEquals(section.Strip.Notes[index].Text.Shown(), ScreenText.Plain(Texts.EventNoInstasPowers.T()), "What the Tier Preview says");
 
         // Copy (and Save, which keeps the code) leaves them out, as the Tier Preview says
         Assert(SetupCode.TryDecode(SetupCode.Encode(BossMode.Options, editor.dcm), out _, out var copied, out _),
