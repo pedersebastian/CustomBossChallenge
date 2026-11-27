@@ -29,6 +29,8 @@ public class SkullModifierTest : CustomBossTest
                 var original = AssertNotNull(Game.instance.model.GetBloon(id), $"No bloon model {id}");
                 var vanillaSkulls = SkullModifier.GetSkulls(original);
                 Assert(vanillaSkulls is {Length: > 0}, $"{id} has no skulls to modify");
+                // The difficulty rating counts skulls from the boss's own (#304)
+                AssertEquals(vanillaSkulls!.Length, DifficultyRating.OwnSkulls(boss, id.Contains("Elite")), $"{id}'s own skulls");
 
                 // The mod changes the only non-repeating health trigger; a second one would make that a guess
                 if (original.GetBehavior<LychBossSuperScriptModel>() == null)

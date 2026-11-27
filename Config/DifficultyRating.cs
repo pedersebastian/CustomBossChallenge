@@ -60,8 +60,52 @@ public static class DifficultyRating
     /// </summary>
     public const double GapWeight = 0.5;
 
-    /// <summary>What each skull fewer than <see cref="SkullMath.DefaultCount"/> adds: fewer skulls, fewer breathers</summary>
-    public const double SkullWeight = 0.2;
+    /// <summary>
+    /// What each skull more than the boss's own adds (#304): every skull uses the boss's ability once more, and some
+    /// abilities hurt more than others. Phayze counts the most, as it also gets stronger at every skull; Bloonarius's
+    /// skulls only send bloons.
+    /// </summary>
+    public static double SkullWeight(BossType boss) => boss switch
+    {
+        BossType.Bloonarius => 0.05,
+        BossType.Diamondback => 0.1,
+        BossType.Vortex => 0.15,
+        BossType.Blastapopoulos => 0.15,
+        BossType.Dreadbloon => 0.2,
+        BossType.Lych => 0.2,
+        BossType.Phayze => 0.3,
+        _ => RandomSkullWeight
+    };
+
+    /// <summary>A Random tier's boss isn't known before the game, so its skulls count as an average boss's</summary>
+    public const double RandomSkullWeight = 0.15;
+
+    /// <summary>What each skull fewer than the boss's own adds: fewer skulls, fewer breathers, but not much</summary>
+    public const double FewerSkullWeight = 0.1;
+
+    /// <summary>
+    /// How many skulls the boss has in the game, normal and Elite; SkullModifierTest checks them against the game's
+    /// models.
+    /// </summary>
+    public static int OwnSkulls(BossType boss, bool elite) => boss switch
+    {
+        BossType.Lych => 5,
+        BossType.Phayze => elite ? 5 : 3,
+        BossType.Blastapopoulos => elite ? 7 : 4,
+        BossType.Diamondback => elite ? 7 : 5,
+        BossType.Bloonarius or BossType.Vortex or BossType.Dreadbloon => elite ? 7 : 3,
+        _ => RandomOwnSkulls(elite)
+    };
+
+    /// <summary>The skulls a Random tier counts as having, about the bosses' average</summary>
+    public static int RandomOwnSkulls(bool elite) => elite ? 6 : 4;
+
+    /// <summary>
+    /// What a tier's skulls add: each one more than the boss's own adds the boss's <see cref="SkullWeight"/>, each
+    /// one fewer <see cref="FewerSkullWeight"/>
+    /// </summary>
+    public static double SkullPoints(int skulls, int own, double weight) =>
+        skulls >= own ? weight * (skulls - own) : FewerSkullWeight * (own - skulls);
 
     /// <summary>The stars for <paramref name="facts"/>, 1 to <see cref="MaxStars"/></summary>
     public static int Stars(SetupFacts facts) => StarsOf(Points(facts));
@@ -100,7 +144,7 @@ public static class DifficultyRating
 
     /// <summary>
     /// The rounds: tiers arriving earlier than in the normal game (40, 60, 80, ...) leave less time to build up, weighted
-    /// like <see cref="BossPoints"/>; fewer skulls give fewer breathers; and the boss events' rounds are harder than
+    /// like <see cref="BossPoints"/>; skulls other than the boss's own (<see cref="SkullPoints"/>); and the boss events' rounds are harder than
     /// the normal ones, the CHIMPS events' much harder
     /// </summary>
     public static double RoundPoints(SetupFacts facts)
@@ -113,7 +157,14 @@ public static class DifficultyRating
             var normal = TierMath.FirstSpawnRound + TierMath.RoundsBetweenTiers * (tier - 1);
             early += tier * Math.Clamp(Math.Log2((double) normal / Math.Max(rounds[tier - 1], 1)), -1, 2);
             weights += tier;
-            if (options.TierSkullPercents(tier) is { } percents) skulls += SkullWeight * (SkullMath.DefaultCount - percents.Length);
+            if (options.TierSkullPercents(tier) is { } percents)
+            {
+                var entry = options.EntryOf(tier);
+                var (boss, elite) = options.BossOf(tier);
+                skulls += entry.IsRandom
+                    ? SkullPoints(percents.Length, RandomOwnSkulls(entry.Elite), RandomSkullWeight)
+                    : SkullPoints(percents.Length, OwnSkulls(boss, elite), SkullWeight(boss));
+            }
         }
 
         var points = early / weights + skulls / rounds.Length + GapPoints(rounds);
