@@ -21,6 +21,7 @@ public static class GildebloonScreens
         if (CustomBossState.ActiveOptions is not { } options || !CustomBossState.IsActive) return;
         var (boss, elite) = options.BossOf(Math.Max(1, CustomBossState.HighestDefeatedTier));
         Show(screen.gameObject, screen.bossIcon, boss, elite);
+        if (BossList.IsModBoss(boss) && screen.defeatedBossTxt != null) FillName(screen.defeatedBossTxt, BossList.Name(boss));
     }
 
     /// <summary>The defeat screen shows the boss that was alive, or else the next one</summary>
@@ -52,6 +53,23 @@ public static class GildebloonScreens
             ModHelper.Warning<CustomBossChallenge>($"Couldn't show {BossList.Name(boss)} on the game's end screen: {e.Message}");
         }
     }
+
+    /// <summary>
+    /// In Arabic the game leaves the boss's place in its victory line empty, as {0} (#291): Gildebloon's name goes
+    /// there, written forward. The game turns the line around for right-to-left once more after this, and laying it out
+    /// right to left turns it back, so the name reads the right way.
+    /// </summary>
+    private static void FillName(TMP_Text text, string name)
+    {
+        if (string.IsNullOrEmpty(text.text)) return;
+        var filled = FillPlaceholder(text.text, name);
+        if (filled != text.text) text.text = filled;
+    }
+
+    /// <summary>The text with {0}, also the way a right-to-left text holds it reversed, replaced by <paramref name="name"/></summary>
+    public static string FillPlaceholder(string text, string name) => Placeholder.Replace(text, name);
+
+    private static readonly System.Text.RegularExpressions.Regex Placeholder = new(@"\{0\}|\}0\{|0\{\}|\}\{0");
 
     /// <summary>The text with the host's name replaced, in any case, by the boss's</summary>
     public static string ReplaceName(string text, string host, string name)

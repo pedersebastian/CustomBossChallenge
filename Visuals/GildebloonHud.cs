@@ -92,7 +92,7 @@ public static class GildebloonHud
         // The tower menu covers the boss panel's right end, where the Vault is: the Vault makes way while it is open
         var selected = Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu.TowerSelectionMenu.instance?.selectedTower != null;
         Panel!.SetActive(!selected);
-        var stolen = $"${GildebloonBrain.Stolen:N0}";
+        var stolen = "$" + Money(GildebloonBrain.Stolen);
         if (amount!.text != stolen) amount.text = stolen;
         var shield = GildebloonBrain.ShieldLeft;
         shieldBar!.SetActive(shield > 0 && GildebloonBrain.ShieldSecondsLeft > 0);
@@ -161,7 +161,7 @@ public static class GildebloonHud
     public static List<string> BannerLines(GildebloonBrain.Repossession repossession)
     {
         var lines = new List<string>();
-        if (repossession.Cash > 0) lines.Add($"-${repossession.Cash:N0}");
+        if (repossession.Cash > 0) lines.Add("-$" + Money(repossession.Cash));
         if (repossession.Frozen == 1) lines.Add(Texts.GildebloonTowerFrozen.T(GildebloonBrain.FreezeSeconds));
         else if (repossession.Frozen > 1) lines.Add(Texts.GildebloonTowersFrozen.T(repossession.Frozen, GildebloonBrain.FreezeSeconds));
         if (repossession.Farms == 1) lines.Add(Texts.GildebloonFarmLocked.T(GildebloonBrain.SeizeSeconds));
@@ -170,7 +170,10 @@ public static class GildebloonHud
     }
 
     /// <summary>The line under the Vault while a seized tower is selected, for tests</summary>
-    public static string? SeizedLine => seizedLine != null && seizedLine.gameObject.activeSelf ? seizedLine.text : null;
+    public static TMP_Text? SeizedLine => seizedLine != null && seizedLine.gameObject.activeSelf ? seizedLine : null;
+
+    /// <summary>Cash the way the game shows it, in any language: "12,345" (<see cref="ShownNumber"/>)</summary>
+    private static string Money(double cash) => ShownNumber.Grouped((long) Math.Round(cash));
 
     private static TMP_Text? seizedLine;
 
@@ -190,7 +193,7 @@ public static class GildebloonHud
     public static int Repossessions { get; private set; }
 
     /// <summary>The Repossession banner while it shows, for tests</summary>
-    public static string? Banner => banner != null && banner.gameObject.activeSelf ? banner.text : null;
+    public static TMP_Text? Banner => banner != null && banner.gameObject.activeSelf ? banner : null;
 
     private const float BannerSeconds = 3f;
     private static TMP_Text? banner;
@@ -202,12 +205,12 @@ public static class GildebloonHud
         if (change != null)
         {
             // what went into the Vault, or came out of it
-            change.text = cash >= 0 ? $"+${cash:N0}" : $"-${-cash:N0}";
+            change.text = (cash >= 0 ? "+$" : "-$") + Money(Math.Abs(cash));
             change.color = cash >= 0 ? new Color(1f, 0.85f, 0.3f) : new Color(1f, 0.55f, 0.45f);
             changeStart = Time.unscaledTime;
         }
 
-        CashPop(cash >= 0 ? $"-${cash:N0}" : $"+${-cash:N0}", cash >= 0 ? new Color(1f, 0.35f, 0.3f) : new Color(0.45f, 1f, 0.4f));
+        CashPop((cash >= 0 ? "-$" : "+$") + Money(Math.Abs(cash)), cash >= 0 ? new Color(1f, 0.35f, 0.3f) : new Color(0.45f, 1f, 0.4f));
         // a few coins for a small sum, more for a big one; the Payout is a shower
         var coins = cash < 0 ? 14 : Math.Clamp(3 + (int) Math.Log10(Math.Max(1, cash)), 3, 8);
         Fly(coins, cash < 0);

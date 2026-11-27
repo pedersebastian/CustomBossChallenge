@@ -316,11 +316,12 @@ public class GildebloonBrainTest : GildebloonTest
         yield return new WaitForSecondsRealtime(0.3f);
         Assert(Visuals.GildebloonHud.Repossessions > 0, "The Repossession was shown");
         var banner = AssertNotNull(Visuals.GildebloonHud.Banner, "The Repossession banner shows")!;
-        Log($"banner: {banner.Replace('\n', '/')}; frozen {GildebloonBrain.FrozenCount}, padlocks {Visuals.GildebloonSeizeLook.PadlockCount}");
-        // In the player's language, which need not be English
+        Log($"banner: {banner.Shown().Replace('\n', '/')}; frozen {GildebloonBrain.FrozenCount}, padlocks {Visuals.GildebloonSeizeLook.PadlockCount}");
+        // In the player's language, which need not be English, as the game shows it (#291)
         var repossessionTitle = Texts.GildebloonRepossessionTitle.T();
         var oneFarm = Texts.GildebloonFarmLocked.T(GildebloonBrain.SeizeSeconds);
-        Assert(banner.StartsWith(repossessionTitle) && banner.Contains(oneFarm), $"Banner: {banner}");
+        Assert(banner.Shown().StartsWith(ScreenText.Plain(repossessionTitle), StringComparison.Ordinal) && banner.Shows(oneFarm),
+            $"Banner: {banner.Shown()}");
         Assert(Visuals.GildebloonHud.CashShown > 0, "What it took showed at the cash");
         Assert(Visuals.GildebloonSeizeLook.RingsShown > 0, "The ring showed how far it reached");
         AssertEquals(Visuals.GildebloonSeizeLook.PadlockCount, GildebloonBrain.SeizedCount + GildebloonBrain.FrozenCount, "A padlock over each seized tower");
@@ -342,8 +343,8 @@ public class GildebloonBrainTest : GildebloonTest
         menu.SelectTower(farmView);
         yield return new WaitForSecondsRealtime(1);
         var line = AssertNotNull(Visuals.GildebloonHud.SeizedLine, "The selected farm's time left shows")!;
-        Assert(Enumerable.Range(1, GildebloonBrain.SeizeSeconds).Any(seconds => line == Texts.GildebloonSeizedFor.T(seconds)),
-            $"Seized line: {line}");
+        Assert(Enumerable.Range(1, GildebloonBrain.SeizeSeconds).Any(seconds => line.ShowsExactly(Texts.GildebloonSeizedFor.T(seconds))),
+            $"Seized line: {line.Shown()}");
         var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
         if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, "gildebloon-tower-menu");
         Assert(!Visuals.GildebloonHud.Panel!.gameObject.activeSelf, "The Vault makes way for the tower menu");
@@ -375,10 +376,12 @@ public class GildebloonBrainTest : GildebloonTest
         yield return WaitFor(() => (screen = UnityEngine.Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen>()) != null,
             "The victory screen", 30);
         yield return new WaitForSecondsRealtime(2);
-        var title = screen!.defeatedBossTxt.text;
-        Log($"victory screen: {title}");
-        Assert(title.Contains("Gildebloon", StringComparison.OrdinalIgnoreCase), $"The victory screen names Gildebloon: {title}");
-        Assert(!title.Contains("Bloonarius", StringComparison.OrdinalIgnoreCase), $"The victory screen doesn't name Bloonarius: {title}");
+        // Gildebloon's name is the same in every language; the game's own text around it is not (#291)
+        var title = screen!.defeatedBossTxt.Shown();
+        Log($"victory screen: {title} (as held: {screen.defeatedBossTxt.text})");
+        Assert(title.Contains(BossList.GildebloonName, StringComparison.OrdinalIgnoreCase), $"The victory screen names Gildebloon: {title}");
+        Assert(!title.Contains(BossList.Name(BossList.Host(BossList.Gildebloon)), StringComparison.OrdinalIgnoreCase),
+            $"The victory screen doesn't name Bloonarius: {title}");
         if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, "gildebloon-victory");
         yield return ToMainMenu();
     }
@@ -463,9 +466,11 @@ public class GildebloonDefeatTest : GildebloonTest
         Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossDefeatScreen? found = null;
         yield return LoseAndOpenDefeatScreen(screen => found = screen);
         var texts = string.Join(" | ", found!.GetComponentsInChildren<Il2CppTMPro.TMP_Text>(true)
-            .Select(text => text.text).Where(text => !string.IsNullOrWhiteSpace(text)));
+            .Select(text => text.Shown()).Where(text => !string.IsNullOrWhiteSpace(text)));
         Log($"defeat screen: {texts}");
-        Assert(!texts.Contains("Bloonarius", StringComparison.OrdinalIgnoreCase), $"The defeat screen doesn't name Bloonarius: {texts}");
+        Assert(texts.Contains(BossList.GildebloonName, StringComparison.OrdinalIgnoreCase), $"The defeat screen names Gildebloon: {texts}");
+        Assert(!texts.Contains(BossList.Name(BossList.Host(BossList.Gildebloon)), StringComparison.OrdinalIgnoreCase),
+            $"The defeat screen doesn't name Bloonarius: {texts}");
         var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);
         if (!string.IsNullOrEmpty(folder)) yield return ScreenshotTour.Capture(folder, "gildebloon-defeat");
         yield return ToMainMenu();
