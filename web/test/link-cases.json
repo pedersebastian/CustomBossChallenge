@@ -48,6 +48,11 @@
     { "text": "\ud835\udc00CBC2:q1bKV7Kq", "code": "\ud835\udc00CBC2:q1bKV7Kq" },
     { "text": "CBC2:q1bKV7Kq \ud83d\ude00", "code": "CBC2:q1bKV7Kq" },
     { "text": "no code here", "code": "no code here" },
-    { "text": "CBC2: q1bKV7Kq", "code": "CBC2: q1bKV7Kq" }
+    { "text": "CBC2: q1bKV7Kq", "code": "CBC2: q1bKV7Kq" },
+    { "text": "ab>", "code": "ab>" },
+    { "text": "<ab", "code": "<ab" },
+    { "text": "#code=CBC1:abc%C3%A6%C3%A6", "code": "CBC1:abcææ" },
+    { "text": "𐀀CBC1:abc", "code": "𐀀CBC1:abc" },
+    { "text": "𝟿CBC1:abc", "code": "𝟿CBC1:abc" }
   ]
 }

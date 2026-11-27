@@ -43,6 +43,28 @@ public class SetupWarningsTests
         Assert.True(expected == Kinds(read), $"{name}: expected [{expected}], got [{Kinds(read)}]");
     }
 
+    /// <summary>The cases of the same file that give the hard-setup score too (#302)</summary>
+    public static IEnumerable<object[]> DifficultyCases()
+    {
+        var folder = new DirectoryInfo(AppContext.BaseDirectory);
+        while (folder != null && !File.Exists(Path.Combine(folder.FullName, "web", "test", "setup-warnings-cases.json")))
+            folder = folder.Parent;
+        if (folder == null) throw new FileNotFoundException("web/test/setup-warnings-cases.json not found above " + AppContext.BaseDirectory);
+
+        var file = JObject.Parse(File.ReadAllText(Path.Combine(folder.FullName, "web", "test", "setup-warnings-cases.json")));
+        foreach (var entry in ((JArray) file["cases"]!).Where(entry => entry["difficulty"] != null))
+            yield return [(string) entry["name"]!, entry["facts"]!.ToString(Formatting.None), (double) entry["difficulty"]!];
+    }
+
+    [Theory]
+    [MemberData(nameof(DifficultyCases))]
+    public void Difficulty_gives_the_score_of_each_case(string name, string facts, double expected)
+    {
+        var read = JObject.Parse(facts).ToObject<SetupFacts>(Serializer)!;
+        var actual = SetupWarnings.Difficulty(read);
+        Assert.True(Math.Abs(expected - actual) < 1e-6, $"{name}: expected {expected}, got {actual}");
+    }
+
     [Theory]
     [InlineData(1, "")]
     [InlineData(35, "")]

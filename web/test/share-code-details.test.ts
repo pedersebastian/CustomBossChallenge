@@ -1,8 +1,25 @@
 // Details of the share-code package that the mutation tests found unchecked (#296): broken option values in a code,
 // the options' ranges, comparing JSON, and the .NET string helpers.
 
-import { describe, expect, it } from "vitest";
-import { decode, deepEqual, defaultOptions, hideRandomPicks, optionsJson, pack, readOptions, sanitize } from "@cbc/share-code";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  UnsupportedBrowserError,
+  canUseCodes,
+  decode,
+  deepEqual,
+  defaultName,
+  defaultOptions,
+  diff,
+  hideRandomPicks,
+  optionsJson,
+  pack,
+  readOptions,
+  sanitize,
+  withoutRandomMark,
+  type Json,
+} from "@cbc/share-code";
+import { normalizeRounds } from "@cbc/share-code/tiers";
+import { FOLLOWS, parseTierList, withTier } from "@cbc/share-code/tier-bosses";
 import { equalsIgnoreCase, netTrimEnd, toFixedNet } from "@cbc/share-code/dotnet";
 
 /** decode of a code holding these options */
@@ -88,5 +105,78 @@ describe(".NET string helpers", () => {
   it("drops the minus sign of a negative number that rounds to 0", () => {
     expect(toFixedNet(-0.04, 1)).toBe("0.0");
     expect(toFixedNet(-1.25, 1)).toBe("-1.3");
+  });
+});
+
+// More details the mutation tests found unchecked (#302)
+describe("why a code's option value is broken", () => {
+  it.each([
+    [{ Tiers: 2147483648 }, "Tiers has the wrong type"],
+    [{ Tiers: -2147483649 }, "Tiers has the wrong type"],
+    [{ Tiers: "abc" }, "Tiers has the wrong type"],
+    [{ Boss: true }, "Boss has the wrong type"],
+    [{ Boss: 1.5 }, "Boss has the wrong type"],
+  ])("%j: %s", async (o, why) => {
+    expect(await read(o)).toEqual({ ok: false, problem: "Invalid", reason: `The code has a broken value: ${why}.` });
+  });
+});
+
+describe("comparing and diffing JSON, more closely", () => {
+  it.each([
+    [{ length: 0 }, [], false],
+    [{}, 5, false],
+    [{}, null, false],
+  ])("%j and %j: %s", (a, b, equal) => {
+    expect(deepEqual(a as Json, b as Json)).toBe(equal);
+    expect(deepEqual(b as Json, a as Json)).toBe(equal);
+  });
+
+  it.each([
+    [{}, 5, {}],
+    [{ a: 1 }, 5, { a: 1 }],
+    [null, { a: 1 }, null],
+    [[1], { a: 1 }, [1]],
+  ])("%j against %j differs as %j", (value, defaults, expected) => {
+    expect(diff(value as Json, defaults as Json)).toEqual(expected);
+  });
+});
+
+describe("browsers without one of the streams", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it.each(["CompressionStream", "DecompressionStream"])("can't use codes without %s", (name) => {
+    vi.stubGlobal(name, undefined);
+    expect(canUseCodes()).toBe(false);
+  });
+
+  it("names its error", () => expect(new UnsupportedBrowserError().name).toBe("UnsupportedBrowserError"));
+});
+
+describe("tier lists and rounds, more closely", () => {
+  it.each([
+    ["10,2", [10, 2]],
+    ["0, -1, 3, 11", [3]],
+  ])("the tier list %j is %j", (list, tiers) => expect(parseTierList(list)).toEqual(tiers));
+
+  it("changes no tier past the tenth, of no list either", () => {
+    expect(withTier(null, 0, { ...FOLLOWS, boss: "Lych" })).toBe("");
+    expect(withTier(null, 11, { ...FOLLOWS, boss: "Lych" })).toBe("");
+  });
+
+  it("keeps the first ten spawn rounds", () => {
+    expect(normalizeRounds("41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52")).toBe("41, 42, 43, 44, 45, 46, 47, 48, 49, 50");
+  });
+});
+
+describe("the options' names and Random marks", () => {
+  it("names a setup after its boss, Elite or not, or a gauntlet of bosses", () => {
+    expect(defaultName({ ...defaultOptions(), Boss: "Lych" })).toBe("Custom Lych");
+    expect(defaultName({ ...defaultOptions(), Boss: "Lych", Elite: true })).toBe("Custom Elite Lych");
+    expect(defaultName({ ...defaultOptions(), Tiers: 2, TierBosses: "Lych,Vortex" })).toBe("Custom Boss Gauntlet");
+  });
+
+  it("leaves options without that Random mark as they are", () => {
+    const options = defaultOptions();
+    expect(withoutRandomMark(options, 1)).toBe(options);
   });
 });
