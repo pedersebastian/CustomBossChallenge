@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CustomBossChallenge.Config;
 using Il2Cpp;
 using Il2CppArabicSupport;
@@ -27,6 +28,68 @@ public static class LanguageText
         // Without the short vowel marks, like the shadda in "تصفّح": the game's Arabic font doesn't have them.
         var placeholders = FormatPlaceholders.Hide(text, out var hidden);
         return FormatPlaceholders.Show(ShownBrackets.FacingIn(ArabicFixer.Fix(placeholders, false, false)), hidden);
+    }
+
+    /// <summary>The mod's Arabic texts as written, by key, while the game's table holds them shaped</summary>
+    private static readonly Dictionary<string, string> Written = new();
+
+    /// <summary>What the game's table holds for each key in <see cref="Written"/>, to know a text shaped already</summary>
+    private static readonly Dictionary<string, string> Shaped = new();
+
+    private static bool listening;
+
+    /// <summary>
+    /// The mod's text for <paramref name="key"/> as it is written in the player's language, not yet shaped for
+    /// Arabic, even while the game's table holds it shaped (<see cref="ShapeTable"/>)
+    /// </summary>
+    public static string WrittenText(string key) =>
+        Written.TryGetValue(key, out var text) ? text : BTD_Mod_Helper.Extensions.StringExt.Localize(key);
+
+    /// <summary>
+    /// Shapes the mod's translations in the game's table each time the language changes, after Mod Helper has added
+    /// them (#292). Once the main menu is up: Mod Helper starts listening on the title screen.
+    /// </summary>
+    public static void ListenForLanguage()
+    {
+        if (listening || LocalizationManager.Instance == null) return;
+        listening = true;
+        LocalizationManager.Instance.add_OnLanguageChanged(new System.Action(ShapeTable));
+        ShapeTable();
+    }
+
+    /// <summary>
+    /// In Arabic, puts the mod's texts into the game's table shaped (<see cref="Shape"/>), the way the game keeps its
+    /// own: the game and Mod Helper look some of them up themselves, by key (a modifier's title, Mod Settings and
+    /// their info), and would show them with loose letters. Mod Helper adds them as they are written.
+    /// </summary>
+    public static void ShapeTable()
+    {
+        var manager = LocalizationManager.Instance;
+        if (manager == null) return;
+        if (!RightToLeft)
+        {
+            // Another language has a table of its own, written as it shows
+            Written.Clear();
+            Shaped.Clear();
+            return;
+        }
+
+        var table = manager.textTable;
+        var keys = new List<string>();
+        foreach (var entry in table)
+        {
+            if (entry.Key.StartsWith(Texts.KeyPrefix, System.StringComparison.Ordinal)) keys.Add(entry.Key);
+        }
+        foreach (var key in keys)
+        {
+            var value = table[key];
+            // Shaped already: the language was set again without a new table
+            if (Shaped.TryGetValue(key, out var shaped) && shaped == value) continue;
+            Written[key] = value;
+            Shaped[key] = table[key] = Shape(value);
+        }
+        // Texts on screen were filled in from the table as it was written
+        manager.UpdateAllTextObjectsForLanguageAsync();
     }
 
     /// <summary>

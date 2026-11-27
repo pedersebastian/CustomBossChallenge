@@ -89,6 +89,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Tier Preview warnings stay readable in Arabic** (#291): a short warning, like the one for Boss Event Rounds in
   CHIMPS, shrank below the readable size on one line, because the Arabic letters are taller. It now gets a second line
   instead. In Russian, a warning on two lines touched the one below it; it sits a little higher now.
+- **Arabic letters join everywhere** (#292): the mod's texts that the game or Mod Helper show by themselves, like All
+  Fortified's title in the Challenge Editor and the mod's settings and their info in Mod Settings, showed loose
+  Arabic letters. The mod now gives the game its Arabic shaped, the way the game keeps its own.
 
 ## [2.14.0] - 2026-11-22
 
