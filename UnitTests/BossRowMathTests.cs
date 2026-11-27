@@ -37,6 +37,13 @@ public class BossRowMathTests
     }
 
     [Fact]
+    public void The_Elite_label_ends_half_its_width_after_its_center()
+    {
+        Assert.Equal(BossRowMath.EliteLabelX(7, Width) + BossRowMath.LabelWidth / 2, BossRowMath.RightEnd(7, Width), 3);
+        Assert.True(BossRowMath.RightEnd(7, Width) > BossRowMath.EliteLabelX(7, Width));
+    }
+
+    [Fact]
     public void An_eighth_boss_still_gets_a_button_big_enough_to_tap()
     {
         Assert.True(BossRowMath.ButtonSize(8, Width) >= 150, $"Eight bosses get buttons of {BossRowMath.ButtonSize(8, Width)}");

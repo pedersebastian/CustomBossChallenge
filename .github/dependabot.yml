@@ -13,6 +13,8 @@ updates:
 
   - package-ecosystem: nuget
     directories:
+      # / for .config/dotnet-tools.json: dotnet-stryker, the mutation tests' tool (#268)
+      - /
       - /Shared
       - /UnitTests
       - /PropertyTests

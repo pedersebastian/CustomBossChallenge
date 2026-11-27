@@ -111,6 +111,7 @@ public class TierBossMathTests
         Assert.Equal("Lych", TierBossMath.With("Lych,Vortex", 2, TierBoss.Follows));
         Assert.Equal("LychElite,Vortex", TierBossMath.With("Lych,Vortex", 1, new TierBoss("Lych", true)));
         Assert.Equal("Lych", TierBossMath.With("Lych", 11, new TierBoss("Vortex", false)));
+        Assert.Equal("", TierBossMath.With(null, 0, new TierBoss("Vortex", false)));
     }
 
     [Fact]
@@ -149,6 +150,7 @@ public class TierBossMathTests
         Assert.Null(TierBossMath.RandomTiers("Lych,,Vortex", 3));
         Assert.Null(TierBossMath.RandomTiers(null, 3));
         Assert.Equal([2, 5], TierBossMath.ParseTierList(" 2, 5 ,x,0,11"));
+        Assert.Equal([1, 10], TierBossMath.ParseTierList("1,10"));
         Assert.Empty(TierBossMath.ParseTierList(null));
     }
 
@@ -180,6 +182,7 @@ public class TierBossMathTests
         Assert.Null(TierBossMath.MergeTierLists(null, ""));
         Assert.Equal("2", TierBossMath.WithoutTier("2,5", 5));
         Assert.Null(TierBossMath.WithoutTier("5", 5));
+        Assert.Equal("2,7", TierBossMath.WithoutTier("2,5,7", 5));
         Assert.Equal("5", TierBossMath.WithoutTier("5", 3));
     }
 

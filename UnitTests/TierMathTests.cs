@@ -79,6 +79,8 @@ public class TierMathTests
     [InlineData("40, 51, 80", 51, 51)]
     [InlineData("40, 51, 80", 95, 80)]
     [InlineData("40, 51, 80", 12, 40)]
+    // No tiers: the first tier's round, as if the default one were there
+    [InlineData("", 50, 40)]
     public void CheckpointRound_is_where_the_current_tier_arrived(string rounds, int round, int expected) =>
         Assert.Equal(expected, TierMath.CheckpointRound(TierMath.ParseRounds(rounds).ToArray(), round));
 
@@ -112,6 +114,7 @@ public class TierMathTests
     [Theory]
     [InlineData("40, 60, 80, 100, 120", 140)]
     [InlineData("40, 51", 71)]
+    [InlineData("", 60)]
     public void EndRound_gives_the_last_tier_20_rounds(string rounds, int expected) =>
         Assert.Equal(expected, TierMath.EndRound(TierMath.ParseRounds(rounds).ToArray()));
 
@@ -261,5 +264,12 @@ public class TierMathTests
     {
         Assert.Equal(skips, TierMath.SkipsFirstTier(start, [40, 43]));
         Assert.Equal(skips, TierMath.SkipsFirstTier(start, []));
+    }
+
+    [Fact]
+    public void A_first_tier_before_round_40_is_skipped_by_a_start_after_it()
+    {
+        Assert.True(TierMath.SkipsFirstTier(31, [30, 50]));
+        Assert.False(TierMath.SkipsFirstTier(30, [30, 50]));
     }
 }

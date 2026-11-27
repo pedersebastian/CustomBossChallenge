@@ -1,0 +1,4 @@
+
+# Mutation testing (#268)
+.stryker-tmp/
+reports/

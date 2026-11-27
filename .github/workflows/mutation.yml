@@ -1,0 +1,66 @@
+# Mutation testing (#268): finds code the tests run but don't really check. Stryker changes the code a little at a time
+# (a "mutant", e.g. < to <=) and runs the tests; a mutant no test fails on has "survived". Slow, so not on every PR: run
+# it by hand, or let the weekly run show how the score moves. Each job uploads its HTML report as an artifact; it never
+# fails on a low score. How to run it locally: CONTRIBUTING.md.
+name: Mutation tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 5 * * 0'
+
+permissions:
+  contents: read
+
+jobs:
+  website:
+    name: Share code and preview (Stryker)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+
+      - name: Mutate the share-code package and the preview math
+        run: npm run mutation
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: mutation-report-website
+          path: web/reports/mutation/
+          if-no-files-found: warn
+
+  config-math:
+    name: Config math (Stryker.NET)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - run: dotnet tool restore
+
+      - name: Mutate the math in Config/, checked by UnitTests and PropertyTests
+        working-directory: Shared
+        run: dotnet stryker --output "$GITHUB_WORKSPACE/StrykerOutput"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: mutation-report-config-math
+          path: StrykerOutput/reports/
+          if-no-files-found: warn
