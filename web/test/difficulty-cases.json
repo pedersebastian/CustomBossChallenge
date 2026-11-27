@@ -19,9 +19,14 @@
     {"name":"Rounds Between Tiers 10","facts":{"Options":{"SpawnRounds":"40, 50, 60, 70, 80"}},"points":0.9503,"stars":2},
     {"name":"Rounds Between Tiers 5","facts":{"Options":{"SpawnRounds":"40, 45, 50, 55, 60"}},"points":1.7543,"stars":3},
     {"name":"Rounds Between Tiers 40","facts":{"Options":{"SpawnRounds":"40, 80, 120, 160, 200"}},"points":-1.0988,"stars":1},
-    {"name":"No skulls","facts":{"Options":{"SkullMode":"EvenlySpaced","SkullCount":0}},"points":0.6,"stars":2},
-    {"name":"Ten skulls","facts":{"Options":{"SkullMode":"EvenlySpaced","SkullCount":10}},"points":-1.4,"stars":1},
-    {"name":"One custom skull","facts":{"Options":{"SkullMode":"Custom","CustomSkulls":"50"}},"points":0.4,"stars":1},
+    {"name":"No skulls: fewer breathers, but not much","facts":{"Options":{"SkullMode":"EvenlySpaced","SkullCount":0}},"points":0.3,"stars":1},
+    {"name":"Ten skulls on Bloonarius: its skulls only send bloons","facts":{"Options":{"SkullMode":"EvenlySpaced","SkullCount":10}},"points":0.35,"stars":1},
+    {"name":"Ten skulls on Phayze, who gets stronger at every skull","facts":{"Options":{"Boss":"Phayze","SkullMode":"EvenlySpaced","SkullCount":10}},"points":3.1,"stars":4},
+    {"name":"Ten skulls on Elite Phayze","facts":{"Options":{"Boss":"Phayze","Elite":true,"SkullMode":"EvenlySpaced","SkullCount":10}},"points":5.5,"stars":7},
+    {"name":"Eight skulls on Dreadbloon","facts":{"Options":{"Boss":"Dreadbloon","SkullMode":"EvenlySpaced","SkullCount":8}},"points":1.5,"stars":3},
+    {"name":"Elite Lych with three skulls, two fewer than its own","facts":{"Options":{"Boss":"Lych","Elite":true,"SkullMode":"EvenlySpaced","SkullCount":3}},"points":3.95,"stars":5},
+    {"name":"A Random tier's skulls count as an average boss's","facts":{"Options":{"TierBosses":"Random#8"}},"points":0.1533,"stars":1},
+    {"name":"One custom skull","facts":{"Options":{"SkullMode":"Custom","CustomSkulls":"50"}},"points":0.2,"stars":1},
     {"name":"CHIMPS with the newest CHIMPS events' rounds","facts":{"Mode":"Clicks","Difficulty":"Hard","Options":{"BossEventRounds":true}},"points":3,"stars":4},
     {"name":"CHIMPS with the boss's own event rounds","facts":{"Mode":"Clicks","Difficulty":"Hard","Options":{"BossEventRounds":true,"ChimpsRounds":"Own"}},"points":2.25,"stars":3},
     {"name":"CHIMPS without event rounds","facts":{"Mode":"Clicks","Difficulty":"Hard"},"points":2,"stars":3},
@@ -62,7 +67,7 @@
     {"name":"Advanced Mode: Elite Phayze last","facts":{"Options":{"TierBosses":",,,,PhayzeElite"}},"points":1.3333,"stars":2},
     {"name":"Advanced Mode: a Random Elite tier","facts":{"Options":{"TierBosses":",RandomElite"}},"points":0.4667,"stars":1},
     {"name":"Advanced Mode: a tier's own speed and health","facts":{"Options":{"TierBosses":",,,,Lych@200/300"}},"points":1.1117,"stars":2},
-    {"name":"Advanced Mode: a tier's own skulls","facts":{"Options":{"TierBosses":"Lych#0,Lych#0,Lych#0,Lych#0,Lych#0"}},"points":1.35,"stars":2},
-    {"name":"Everything at once","facts":{"Mode":"Clicks","Difficulty":"Hard","Lives":1,"Cash":300,"MaxTowers":3,"MaxParagons":0,"NoSelling":true,"AllFortified":true,"BossHealth":3,"Options":{"Boss":"Phayze","Elite":true,"Tiers":10,"HealthPerTier":200,"SpeedPerTier":50,"BossEventRounds":true,"SpawnRounds":"20, 25, 30, 35, 40, 45, 50, 55, 60, 65","SkullMode":"EvenlySpaced","SkullCount":0},"MapDifficulty":"Expert"},"points":27.8782,"stars":10}
+    {"name":"Advanced Mode: a tier's own skulls","facts":{"Options":{"TierBosses":"Lych#0,Lych#0,Lych#0,Lych#0,Lych#0"}},"points":1.25,"stars":2},
+    {"name":"Everything at once","facts":{"Mode":"Clicks","Difficulty":"Hard","Lives":1,"Cash":300,"MaxTowers":3,"MaxParagons":0,"NoSelling":true,"AllFortified":true,"BossHealth":3,"Options":{"Boss":"Phayze","Elite":true,"Tiers":10,"HealthPerTier":200,"SpeedPerTier":50,"BossEventRounds":true,"SpawnRounds":"20, 25, 30, 35, 40, 45, 50, 55, 60, 65","SkullMode":"EvenlySpaced","SkullCount":0},"MapDifficulty":"Expert"},"points":27.7782,"stars":10}
   ]
 }

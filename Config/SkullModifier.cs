@@ -2,6 +2,7 @@ using System.Linq;
 using Il2CppAssets.Scripts.Models;
 using Il2CppAssets.Scripts.Models.Bloons;
 using Il2CppAssets.Scripts.Models.Bloons.Behaviors;
+using Il2CppAssets.Scripts.Models.Bloons.Behaviors.Actions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace CustomBossChallenge.Config;
@@ -10,9 +11,10 @@ namespace CustomBossChallenge.Config;
 /// Changes the skull thresholds of boss bloons.
 /// <br/>
 /// Most bosses fire one non-repeating <see cref="HealthPercentTriggerModel"/> at each skull; its actionIds are the
-/// actions run at every threshold, so only the percentages need replacing. Bloonarius also has a repeating 1% bleed
-/// trigger that must be left alone. Lych instead goes ethereal at the thresholds of its
-/// <see cref="LychBossSuperScriptModel"/>.
+/// actions run at every threshold, so the percentages are replaced and the actions kept. Bloonarius also has a
+/// repeating 1% bleed trigger that must be left alone. Lych instead goes ethereal at the thresholds of its
+/// <see cref="LychBossSuperScriptModel"/>. Dreadbloon and Phayze also keep a value per skull, made to fit the skull
+/// count (<see cref="FitPerSkullValues"/>).
 /// </summary>
 public static class SkullModifier
 {
@@ -56,7 +58,33 @@ public static class SkullModifier
         if (trigger == null) return false;
 
         trigger.percentageValues = new Il2CppStructArray<float>(percents);
+        FitPerSkullValues(bloon, percents.Length);
         return true;
+    }
+
+    /// <summary>
+    /// Makes what a boss keeps per skull long enough for <paramref name="skulls"/> skulls (#304). The game looks
+    /// it up by the skull's number and does nothing past the end, so more skulls than the boss's own lost it:
+    /// <list type="bullet">
+    /// <item>Dreadbloon's armour is immune to a tower set at spawn and at every skull (Primary, Military, Magic,
+    /// Support); they go round, as on Elite Dreadbloon, whose list has them twice for its 7 skulls.</item>
+    /// <item>Phayze gets stronger at every skull, a power level per skull; past its own they keep growing by the
+    /// last step, as Elite Phayze's go on from the normal one's.</item>
+    /// </list>
+    /// </summary>
+    private static void FitPerSkullValues(BloonModel bloon, int skulls)
+    {
+        foreach (var immunity in bloon.GetBehaviors<ApplyTowerSetImmunityModel>())
+        {
+            // One for the armour it spawns with, then one per skull
+            immunity.immunities = new Il2CppReferenceArray<ApplyTowerSetImmunityModel.TowerTypeImmunity>(
+                SkullMath.Cycle(immunity.immunities.ToArray(), skulls + 1));
+        }
+
+        foreach (var phayze in bloon.GetBehaviors<PhayzeBehaviorModel>())
+        {
+            phayze.powerLevels = new Il2CppStructArray<float>(SkullMath.ContinueSteps(phayze.powerLevels.ToArray(), skulls));
+        }
     }
 
     /// <summary>

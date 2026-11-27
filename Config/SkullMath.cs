@@ -97,6 +97,27 @@ public static class SkullMath
         ParseCustom(text) is { } values ? FormatCustom(values) : fallback;
 
     /// <summary>
+    /// A boss's values that go round, made long enough for <paramref name="count"/>: the values again from the start
+    /// for every entry past the end, e.g. Dreadbloon's immunities Primary, Military, Magic, Support, Primary, ...
+    /// Never shorter than the boss's own list, and empty stays empty.
+    /// </summary>
+    public static T[] Cycle<T>(T[] values, int count) =>
+        values.Length == 0 ? values : Enumerable.Range(0, Math.Max(count, values.Length)).Select(i => values[i % values.Length]).ToArray();
+
+    /// <summary>
+    /// A boss's values that grow by a step per skull, made long enough for <paramref name="count"/>: past the end
+    /// they keep growing by the last step, e.g. Phayze's 1.1, 1.15, 1.2 go on 1.25, 1.3, as on Elite Phayze. Never
+    /// shorter than the boss's own list; a single value is repeated, and empty stays empty.
+    /// </summary>
+    public static float[] ContinueSteps(float[] values, int count)
+    {
+        if (values.Length == 0 || count <= values.Length) return values;
+        var step = values.Length > 1 ? values[^1] - values[^2] : 0;
+        return values.Concat(Enumerable.Range(1, count - values.Length)
+            .Select(i => (float) Math.Round(values[^1] + step * i, 4))).ToArray();
+    }
+
+    /// <summary>
     /// A skull's health percentage, e.g. 0.3333 -> "33.33%"
     /// </summary>
     public static string FormatPercent(float percent) =>

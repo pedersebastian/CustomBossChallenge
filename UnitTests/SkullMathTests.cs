@@ -82,4 +82,45 @@ public class SkullMathTests
     [Fact]
     public void FormatCustom_writes_percentages_without_trailing_zeros() =>
         Assert.Equal("50, 33.5, 12.35", SkullMath.FormatCustom(new[] {0.5f, 0.335f, 0.12345f}));
+
+    [Fact]
+    public void Cycle_goes_round_Dreadbloons_immunities_for_more_skulls() =>
+        Assert.Equal(new[] {"Primary", "Military", "Magic", "Support", "Primary", "Military", "Magic", "Support", "Primary"},
+            SkullMath.Cycle(new[] {"Primary", "Military", "Magic", "Support"}, 9));
+
+    [Fact]
+    public void Cycle_of_a_list_that_already_repeats_keeps_going_round() =>
+        Assert.Equal(new[] {1, 2, 1, 2, 1}, SkullMath.Cycle(new[] {1, 2, 1, 2}, 5));
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(2)]
+    [InlineData(4)]
+    public void Cycle_never_shortens_the_bosss_own_list(int count) =>
+        Assert.Equal(new[] {1, 2, 3, 4}, SkullMath.Cycle(new[] {1, 2, 3, 4}, count));
+
+    [Fact]
+    public void Cycle_of_nothing_stays_empty() => Assert.Empty(SkullMath.Cycle(Array.Empty<int>(), 5));
+
+    [Fact]
+    public void ContinueSteps_grows_Phayzes_power_by_its_last_step() =>
+        Assert.Equal(new[] {1.1f, 1.15f, 1.2f, 1.25f, 1.3f, 1.35f}, SkullMath.ContinueSteps(new[] {1.1f, 1.15f, 1.2f}, 6));
+
+    [Fact]
+    public void ContinueSteps_goes_on_like_Elite_Phayze() =>
+        // Elite Phayze 1 has the normal one's levels and two more
+        Assert.Equal(new[] {1.1f, 1.15f, 1.2f, 1.25f, 1.3f}, SkullMath.ContinueSteps(new[] {1.1f, 1.15f, 1.2f}, 5));
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(3)]
+    public void ContinueSteps_never_shortens_the_bosss_own_list(int count) =>
+        Assert.Equal(new[] {1.1f, 1.15f, 1.2f}, SkullMath.ContinueSteps(new[] {1.1f, 1.15f, 1.2f}, count));
+
+    [Fact]
+    public void ContinueSteps_repeats_a_single_value() =>
+        Assert.Equal(new[] {1.5f, 1.5f, 1.5f}, SkullMath.ContinueSteps(new[] {1.5f}, 3));
+
+    [Fact]
+    public void ContinueSteps_of_nothing_stays_empty() => Assert.Empty(SkullMath.ContinueSteps(Array.Empty<float>(), 5));
 }

@@ -5,8 +5,9 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { decode, defaultOptions, pastEventCode, readPastEvents, type BossOptions, type Challenge } from "@cbc/share-code";
-import { difficultyPoints, difficultyStars, MAX_STARS, starsOf, STAR_STEPS } from "@cbc/share-code/difficulty";
+import { difficultyPoints, difficultyStars, MAX_STARS, OWN_SKULLS, SKULL_WEIGHTS, starsOf, STAR_STEPS } from "@cbc/share-code/difficulty";
 import { factsOf, setupFacts, towerCounts, type SetupFacts } from "@cbc/share-code/warnings";
+import { GAME } from "../src/data/types";
 import { difficultyOf } from "../src/preview/difficulty";
 import examples from "../src/data/examples.json";
 
@@ -39,6 +40,19 @@ describe("the shared cases", () => {
       expect(difficultyStars(facts)).toBe(entry.stars);
     });
   }
+});
+
+describe("the skulls", () => {
+  it("count from each boss's own, as the game has them", () => {
+    for (const [boss, data] of Object.entries(GAME.bosses)) {
+      for (const elite of [false, true]) {
+        const counts = new Set((elite ? data.elite : data.normal).map((tier) => tier.skulls.length));
+        expect([...counts], `${boss}${elite ? " Elite" : ""}`).toEqual([elite ? OWN_SKULLS[boss].elite : OWN_SKULLS[boss].normal]);
+      }
+    }
+  });
+
+  it("weigh every boss", () => expect(Object.keys(SKULL_WEIGHTS).sort()).toEqual(Object.keys(GAME.bosses).sort()));
 });
 
 describe("stars", () => {

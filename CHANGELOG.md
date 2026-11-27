@@ -69,6 +69,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Dreadbloon's armour goes round with more skulls** (#304): Dreadbloon's armour is immune to Primary when it spawns,
+  then Military, Magic and Support at its skulls. With more skulls than its own, it ran out after the fourth (Elite:
+  the eighth) and the rest of the skulls gave armour without an immunity. Now the immunities go round, Primary again
+  after Support, however many skulls it has. Phayze, who gets stronger at every skull, keeps getting stronger by the
+  same step past its own skulls, as Elite Phayze does. A new in-game test pushes every boss, normal and Elite, through
+  its own skulls, 8, 10, three close together and one at 1 %; the other bosses already went through all of them.
+- **Skulls count per boss in the difficulty stars** (#304): each skull more than the boss's own makes the stars go
+  up by how much that boss's skull hurts: Phayze the most, as it gets stronger at every skull, then Dreadbloon and Lych,
+  Vortex and Blastapopoulos, Diamondback, and Bloonarius the least. More skulls used to count as easier, as breathers;
+  fewer skulls than the boss's own still add a little. The website rates setups the same way.
 - **Past Events show CHIMPS by its name** (#267): an event in CHIMPS mode showed the game's internal "Clicks" in its
   details and in the mode filter, in every language.
 - **Dropdown texts keep clear of their arrow** (#267): in the Past Events filters and the Saved Setups list a longer
