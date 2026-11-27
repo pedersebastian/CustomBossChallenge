@@ -6,6 +6,7 @@ using Il2CppAssets.Scripts.Data.Boss;
 using System.Linq;
 using Il2CppAssets.Scripts.Models.Bloons;
 using Il2CppAssets.Scripts.Models.Bloons.Behaviors;
+using Il2CppAssets.Scripts.Models.Bloons.Behaviors.Actions;
 using Il2CppAssets.Scripts.Unity;
 using static CustomBossChallenge.Tests.TestUtils;
 
@@ -44,6 +45,14 @@ public class SkullModifierTest : CustomBossTest
                 Assert(SkullModifier.Apply(clone, Array.Empty<float>()), $"Skulls of {id} were not removed");
                 AssertEquals(SkullModifier.GetSkulls(clone)!.Length, 0, $"{id} still has skulls");
 
+                // What the boss keeps per skull fits any skull count (#304)
+                foreach (var count in new[] {0, 1, 8, SkullMath.MaxSkulls})
+                {
+                    var fitted = original.Clone().Cast<BloonModel>();
+                    SkullModifier.Apply(fitted, SkullMath.EvenlySpaced(count));
+                    CheckPerSkullValues(id, original, fitted, count);
+                }
+
                 Assert(SameValues(SkullModifier.GetSkulls(original), vanillaSkulls), $"{id} original was modified");
             }
         }
@@ -52,5 +61,39 @@ public class SkullModifierTest : CustomBossTest
         Assert(!SkullModifier.Apply(segment, custom), "Diamondback segments must not be changed");
         Assert(!SkullModifier.Apply(Game.instance.model.GetBloon("Moab"), custom), "Non bosses must not be changed");
         yield break;
+    }
+
+    /// <summary>
+    /// Dreadbloon has an immunity for its spawn and every skull, going round its own; Phayze a power level per
+    /// skull that keeps growing; the boss's own model keeps its lists
+    /// </summary>
+    private void CheckPerSkullValues(string id, BloonModel original, BloonModel fitted, int count)
+    {
+        var vanillaImmunity = original.GetBehavior<ApplyTowerSetImmunityModel>();
+        if (vanillaImmunity != null)
+        {
+            var own = vanillaImmunity.immunities.ToArray().Select(i => i.towerType).ToArray();
+            var now = fitted.GetBehavior<ApplyTowerSetImmunityModel>()!.immunities.ToArray().Select(i => i.towerType).ToArray();
+            Assert(now.Length >= count + 1 && now.Length >= own.Length, $"{id} with {count} skulls has {now.Length} immunities");
+            for (var i = 0; i < now.Length; i++)
+            {
+                AssertEquals(now[i], own[i % own.Length], $"{id} with {count} skulls: immunity {i}");
+            }
+            AssertEquals(vanillaImmunity.immunities.Length, own.Length, $"{id}'s own immunities were changed");
+        }
+
+        var vanillaPhayze = original.GetBehavior<PhayzeBehaviorModel>();
+        if (vanillaPhayze != null)
+        {
+            var own = vanillaPhayze.powerLevels.ToArray();
+            var now = fitted.GetBehavior<PhayzeBehaviorModel>()!.powerLevels.ToArray();
+            Assert(now.Length >= count && now.Length >= own.Length, $"{id} with {count} skulls has {now.Length} power levels");
+            Assert(now.Take(own.Length).SequenceEqual(own), $"{id} with {count} skulls keeps its own power levels: {Show(now)}");
+            for (var i = 1; i < now.Length; i++)
+            {
+                Assert(now[i] >= now[i - 1], $"{id} with {count} skulls gets weaker at skull {i + 1}: {Show(now)}");
+            }
+            AssertEquals(vanillaPhayze.powerLevels.Length, own.Length, $"{id}'s own power levels were changed");
+        }
     }
 }
