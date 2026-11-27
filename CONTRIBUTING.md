@@ -181,7 +181,9 @@ several languages one after the other and prints a table of what failed, e.g.
   English written into the test. The game keeps a right-to-left text reversed, so in Arabic `40` is `04` in `.text`,
   and the mod leaves the tags out of popups and lists there (`LanguageText.ForGameText`). `Shown()` turns it back and
   leaves the tags out. A mod text that the game or Mod Helper looks up by its key (a modifier's `titleLocKey`, Mod
-  Settings and their info popups) isn't shaped for Arabic (#292): compare it with `ScreenText.ByGame(key)`.
+  Settings and their info popups) shows the same as `Texts.X.T()`: the mod puts its Arabic into the game's table
+  shaped (`LanguageText.ShapeTable`, #292). For a text as it is written, use `LanguageText.WrittenText(key)`, never
+  `Localize(key)`.
 - Don't count on how long a translation is: a text that wraps or shrinks in English may fit on one line in another
   language.
 - Run the quick suite in Arabic after changing a text a test looks at, and before a release. Run all languages now

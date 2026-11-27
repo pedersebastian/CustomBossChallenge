@@ -50,6 +50,17 @@ public class LocalizationTest : CustomBossTest
             // In Arabic the mod's texts come shaped, like the game's own (#244)
             AssertEquals(Texts.BossCreator.T(), LanguageText.Shape(Load(active)[Texts.BossCreator]), $"Boss Creator in {active}");
             AssertEquals(Texts.BossTiersInfo.T(), LanguageText.Shape(Load(active)[Texts.BossTiersInfo]), $"Boss Tiers info in {active}");
+            AssertEquals(LanguageText.WrittenText(Texts.BossCreator), Load(active)[Texts.BossCreator], $"Boss Creator as written in {active}");
+
+            // The game and Mod Helper look some texts up themselves, so the game's table holds them as they show (#292).
+            // The tests switch the language before and after each test, so this also holds after a switch.
+            var table = LocalizationManager.Instance.textTable;
+            AssertEquals(table[Texts.BossCreator], Texts.BossCreator.T(), $"Boss Creator in the game's table in {active}");
+            AssertEquals(table[Texts.AllFortified], Texts.AllFortified.T(), $"All Fortified in the game's table in {active}");
+            // Setting the language again doesn't shape twice
+            LanguageText.ShapeTable();
+            AssertEquals(table[Texts.BossCreator], Texts.BossCreator.T(), $"Boss Creator shaped once in {active}");
+            AssertEquals(LanguageText.WrittenText(Texts.BossCreator), Load(active)[Texts.BossCreator], $"Boss Creator still as written in {active}");
         }
         Log($"active language {active}: {Texts.BossCreator.T()}");
         yield break;
