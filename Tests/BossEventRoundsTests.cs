@@ -421,15 +421,16 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? infoPopup = null;
         yield return WaitFor(() => (infoPopup = Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()) != null,
             "Opening the CHIMPS info popup");
-        Assert(infoPopup!.body.text.Contains(Menus.Texts.ChimpsRoundsInfo.T()), $"CHIMPS info popup text: {infoPopup.body.text}");
-        AssertEquals(Menus.Texts.ChimpsRoundsInfo.T().Split("\n\n").Length, 5, "Both CHIMPS sets, the boss rounds and the boss's own rounds");
+        Assert(infoPopup!.body.Shows(Menus.Texts.ChimpsRoundsInfo.T()), $"CHIMPS info popup text: {infoPopup.body.Shown()}");
+        // Counted in the text as written: shaping Arabic changes its line breaks
+        AssertEquals(BTD_Mod_Helper.Extensions.StringExt.Localize(Menus.Texts.ChimpsRoundsInfo).Split("\n\n").Length, 5, "Both CHIMPS sets, the boss rounds and the boss's own rounds");
         infoPopup.TryHidePop();
         yield return new WaitForSecondsRealtime(1);
         AssertEquals(chimpsRounds.Dropdown.options.Count, 4, "Off, newest, earlier and the boss's own");
         Assert(chimpsRounds.TemplatePanel.RectTransform.sizeDelta.y >= 4 * Menus.BossEditorSection.ChimpsItemHeight,
             $"The opened list has room for all four entries: {chimpsRounds.TemplatePanel.RectTransform.sizeDelta.y}");
         Assert(chimpsRounds.TemplatePanel.transform.Find(Menus.EditorRows.ListFrameName) != null, "The opened list has its frame");
-        AssertEquals(chimpsRounds.Dropdown.captionText.text, Menus.Texts.ChimpsRoundsNewest.T(),
+        AssertEquals(chimpsRounds.Dropdown.captionText.Shown(), ScreenText.Plain(Menus.Texts.ChimpsRoundsNewest.T()),
             $"The entry's text as it is, not taken for a key (option '{chimpsRounds.Dropdown.options[1].text}')");
         AssertEquals(chimpsRounds.Dropdown.value, 1, "Ticked shows the newest CHIMPS rounds");
         // The mode change becomes its own Undo step once the editor's rules are looked at again
@@ -469,8 +470,15 @@ public class BossEventRoundsCreatorTest : CustomBossTest
         yield return null;
         Assert(BossMode.Options is {BossEventRounds: true, ChimpsRounds: ChimpsRounds.Newest}, "Back on the newest");
         // Too long for one line at a readable size, so it wraps onto two and the row makes room for both (#139)
+        // In English; another language may say it in one line (#291), so there the row must fit the text it has
         var index = section.Strip.Warnings.FindIndex(w => w.Kind == SetupWarning.ChimpsEventRounds);
-        AssertEquals(section.Strip.NoteRows[index], TierStrip.MaxNoteRows, "The CHIMPS warning takes two lines");
+        var rows = section.Strip.NoteRows[index];
+        if (Il2CppNinjaKiwi.Localization.LocalizationManager.Instance.ActiveLanguage.ToString() == "English")
+            AssertEquals(rows, TierStrip.MaxNoteRows, "The CHIMPS warning takes two lines");
+        var note = section.Strip.Notes[index].Text;
+        note.ForceMeshUpdate();
+        Assert(note.textInfo.lineCount <= rows && note.fontSize >= TierStrip.NoteMinFontSize - 0.5f,
+            $"The CHIMPS warning must fit its {rows} line(s) at a readable size: {note.textInfo.lineCount} line(s) at {note.fontSize}");
         AssertEquals(section.Strip.Row.GetComponent<RectTransform>().sizeDelta.y, TierStrip.HeightFor(section.Strip.TextRows),
             "The row has room for both lines");
         var folder = System.Environment.GetEnvironmentVariable(ScreenshotTour.EnvironmentVariable);

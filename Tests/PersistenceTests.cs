@@ -145,7 +145,7 @@ public class NewerFilesNoticeTest : CustomBossTest
         Assert(Creator.BossMode.TellAboutNewerFiles(), "Saved setups from a newer version are told about");
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
         yield return WaitForPopup(found => popup = found);
-        Assert(popup!.body.text.Contains(Menus.Texts.T(Menus.Texts.NewerSetupFiles)), $"Popup: {popup.body.text}");
+        Assert(popup!.body.Shows(Menus.Texts.T(Menus.Texts.NewerSetupFiles)), $"Popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         Assert(!Creator.BossMode.TellAboutNewerFiles(), "Told only once per session");
         AssertEquals(File.ReadAllText(Creator.BossMode.Saved.FilePath), newer, "The newer file is kept as it was");

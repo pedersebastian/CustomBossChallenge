@@ -83,7 +83,7 @@ public class KeyboardTest : CustomBossTest
         clipboard = SetupCode.Encode(new BossOptions {Boss = BossType.Lych}, theirDcm);
         AssertEquals(BossCreatorKeys.Handle(Ctrl(ShortcutKey.V)), KeyAction.Paste, "Ctrl+V");
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains("Keyboard Lych"), $"Paste popup: {popup.body.text}");
+        Assert(popup.body.Shows("Keyboard Lych"), $"Paste popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, false);
 
         // Ctrl+S saves the setup under the challenge's name
@@ -99,7 +99,7 @@ public class KeyboardTest : CustomBossTest
         BossMode.Options = mine with {Boss = (BossType) 99};
         AssertEquals(BossCreatorKeys.Handle(Ctrl(ShortcutKey.Enter)), KeyAction.Play, "Ctrl+Enter");
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains(Texts.BossUnavailable.T(BossMode.Options.BossId(1))), $"Play popup: {popup.body.text}");
+        Assert(popup.body.Shows(Texts.BossUnavailable.T(BossMode.Options.BossId(1))), $"Play popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         BossMode.Options = mine;
         Assert(BossMode.Active, "Ctrl+Enter must not start a game it can't play");

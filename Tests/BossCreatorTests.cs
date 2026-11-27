@@ -106,7 +106,7 @@ public class BossCreatorTest : CustomBossTest
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
         yield return WaitFor(() => (popup = Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()) != null,
             "Opening the info popup");
-        Assert(popup!.body.text.Contains(Texts.BossTiersInfo.T()), $"Info popup text: {popup.body.text}");
+        Assert(popup!.body.Shows(Texts.BossTiersInfo.T()), $"Info popup text: {popup.body.Shown()}");
         popup.TryHidePop();
         yield return new WaitForSecondsRealtime(1);
 
@@ -132,7 +132,7 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(fortified.transform.GetSiblingIndex(), 0, "All Fortified comes first after showing a model");
         foreach (var label in fortified.GetComponentsInChildren<TMP_Text>(true))
         {
-            AssertEquals(label.text, Texts.AllFortified.T(), "All Fortified label");
+            AssertEquals(label.Shown(), ScreenText.Plain(Texts.AllFortified.T()), "All Fortified label");
         }
         modifiers.OpenEditPopup();
         yield return new WaitForSecondsRealtime(1);
@@ -143,7 +143,9 @@ public class BossCreatorTest : CustomBossTest
         Assert(scrollArea.rect.height >= excludedSlots.rect.height - 1,
             $"All excluded modifiers must fit: area {scrollArea.rect.height}, modifiers {excludedSlots.rect.height}");
         fortified.Select();
-        AssertEquals(modifiers.descriptionTitle.text, Texts.AllFortified.T(), "All Fortified info title");
+        // The game looks the title up itself (titleLocKey)
+        Assert(modifiers.descriptionTitle.ShowsExactly(ScreenText.ByGame(Texts.AllFortified)),
+            $"All Fortified info title: '{modifiers.descriptionTitle.Shown()}', expected '{ScreenText.ByGame(Texts.AllFortified)}'");
         fortified.includeToggle.isOn = true;
         yield return new WaitForSecondsRealtime(0.5f);
         AssertEquals(fortified.transform.parent.Pointer, modifiers.includedContainer.Pointer, "All Fortified moves to included");
@@ -180,7 +182,10 @@ public class BossCreatorTest : CustomBossTest
         foreach (var text in new[] { cards[6].Speed, cards[6].Health })
         {
             text.Text.ForceMeshUpdate();
-            AssertEquals(text.Text.fontSize, text.Text.fontSizeMax, $"Size of '{text.Text.text}' on 7 cards");
+            // A pixel too high shrinks it a hair in some languages (Arabic: 53.3 of 54), which nobody sees
+            Assert(text.Text.fontSize >= text.Text.fontSizeMax * 0.97f,
+                $"Size of '{text.Text.Shown()}' on 7 cards: {text.Text.fontSize} of {text.Text.fontSizeMax} in {text.Text.font?.name}, " +
+                $"needs {text.Text.preferredWidth:0} of {text.Text.rectTransform.rect.width:0} wide, {text.Text.preferredHeight:0} of {text.Text.rectTransform.rect.height:0} high");
         }
 
         // The game's font must have the mark, or it shows as a box (▼ is ▲ turned around)
@@ -194,7 +199,7 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(string.Concat(cards[9].Health.Text.text.Where(c => !char.IsWhiteSpace(c))), $"2B{TierStrip.HigherMark}",
             "Health of tier 10, capped like in the game");
         var capLine = WarningLine(section, SetupWarning.HealthCapped);
-        Assert(capLine != null && capLine.Text.text.Contains("2B"), $"The cap line shows the game's limit: {capLine?.Text.text}");
+        Assert(capLine != null && capLine.Text.Shows("2B"), $"The cap line shows the game's limit: {capLine?.Text.Shown()}");
         AssertStripHeight(section, "The strip grows for the warning lines");
         // With 10 narrow cards, the values and their marks still fit inside each card
         for (var i = 0; i < 10; i++)
@@ -204,7 +209,7 @@ public class BossCreatorTest : CustomBossTest
             {
                 text.Text.ForceMeshUpdate();
                 var shown = text.Text.textBounds.size.x;
-                Assert(shown <= cardWidth, $"Tier {i + 1}: '{text.Text.text}' is {shown:0} wide on a card {cardWidth:0} wide");
+                Assert(shown <= cardWidth, $"Tier {i + 1}: '{text.Text.Shown()}' is {shown:0} wide on a card {cardWidth:0} wide");
             }
         }
         section.BossHealth.DragTo(300);
@@ -234,7 +239,7 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(section.Skulls.Empty.Text.text, "", "No empty text while there are skulls");
         section.SkullCount.Slider.value = 0;
         AssertEquals(ShownSkulls(section), "", "No skulls in the preview");
-        AssertEquals(section.Skulls.Empty.Text.text, Texts.NoSkulls.T(), "The preview says there are no skulls");
+        AssertEquals(section.Skulls.Empty.Text.Shown(), ScreenText.Plain(Texts.NoSkulls.T()), "The preview says there are no skulls");
         section.SkullCount.Slider.value = 5;
 
         section.SkullMode.Dropdown.value = (int) SkullMode.Custom;
@@ -344,7 +349,7 @@ public class BossCreatorTest : CustomBossTest
         section.CopyCode.Button.onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup popup = null!;
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains(clipboard.Length.ToString()), $"Copied popup: {popup.body.text}");
+        Assert(popup.body.Shows(clipboard.Length.ToString()), $"Copied popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         var myCode = clipboard;
         Assert(SetupCode.TryDecode(myCode, out var copied, out var copiedDcm, out _), $"Copied code: {myCode}");
@@ -356,7 +361,7 @@ public class BossCreatorTest : CustomBossTest
         yield return WaitForPopup(p => popup = p);
         yield return ClosePopup(popup, false);
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains(Texts.LinkCopied.T()), $"Link popup: {popup.body.text}");
+        Assert(popup.body.Shows(Texts.LinkCopied.T()), $"Link popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         AssertEquals(clipboard, CodeFormat.Link(myCode), "Copied link");
         Assert(SetupCode.TryDecode(clipboard, out var linked, out _, out _) && linked == mine, $"Copied link: {clipboard}");
@@ -372,7 +377,7 @@ public class BossCreatorTest : CustomBossTest
         // Cancel keeps the current setup
         section.PasteCode.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains("Shared Lych"), $"Paste popup: {popup.body.text}");
+        Assert(popup.body.Shows("Shared Lych"), $"Paste popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, false);
         AssertEquals(BossMode.Options, mine, "Cancel must keep the options");
         AssertEquals(editor!.dcm.name, BossMode.DefaultName(BossType.Vortex, BossMode.Options.Elite), "Cancel must keep the challenge");
@@ -403,12 +408,12 @@ public class BossCreatorTest : CustomBossTest
         clipboard = "not a code";
         section.PasteCode.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains(Texts.CodeInvalid.T()), $"Invalid code popup: {popup.body.text}");
+        Assert(popup.body.Shows(Texts.CodeInvalid.T()), $"Invalid code popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         clipboard = "CBC8:abc";
         section.PasteCode.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains(Texts.CodeTooNew.T()), $"Newer code popup: {popup.body.text}");
+        Assert(popup.body.Shows(Texts.CodeTooNew.T()), $"Newer code popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         AssertEquals(BossMode.Options, theirs, "A bad code must not change the setup");
 
@@ -510,7 +515,7 @@ public class BossCreatorTest : CustomBossTest
         var lych = BossMode.Options;
         section.SaveSetup.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains("My Lych"), $"Saved popup: {popup.body.text}");
+        Assert(popup.body.Shows("My Lych"), $"Saved popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         Assert(BossMode.Saved.Contains("My Lych"), "The setup was not saved under the challenge's name");
         AssertEquals(section.SelectedSetup, "My Lych", "The saved setup is picked");
@@ -520,7 +525,7 @@ public class BossCreatorTest : CustomBossTest
         section.Tiers.Slider.value = 6;
         section.SaveSetup.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains("My Lych"), $"Replace popup: {popup.body.text}");
+        Assert(popup.body.Shows("My Lych"), $"Replace popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, false);
         Assert(BossMode.Saved.TryLoad("My Lych", out var kept, out _, out _) && kept == lych, "Cancel must keep the saved setup");
 
@@ -554,7 +559,7 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(section.SelectedSetup, "My Lych", "Picked in the list");
         section.LoadSetup.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains("My Lych") && popup.body.text.Contains(Texts.TierCount.T(4)), $"Load popup: {popup.body.text}");
+        Assert(popup.body.Shows("My Lych") && popup.body.Shows(Texts.TierCount.T(4)), $"Load popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, false);
         AssertEquals(BossMode.Options, vortex, "Cancel must keep the current setup");
 
@@ -568,7 +573,7 @@ public class BossCreatorTest : CustomBossTest
         // Delete asks first, then removes the setup from the list
         section.DeleteSetup.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains("My Lych"), $"Delete popup: {popup.body.text}");
+        Assert(popup.body.Shows("My Lych"), $"Delete popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         Assert(!BossMode.Saved.Contains("My Lych"), "The setup was not deleted");
         AssertEquals(section.SavedList.Dropdown.options.Count, 1 + examples, "One setup left in the list");
@@ -582,7 +587,7 @@ public class BossCreatorTest : CustomBossTest
         AssertEquals(section.SelectedSetup, "Damaged", "The damaged setup is picked");
         section.LoadSetup.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains(Texts.SetupUnreadable.T()), $"Damaged setup popup: {popup.body.text}");
+        Assert(popup.body.Shows(Texts.SetupUnreadable.T()), $"Damaged setup popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         File.WriteAllText(store.FilePath, savedFile);
 
@@ -590,7 +595,7 @@ public class BossCreatorTest : CustomBossTest
         BossMode.Saved = new SavedSetupsStore(Path.Combine(store.FilePath, "SavedSetups.json"));
         section.SaveSetup.Button.onClick.Invoke();
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains(Texts.SetupFileError.T()), $"File error popup: {popup.body.text}");
+        Assert(popup.body.Shows(Texts.SetupFileError.T()), $"File error popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, true);
         BossMode.Saved = store;
         section.ShowSavedSetups();
@@ -618,7 +623,7 @@ public class BossCreatorTest : CustomBossTest
         var play = editor.transform.Find(BossEditorSection.PlayName);
         Assert(play == null || !play.gameObject.activeSelf, "The normal Challenge Editor shows the boss Play button");
         var title = editor.transform.Find("TopInfo/Title")?.GetComponent<TMP_Text>();
-        Assert(title == null || title.text != BossEditorSection.Title, "The normal Challenge Editor is titled Boss Creator");
+        Assert(title == null || !title.ShowsExactly(BossEditorSection.Title), "The normal Challenge Editor is titled Boss Creator");
         AssertEquals(FortifiedModifier.Find(FortifiedModifier.Settings(editor)), null, "The normal Challenge Editor has the All Fortified modifier");
         AssertEquals(FortifiedModifier.ExtraHeight(FortifiedModifier.Settings(editor)!), 0f, "The normal editor's modifier panels must keep their size");
         Assert(editor.endRound.gameObject.activeSelf, "The normal Challenge Editor hides the End Round field");
@@ -725,7 +730,7 @@ public class BossCreatorTest : CustomBossTest
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup? popup = null;
         yield return WaitFor(() => (popup = Il2CppAssets.Scripts.Unity.UI_New.Popups.PopupScreen.instance.GetFirstActivePopup()) != null,
             $"Showing \"{text}\"");
-        Assert(popup!.body.text.Contains(text), $"Popup text: {popup.body.text}");
+        Assert(popup!.body.Shows(text), $"Popup text: {popup.body.Shown()}");
         popup.TryHidePop();
         yield return new WaitForSecondsRealtime(1);
         Assert(InGame.instance == null && BossMode.Active, "Play must not start a game it can't play");
@@ -795,7 +800,7 @@ public class BossCreatorTest : CustomBossTest
         editor.round.onEndEdit.Invoke(start);
         yield return null;
         var line = WarningLine(section, SetupWarning.StartRoundClose);
-        Assert(line != null && line.Text.text.Contains(start), $"No warning about the start round {start}: {line?.Text.text}");
+        Assert(line != null && line.Text.Shows(start), $"No warning about the start round {start}: {line?.Text.Shown()}");
         AssertStripHeight(section, "With the start round warning");
         AssertEquals(BossEditorSection.PlayProblem(editor.dcm, BossMode.Options), null, "A warning must not stop Play");
 
@@ -1105,7 +1110,7 @@ public class BossCreatorTest : CustomBossTest
         section.ResetAllButton.Button.onClick.Invoke();
         Il2CppAssets.Scripts.Unity.UI_New.Popups.Popup popup = null!;
         yield return WaitForPopup(p => popup = p);
-        Assert(popup.body.text.Contains(Texts.ResetBossOptionsQuestion.T()), $"Reset popup: {popup.body.text}");
+        Assert(popup.body.Shows(Texts.ResetBossOptionsQuestion.T()), $"Reset popup: {popup.body.Shown()}");
         yield return ClosePopup(popup, false);
         AssertEquals(BossMode.Options, mine, "Cancel keeps the boss options");
         section.ResetAllButton.Button.onClick.Invoke();

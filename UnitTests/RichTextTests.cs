@@ -64,6 +64,35 @@ public class RichTextTests
         Assert.Equal(RichText.Strip(text), Reverse(RichText.Strip(RichText.ForRightToLeft(text))));
     }
 
+    [Theory]
+    [InlineData("مرحبا 40 <b>Lych</b>")]
+    [InlineData("<color=#FFD24A>مثال</color>: Continue Test {0}")]
+    [InlineData("<size=80%>R30</size> <b>a<i>bc</i>d</b>")]
+    [InlineData("مرحبا")]
+    [InlineData("")]
+    public void Visible_reads_a_right_to_left_text_back_as_it_was_written(string written) =>
+        Assert.Equal(RichText.Strip(written), RichText.Visible(RichText.ForRightToLeft(written), true));
+
+    [Fact]
+    public void Visible_turns_the_games_reversed_digits_and_Latin_words_around() =>
+        Assert.Equal("Retry 40", RichText.Visible("04 yrteR", true));
+
+    [Fact]
+    public void Visible_left_to_right_only_strips_tags() =>
+        Assert.Equal("Custom Lych 40", RichText.Visible("<b>Custom</b> Lych <color=#FFD24A>40</color>", false));
+
+    [Fact]
+    public void Visible_shows_a_tag_the_game_broke_as_letters()
+    {
+        // The game reversed "<b>Lych</b>" as a whole: the tags read backwards and show as letters
+        var broken = Reverse("<b>Lych</b>");
+        Assert.NotEqual("Lych", RichText.Visible(broken, true));
+        Assert.Contains("<b>", RichText.Visible(broken, true));
+    }
+
+    [Fact]
+    public void Visible_of_nothing_is_empty() => Assert.Equal("", RichText.Visible(null, true));
+
     private static string Reverse(string text)
     {
         var letters = text.ToCharArray();

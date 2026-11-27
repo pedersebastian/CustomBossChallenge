@@ -148,7 +148,8 @@ public class BackToCreatorTest : CustomBossTest
             {
                 var example = ExampleSetups.All.First();
                 var line = BossEditorSection.ExampleLine(example);
-                yield return LoadFromList(section, text => text == line);
+                // In Arabic the list has no tags (LanguageText.ForGameText, #291)
+                yield return LoadFromList(section, text => ScreenText.Plain(text) == ScreenText.Plain(line));
                 Assert(ExampleSetups.Named(editor.dcm.name) != null, $"The example is loaded: {editor.dcm.name}");
                 break;
             }

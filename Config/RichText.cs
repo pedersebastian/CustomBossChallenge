@@ -79,6 +79,19 @@ public static class RichText
         return result.ToString();
     }
 
+    /// <summary>
+    /// What a text shows, read from left to right in the order it was written: <paramref name="raw"/> as TextMeshPro
+    /// holds it, without its tags, and turned back around when it is laid out right to left. For tests, which compare
+    /// what the game shows with the mod's texts in any language (#291). The game keeps a right-to-left text reversed
+    /// (<see cref="ForRightToLeft"/>), so <c>40</c> is <c>04</c> in it. Tags are taken out before the text is turned,
+    /// so one the game broke by reversing it (<c>&gt;b&lt;</c>) comes back as letters and fails the comparison.
+    /// </summary>
+    public static string Visible(string? raw, bool rightToLeft)
+    {
+        var shown = Strip(raw);
+        return rightToLeft ? Reverse(shown) : shown;
+    }
+
     private static string Name(string tag)
     {
         var start = tag.StartsWith("</", StringComparison.Ordinal) ? 2 : 1;
