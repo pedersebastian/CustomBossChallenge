@@ -53,6 +53,31 @@ public class BossRoundsMathTests
     }
 
     [Fact]
+    public void A_tier_on_the_last_round_still_moves()
+    {
+        var sources = BossRoundsMath.Sources([45], 45);
+        Assert.Equal(40, sources[44]);
+        Assert.Equal(45, sources[39]);
+    }
+
+    [Fact]
+    public void A_tier_plays_its_event_round_from_round_1_to_the_last_round()
+    {
+        Assert.Equal([(1, 1, 40)], BossRoundsMath.TierEventRounds([1], Rounds));
+        Assert.Equal([(45, 1, 40)], BossRoundsMath.TierEventRounds([45], 45));
+        // The event round itself is the last round
+        Assert.Equal([(30, 1, 40)], BossRoundsMath.TierEventRounds([30], 40));
+        Assert.Empty(BossRoundsMath.TierEventRounds([30], 39));
+    }
+
+    [Fact]
+    public void Only_every_round_in_place_is_the_identity()
+    {
+        Assert.True(BossRoundsMath.IsIdentity([1, 2, 3]));
+        Assert.False(BossRoundsMath.IsIdentity([2, 1, 3]));
+    }
+
+    [Fact]
     public void A_tier_past_the_last_round_keeps_its_event_round()
     {
         var sources = BossRoundsMath.Sources([40, 60, 80, 100, 150], Rounds);
