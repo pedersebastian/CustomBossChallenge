@@ -346,7 +346,7 @@ export async function decode(code: string | null | undefined): Promise<DecodeRes
     if (trimmed.startsWith("CBC") && trimmed.length > 4 && /\d/.test(trimmed[3])) {
       return fail("TooNew", "This code comes from a newer version of Custom Boss Challenge.");
     }
-    return fail("Invalid", "This isn't a Boss Creator code. Codes start with CBC1:, CBC2:, CBC3:, CBC4:, CBC5:, CBC6: or CBC7:.");
+    return fail("Invalid", "This isn't a Boss Creator code. Codes start with CBC.");
   }
   // Not "damaged": the code may be fine, the browser can't unpack it
   if (!canUseCodes()) return fail("Unsupported", UNSUPPORTED_REASON);
