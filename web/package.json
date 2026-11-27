@@ -11,18 +11,21 @@
     "preview": "vite preview",
     "test": "vitest run",
     "sync-data": "node scripts/sync-share-code-data.mjs",
-    "boss-events": "node ../tools/boss-events/archive.mjs --bundle public/boss-events.json"
+    "boss-events": "node ../tools/boss-events/archive.mjs --bundle public/boss-events.json",
+    "mutation": "node scripts/mutation.mjs"
   },
   "devDependencies": {
+    "@stryker-mutator/core": "^10.1.1",
+    "@stryker-mutator/vitest-runner": "^10.1.1",
     "happy-dom": "^21.0.4",
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
     "vitest": "^5.1.1"
   },
   "dependencies": {
+    "@cbc/share-code": "*",
     "@fontsource/luckiest-guy": "^5.3.0",
-    "@fontsource/nunito": "^5.3.0",
-    "@cbc/share-code": "*"
+    "@fontsource/nunito": "^5.3.0"
   },
   "workspaces": [
     "packages/*"

@@ -359,3 +359,6 @@ web/.env.*.local
 
 # Downloads of the boss events backfill (tools/boss-events/sources.mjs)
 tools/boss-events/.cache/
+
+# Mutation testing reports (#268, see CONTRIBUTING.md)
+StrykerOutput/

@@ -117,6 +117,45 @@ the website's tests must read exactly like the mod. After changing the generator
 $env:CBC_GENERATED_CODES = "1"; dotnet test --project PropertyTests; Remove-Item env:CBC_GENERATED_CODES
 ```
 
+### Mutation tests
+
+Mutation tests find code the tests run but don't really check (#268). [Stryker](https://stryker-mutator.io/) makes
+many small changes to the code, one at a time (a *mutant*: `<` to `<=`, `+` to `-`, a condition to `true`, a string to
+`""`), and runs the tests on each. A mutant no test fails on has *survived*: that change could ship without a test
+noticing. They are slow, so they aren't part of the checks on every push; run them after changing the math or the code
+format, or look at the weekly report.
+
+- **Website** (StrykerJS): the share-code package (`web/packages/share-code/src/`) and the preview math
+  (`web/src/preview/`), checked by all of `npm test`. Settings in `web/stryker.config.mjs`. In `web/`:
+
+  ```
+  npm run mutation
+  ```
+
+  The report is `web/reports/mutation/index.html`. To try one file:
+  `npm run mutation -- --mutate src/preview/timeline.ts`. `scripts/mutation.mjs` first copies `CHANGELOG.md`,
+  `Localization/` and `data/` into `web/.stryker-tmp/`, since Stryker runs the tests in a copy of `web/` there and
+  some tests read those files. The tests run with `vitest.stryker.config.mjs`, which points `@cbc/share-code` at that
+  copy: `node_modules` links to the real package, which Stryker never changes.
+- **Mod math** (Stryker.NET): the pure math in `Config/` (`TierMath`, `TierBossMath`, `SkullMath`, `RankedTime`,
+  `ParagonMath.Slider`, `HealthSteps`, `BossRoundsMath`, `BossRowMath`, `DifficultyRating`, `ShownNumber`), built from
+  `Shared/` and checked by `UnitTests` and `PropertyTests`. No game needed. Settings and the file list in
+  `Shared/stryker-config.json`. From the repo root:
+
+  ```
+  dotnet tool restore
+  cd Shared; dotnet stryker; cd ..
+  ```
+
+  The report is in `Shared/StrykerOutput/<time>/reports/mutation-report.html`. To try one file, add
+  `--mutate ../Config/SkullMath.cs`. Stryker.NET also compiles mutants of the other files in `Shared/` and prints
+  compile warnings for some of them; only the listed files are tested and counted.
+
+`.github/workflows/mutation.yml` runs both every Sunday and by hand (Actions → Mutation tests → Run workflow), and
+uploads each HTML report as an artifact. It never fails on a low score. When a survivor matters, add a test that fails
+on it; when it doesn't (an equivalent mutant, a log text, a guard that can't be reached), leave it, or file an issue
+if it needs a closer look.
+
 ### In-game tests
 
 Everything else runs inside the game, with automated tests built on Mod Helper's `ModTest`. They cover:
@@ -313,6 +352,7 @@ guards (`[GuardPatch]`), so a bug report's `Latest.log` shows it.
   to be run locally; the release check only sees their report.
 - **Property tests**: `dotnet test --project PropertyTests`, see above.
 - **Website**: `npm test` and `npm run build` in `web/`, see below.
+- **Mutation tests** are not here: `mutation.yml` runs them weekly and by hand, see above.
 - **Boss events**: `node --test "tools/boss-events/*.test.mjs"`, the tests of the boss events backfill and archiver,
   see below.
 - **Game version**: `node --test "tools/game-version/*.test.mjs"`, the tests of the daily check for a new BTD6 version,
