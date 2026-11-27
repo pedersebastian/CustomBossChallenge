@@ -239,31 +239,15 @@ Codes are checked before they load: values outside what the game can play are br
 player can't make in the Challenge Editor or the Boss Creator are ignored, and a code with a value of the wrong type
 (or `NaN` or `Infinity`) doesn't load at all.
 
-Codes start with `CBC1:`, `CBC2:` when they use Speed or Health per Tier, `CBC3:` when they use Advanced Mode,
-`CBC4:` when they use Boss Event Rounds, `CBC5:` when they play the boss's own event rounds in CHIMPS, `CBC6:` when
-Boss Health or a tier's own health is below 10 %, above 2000 % or (a tier's) on a step of 5 %, or `CBC7:` when they hold
-the bosses a game picked for its Random tiers; a setup that uses several
-of them gets the highest, so that older versions of the mod ask for an update instead of loading them without those
-settings. They only contain what differs from the defaults, with Boss Event Rounds off, so they are usually a few
-hundred characters. A new, unchanged setup, which has Boss Event Rounds on, gives a `CBC4:` code like this one:
+Codes start with `CBC` and only contain what differs from the defaults, so they are usually a few hundred
+characters. If a code uses something your version of the mod doesn't have yet, the mod asks you to update instead of
+loading it without those settings. A new, unchanged setup gives a code like this one:
 
 ```
 CBC4:q1bKV7KqVnLKLy52LUvNKwnKL81LKVayKikqTa3VUUoGSRanpqYoWRmampkYWZgZW9bWAgA
 ```
 
-The same setup with Boss Event Rounds off is a `CBC1:` code:
-
-```
-CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA
-```
-
-And this is Elite Vortex with 7 tiers, +20 % speed and +50 % health per tier, so it is a `CBC2:` code:
-
-```
-CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJSsjAx0lDxSE3NKMuBCpga1OkrJQBNrawE
-```
-
-And the Boss Gauntlet example, a different boss on each of its 7 tiers, is a `CBC3:` code:
+And this is the Boss Gauntlet example, a different boss on each of its 7 tiers:
 
 ```
 CBC3:HY2xCsMwDER_pWjWUDK04DEESiFDh5BdSQQ2dSxjOdA05N9rd7u7B_cOEDAHDI6TgrnjP7WiyqVC60UCJbcp9vtscZSU-YNdYlqmyvBlaf8ytp40U5QomxfFztEqYZlofsOJMFfFSrE8PsNguReJgBBo5SoptsuDtpA95zIr8wKmuTa38_wB
