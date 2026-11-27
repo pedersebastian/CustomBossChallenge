@@ -1,10 +1,11 @@
 {
-  "about": "Setups and the warnings the Boss Creator shows for them before Play (issue #70). Read by UnitTests/SetupWarningsTests.cs and by web/test/setup-warnings.test.ts, the website's port of Config/SetupWarnings.cs (#186). Facts are SetupFacts, with BossOptions under Options; missing values are the editor's defaults. Warnings are in the order the Boss Creator shows them.",
+  "about": "Setups and the warnings the Boss Creator shows for them before Play (issue #70). Read by UnitTests/SetupWarningsTests.cs and by web/test/setup-warnings.test.ts, the website's port of Config/SetupWarnings.cs (#186). Facts are SetupFacts, with BossOptions under Options; missing values are the editor's defaults. Warnings are in the order the Boss Creator shows them. Difficulty, when given, is the hard-setup score (SetupWarnings.Difficulty, #302).",
   "cases": [
     {
       "name": "The editor's default setup",
       "facts": {},
-      "warnings": []
+      "warnings": [],
+      "difficulty": 0
     },
     {
       "name": "CHIMPS with the newest CHIMPS events' rounds",
@@ -146,6 +147,184 @@
       "name": "Just short of hard: the same with Cash 400",
       "facts": { "Lives": 1, "Cash": 400, "MaxTowers": 5, "NoKnowledge": true },
       "warnings": []
+    },
+    {
+      "name": "Zero lives count like one",
+      "facts": {"Lives": 0},
+      "warnings": [],
+      "difficulty": 2
+    },
+    {
+      "name": "At most 5 towers",
+      "facts": {"MaxTowers": 5},
+      "warnings": [],
+      "difficulty": 1.5
+    },
+    {
+      "name": "No towers at all",
+      "facts": {"MaxTowers": 0},
+      "warnings": [],
+      "difficulty": 1.5
+    },
+    {
+      "name": "At most 6 towers",
+      "facts": {"MaxTowers": 6},
+      "warnings": [],
+      "difficulty": 0.5
+    },
+    {
+      "name": "At most 15 towers",
+      "facts": {"MaxTowers": 15},
+      "warnings": [],
+      "difficulty": 0.5
+    },
+    {
+      "name": "At most 16 towers",
+      "facts": {"MaxTowers": 16},
+      "warnings": [],
+      "difficulty": 0
+    },
+    {
+      "name": "No selling, Monkey Knowledge or powers",
+      "facts": {"NoSelling": true, "NoKnowledge": true, "NoPowers": true},
+      "warnings": [],
+      "difficulty": 1.75
+    },
+    {
+      "name": "All camo, regrow and fortified bloons",
+      "facts": {"AllCamo": true, "AllRegrow": true, "AllFortified": true},
+      "warnings": [],
+      "difficulty": 2
+    },
+    {
+      "name": "Hard difficulty",
+      "facts": {"Difficulty": "Hard"},
+      "warnings": [],
+      "difficulty": 0.5
+    },
+    {
+      "name": "Impoppable",
+      "facts": {"Mode": "Impoppable"},
+      "warnings": [],
+      "difficulty": 1.5
+    },
+    {
+      "name": "Half Cash",
+      "facts": {"Mode": "HalfCash"},
+      "warnings": [],
+      "difficulty": 1
+    },
+    {
+      "name": "Double HP MOABs",
+      "facts": {"Mode": "DoubleMoabHealth"},
+      "warnings": [],
+      "difficulty": 1
+    },
+    {
+      "name": "Apopalypse",
+      "facts": {"Mode": "Apopalypse"},
+      "warnings": [],
+      "difficulty": 0.5
+    },
+    {
+      "name": "Twice the bloons' health and speed",
+      "facts": {"BloonHealth": 2, "MoabHealth": 2, "BloonSpeed": 2, "MoabSpeed": 2},
+      "warnings": [],
+      "difficulty": 4
+    },
+    {
+      "name": "Twice the bloons' health, half the MOABs' speed",
+      "facts": {"BloonHealth": 2, "MoabSpeed": 0.5},
+      "warnings": [],
+      "difficulty": 0
+    },
+    {
+      "name": "Only the first tier Elite",
+      "facts": {"Options": {"TierBosses": "BloonariusElite"}},
+      "warnings": [],
+      "difficulty": 1.5
+    },
+    {
+      "name": "Only the last tier Elite",
+      "facts": {"Options": {"TierBosses": ",,,,BloonariusElite"}},
+      "warnings": [],
+      "difficulty": 1.5
+    },
+    {
+      "name": "A Random Elite tier",
+      "facts": {"Options": {"TierBosses": ",,RandomElite"}},
+      "warnings": [],
+      "difficulty": 1.5
+    },
+    {
+      "name": "A Random tier that isn't Elite",
+      "facts": {"Options": {"TierBosses": ",,Random"}},
+      "warnings": [],
+      "difficulty": 0
+    },
+    {
+      "name": "The last tier with twice the health",
+      "facts": {"Options": {"TierBosses": ",,,,@100/200"}},
+      "warnings": [],
+      "difficulty": 1
+    },
+    {
+      "name": "Tiers with the same boss model and the same settings are the same on purpose",
+      "facts": {
+        "TierBases": [
+          { "Health": 20000, "Speed": 2 }, { "Health": 20000, "Speed": 2 }, { "Health": 20000, "Speed": 2 },
+          { "Health": 20000, "Speed": 2 }, { "Health": 20000, "Speed": 2 }
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "name": "Random tiers over the health limit don't warn, as their boss isn't known yet",
+      "facts": {
+        "BossHealth": 20,
+        "Options": { "HealthPerTier": 200, "TierBosses": "Bloonarius,Random,Random,Random,Random" },
+        "TierBases": [
+          { "Health": 20000000, "Speed": 2 }, { "Health": 40000000, "Speed": 2 }, { "Health": 60000000, "Speed": 2 },
+          { "Health": 80000000, "Speed": 2 }, { "Health": 100000000, "Speed": 2 }
+        ]
+      },
+      "warnings": ["HardSetup"]
+    },
+    {
+      "name": "Capped tiers that take turns being Elite are not the same",
+      "facts": {
+        "BossHealth": 20,
+        "Options": { "HealthPerTier": 200, "TierBosses": "Bloonarius,BloonariusElite,Bloonarius,BloonariusElite,Bloonarius" },
+        "TierBases": [
+          { "Health": 20000000, "Speed": 2 }, { "Health": 40000000, "Speed": 2 }, { "Health": 60000000, "Speed": 2 },
+          { "Health": 80000000, "Speed": 2 }, { "Health": 100000000, "Speed": 2 }
+        ]
+      },
+      "warnings": ["HealthCapped", "HardSetup"]
+    },
+    {
+      "name": "The tiers' own health keeps them under the limit",
+      "facts": {
+        "BossHealth": 20,
+        "Options": { "HealthPerTier": 200, "TierBosses": ",@100/10,@100/10,@100/10,@100/10" },
+        "TierBases": [
+          { "Health": 20000000, "Speed": 2 }, { "Health": 40000000, "Speed": 2 }, { "Health": 60000000, "Speed": 2 },
+          { "Health": 80000000, "Speed": 2 }, { "Health": 100000000, "Speed": 2 }
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "name": "Speed per tier makes the last tier faster",
+      "facts": { "Options": { "SpeedPerTier": 25 } },
+      "warnings": [],
+      "difficulty": 1
+    },
+    {
+      "name": "The last tier at twice the speed",
+      "facts": { "Options": { "TierBosses": ",,,,@200/100" } },
+      "warnings": [],
+      "difficulty": 1
     }
   ]
 }

@@ -18,6 +18,7 @@ interface Case {
   name: string;
   facts: Record<string, unknown> & { Options?: Partial<BossOptions>; TierBases?: ({ Health: number; Speed: number } | null)[] };
   warnings: string[];
+  difficulty?: number;
 }
 
 const file = JSON.parse(readFileSync(new URL("./setup-warnings-cases.json", import.meta.url), "utf8")) as { cases: Case[] };
@@ -45,7 +46,10 @@ describe("the shared cases", () => {
   it("has them", () => expect(file.cases.length).toBeGreaterThanOrEqual(20));
 
   for (const entry of file.cases) {
-    it(entry.name, () => expect(kinds(read(entry.facts))).toBe(entry.warnings.join(",")));
+    it(entry.name, () => {
+      expect(kinds(read(entry.facts))).toBe(entry.warnings.join(","));
+      if (entry.difficulty !== undefined) expect(difficulty(read(entry.facts))).toBeCloseTo(entry.difficulty, 6);
+    });
   }
 });
 

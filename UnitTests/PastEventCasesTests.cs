@@ -78,6 +78,25 @@ public class PastEventCasesTests
         yield return ("no rules", Changed("Lych47_m5zq59de", "MadeUpNoRules", e => e.Remove("standard")));
         yield return ("a boss this version doesn't know", Changed("Lych47_m5zq59de", "MadeUpBoss", e => e["bossType"] = "newboss"));
         yield return ("a map this version doesn't know", Changed("Lych47_m5zq59de", "MadeUpMap", e => e["standard"]!["map"] = "RemovedMap"));
+        yield return ("CHIMPS round sets outside CHIMPS, and the default set", Changed("Lych47_m5zq59de", "MadeUpRoundSets", e =>
+        {
+            foreach (var level in new[] {"standard", "elite"})
+                e[level]!["roundSets"] = new JArray("default", "chimpsboss", "chimpsbloonarius");
+        }));
+        yield return ("tiers blocked on every path, and a tower the game doesn't have that isn't allowed", Changed("Lych47_m5zq59de",
+            "MadeUpTowers", e =>
+            {
+                foreach (var level in new[] {"standard", "elite"})
+                {
+                    var towers = (JArray) e[level]!["_towers"]!;
+                    towers.Add(new JObject
+                    {
+                        ["tower"] = "DartMonkey", ["max"] = 3, ["path1NumBlockedTiers"] = 1, ["path2NumBlockedTiers"] = 2,
+                        ["path3NumBlockedTiers"] = 3
+                    });
+                    towers.Add(new JObject {["tower"] = "FutureMonkey", ["max"] = 0});
+                }
+            }));
         yield return ("a name with odd characters", Changed("Lych47_m5zq59de", "MadeUpName", e =>
         {
             e["name"] = "Got_you!";

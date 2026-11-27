@@ -15,6 +15,10 @@ export default {
   // the mutants but more than half the time. Left out, a run takes well under half as long.
   ignoreStatic: true,
   thresholds: { high: 80, low: 60, break: null },
+  // A mutant that takes longer than its tests took without it, times 1.5, plus this, counts as a Timeout, which Stryker
+  // scores as killed. 5 s (the default) was too little on a busy machine: mutants that GitHub found surviving timed out
+  // here (#302). Most mutants finish far below this, so a higher value only slows the few real endless loops.
+  timeoutMS: 15000,
   tempDirName: ".stryker-tmp",
   // Stryker rewrites tsconfig.json in its sandbox with the typescript package's JS API, which TypeScript 7 (the native
   // compiler) doesn't have. Vitest doesn't read tsconfig.json for the tests, so point Stryker at a file that isn't there.

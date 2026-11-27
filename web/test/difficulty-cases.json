@@ -33,6 +33,7 @@
     {"name":"Half Cash","facts":{"Mode":"HalfCash"},"points":1,"stars":2},
     {"name":"Deflation","facts":{"Mode":"Deflation"},"points":0.5,"stars":2},
     {"name":"Primary Only","facts":{"Mode":"PrimaryOnly"},"points":1,"stars":2},
+    {"name":"Zero lives count like one","facts":{"Lives":0},"points":2,"stars":3},
     {"name":"One life","facts":{"Lives":1},"points":2,"stars":3},
     {"name":"Ten lives","facts":{"Lives":10},"points":1,"stars":2},
     {"name":"Fifty lives","facts":{"Lives":50},"points":0.5,"stars":2},

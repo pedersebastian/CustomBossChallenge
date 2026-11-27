@@ -5097,6 +5097,434 @@
     },
     {
       "formatVersion": 1,
+      "id": "MadeUpRoundSets",
+      "name": "Lych47",
+      "bossType": "lych",
+      "start": 1737100800000,
+      "end": 1737601200000,
+      "normalScoringType": "LeastCash",
+      "eliteScoringType": "LeastTiers",
+      "source": "bloonswiki",
+      "sourceUrls": [
+        "https://www.bloonswiki.com/Event_history:Boss_Bloon_Event/2025"
+      ],
+      "license": "CC BY-NC-SA 4.0",
+      "lossy": [],
+      "standard": {
+        "name": "Lych47",
+        "map": "Tinkerton",
+        "mode": "Standard",
+        "difficulty": "Medium",
+        "disableDoubleCash": false,
+        "disableInstas": false,
+        "disableMK": false,
+        "disablePowers": false,
+        "disableSelling": false,
+        "disableFastTrack": false,
+        "displayIncludedTowers": true,
+        "startingCash": 2500,
+        "abilityCooldownReductionMultiplier": 1,
+        "leastCashUsed": -1,
+        "leastTiersUsed": -1,
+        "noContinues": false,
+        "seed": 1,
+        "removeableCostMultiplier": 1,
+        "roundSets": [
+          "default",
+          "chimpsboss",
+          "chimpsbloonarius"
+        ],
+        "lives": 200,
+        "maxLives": -1,
+        "startRound": 1,
+        "endRound": 140,
+        "maxTowers": -1,
+        "maxParagons": 4,
+        "_bloonModifiers": {
+          "speedMultiplier": 0.75,
+          "moabSpeedMultiplier": 0.7,
+          "bossSpeedMultiplier": 0.5,
+          "regrowRateMultiplier": 1,
+          "healthMultipliers": {
+            "bloons": 0.8,
+            "moabs": 0.8,
+            "boss": 2
+          },
+          "allCamo": false,
+          "allRegen": false
+        },
+        "_towers": [
+          {
+            "tower": "Benjamin",
+            "max": 99,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": true
+          },
+          {
+            "tower": "BananaFarm",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "SpikeFactory",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "MonkeyVillage",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "EngineerMonkey",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "BeastHandler",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": -1,
+            "isHero": false
+          }
+        ]
+      },
+      "elite": {
+        "name": "Lych47",
+        "map": "Tinkerton",
+        "mode": "Standard",
+        "difficulty": "Medium",
+        "disableDoubleCash": false,
+        "disableInstas": false,
+        "disableMK": false,
+        "disablePowers": false,
+        "disableSelling": false,
+        "disableFastTrack": false,
+        "displayIncludedTowers": true,
+        "startingCash": 3000,
+        "abilityCooldownReductionMultiplier": 1,
+        "leastCashUsed": -1,
+        "leastTiersUsed": -1,
+        "noContinues": false,
+        "seed": 1,
+        "removeableCostMultiplier": 1,
+        "roundSets": [
+          "default",
+          "chimpsboss",
+          "chimpsbloonarius"
+        ],
+        "lives": 100,
+        "maxLives": -1,
+        "startRound": 1,
+        "endRound": 140,
+        "maxTowers": -1,
+        "maxParagons": 4,
+        "_bloonModifiers": {
+          "speedMultiplier": 0.75,
+          "moabSpeedMultiplier": 0.7,
+          "bossSpeedMultiplier": 0.5,
+          "regrowRateMultiplier": 1,
+          "healthMultipliers": {
+            "bloons": 0.8,
+            "moabs": 0.8,
+            "boss": 2
+          },
+          "allCamo": false,
+          "allRegen": false
+        },
+        "_towers": [
+          {
+            "tower": "Benjamin",
+            "max": 99,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": true
+          },
+          {
+            "tower": "BananaFarm",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "SpikeFactory",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "MonkeyVillage",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "EngineerMonkey",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "BeastHandler",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": -1,
+            "isHero": false
+          }
+        ]
+      }
+    },
+    {
+      "formatVersion": 1,
+      "id": "MadeUpTowers",
+      "name": "Lych47",
+      "bossType": "lych",
+      "start": 1737100800000,
+      "end": 1737601200000,
+      "normalScoringType": "LeastCash",
+      "eliteScoringType": "LeastTiers",
+      "source": "bloonswiki",
+      "sourceUrls": [
+        "https://www.bloonswiki.com/Event_history:Boss_Bloon_Event/2025"
+      ],
+      "license": "CC BY-NC-SA 4.0",
+      "lossy": [],
+      "standard": {
+        "name": "Lych47",
+        "map": "Tinkerton",
+        "mode": "Standard",
+        "difficulty": "Medium",
+        "disableDoubleCash": false,
+        "disableInstas": false,
+        "disableMK": false,
+        "disablePowers": false,
+        "disableSelling": false,
+        "disableFastTrack": false,
+        "displayIncludedTowers": true,
+        "startingCash": 2500,
+        "abilityCooldownReductionMultiplier": 1,
+        "leastCashUsed": -1,
+        "leastTiersUsed": -1,
+        "noContinues": false,
+        "seed": 1,
+        "removeableCostMultiplier": 1,
+        "roundSets": [
+          "default",
+          "lych"
+        ],
+        "lives": 200,
+        "maxLives": -1,
+        "startRound": 1,
+        "endRound": 140,
+        "maxTowers": -1,
+        "maxParagons": 4,
+        "_bloonModifiers": {
+          "speedMultiplier": 0.75,
+          "moabSpeedMultiplier": 0.7,
+          "bossSpeedMultiplier": 0.5,
+          "regrowRateMultiplier": 1,
+          "healthMultipliers": {
+            "bloons": 0.8,
+            "moabs": 0.8,
+            "boss": 2
+          },
+          "allCamo": false,
+          "allRegen": false
+        },
+        "_towers": [
+          {
+            "tower": "Benjamin",
+            "max": 99,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": true
+          },
+          {
+            "tower": "BananaFarm",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "SpikeFactory",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "MonkeyVillage",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "EngineerMonkey",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "BeastHandler",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": -1,
+            "isHero": false
+          },
+          {
+            "tower": "DartMonkey",
+            "max": 3,
+            "path1NumBlockedTiers": 1,
+            "path2NumBlockedTiers": 2,
+            "path3NumBlockedTiers": 3
+          },
+          {
+            "tower": "FutureMonkey",
+            "max": 0
+          }
+        ]
+      },
+      "elite": {
+        "name": "Lych47",
+        "map": "Tinkerton",
+        "mode": "Standard",
+        "difficulty": "Medium",
+        "disableDoubleCash": false,
+        "disableInstas": false,
+        "disableMK": false,
+        "disablePowers": false,
+        "disableSelling": false,
+        "disableFastTrack": false,
+        "displayIncludedTowers": true,
+        "startingCash": 3000,
+        "abilityCooldownReductionMultiplier": 1,
+        "leastCashUsed": -1,
+        "leastTiersUsed": -1,
+        "noContinues": false,
+        "seed": 1,
+        "removeableCostMultiplier": 1,
+        "roundSets": [
+          "default",
+          "lych"
+        ],
+        "lives": 100,
+        "maxLives": -1,
+        "startRound": 1,
+        "endRound": 140,
+        "maxTowers": -1,
+        "maxParagons": 4,
+        "_bloonModifiers": {
+          "speedMultiplier": 0.75,
+          "moabSpeedMultiplier": 0.7,
+          "bossSpeedMultiplier": 0.5,
+          "regrowRateMultiplier": 1,
+          "healthMultipliers": {
+            "bloons": 0.8,
+            "moabs": 0.8,
+            "boss": 2
+          },
+          "allCamo": false,
+          "allRegen": false
+        },
+        "_towers": [
+          {
+            "tower": "Benjamin",
+            "max": 99,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": true
+          },
+          {
+            "tower": "BananaFarm",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "SpikeFactory",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "MonkeyVillage",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "EngineerMonkey",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": 0,
+            "isHero": false
+          },
+          {
+            "tower": "BeastHandler",
+            "max": -1,
+            "path1NumBlockedTiers": 0,
+            "path2NumBlockedTiers": 0,
+            "path3NumBlockedTiers": -1,
+            "isHero": false
+          },
+          {
+            "tower": "DartMonkey",
+            "max": 3,
+            "path1NumBlockedTiers": 1,
+            "path2NumBlockedTiers": 2,
+            "path3NumBlockedTiers": 3
+          },
+          {
+            "tower": "FutureMonkey",
+            "max": 0
+          }
+        ]
+      }
+    },
+    {
+      "formatVersion": 1,
       "id": "MadeUpName",
       "name": "Got_you!",
       "bossType": "lych",
@@ -7493,6 +7921,538 @@
             },
             "19": {
               "max": 0
+            },
+            "20": {
+              "max": 0
+            },
+            "21": {
+              "max": 0
+            },
+            "22": {
+              "max": 0
+            },
+            "23": {
+              "max": 0
+            },
+            "24": {
+              "max": 0
+            },
+            "25": {
+              "max": 0
+            },
+            "26": {
+              "max": 0
+            },
+            "27": {
+              "max": 0
+            },
+            "28": {
+              "max": 0
+            },
+            "29": {
+              "max": 0
+            },
+            "30": {
+              "max": 0
+            },
+            "31": {
+              "max": 0
+            },
+            "32": {
+              "max": 0
+            },
+            "33": {
+              "max": 0
+            },
+            "34": {
+              "max": 0
+            },
+            "35": {
+              "max": 0
+            },
+            "36": {
+              "max": 0
+            },
+            "37": {
+              "max": 0
+            },
+            "38": {
+              "max": 0
+            },
+            "39": {
+              "max": 0
+            },
+            "44": {
+              "path3NumBlockedTiers": -1
+            }
+          }
+        }
+      },
+      "unsupported": [],
+      "setupName": "Lych47 Elite, 17 Jan 2025"
+    },
+    {
+      "name": "CHIMPS round sets outside CHIMPS, and the default set",
+      "id": "MadeUpRoundSets",
+      "elite": false,
+      "problem": "None",
+      "options": {
+        "Boss": "Lych",
+        "Elite": false,
+        "BossEventRounds": false,
+        "ChimpsRounds": "Newest"
+      },
+      "challenge": {
+        "name": "Lych47, 17 Jan 2025",
+        "map": "Tinkerton",
+        "mode": "Standard",
+        "difficulty": "Medium",
+        "maxTowers": -1,
+        "maxParagons": 4,
+        "leastCashUsed": -1,
+        "leastTiersUsed": -1,
+        "seed": 1,
+        "removeableCostMultiplier": 1,
+        "abilityCooldownReductionMultiplier": 1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "displayIncludedTowers": true,
+        "startRules": {
+          "cash": 2500,
+          "lives": 200,
+          "maxLives": -1,
+          "round": 1,
+          "endRound": 140
+        },
+        "bloonModifiers": {
+          "speedMultiplier": 0.75,
+          "moabSpeedMultiplier": 0.7,
+          "bossSpeedMultiplier": 0.5,
+          "regrowRateMultiplier": 1,
+          "healthMultipliers": {
+            "bloons": 0.8,
+            "moabs": 0.8,
+            "boss": 2
+          },
+          "allCamo": false,
+          "allRegen": false
+        },
+        "towers": {
+          "$items": {
+            "6": {
+              "max": 99
+            },
+            "7": {
+              "max": 0
+            },
+            "19": {
+              "max": 0
+            },
+            "20": {
+              "max": 0
+            },
+            "21": {
+              "max": 0
+            },
+            "22": {
+              "max": 0
+            },
+            "23": {
+              "max": 0
+            },
+            "24": {
+              "max": 0
+            },
+            "25": {
+              "max": 0
+            },
+            "26": {
+              "max": 0
+            },
+            "27": {
+              "max": 0
+            },
+            "28": {
+              "max": 0
+            },
+            "29": {
+              "max": 0
+            },
+            "30": {
+              "max": 0
+            },
+            "31": {
+              "max": 0
+            },
+            "32": {
+              "max": 0
+            },
+            "33": {
+              "max": 0
+            },
+            "34": {
+              "max": 0
+            },
+            "35": {
+              "max": 0
+            },
+            "36": {
+              "max": 0
+            },
+            "37": {
+              "max": 0
+            },
+            "38": {
+              "max": 0
+            },
+            "39": {
+              "max": 0
+            },
+            "44": {
+              "path3NumBlockedTiers": -1
+            }
+          }
+        }
+      },
+      "unsupported": [
+        "round set chimpsboss",
+        "round set chimpsbloonarius"
+      ],
+      "setupName": "Lych47, 17 Jan 2025"
+    },
+    {
+      "name": "CHIMPS round sets outside CHIMPS, and the default set (Elite)",
+      "id": "MadeUpRoundSets",
+      "elite": true,
+      "problem": "None",
+      "options": {
+        "Boss": "Lych",
+        "Elite": true,
+        "BossEventRounds": false,
+        "ChimpsRounds": "Newest"
+      },
+      "challenge": {
+        "name": "Lych47 Elite, 17 Jan 2025",
+        "map": "Tinkerton",
+        "mode": "Standard",
+        "difficulty": "Medium",
+        "maxTowers": -1,
+        "maxParagons": 4,
+        "leastCashUsed": -1,
+        "leastTiersUsed": -1,
+        "seed": 1,
+        "removeableCostMultiplier": 1,
+        "abilityCooldownReductionMultiplier": 1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "displayIncludedTowers": true,
+        "startRules": {
+          "cash": 3000,
+          "lives": 100,
+          "maxLives": -1,
+          "round": 1,
+          "endRound": 140
+        },
+        "bloonModifiers": {
+          "speedMultiplier": 0.75,
+          "moabSpeedMultiplier": 0.7,
+          "bossSpeedMultiplier": 0.5,
+          "regrowRateMultiplier": 1,
+          "healthMultipliers": {
+            "bloons": 0.8,
+            "moabs": 0.8,
+            "boss": 2
+          },
+          "allCamo": false,
+          "allRegen": false
+        },
+        "towers": {
+          "$items": {
+            "6": {
+              "max": 99
+            },
+            "7": {
+              "max": 0
+            },
+            "19": {
+              "max": 0
+            },
+            "20": {
+              "max": 0
+            },
+            "21": {
+              "max": 0
+            },
+            "22": {
+              "max": 0
+            },
+            "23": {
+              "max": 0
+            },
+            "24": {
+              "max": 0
+            },
+            "25": {
+              "max": 0
+            },
+            "26": {
+              "max": 0
+            },
+            "27": {
+              "max": 0
+            },
+            "28": {
+              "max": 0
+            },
+            "29": {
+              "max": 0
+            },
+            "30": {
+              "max": 0
+            },
+            "31": {
+              "max": 0
+            },
+            "32": {
+              "max": 0
+            },
+            "33": {
+              "max": 0
+            },
+            "34": {
+              "max": 0
+            },
+            "35": {
+              "max": 0
+            },
+            "36": {
+              "max": 0
+            },
+            "37": {
+              "max": 0
+            },
+            "38": {
+              "max": 0
+            },
+            "39": {
+              "max": 0
+            },
+            "44": {
+              "path3NumBlockedTiers": -1
+            }
+          }
+        }
+      },
+      "unsupported": [
+        "round set chimpsboss",
+        "round set chimpsbloonarius"
+      ],
+      "setupName": "Lych47 Elite, 17 Jan 2025"
+    },
+    {
+      "name": "tiers blocked on every path, and a tower the game doesn't have that isn't allowed",
+      "id": "MadeUpTowers",
+      "elite": false,
+      "problem": "None",
+      "options": {
+        "Boss": "Lych",
+        "Elite": false,
+        "BossEventRounds": true,
+        "ChimpsRounds": "Newest"
+      },
+      "challenge": {
+        "name": "Lych47, 17 Jan 2025",
+        "map": "Tinkerton",
+        "mode": "Standard",
+        "difficulty": "Medium",
+        "maxTowers": -1,
+        "maxParagons": 4,
+        "leastCashUsed": -1,
+        "leastTiersUsed": -1,
+        "seed": 1,
+        "removeableCostMultiplier": 1,
+        "abilityCooldownReductionMultiplier": 1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "displayIncludedTowers": true,
+        "startRules": {
+          "cash": 2500,
+          "lives": 200,
+          "maxLives": -1,
+          "round": 1,
+          "endRound": 140
+        },
+        "bloonModifiers": {
+          "speedMultiplier": 0.75,
+          "moabSpeedMultiplier": 0.7,
+          "bossSpeedMultiplier": 0.5,
+          "regrowRateMultiplier": 1,
+          "healthMultipliers": {
+            "bloons": 0.8,
+            "moabs": 0.8,
+            "boss": 2
+          },
+          "allCamo": false,
+          "allRegen": false
+        },
+        "towers": {
+          "$items": {
+            "6": {
+              "max": 99
+            },
+            "7": {
+              "max": 0
+            },
+            "19": {
+              "max": 3,
+              "path1NumBlockedTiers": 1,
+              "path2NumBlockedTiers": 2,
+              "path3NumBlockedTiers": 3
+            },
+            "20": {
+              "max": 0
+            },
+            "21": {
+              "max": 0
+            },
+            "22": {
+              "max": 0
+            },
+            "23": {
+              "max": 0
+            },
+            "24": {
+              "max": 0
+            },
+            "25": {
+              "max": 0
+            },
+            "26": {
+              "max": 0
+            },
+            "27": {
+              "max": 0
+            },
+            "28": {
+              "max": 0
+            },
+            "29": {
+              "max": 0
+            },
+            "30": {
+              "max": 0
+            },
+            "31": {
+              "max": 0
+            },
+            "32": {
+              "max": 0
+            },
+            "33": {
+              "max": 0
+            },
+            "34": {
+              "max": 0
+            },
+            "35": {
+              "max": 0
+            },
+            "36": {
+              "max": 0
+            },
+            "37": {
+              "max": 0
+            },
+            "38": {
+              "max": 0
+            },
+            "39": {
+              "max": 0
+            },
+            "44": {
+              "path3NumBlockedTiers": -1
+            }
+          }
+        }
+      },
+      "unsupported": [],
+      "setupName": "Lych47, 17 Jan 2025"
+    },
+    {
+      "name": "tiers blocked on every path, and a tower the game doesn't have that isn't allowed (Elite)",
+      "id": "MadeUpTowers",
+      "elite": true,
+      "problem": "None",
+      "options": {
+        "Boss": "Lych",
+        "Elite": true,
+        "BossEventRounds": true,
+        "ChimpsRounds": "Newest"
+      },
+      "challenge": {
+        "name": "Lych47 Elite, 17 Jan 2025",
+        "map": "Tinkerton",
+        "mode": "Standard",
+        "difficulty": "Medium",
+        "maxTowers": -1,
+        "maxParagons": 4,
+        "leastCashUsed": -1,
+        "leastTiersUsed": -1,
+        "seed": 1,
+        "removeableCostMultiplier": 1,
+        "abilityCooldownReductionMultiplier": 1,
+        "disableMK": false,
+        "disableSelling": false,
+        "disablePowers": false,
+        "noContinues": false,
+        "disableDoubleCash": false,
+        "disableFastTrack": false,
+        "displayIncludedTowers": true,
+        "startRules": {
+          "cash": 3000,
+          "lives": 100,
+          "maxLives": -1,
+          "round": 1,
+          "endRound": 140
+        },
+        "bloonModifiers": {
+          "speedMultiplier": 0.75,
+          "moabSpeedMultiplier": 0.7,
+          "bossSpeedMultiplier": 0.5,
+          "regrowRateMultiplier": 1,
+          "healthMultipliers": {
+            "bloons": 0.8,
+            "moabs": 0.8,
+            "boss": 2
+          },
+          "allCamo": false,
+          "allRegen": false
+        },
+        "towers": {
+          "$items": {
+            "6": {
+              "max": 99
+            },
+            "7": {
+              "max": 0
+            },
+            "19": {
+              "max": 3,
+              "path1NumBlockedTiers": 1,
+              "path2NumBlockedTiers": 2,
+              "path3NumBlockedTiers": 3
             },
             "20": {
               "max": 0

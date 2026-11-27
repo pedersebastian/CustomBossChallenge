@@ -20,4 +20,6 @@ const alias = Object.entries(exports)
     replacement: fileURLToPath(new URL(file, packageFolder)),
   }));
 
-export default mergeConfig(base, { resolve: { alias } });
+// A test may take more than vitest's 5 s while Stryker runs several test runners at once, which would stop the whole
+// run in its first test run (#302); a mutant that never ends is still stopped by Stryker's own timeoutMS
+export default mergeConfig(base, { resolve: { alias }, test: { testTimeout: 30000 } });

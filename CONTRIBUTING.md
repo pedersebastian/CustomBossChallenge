@@ -155,6 +155,13 @@ format, or look at the weekly report.
   the score can move by a few percent from that alone. `"coverage-analysis": "all"` would fix it, but runs every test
   for every mutant, which takes hours.
 
+A mutant that makes the tests run too long counts as a *Timeout*, which Stryker scores as killed: usually the change
+made a loop that never ends. On a busy machine (two Stryker runs at once, a build, a video call) a mutant the tests
+don't catch can time out too, so a local Timeout isn't proof that a test catches it (#302). Stryker itself starts a test
+runner on every core but one, which can be enough: run it with nothing else heavy going on, try fewer runners
+(`npm run mutation -- --concurrency 4`), and trust the weekly run on GitHub when the two disagree. `timeoutMS` in
+`web/stryker.config.mjs` gives every mutant 15 s more than its tests took without it.
+
 `.github/workflows/mutation.yml` runs both every Sunday and by hand (Actions → Mutation tests → Run workflow), and
 uploads each HTML report as an artifact. It never fails on a low score. When a survivor matters, add a test that fails
 on it; when it doesn't (an equivalent mutant, a log text, a guard that can't be reached), leave it, or file an issue
