@@ -2,7 +2,7 @@
 // Same rules as PastEventsFormat.Read and PastEventRules.Map in the mod.
 
 import { describe, expect, it } from "vitest";
-import { hasRules, mapPastEvent, newestFirst, readPastEvents, type PastEvent } from "@cbc/share-code";
+import { hasRules, mapPastEvent, matchesPastEvent, newestFirst, pastEventModes, readPastEvents, setupName, type PastEvent } from "@cbc/share-code";
 
 const GENERATED = "2026-01-01T00:00:00Z";
 const file = (events: unknown[], extra: object = {}) => JSON.stringify({ formatVersion: 1, generated: GENERATED, events, ...extra });
@@ -113,5 +113,55 @@ describe("an event's rules as a setup", () => {
     expect(setup.challenge).not.toHaveProperty("startRules");
     expect(allowed(setup.challenge.towers)).toEqual([]);
     expect(setup.unsupported).toEqual(["mode Deflation"]);
+  });
+
+  it("lists a rule it doesn't know only when it changes something", () => {
+    const setup = map({
+      map: "Tutorial", a: false, b: 0, c: -1, d: 1, e: "", f: [], g: {}, h: null,
+      i: true, j: 2, k: "x", l: [1], m: { a: 1 },
+    });
+    expect(setup.unsupported).toEqual(["i", "j", "k", "l", "m"]);
+  });
+
+  it("plays the event's round sets as Boss Event Rounds", () => {
+    // The boss's own set, also under its old name; in CHIMPS that is "Own"
+    expect(map({ map: "Tutorial", mode: "Clicks", roundSets: ["default", "lych"] }).options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Own" });
+    expect(map({ map: "Tutorial", roundSets: ["bossRounds"] }).options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Newest" });
+    expect(map({ map: "Tutorial", mode: "Clicks", roundSets: ["chimpsboss"] }).options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Newest" });
+    expect(map({ map: "Tutorial", mode: "Clicks", roundSets: ["chimpsbloonarius"] }).options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Earlier" });
+    // The CHIMPS events' sets only in CHIMPS
+    const outside = map({ map: "Tutorial", roundSets: ["chimpsbloonarius", "phayze"] });
+    expect(outside.options.BossEventRounds).toBe(false);
+    expect(outside.unsupported).toEqual(["round set chimpsbloonarius", "round set phayze"]);
+  });
+
+  it("names the setup like the Challenge Editor's 40-character name field", () => {
+    const event = { ...base, start: Date.UTC(2025, 0, 17) };
+    expect(setupName({ ...event, displayName: "Lych 47" }, true)).toBe("Lych 47 Elite, 17 Jan 2025");
+    // Cut at 40, and the space the cut ends on goes too
+    expect(setupName({ ...event, displayName: "A".repeat(35) }, false)).toBe(`${"A".repeat(35)}, 17`);
+  });
+});
+
+describe("the past events list's filters", () => {
+  const event = (mode: string, eliteMode?: string): PastEvent => ({
+    id: mode, name: "Lych 47", displayName: "Lych 47", bossKey: "lych", start: Date.UTC(2026, 0, 1), end: 0,
+    normalScoring: null, eliteScoring: null, datesGuessed: false, standard: { mode }, elite: eliteMode ? { mode: eliteMode } : null,
+    replaces: [], replacedBy: [], license: null, sourceUrls: [],
+  });
+
+  it("offers the modes most played first, then by name; an event counts each of its modes once", () => {
+    const events = [event("Standard"), event("Clicks", "Clicks"), event("Clicks"), event("Apopalypse"), event("Deflation", "Apopalypse")];
+    expect(pastEventModes(events)).toEqual(["Apopalypse", "Clicks", "Deflation", "Standard"]);
+  });
+
+  it("finds every word of the search, in any order, and shows everything for an empty search", () => {
+    const query = (text: string) => ({ text, boss: null, year: null, mode: null });
+    const search = () => "lych 47 lych 2026";
+    expect(matchesPastEvent(event("Clicks"), query("  2026   LYCH "), search)).toBe(true);
+    expect(matchesPastEvent(event("Clicks"), query("lych 2025"), search)).toBe(false);
+    expect(matchesPastEvent(event("Clicks"), query("   "), () => {
+      throw new Error("an empty search looks at nothing");
+    })).toBe(true);
   });
 });
