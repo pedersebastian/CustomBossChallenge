@@ -164,6 +164,13 @@ const START_RULES: [string, string][] = [
   ["startingCash", "cash"], ["lives", "lives"], ["maxLives", "maxLives"], ["startRound", "round"], ["endRound", "endRound"],
 ];
 
+/** Limits the API sets to 0 when an event doesn't have them (Diamondback 6's placeholder rules), like the mod's ZeroIsUnset */
+const ZERO_IS_UNSET = new Set(["maxTowers", "maxLives"]);
+
+/** Whether the event sets a rule: not null, and not 0 for a ZERO_IS_UNSET limit, like PastEventRules.IsSet */
+const isSet = (rules: JsonObject, field: string): boolean =>
+  rules[field] !== undefined && rules[field] !== null && !(ZERO_IS_UNSET.has(field) && rules[field] === 0);
+
 const NOT_RULES = new Set([
   "name", "id", "creator", "createdAt", "gameVersion", "mapURL", "plays", "wins", "restarts", "losses", "upvotes",
   "playsUnique", "winsUnique", "lossesUnique", "roundSets", "_bloonModifiers", "_towers",
@@ -201,12 +208,12 @@ export function mapPastEvent(event: PastEvent, elite: boolean, game: PastEventGa
 
   challenge.name = setupName(event, elite);
   for (const field of SAME_NAME) {
-    if (rules[field] !== undefined && rules[field] !== null) challenge[field] = clone(rules[field]);
+    if (isSet(rules, field)) challenge[field] = clone(rules[field]);
   }
 
   const start: JsonObject = {};
   for (const [from, to] of START_RULES) {
-    if (rules[from] !== undefined && rules[from] !== null) start[to] = clone(rules[from]);
+    if (isSet(rules, from)) start[to] = clone(rules[from]);
   }
   if (Object.keys(start).length > 0) challenge.startRules = start;
 
