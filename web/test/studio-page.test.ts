@@ -465,6 +465,33 @@ describe("the Studio page", () => {
       }
     });
 
+    it("tells the speed rows from the health rows, and lifts the card line a slider changes (#306)", async () => {
+      await studio.load(newSetup(), null);
+      const drawing = (label: string): string | null | undefined => rowOf(label).querySelector(".studio-icon path")?.getAttribute("d");
+      expect(drawing("Boss Speed")).toBeTruthy();
+      expect(drawing("Speed per Tier")).toBe(drawing("Boss Speed"));
+      expect(drawing("Health per Tier")).toBe(drawing("Boss Health"));
+      expect(drawing("Boss Health")).not.toBe(drawing("Boss Speed"));
+
+      const strip = (): Element => form.querySelector(".studio-tier-preview .tiers")!;
+      // Nothing is lifted before a slider moves
+      expect(strip().className).toBe("tiers");
+      const move = (label: string, value: string): void => {
+        const input = rowOf(label).querySelector("input")!;
+        input.value = value;
+        input.dispatchEvent(new Event("input"));
+      };
+      move("Boss Speed", "150");
+      expect(strip().classList.contains("lift-speed")).toBe(true);
+      expect(strip().classList.contains("lift-health")).toBe(false);
+      move("Health per Tier", "10");
+      expect(strip().classList.contains("lift-health")).toBe(true);
+      expect(strip().classList.contains("lift-speed")).toBe(false);
+      // A change of something else lifts nothing
+      move("Boss Tiers", "7");
+      expect(strip().className).toBe("tiers");
+    });
+
     it("shows the Tier Preview and Skull Preview among the controls in Standard, and follows the changes", async () => {
       await studio.load(newSetup(), null);
       const tiers = form.querySelector<HTMLElement>(".studio-tier-preview")!;

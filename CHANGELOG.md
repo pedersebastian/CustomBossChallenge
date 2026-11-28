@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Boss Speed and Boss Health are easier to tell apart** (#306): every speed row in the Boss Creator (Boss Speed,
+  Speed per Tier and a tier's own speed in Advanced Mode) now has the fast-forward arrows, and every health row the
+  heart, also in the Rules panel. Moving one of these sliders briefly lifts the matching line on the Tier Preview's
+  cards, on every card or, from a tier's picker, on that tier's card, so a slider moved by mistake shows at once. The
+  website's Studio lifts the line too.
+
 - **The countdown names the next tier** (#307): between bosses the boss panel says which tier comes next and how
   many there are, e.g. "Tier 3/6 Appears In: 5 Rounds", in place of the game's "Boss Appears In". It names no boss,
   so a Random boss stays a secret, and a normal Boss Challenge keeps the game's own text.

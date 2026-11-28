@@ -70,8 +70,8 @@ public static class RulesPanel
     private static string Icon(SummaryLine line) => line.Kind switch
     {
         RuleLine.Tiers => VanillaSprites.BossTiersIconSmall,
-        RuleLine.SpeedPerTier => VanillaSprites.FasterBossIcon,
-        RuleLine.HealthPerTier => VanillaSprites.BossBoostIcon,
+        RuleLine.SpeedPerTier => EditorRows.SpeedIcon,
+        RuleLine.HealthPerTier => EditorRows.HealthIcon,
         _ => VanillaSprites.CrossboneSkull
     };
 

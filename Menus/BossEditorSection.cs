@@ -343,12 +343,22 @@ public sealed class BossEditorSection
         Mode = new ModeTabs(modeRow, SetAdvanced);
         EditorRows.AddInfo(modeRow, Texts.DifferentBosses, Texts.DifferentBossesInfo);
 
-        BossSpeed = SliderRow.Clone(template, rows, "BossSpeedRow", Texts.BossSpeed.T(), VanillaSprites.FasterBossIcon,
-            TierBossMath.MinSpeed, TierBossMath.MaxSpeed, TierBossMath.ValueStep, TierBossMath.Normal, Percent, value => UpdateDcm("BossSpeed", dcm => dcm.bloonModifiers.bossSpeedMultiplier, value / 100f,
-                (dcm, speed) => dcm.bloonModifiers.bossSpeedMultiplier = speed));
-        BossHealth = SliderRow.Clone(template, rows, "BossHealthRow", Texts.BossHealth.T(), VanillaSprites.BossBoostIcon,
-            HealthSteps.LastPosition, HealthSliderSteps, TierBossMath.Normal, Percent, value => UpdateDcm("BossHealth", dcm => dcm.bloonModifiers.healthMultipliers.boss, value / 100f,
-                (dcm, health) => dcm.bloonModifiers.healthMultipliers.boss = health));
+        // Moving a speed or health slider briefly lifts that line on the Tier Preview's cards, so a slider moved by
+        // mistake shows where it should be looked for (#306)
+        BossSpeed = SliderRow.Clone(template, rows, "BossSpeedRow", Texts.BossSpeed.T(), EditorRows.SpeedIcon,
+            TierBossMath.MinSpeed, TierBossMath.MaxSpeed, TierBossMath.ValueStep, TierBossMath.Normal, Percent, value =>
+            {
+                UpdateDcm("BossSpeed", dcm => dcm.bloonModifiers.bossSpeedMultiplier, value / 100f,
+                    (dcm, speed) => dcm.bloonModifiers.bossSpeedMultiplier = speed);
+                Strip.Flash(TierStrip.Line.Speed);
+            });
+        BossHealth = SliderRow.Clone(template, rows, "BossHealthRow", Texts.BossHealth.T(), EditorRows.HealthIcon,
+            HealthSteps.LastPosition, HealthSliderSteps, TierBossMath.Normal, Percent, value =>
+            {
+                UpdateDcm("BossHealth", dcm => dcm.bloonModifiers.healthMultipliers.boss, value / 100f,
+                    (dcm, health) => dcm.bloonModifiers.healthMultipliers.boss = health);
+                Strip.Flash(TierStrip.Line.Health);
+            });
 
         // The last position means no limit
         var paragons = ParagonMath.Available;
@@ -360,12 +370,18 @@ public sealed class BossEditorSection
         Tiers = SliderRow.Clone(template, rows, "TiersRow", Texts.BossTiers.T(), VanillaSprites.BossTiersIconSmall,
             TierMath.MinTiers, TierMath.MaxTiers, 1, TierMath.VanillaTiers, value => ShownNumber.Whole(value),
             value => UpdateOptions("Tiers", o => o with {Tiers = (int) value}));
-        SpeedPerTier = SliderRow.Clone(template, rows, "SpeedPerTierRow", Texts.SpeedPerTier.T(), VanillaSprites.FasterBossIcon,
-            TierMath.MinSpeedPerTier, TierMath.MaxSpeedPerTier, TierMath.PerTierStep, 0, PerTier,
-            value => UpdateOptions("SpeedPerTier", o => o with {SpeedPerTier = (int) value}));
-        HealthPerTier = SliderRow.Clone(template, rows, "HealthPerTierRow", Texts.HealthPerTier.T(), VanillaSprites.BossBoostIcon,
-            TierMath.MinHealthPerTier, TierMath.MaxHealthPerTier, TierMath.PerTierStep, 0, PerTier,
-            value => UpdateOptions("HealthPerTier", o => o with {HealthPerTier = (int) value}));
+        SpeedPerTier = SliderRow.Clone(template, rows, "SpeedPerTierRow", Texts.SpeedPerTier.T(), EditorRows.SpeedIcon,
+            TierMath.MinSpeedPerTier, TierMath.MaxSpeedPerTier, TierMath.PerTierStep, 0, PerTier, value =>
+            {
+                UpdateOptions("SpeedPerTier", o => o with {SpeedPerTier = (int) value});
+                Strip.Flash(TierStrip.Line.Speed);
+            });
+        HealthPerTier = SliderRow.Clone(template, rows, "HealthPerTierRow", Texts.HealthPerTier.T(), EditorRows.HealthIcon,
+            TierMath.MinHealthPerTier, TierMath.MaxHealthPerTier, TierMath.PerTierStep, 0, PerTier, value =>
+            {
+                UpdateOptions("HealthPerTier", o => o with {HealthPerTier = (int) value});
+                Strip.Flash(TierStrip.Line.Health);
+            });
         var stripRow = EditorRows.LabelRow(template, rows, "TierStripRow", Texts.TierPreview.T(), VanillaSprites.BossT5Icon);
         Strip = new TierStrip(stripRow) {CardClicked = tier => OpenPicker(tier)};
         var difficultyRow = EditorRows.LabelRow(template, rows, DifficultyStars.RowName, Texts.Difficulty.T(),

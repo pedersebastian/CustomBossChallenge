@@ -143,6 +143,68 @@ public sealed class TierStrip
         public ModHelperText SkullCount = null!;
     }
 
+    /// <summary>The two value lines of a card</summary>
+    public enum Line
+    {
+        Speed,
+        Health
+    }
+
+    /// <summary>How long a line stays lifted after its slider moves, in seconds, and how much bigger it gets</summary>
+    public const float FlashTime = 0.6f;
+    public const float FlashScale = 1.25f;
+
+    /// <summary>
+    /// The line that was last lifted, and the tier when only one card's was, for the tests: null when no line has been
+    /// </summary>
+    public (Line Line, int? Tier)? LastFlash { get; private set; }
+
+    /// <summary>Whether a line is lifted right now</summary>
+    public bool Flashing { get; private set; }
+
+    private float flashStart;
+    private int flashGeneration;
+
+    /// <summary>
+    /// Briefly makes <paramref name="line"/> bigger on every card, or only on <paramref name="tier"/>'s, so it shows
+    /// which of a card's values a slider changes: Boss Speed and Boss Health look much alike (#306). Moving the slider
+    /// again starts it over.
+    /// </summary>
+    public void Flash(Line line, int? tier = null)
+    {
+        if (ReadOnly) return;
+        LastFlash = (line, tier);
+        flashStart = Time.unscaledTime;
+        // A new flash ends the one before, so a line never stays lifted when the other one is moved
+        flashGeneration++;
+        Flashing = true;
+        MelonLoader.MelonCoroutines.Start(Lift(line, tier, flashGeneration));
+    }
+
+    private System.Collections.IEnumerator Lift(Line line, int? tier, int generation)
+    {
+        while (generation == flashGeneration)
+        {
+            var age = Time.unscaledTime - flashStart;
+            if (strip == null) yield break;
+            // Up and back down again, smoothly
+            var scale = age >= FlashTime ? 1 : 1 + (FlashScale - 1) * Mathf.Sin(age / FlashTime * Mathf.PI);
+            for (var i = 0; i < Cards.Count; i++)
+            {
+                var card = Cards[i];
+                var lifted = tier == null || tier == i + 1;
+                card.Speed.transform.localScale = Vector3.one * (line == Line.Speed && lifted ? scale : 1);
+                card.Health.transform.localScale = Vector3.one * (line == Line.Health && lifted ? scale : 1);
+            }
+            if (age >= FlashTime)
+            {
+                Flashing = false;
+                yield break;
+            }
+            yield return null;
+        }
+    }
+
     public TierStrip(GameObject row, bool readOnly = false)
     {
         Row = row;
