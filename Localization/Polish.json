@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "Losowy",
   "CustomBossChallenge-BossLineup": "Bossowie",
   "CustomBossChallenge-TierArrives": "Poziom {0}: {1}",
+  "CustomBossChallenge-TierAppearsIn": "Poziom {0}/{1} pojawi się za: {2} rund",
+  "CustomBossChallenge-TierAppearsInOneRound": "Poziom {0}/{1} pojawi się za: 1 rundę",
   "CustomBossChallenge-ModeStandard": "Standardowy",
   "CustomBossChallenge-ModeAdvanced": "Zaawansowany",
   "CustomBossChallenge-BossEventRounds": "Rundy wydarzeń bossów",

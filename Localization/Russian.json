@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "Случайный",
   "CustomBossChallenge-BossLineup": "Боссы",
   "CustomBossChallenge-TierArrives": "Уровень {0}: {1}",
+  "CustomBossChallenge-TierAppearsIn": "Уровень {0}/{1} появится через: {2} раундов",
+  "CustomBossChallenge-TierAppearsInOneRound": "Уровень {0}/{1} появится через: 1 раунд",
   "CustomBossChallenge-ModeStandard": "Обычный",
   "CustomBossChallenge-ModeAdvanced": "Расширенный",
   "CustomBossChallenge-BossEventRounds": "Раунды босс-событий",

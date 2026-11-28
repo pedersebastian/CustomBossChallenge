@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "Aleatório",
   "CustomBossChallenge-BossLineup": "Chefes",
   "CustomBossChallenge-TierArrives": "Nível {0}: {1}",
+  "CustomBossChallenge-TierAppearsIn": "Nível {0}/{1} aparece em: {2} rodadas",
+  "CustomBossChallenge-TierAppearsInOneRound": "Nível {0}/{1} aparece em: 1 rodada",
   "CustomBossChallenge-ModeStandard": "Padrão",
   "CustomBossChallenge-ModeAdvanced": "Avançado",
   "CustomBossChallenge-BossEventRounds": "Rodadas de evento de chefe",

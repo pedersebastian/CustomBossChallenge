@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "무작위",
   "CustomBossChallenge-BossLineup": "보스",
   "CustomBossChallenge-TierArrives": "{0}단계: {1}",
+  "CustomBossChallenge-TierAppearsIn": "{0}/{1}단계 등장까지: {2}라운드",
+  "CustomBossChallenge-TierAppearsInOneRound": "{0}/{1}단계 등장까지: 1라운드",
   "CustomBossChallenge-ModeStandard": "기본",
   "CustomBossChallenge-ModeAdvanced": "고급",
   "CustomBossChallenge-BossEventRounds": "보스 이벤트 라운드",

@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "ランダム",
   "CustomBossChallenge-BossLineup": "ボス",
   "CustomBossChallenge-TierArrives": "ティア {0}：{1}",
+  "CustomBossChallenge-TierAppearsIn": "ティア {0}/{1} 出現まで：{2} ラウンド",
+  "CustomBossChallenge-TierAppearsInOneRound": "ティア {0}/{1} 出現まで：1 ラウンド",
   "CustomBossChallenge-ModeStandard": "スタンダード",
   "CustomBossChallenge-ModeAdvanced": "アドバンス",
   "CustomBossChallenge-BossEventRounds": "ボスイベントのラウンド",

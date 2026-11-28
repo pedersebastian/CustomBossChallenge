@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The countdown names the next tier** (#307): between bosses the boss panel says which tier comes next and how
+  many there are, e.g. "Tier 3/6 Appears In: 5 Rounds", in place of the game's "Boss Appears In". It names no boss,
+  so a Random boss stays a secret, and a normal Boss Challenge keeps the game's own text.
+
 - **Mystery map effects for a secret boss** (#285): while a boss Random picked is still a secret, the map shows the
   mod's own effects in place of the boss's: a soft haze coming in from the screen's edges with a few pips twinkling in
   it, and three small dice at the boss's spawn point that hop, tumble and land on new faces now and then, in the

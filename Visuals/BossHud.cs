@@ -117,6 +117,41 @@ public static class BossHud
     }
 
     /// <summary>
+    /// The countdown between bosses in a custom boss game, with the tier that comes next and how many there are, e.g.
+    /// "Tier 3/6 Appears In: 5 Rounds" (#307); null in any other game, which keeps the game's own. It names no boss,
+    /// so a Random boss stays a secret.
+    /// </summary>
+    public static string? ArrivalText(int rounds)
+    {
+        if (!CustomBossState.IsActive || CustomBossState.ActiveOptions is not { } options) return null;
+        var tiers = TierMath.ClampTiers(options.Tiers);
+        var next = Math.Clamp(CustomBossState.HighestDefeatedTier + 1, TierMath.MinTiers, tiers);
+        return rounds == 1 ? Texts.TierAppearsInOneRound.T(next, tiers) : Texts.TierAppearsIn.T(next, tiers, rounds);
+    }
+
+    /// <summary>
+    /// Puts <see cref="ArrivalText"/> in the boss panel's countdown, in a custom boss game
+    /// </summary>
+    public static void ShowArrival(BossUI ui, int rounds)
+    {
+        if (ArrivalText(rounds) is not { } text || ui.bossArrivalTxt == null) return;
+        FitArrival(ui.bossArrivalTxt);
+        ui.bossArrivalTxt.SetText(text);
+    }
+
+    /// <summary>
+    /// The tier makes the countdown longer than the game's "Boss Appears In", so it may shrink to fit its box, at
+    /// most to half its size; a text that fits keeps the game's size
+    /// </summary>
+    internal static void FitArrival(TMP_Text text)
+    {
+        if (text.enableAutoSizing) return;
+        text.fontSizeMax = text.fontSize;
+        text.fontSizeMin = text.fontSize * 0.5f;
+        text.enableAutoSizing = true;
+    }
+
+    /// <summary>
     /// The defeat screen shows the boss of the tier being played, the one alive or else the next one: a die while that
     /// one is a secret, with the Elite glow behind it for a Random Elite tier, like the line-up (#283). The screen is
     /// reused, so the glow is switched off again otherwise.

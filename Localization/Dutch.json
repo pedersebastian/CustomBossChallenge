@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "Willekeurig",
   "CustomBossChallenge-BossLineup": "Bosses",
   "CustomBossChallenge-TierArrives": "Tier {0}: {1}",
+  "CustomBossChallenge-TierAppearsIn": "Tier {0}/{1} verschijnt over: {2} rondes",
+  "CustomBossChallenge-TierAppearsInOneRound": "Tier {0}/{1} verschijnt over: 1 ronde",
   "CustomBossChallenge-ModeStandard": "Standaard",
   "CustomBossChallenge-ModeAdvanced": "Geavanceerd",
   "CustomBossChallenge-BossEventRounds": "Baas-evenementrondes",

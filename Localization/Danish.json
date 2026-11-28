@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "Tilfældig",
   "CustomBossChallenge-BossLineup": "Bosser",
   "CustomBossChallenge-TierArrives": "Niveau {0}: {1}",
+  "CustomBossChallenge-TierAppearsIn": "Niveau {0}/{1} kommer om: {2} runder",
+  "CustomBossChallenge-TierAppearsInOneRound": "Niveau {0}/{1} kommer om: 1 runde",
   "CustomBossChallenge-ModeStandard": "Standard",
   "CustomBossChallenge-ModeAdvanced": "Avanceret",
   "CustomBossChallenge-BossEventRounds": "Boss-event-runder",

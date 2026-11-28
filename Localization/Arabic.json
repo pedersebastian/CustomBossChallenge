@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "عشوائي",
   "CustomBossChallenge-BossLineup": "الزعماء",
   "CustomBossChallenge-TierArrives": "المستوى {0}: {1}",
+  "CustomBossChallenge-TierAppearsIn": "المستوى {0}/{1} يظهر بعد: {2} جولات",
+  "CustomBossChallenge-TierAppearsInOneRound": "المستوى {0}/{1} يظهر بعد: جولة واحدة",
   "CustomBossChallenge-ModeStandard": "عادي",
   "CustomBossChallenge-ModeAdvanced": "متقدم",
   "CustomBossChallenge-BossEventRounds": "جولات أحداث الزعماء",
