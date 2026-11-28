@@ -3,12 +3,15 @@
 // skull block of Advanced Mode, the Konami party and how large a code may unpack to
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { decode } from "@cbc/share-code";
+import { decode, defaultChallenge, defaultOptions, encode as make } from "@cbc/share-code";
+import { formatHealth } from "@cbc/share-code/tiers";
 import { keepsSetup } from "../src/code/link";
 import { FEEDBACK_TIME, announce, copyWithFeedback, h } from "../src/dom";
 import { GAME } from "../src/data/types";
-import { PARTY_TIME, KONAMI } from "../src/fun/konami";
+import { PARTY_TIME, KONAMI, setUpKonami } from "../src/fun/konami";
 import { linearAxis } from "../src/compare/chart";
+import { renderSetup, renderTiers } from "../src/preview/render";
+import { MOD_TEXTS } from "../src/modTexts";
 import { encode } from "./encode";
 
 const live = (): string => document.querySelector('[aria-live="polite"]')?.textContent ?? "";
@@ -101,9 +104,8 @@ describe("links within the page", () => {
 });
 
 describe("the Konami party", () => {
-  it("ends even when its bloons never finish rising", async () => {
+  it("ends even when its bloons never finish rising", () => {
     window.matchMedia = ((query: string) => ({ matches: false, media: query })) as typeof window.matchMedia;
-    const { setUpKonami } = await import("../src/fun/konami");
     setUpKonami();
     const type = (): void => KONAMI.forEach((key) => window.dispatchEvent(new KeyboardEvent("keydown", { key })));
 
@@ -123,9 +125,6 @@ describe("the warnings under the Tier Preview (#186)", () => {
     [...root.querySelectorAll<HTMLElement>(".block")].find((block) => block.querySelector("h4")?.textContent === "Tier Preview")!;
 
   it("say what the Boss Creator says, in its order", async () => {
-    const { renderSetup } = await import("../src/preview/render");
-    const { MOD_TEXTS } = await import("../src/modTexts");
-    const { defaultChallenge, defaultOptions, encode: make } = await import("@cbc/share-code");
     const json = defaultChallenge();
     (json.startRules as Record<string, number>).round = 36;
     const read = await decode(await make({ ...defaultOptions(), SpawnRounds: "40, 60, 80, 81, 100" }, json));
@@ -138,10 +137,7 @@ describe("the warnings under the Tier Preview (#186)", () => {
     ]);
   });
 
-  it("keep the game's health limit at a Boss Health below 100 %, like the mod", async () => {
-    const { renderTiers } = await import("../src/preview/render");
-    const { defaultOptions } = await import("@cbc/share-code");
-    const { formatHealth } = await import("@cbc/share-code/tiers");
+  it("keep the game's health limit at a Boss Health below 100 %, like the mod", () => {
     const options = { ...defaultOptions(), Elite: true, Tiers: 10, HealthPerTier: 200 };
     const challenge = { bossSpeed: 1, bossHealth: 0.5 } as Parameters<typeof renderTiers>[1];
 
