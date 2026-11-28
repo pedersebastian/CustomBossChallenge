@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "隨機",
   "CustomBossChallenge-BossLineup": "Boss",
   "CustomBossChallenge-TierArrives": "第 {0} 階段：{1}",
+  "CustomBossChallenge-TierAppearsIn": "第 {0}/{1} 階段出現於：{2} 回合後",
+  "CustomBossChallenge-TierAppearsInOneRound": "第 {0}/{1} 階段出現於：1 回合後",
   "CustomBossChallenge-ModeStandard": "標準",
   "CustomBossChallenge-ModeAdvanced": "進階",
   "CustomBossChallenge-BossEventRounds": "Boss 活動回合",

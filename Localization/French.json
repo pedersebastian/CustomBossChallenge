@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "Aléatoire",
   "CustomBossChallenge-BossLineup": "Boss",
   "CustomBossChallenge-TierArrives": "Palier {0} : {1}",
+  "CustomBossChallenge-TierAppearsIn": "Palier {0}/{1} dans : {2} manches",
+  "CustomBossChallenge-TierAppearsInOneRound": "Palier {0}/{1} dans : 1 manche",
   "CustomBossChallenge-ModeStandard": "Standard",
   "CustomBossChallenge-ModeAdvanced": "Avancé",
   "CustomBossChallenge-BossEventRounds": "Manches des événements de boss",

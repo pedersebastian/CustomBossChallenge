@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "Satunnainen",
   "CustomBossChallenge-BossLineup": "Pomot",
   "CustomBossChallenge-TierArrives": "Taso {0}: {1}",
+  "CustomBossChallenge-TierAppearsIn": "Taso {0}/{1} saapuu: {2} kierroksen päästä",
+  "CustomBossChallenge-TierAppearsInOneRound": "Taso {0}/{1} saapuu: 1 kierroksen päästä",
   "CustomBossChallenge-ModeStandard": "Tavallinen",
   "CustomBossChallenge-ModeAdvanced": "Edistynyt",
   "CustomBossChallenge-BossEventRounds": "Bossitapahtuman kierrokset",

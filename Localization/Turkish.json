@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "Rastgele",
   "CustomBossChallenge-BossLineup": "Bosslar",
   "CustomBossChallenge-TierArrives": "Kademe {0}: {1}",
+  "CustomBossChallenge-TierAppearsIn": "Kademe {0}/{1} geliyor: {2} tur sonra",
+  "CustomBossChallenge-TierAppearsInOneRound": "Kademe {0}/{1} geliyor: 1 tur sonra",
   "CustomBossChallenge-ModeStandard": "Standart",
   "CustomBossChallenge-ModeAdvanced": "Gelişmiş",
   "CustomBossChallenge-BossEventRounds": "Boss Etkinliği Turları",

@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "สุ่ม",
   "CustomBossChallenge-BossLineup": "บอส",
   "CustomBossChallenge-TierArrives": "ระดับ {0}: {1}",
+  "CustomBossChallenge-TierAppearsIn": "ระดับ {0}/{1} จะปรากฏใน: {2} รอบ",
+  "CustomBossChallenge-TierAppearsInOneRound": "ระดับ {0}/{1} จะปรากฏใน: 1 รอบ",
   "CustomBossChallenge-ModeStandard": "มาตรฐาน",
   "CustomBossChallenge-ModeAdvanced": "ขั้นสูง",
   "CustomBossChallenge-BossEventRounds": "รอบของอีเวนต์บอส",

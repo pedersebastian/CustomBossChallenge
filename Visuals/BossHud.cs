@@ -117,6 +117,68 @@ public static class BossHud
     }
 
     /// <summary>
+    /// The countdown between bosses in a custom boss game, with the tier that comes next and how many there are, e.g.
+    /// "Tier 3/6 Appears In: 5 Rounds" (#307); null in any other game, which keeps the game's own. It names no boss,
+    /// so a Random boss stays a secret.
+    /// </summary>
+    public static string? ArrivalText(int rounds)
+    {
+        if (!CustomBossState.IsActive || CustomBossState.ActiveOptions is not { } options) return null;
+        var tiers = TierMath.ClampTiers(options.Tiers);
+        var next = Math.Clamp(CustomBossState.HighestDefeatedTier + 1, TierMath.MinTiers, tiers);
+        return rounds == 1 ? Texts.TierAppearsInOneRound.T(next, tiers) : Texts.TierAppearsIn.T(next, tiers, rounds);
+    }
+
+    /// <summary>
+    /// Puts <see cref="ArrivalText"/> in the boss panel's countdown, in a custom boss game
+    /// </summary>
+    public static void ShowArrival(BossUI ui, int rounds)
+    {
+        if (ArrivalText(rounds) is not { } text || ui.bossArrivalTxt == null) return;
+        FitArrival(ui.bossArrivalTxt, text);
+    }
+
+    /// <summary>
+    /// The space the countdown keeps free at its right, inside the panel's background: the game's box ends right at the
+    /// background's edge, which the longer text reaches
+    /// </summary>
+    public const float ArrivalPadding = 40;
+
+    /// <summary>
+    /// Puts the countdown in its box, inside the background, as large as it gets: on one line, or on two after the
+    /// colon, "Уровень 1/6 появится через:" over "20 раундов", when that is larger. Either way it shrinks rather than
+    /// runs out. Arabic, which the game keeps reversed, stays on one line.
+    /// </summary>
+    internal static void FitArrival(TMP_Text box, string text)
+    {
+        box.margin = new Vector4(0, 0, ArrivalPadding, 0);
+        box.textWrappingMode = TextWrappingModes.NoWrap;
+        box.enableAutoSizing = true;
+        box.fontSizeMin = Math.Min(box.fontSizeMin, box.fontSizeMax * 0.5f);
+
+        var colon = text.IndexOfAny(new[] {':', '：'});
+        if (colon > 0 && colon < text.Length - 1 && !LanguageText.RightToLeft)
+        {
+            var broken = text[..(colon + 1)] + "\n" + text[(colon + 1)..].TrimStart();
+            if (FittedScale(box, broken) > FittedScale(box, text)) text = broken;
+        }
+        box.SetText(text);
+    }
+
+    /// <summary>How far the text has to shrink from the box's largest size to fit it, at most 1</summary>
+    private static float FittedScale(TMP_Text box, string text)
+    {
+        var (auto, size) = (box.enableAutoSizing, box.fontSize);
+        box.enableAutoSizing = false;
+        box.fontSize = box.fontSizeMax;
+        var preferred = box.GetPreferredValues(text, float.PositiveInfinity, float.PositiveInfinity);
+        box.enableAutoSizing = auto;
+        box.fontSize = size;
+        var rect = box.rectTransform.rect;
+        return Math.Min(1, Math.Min((rect.width - ArrivalPadding) / preferred.x, rect.height / preferred.y));
+    }
+
+    /// <summary>
     /// The defeat screen shows the boss of the tier being played, the one alive or else the next one: a die while that
     /// one is a secret, with the Elite glow behind it for a Random Elite tier, like the line-up (#283). The screen is
     /// reused, so the glow is switched off again otherwise.

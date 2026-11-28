@@ -28,3 +28,14 @@ internal static class BossUI_ShowInBetweenBossesUI
     [HarmonyPostfix]
     internal static void Postfix(BossUI __instance) => Visuals.BossHud.ShowPortraits(__instance);
 }
+
+/// <summary>
+/// Between bosses the countdown says which tier comes and how many there are: "Tier 3/6 Appears In: 5 Rounds" (#307)
+/// </summary>
+[HarmonyPatch(typeof(BossUI), nameof(BossUI.SetArriveInTxt))]
+[OptionalPatch]
+internal static class BossUI_SetArriveInTxt
+{
+    [HarmonyPostfix]
+    internal static void Postfix(BossUI __instance, int __0) => Visuals.BossHud.ShowArrival(__instance, __0);
+}

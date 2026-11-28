@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "Casuale",
   "CustomBossChallenge-BossLineup": "Boss",
   "CustomBossChallenge-TierArrives": "Livello {0}: {1}",
+  "CustomBossChallenge-TierAppearsIn": "Livello {0}/{1} tra: {2} round",
+  "CustomBossChallenge-TierAppearsInOneRound": "Livello {0}/{1} tra: 1 round",
   "CustomBossChallenge-ModeStandard": "Standard",
   "CustomBossChallenge-ModeAdvanced": "Avanzata",
   "CustomBossChallenge-BossEventRounds": "Round degli eventi boss",

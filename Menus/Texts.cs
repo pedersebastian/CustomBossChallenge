@@ -44,6 +44,10 @@ public static class Texts
     public static readonly string BossLineup = Key(nameof(BossLineup), "Bosses");
     public static readonly string TierArrives = Key(nameof(TierArrives), "Tier {0}: {1}");
 
+    /// <summary>The boss panel's countdown to the next tier (#307): {0} is the tier, {1} the tiers, {2} the rounds</summary>
+    public static readonly string TierAppearsIn = Key(nameof(TierAppearsIn), "Tier {0}/{1} Appears In: {2} Rounds");
+    public static readonly string TierAppearsInOneRound = Key(nameof(TierAppearsInOneRound), "Tier {0}/{1} Appears In: 1 Round");
+
     public static readonly string BossSpeed = Key(nameof(BossSpeed), "Boss Speed");
     public static readonly string BossSpeedInfo = Key(nameof(BossSpeedInfo),
         "How fast the boss moves, in percent of its normal speed. 100 % is the normal speed.");

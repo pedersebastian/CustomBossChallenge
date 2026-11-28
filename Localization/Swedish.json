@@ -168,6 +168,8 @@
   "CustomBossChallenge-RandomBoss": "Slumpad",
   "CustomBossChallenge-BossLineup": "Bossar",
   "CustomBossChallenge-TierArrives": "Nivå {0}: {1}",
+  "CustomBossChallenge-TierAppearsIn": "Nivå {0}/{1} kommer om: {2} rundor",
+  "CustomBossChallenge-TierAppearsInOneRound": "Nivå {0}/{1} kommer om: 1 runda",
   "CustomBossChallenge-ModeStandard": "Standard",
   "CustomBossChallenge-ModeAdvanced": "Avancerat",
   "CustomBossChallenge-BossEventRounds": "Bosseventrundor",
