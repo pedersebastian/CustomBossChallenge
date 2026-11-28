@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.15.0] - 2026-11-28
+
 ### Added
 
 - **Boss Speed and Boss Health are easier to tell apart** (#306): every speed row in the Boss Creator (Boss Speed,
@@ -791,7 +793,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety guards: only Boss Challenges are affected; custom games are always unranked, never saved and never update Boss Challenge records. The weekly Boss Event, co-op and all other modes are untouched.
 - In-game automated tests (Mod Helper `ModTest`) covering config application, skull math, all boss/Elite skulls, ranked/co-op guards, the Customize button and a game test comparing a vanilla and a custom Bloonarius challenge.
 
-[unreleased]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.14.0...HEAD
+[unreleased]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.15.0...HEAD
+[2.15.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.14.0...2.15.0
 [2.14.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.13.0...2.14.0
 [2.13.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.12.0...2.13.0
 [2.12.0]: https://github.com/pedersebastian/CustomBossChallenge/compare/2.11.0...2.12.0
