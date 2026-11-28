@@ -119,6 +119,9 @@ public class ChangelogTests
     [InlineData("2.14", "2.14.0")]
     [InlineData("v2.15.1", "2.15.1")]
     [InlineData(" 3.0.0 ", "3.0.0")]
+    [InlineData("2.15.0-beta", "2.15.0")]
+    [InlineData("2.15.0-beta.2+abc", "2.15.0")]
+    [InlineData("v2.16.0+build.7", "2.16.0")]
     public void Versions_are_read_with_three_parts(string text, string expected) =>
         Assert.Equal(expected, Changelog.ReadVersion(text)!.ToString(3));
 
@@ -127,6 +130,7 @@ public class ChangelogTests
     [InlineData("")]
     [InlineData("Unreleased")]
     [InlineData("two")]
+    [InlineData("-beta")]
     public void Anything_else_is_no_version(string? text) => Assert.Null(Changelog.ReadVersion(text));
 
     [Fact]
@@ -151,6 +155,12 @@ public class ChangelogTests
     public void A_downgrade_shows_nothing_and_keeps_the_newer_version() =>
         Assert.Equal(new WhatsNewRule.Decision(false, new Version(2, 16, 0), "2.16.0"),
             WhatsNewRule.Decide("2.16.0", true, "2.15.0"));
+
+    [Fact]
+    public void A_prerelease_record_counts_as_its_release() =>
+        // #321: "2.15.0-beta" wasn't read, so the popup came back after every start
+        Assert.Equal(new WhatsNewRule.Decision(false, new Version(2, 15, 0), "2.15.0"),
+            WhatsNewRule.Decide("2.15.0-beta", true, "2.15.0"));
 
     [Fact]
     public void An_unreadable_record_counts_as_none() =>

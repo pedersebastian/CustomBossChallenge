@@ -93,7 +93,7 @@ public static class WhatsNew
         var points = Points();
         if (points.Count == 0) return false;
 
-        Show(Body(points));
+        if (!Show(Body(points))) return false;
         ModHelper.Msg<CustomBossChallenge>($"What's new in {Current}, last seen " +
                                            $"{decision.Since?.ToString(3) ?? "an earlier version"}: {points.Count} point(s)");
         return true;
@@ -127,19 +127,46 @@ public static class WhatsNew
     }
 
     /// <summary>
-    /// The game's popup with <paramref name="body"/>, OK and Don't Show Again, its text in a list that scrolls
+    /// Whether a popup <see cref="Show"/> queued is still being looked for. The list, its popup and the Don't Show
+    /// Again listener are kept for one popup, so a second Show meanwhile is left out (#321): both would have picked the
+    /// same new popup, and the second one stayed without its list.
     /// </summary>
-    internal static void Show(string body) =>
+    internal static bool Waiting { get; private set; }
+
+    /// <summary>
+    /// The game's popup with <paramref name="body"/>, OK and Don't Show Again, its text in a list that scrolls. Does
+    /// nothing while an earlier call's popup is still being looked for.
+    /// </summary>
+    /// <returns>Whether the popup was queued</returns>
+    internal static bool Show(string body)
+    {
+        if (Waiting)
+        {
+            ModHelper.Warning<CustomBossChallenge>("What's new is opening already, so it isn't shown a second time");
+            return false;
+        }
+        Waiting = true;
         PopupScreen.instance.SafelyQueue(screen =>
         {
-            var before = Popups().Select(popup => popup.Pointer).ToHashSet();
-            // The game also cancels a popup with Esc, so cancelling only closes it: the button's own click turns the
-            // setting off (AddScroll)
-            screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.WhatsNew.T(), body,
-                new Action(Restore), Texts.Ok.T(), new Action(Restore), Texts.DontShowAgain.T(),
-                Popup.TransitionAnim.Scale);
+            HashSet<IntPtr> before;
+            try
+            {
+                before = Popups().Select(popup => popup.Pointer).ToHashSet();
+                // The game also cancels a popup with Esc, so cancelling only closes it: the button's own click turns
+                // the setting off (AddScroll)
+                screen.ShowPopup(PopupScreen.Placement.menuCenter, Texts.WhatsNew.T(), body,
+                    new Action(Restore), Texts.Ok.T(), new Action(Restore), Texts.DontShowAgain.T(),
+                    Popup.TransitionAnim.Scale);
+            }
+            catch
+            {
+                Waiting = false;
+                throw;
+            }
             MelonLoader.MelonCoroutines.Start(ScrollWhenShown(before));
         });
+        return true;
+    }
 
     /// <summary>Don't Show Again's own button, and what its click does besides closing the popup</summary>
     private static (Button Button, UnityEngine.Events.UnityAction Click)? dontShowAgain;
@@ -195,11 +222,20 @@ public static class WhatsNew
         }
         if (popup == null)
         {
+            Waiting = false;
             ModHelper.Warning<CustomBossChallenge>("The What's new popup wasn't found to make its text scroll");
             yield break;
         }
 
-        var list = AddScroll(popup);
+        RectTransform list;
+        try
+        {
+            list = AddScroll(popup);
+        }
+        finally
+        {
+            Waiting = false;
+        }
         var text = popup.body.rectTransform;
         while (list != null && text != null)
         {

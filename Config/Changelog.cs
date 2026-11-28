@@ -122,10 +122,18 @@ public static class Changelog
     }
 
     /// <summary>
-    /// A version like "2.14.0"; null for "Unreleased" or anything else
+    /// A version like "2.14.0"; null for "Unreleased" or anything else. A prerelease or build part ("2.15.0-beta",
+    /// "2.15.0+abc") is read as its release, so a test build's record doesn't show the popup again (#321).
     /// </summary>
     public static Version? ReadVersion(string? text) =>
-        System.Version.TryParse(text?.Trim().TrimStart('v', 'V'), out var version) ? Normal(version) : null;
+        System.Version.TryParse(WithoutSuffix(text?.Trim().TrimStart('v', 'V')), out var version) ? Normal(version) : null;
+
+    /// <summary>The version without what follows its first "-" or "+"</summary>
+    private static string? WithoutSuffix(string? text)
+    {
+        var end = text?.IndexOfAny(['-', '+']) ?? -1;
+        return end < 0 ? text : text![..end];
+    }
 
     /// <summary>2.14 is 2.14.0, so versions written either way compare equal</summary>
     private static Version Normal(Version version) =>

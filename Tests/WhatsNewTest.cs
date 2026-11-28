@@ -123,8 +123,11 @@ public class WhatsNewTest : ContinueTestBase
         var sentence = string.Join(' ', Enumerable.Repeat("The Boss Creator shows something new.", 8));
         var many = Enumerable.Range(1, 8).Select(i => (new ChangelogEntry(WhatsNew.Current, "", []),
             new ChangelogPoint($"A long title for point number {i} of the list", "", sentence))).ToList();
-        WhatsNew.Show(WhatsNew.Body(many));
+        AssertEquals(WhatsNew.Show(WhatsNew.Body(many)), true, "Showing What's new");
+        // #321: a second Show before the first popup opens is left out, not a second popup without its list
+        AssertEquals(WhatsNew.Show(WhatsNew.Body(many)), false, "What's new shown twice at once");
         yield return WaitForList(found => popup = found);
+        AssertEquals(WhatsNew.Waiting, false, "What's new still waiting for its popup");
         var scroll = WhatsNew.ScrollOf(popup!)!;
         var longText = ScrollText(popup!);
         AssertEquals(longText.fontSize, WhatsNew.FontSize, "The size of a long text");
