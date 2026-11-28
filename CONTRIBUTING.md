@@ -137,7 +137,10 @@ format, or look at the weekly report.
   `Localization/` and `data/` into `web/.stryker-tmp/`, since Stryker runs the tests in a copy of `web/` there and
   some tests read those files. The tests run with `vitest.stryker.config.mjs`, which points `@cbc/share-code` at that
   copy: `node_modules` links to the real package, which Stryker never changes. Mutants in code that runs once when a module loads
-  (`ignoreStatic`) are left out: each would run every test, which more than doubles the time.
+  (`ignoreStatic`) are left out: each would run every test, which more than doubles the time. So don't load modules
+  again in a test (`vi.resetModules()` and `await import(...)`): Stryker then counts that test as covering all the code
+  that runs when those modules load, and tries those mutants against it alone, so hundreds survive. To swap a global a
+  module uses as it loads, stub it in `vi.hoisted` instead (see `web/test/skull-labels.test.ts`).
 - **Mod math** (Stryker.NET): the pure math in `Config/` (`TierMath`, `TierBossMath`, `SkullMath`, `RankedTime`,
   `ParagonMath.Slider`, `HealthSteps`, `BossRoundsMath`, `BossRowMath`, `DifficultyRating`, `ShownNumber`), built from
   `Shared/` and checked by `UnitTests` and `PropertyTests`. No game needed. Settings and the file list in

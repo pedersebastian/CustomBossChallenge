@@ -4,28 +4,37 @@
 // ResizeObserver hands the bars over and each label says where it is.
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { defaultOptions, type BossOptions } from "@cbc/share-code";
+import { decode, defaultOptions, type BossOptions } from "@cbc/share-code";
+import { releaseSetup, renderSetup, renderSkulls } from "../src/preview/render";
+import { EXAMPLES } from "../src/data/types";
 
-class FakeObserver {
-  static last: FakeObserver;
-  readonly watched = new Set<Element>();
-  constructor(readonly callback: ResizeObserverCallback) {
-    FakeObserver.last = this;
+// render.ts makes its one observer when it loads, so the stand-in must be in place before the imports above run.
+// Loading render.ts again in each test (vi.resetModules) would do it too, but then Stryker counts these tests as
+// covering all code that runs when a module loads, and tries those mutants against these three tests only (#268).
+const { FakeObserver } = vi.hoisted(() => {
+  class FakeObserver {
+    static last: FakeObserver;
+    readonly watched = new Set<Element>();
+    constructor(readonly callback: ResizeObserverCallback) {
+      FakeObserver.last = this;
+    }
+    observe(target: Element): void {
+      this.watched.add(target);
+    }
+    unobserve(target: Element): void {
+      this.watched.delete(target);
+    }
+    disconnect(): void {
+      this.watched.clear();
+    }
+    /** As if every bar watched had changed size */
+    resize(): void {
+      this.callback([...this.watched].map((target) => ({ target }) as ResizeObserverEntry), this as unknown as ResizeObserver);
+    }
   }
-  observe(target: Element): void {
-    this.watched.add(target);
-  }
-  unobserve(target: Element): void {
-    this.watched.delete(target);
-  }
-  disconnect(): void {
-    this.watched.clear();
-  }
-  /** As if every bar watched had changed size */
-  resize(): void {
-    this.callback([...this.watched].map((target) => ({ target }) as ResizeObserverEntry), this as unknown as ResizeObserver);
-  }
-}
+  vi.stubGlobal("ResizeObserver", FakeObserver);
+  return { FakeObserver };
+});
 
 /** Where each label is, from its text: [left, right] in px */
 const RECTS: Record<string, [number, number]> = {
@@ -39,17 +48,15 @@ const RECTS: Record<string, [number, number]> = {
 };
 
 beforeEach(() => {
-  vi.stubGlobal("ResizeObserver", FakeObserver);
+  // The bars of the test before are gone from the page
+  FakeObserver.last.watched.clear();
   vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
     const [left, right] = RECTS[this.textContent ?? ""] ?? [0, 0];
     return { left, right, top: 0, bottom: 0, width: right - left, height: 0, x: left, y: 0, toJSON: () => ({}) } as DOMRect;
   });
-  // A fresh render.ts, so its one observer is the stand-in
-  vi.resetModules();
 });
 
 afterEach(() => {
-  vi.unstubAllGlobals();
   vi.restoreAllMocks();
   document.body.replaceChildren();
 });
@@ -57,8 +64,7 @@ afterEach(() => {
 const custom = (skulls: string): BossOptions => ({ ...defaultOptions(), Boss: "Lych", SkullMode: "Custom", CustomSkulls: skulls });
 
 describe("the Skull Preview's labels", () => {
-  it("go one line down when they would come too close to the one before", async () => {
-    const { renderSkulls } = await import("../src/preview/render");
+  it("go one line down when they would come too close to the one before", () => {
     const bar = renderSkulls(custom("90, 89, 88, 50, 49")).querySelector<HTMLElement>(".skull-bar")!;
     expect(FakeObserver.last.watched.has(bar)).toBe(true);
 
@@ -75,8 +81,7 @@ describe("the Skull Preview's labels", () => {
     expect(bar.style.marginBottom).toBe("100px");
   });
 
-  it("keep one line when they don't overlap", async () => {
-    const { renderSkulls } = await import("../src/preview/render");
+  it("keep one line when they don't overlap", () => {
     const bar = renderSkulls(custom("90, 50")).querySelector<HTMLElement>(".skull-bar")!;
     FakeObserver.last.resize();
     expect([...bar.querySelectorAll<HTMLElement>(".skull span")].map((label) => label.style.top)).toEqual(["48px", "48px"]);
@@ -84,9 +89,6 @@ describe("the Skull Preview's labels", () => {
   });
 
   it("are no longer laid out once the setup is taken away", async () => {
-    const { releaseSetup, renderSetup } = await import("../src/preview/render");
-    const { decode } = await import("@cbc/share-code");
-    const { EXAMPLES } = await import("../src/data/types");
     const read = await decode(EXAMPLES.find((entry) => entry.name === "Boss Gauntlet")!.code);
     if (!read.ok) throw new Error(read.reason);
 
