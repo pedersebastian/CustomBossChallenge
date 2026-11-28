@@ -169,9 +169,9 @@ describe("the Past Events page", () => {
   it("follows the address's filters, but a # like the skip link's keeps them", async () => {
     const root = await page();
     goTo("#boss=diamondback");
-    expect(ids(root)).toEqual(["Diamondback8_mvaa404d"]);
+    expect(ids(root).sort()).toEqual(["Diamondback6_mrea6zh0", "Diamondback8_mvaa404d"]);
     goTo("#top");
-    expect(ids(root)).toEqual(["Diamondback8_mvaa404d"]);
+    expect(ids(root).sort()).toEqual(["Diamondback6_mrea6zh0", "Diamondback8_mvaa404d"]);
     expect(root.querySelectorAll<HTMLSelectElement>(".past-events-filter")[0].value).toBe("diamondback");
     goTo("");
     expect(rows(root)).toHaveLength(cases.events.length);

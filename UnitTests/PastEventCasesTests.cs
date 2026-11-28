@@ -54,6 +54,7 @@ public class PastEventCasesTests
         yield return ("a round set the Boss Creator can't play", Archived("Vortex10_l7si69ji"));
         yield return ("Alternate Bloons Rounds", Archived("Bloonarius52ABR_lyhw36tt"));
         yield return ("blocked tiers and a start round", Archived("Blastapopoulos20_mv08g41v"));
+        yield return ("placeholder rules with 0 max towers and lives", Archived("Diamondback6_mrea6zh0"));
         yield return ("rules the Boss Creator can't play", Changed("Lych47_m5zq59de", "MadeUpUnsupported", e =>
         {
             foreach (var level in new[] {"standard", "elite"})

@@ -77,6 +77,33 @@ describe("past events, like the mod", () => {
     }
   });
 
+  it("leaves 0 max towers and lives as the game's default, as the mod does (#320)", async () => {
+    // Diamondback 6's placeholder rules have 0 for both, which gave a code with no towers and one life
+    const diamondback = casesById.get("Diamondback6_mrea6zh0")!;
+    for (const elite of [false, true]) {
+      const setup = mapPastEvent(diamondback, elite);
+      expect(setup.challenge.maxTowers).toBeUndefined();
+      const start = setup.challenge.startRules as Record<string, unknown>;
+      expect(start.maxLives).toBeUndefined();
+      expect(start.lives).toBe(elite ? 100 : 200);
+      const { code } = await pastEventCode(diamondback, elite);
+      const read = await decode(code!);
+      if (!read.ok) throw new Error(read.reason);
+      expect(read.challenge.lives).toBe(elite ? 100 : 200);
+      // -1: the game's own default
+      expect(read.challenge.maxLives).toBe(-1);
+      expect(read.challenge.maxTowers).toBe(-1);
+    }
+
+    for (const event of read(archive())) {
+      for (const elite of [false, true]) {
+        const setup = mapPastEvent(event, elite);
+        expect(setup.challenge.maxTowers, `${event.id} ${elite}`).not.toBe(0);
+        expect((setup.challenge.startRules as Record<string, unknown> | undefined)?.maxLives, `${event.id} ${elite}`).not.toBe(0);
+      }
+    }
+  });
+
   it("makes a code the mod reads with the event's rules and name", async () => {
     const lych = casesById.get("Lych47_m5zq59de")!;
     const { setup, code } = await pastEventCode(lych, true);
