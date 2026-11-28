@@ -68,6 +68,20 @@ describe("tier glow on the website", () => {
     expect(tierGlow("NoSuchBoss", 10)!.color).toBe(TIER_LOOK.defaultTheme[STEPS - 1]);
   });
 
+  it("writes each value into its variable", () => {
+    const style = tierGlowStyle({ color: "#123456", glow: [0.25, 0.5], aura: [0.1, 0.2], auraReach: 12, period: 1.5 });
+    expect(style).toBe(
+      "--tier-color: #123456; --glow-low: 0.250; --glow-high: 0.500; --aura-low: 0.100; --aura-high: 0.200; " +
+        "--aura-reach: 12px; --pulse-period: 1.5s",
+    );
+  });
+
+  it("reaches 40 px of aura for each step the aura is bigger than the boss", () => {
+    for (const curve of TIER_LOOK.tiers) {
+      expect(tierGlow("Lych", curve.tier)!.auraReach).toBe(Math.round((curve.auraSize - 1) * 40));
+    }
+  });
+
   it("only sets variables the stylesheet uses", () => {
     const names = tierGlowStyle(tierGlow("Lych", 10)!).match(/--[a-z-]+(?=:)/g)!;
     expect(names.length).toBeGreaterThan(0);

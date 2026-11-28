@@ -32,6 +32,7 @@ public class CustomBossChallenge : BloonsTD6Mod
     public override void OnMainMenu()
     {
         _ = Patches.PatchCheck.AllInPlace;
+        Menus.LanguageText.ListenForLanguage();
         Patches.ConflictReport.LogOnce();
         Visuals.TierLookApplier.Prepare();
         Config.Gildebloon.Register(Il2CppAssets.Scripts.Unity.Game.instance.model);

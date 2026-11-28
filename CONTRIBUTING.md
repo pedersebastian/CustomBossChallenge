@@ -135,6 +135,59 @@ the website's tests must read exactly like the mod. After changing the generator
 $env:CBC_GENERATED_CODES = "1"; dotnet test --project PropertyTests; Remove-Item env:CBC_GENERATED_CODES
 ```
 
+### Mutation tests
+
+Mutation tests find code the tests run but don't really check (#268). [Stryker](https://stryker-mutator.io/) makes
+many small changes to the code, one at a time (a *mutant*: `<` to `<=`, `+` to `-`, a condition to `true`, a string to
+`""`), and runs the tests on each. A mutant no test fails on has *survived*: that change could ship without a test
+noticing. They are slow, so they aren't part of the checks on every push; run them after changing the math or the code
+format, or look at the weekly report.
+
+- **Website** (StrykerJS): the share-code package (`web/packages/share-code/src/`) and the preview math
+  (`web/src/preview/`), checked by all of `npm test`. Settings in `web/stryker.config.mjs`. In `web/`:
+
+  ```
+  npm run mutation
+  ```
+
+  The report is `web/reports/mutation/index.html`. To try one file:
+  `npm run mutation -- --mutate src/preview/timeline.ts`. `scripts/mutation.mjs` first copies `CHANGELOG.md`,
+  `Localization/` and `data/` into `web/.stryker-tmp/`, since Stryker runs the tests in a copy of `web/` there and
+  some tests read those files. The tests run with `vitest.stryker.config.mjs`, which points `@cbc/share-code` at that
+  copy: `node_modules` links to the real package, which Stryker never changes. Mutants in code that runs once when a module loads
+  (`ignoreStatic`) are left out: each would run every test, which more than doubles the time. So don't load modules
+  again in a test (`vi.resetModules()` and `await import(...)`): Stryker then counts that test as covering all the code
+  that runs when those modules load, and tries those mutants against it alone, so hundreds survive. To swap a global a
+  module uses as it loads, stub it in `vi.hoisted` instead (see `web/test/skull-labels.test.ts`).
+- **Mod math** (Stryker.NET): the pure math in `Config/` (`TierMath`, `TierBossMath`, `SkullMath`, `RankedTime`,
+  `ParagonMath.Slider`, `HealthSteps`, `BossRoundsMath`, `BossRowMath`, `DifficultyRating`, `ShownNumber`), built from
+  `Shared/` and checked by `UnitTests` and `PropertyTests`. No game needed. Settings and the file list in
+  `Shared/stryker-config.json`, the tool's version in `Shared/.config/dotnet-tools.json`. In `Shared/`:
+
+  ```
+  dotnet tool restore
+  dotnet stryker
+  ```
+
+  The report is in `Shared/StrykerOutput/<time>/reports/mutation-report.html`. To try one file, add
+  `--mutate ../Config/SkullMath.cs`. Stryker.NET also compiles mutants of the other files in `Shared/` and prints
+  compile warnings for some of them; only the listed files are tested and counted. Mutants of `static readonly` fields (like
+  `TierBoss.Bosses` or a `Regex`) survive in some runs and not in others, since the field is set once per test process;
+  the score can move by a few percent from that alone. `"coverage-analysis": "all"` would fix it, but runs every test
+  for every mutant, which takes hours.
+
+A mutant that makes the tests run too long counts as a *Timeout*, which Stryker scores as killed: usually the change
+made a loop that never ends. On a busy machine (two Stryker runs at once, a build, a video call) a mutant the tests
+don't catch can time out too, so a local Timeout isn't proof that a test catches it (#302). Stryker itself starts a test
+runner on every core but one, which can be enough: run it with nothing else heavy going on, try fewer runners
+(`npm run mutation -- --concurrency 4`), and trust the weekly run on GitHub when the two disagree. `timeoutMS` in
+`web/stryker.config.mjs` gives every mutant 15 s more than its tests took without it.
+
+`.github/workflows/mutation.yml` runs both every Sunday and by hand (Actions → Mutation tests → Run workflow), and
+uploads each HTML report as an artifact. It never fails on a low score. When a survivor matters, add a test that fails
+on it; when it doesn't (an equivalent mutant, a log text, a guard that can't be reached), leave it, or file an issue
+if it needs a closer look.
+
 ### In-game tests
 
 Everything else runs inside the game, with automated tests built on Mod Helper's `ModTest`. They cover:
@@ -202,7 +255,9 @@ several languages one after the other and prints a table of what failed, e.g.
   English written into the test. The game keeps a right-to-left text reversed, so in Arabic `40` is `04` in `.text`,
   and the mod leaves the tags out of popups and lists there (`LanguageText.ForGameText`). `Shown()` turns it back and
   leaves the tags out. A mod text that the game or Mod Helper looks up by its key (a modifier's `titleLocKey`, Mod
-  Settings and their info popups) isn't shaped for Arabic (#292): compare it with `ScreenText.ByGame(key)`.
+  Settings and their info popups) shows the same as `Texts.X.T()`: the mod puts its Arabic into the game's table
+  shaped (`LanguageText.ShapeTable`, #292). For a text as it is written, use `LanguageText.WrittenText(key)`, never
+  `Localize(key)`.
 - Don't count on how long a translation is: a text that wraps or shrinks in English may fit on one line in another
   language.
 - Run the quick suite in Arabic after changing a text a test looks at, and before a release. Run all languages now
@@ -332,6 +387,7 @@ guards (`[GuardPatch]`), so a bug report's `Latest.log` shows it.
   to be run locally; the release check only sees their report.
 - **Property tests**: `dotnet test --project PropertyTests`, see above.
 - **Website**: `npm test` and `npm run build` in `web/`, see below.
+- **Mutation tests** are not here: `mutation.yml` runs them weekly and by hand, see above.
 - **Boss events**: `node --test "tools/boss-events/*.test.mjs"`, the tests of the boss events backfill and archiver,
   see below.
 - **Game version**: `node --test "tools/game-version/*.test.mjs"`, the tests of the daily check for a new BTD6 version,

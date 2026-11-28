@@ -144,9 +144,9 @@ public class BossCreatorTest : CustomBossTest
         Assert(scrollArea.rect.height >= excludedSlots.rect.height - 1,
             $"All excluded modifiers must fit: area {scrollArea.rect.height}, modifiers {excludedSlots.rect.height}");
         fortified.Select();
-        // The game looks the title up itself (titleLocKey)
-        Assert(modifiers.descriptionTitle.ShowsExactly(ScreenText.ByGame(Texts.AllFortified)),
-            $"All Fortified info title: '{modifiers.descriptionTitle.Shown()}', expected '{ScreenText.ByGame(Texts.AllFortified)}'");
+        // The game looks the title up itself (titleLocKey): shaped like the mod's own texts in Arabic (#292)
+        Assert(modifiers.descriptionTitle.ShowsExactly(ScreenText.Plain(Texts.AllFortified.T())),
+            $"All Fortified info title: '{modifiers.descriptionTitle.Shown()}', expected '{ScreenText.Plain(Texts.AllFortified.T())}'");
         fortified.includeToggle.isOn = true;
         yield return new WaitForSecondsRealtime(0.5f);
         AssertEquals(fortified.transform.parent.Pointer, modifiers.includedContainer.Pointer, "All Fortified moves to included");

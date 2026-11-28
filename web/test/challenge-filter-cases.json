@@ -1,0 +1,29 @@
+{
+  "about": "A code's challenge changes (its \"c\"), and what a code may keep of them with the right types (#108, #302): kept is what CodeFormat.FilterChallenge keeps, dropped the paths it leaves out, in order. Against the game's default challenge (web/src/data/game.json), or the case's own defaults. Read by web/test/decode-details.test.ts and UnitTests/ChallengeFilterTests.cs.",
+  "cases": [
+    {"name": "an unknown field with an empty object is still named", "c": {"nope": {}}, "kept": {}, "dropped": ["nope"]},
+    {"name": "text where an object belongs", "c": {"bloonModifiers": "ab"}, "kept": {}, "dropped": ["bloonModifiers"]},
+    {"name": "a list where an object belongs", "c": {"bloonModifiers": [1]}, "kept": {}, "dropped": ["bloonModifiers"]},
+    {"name": "__proto__ is not a field, whatever it holds", "c": {"__proto__": {"toString": 1}}, "kept": {}, "dropped": ["__proto__"]},
+    {"name": "constructor is not a field", "c": {"constructor": {"name": "x"}}, "kept": {}, "dropped": ["constructor"]},
+    {"name": "the smallest and largest int", "c": {"maxTowers": 2147483647, "maxParagons": -2147483648}, "kept": {"maxTowers": 2147483647, "maxParagons": -2147483648}, "dropped": []},
+    {"name": "just past the largest int", "c": {"maxTowers": 2147483648}, "kept": {}, "dropped": ["maxTowers"]},
+    {"name": "just past the smallest int", "c": {"maxParagons": -2147483649}, "kept": {}, "dropped": ["maxParagons"]},
+    {"name": "a float written as text", "c": {"bloonModifiers": {"speedMultiplier": "1"}}, "kept": {}, "dropped": ["bloonModifiers.speedMultiplier"]},
+    {"name": "a whole number is a float too", "c": {"bloonModifiers": {"speedMultiplier": 2}}, "kept": {"bloonModifiers": {"speedMultiplier": 2}}, "dropped": []},
+    {"name": "a tower change that isn't an object", "c": {"towers": {"$items": {"0": 5}}}, "kept": {}, "dropped": ["towers[0]"]},
+    {"name": "a negative tower index", "c": {"towers": {"$items": {"-1": {"max": 2}}}}, "kept": {}, "dropped": ["towers[-1]"]},
+    {"name": "a tower index with a sign", "c": {"towers": {"$items": {"+1": {"max": 2}}}}, "kept": {}, "dropped": ["towers[+1]"]},
+    {"name": "a tower index that isn't whole", "c": {"towers": {"$items": {"1.5": {"max": 2}}}}, "kept": {}, "dropped": ["towers[1.5]"]},
+    {"name": "a tower index with letters after it", "c": {"towers": {"$items": {"1x": {"max": 2}}}}, "kept": {}, "dropped": ["towers[1x]"]},
+    {"name": "only bad tower indexes leave no list", "c": {"towers": {"$items": {"x": {"max": 1}}}}, "kept": {}, "dropped": ["towers[x]"]},
+    {"name": "$items next to another key isn't a list of changes", "c": {"towers": {"$items": {"0": {"max": 2}}, "x": 1}}, "kept": {}, "dropped": ["towers"]},
+    {"name": "$items that isn't an object", "c": {"towers": {"$items": 5}}, "kept": {}, "dropped": ["towers"]},
+    {"name": "a tower list that changes nothing is named", "c": {"towers": [{"tower": "DartMonkey"}]}, "kept": {}, "dropped": ["towers"]},
+    {"name": "a tower entry with a number for its tower", "c": {"towers": [{"tower": 5, "max": 1}]}, "kept": {}, "dropped": ["towers[0]"]},
+    {"name": "a tower entry that is text", "c": {"towers": ["DartMonkey"]}, "kept": {}, "dropped": ["towers[0]"]},
+    {"name": "$key inside a tower entry", "c": {"towers": {"$items": {"1": {"$key": "tower", "max": 2}}}}, "kept": {"towers": {"$items": {"1": {"max": 2}}}}, "dropped": ["towers[1].$key"]},
+    {"name": "tower changes without default towers", "c": {"towers": {"$items": {"0": {"max": 2}}}}, "kept": {}, "dropped": ["towers[0]"], "defaults": {}},
+    {"name": "a whole tower list without default towers", "c": {"towers": [{"tower": "DartMonkey", "max": 1}]}, "kept": {}, "dropped": ["towers"], "defaults": {}}
+  ]
+}

@@ -315,6 +315,7 @@ public class WebDataTest : CustomBossTest
         var readme = new StreamReader(typeof(WebDataTest).Assembly.GetManifestResourceStream("CustomBossChallenge.README.md")!)
             .ReadToEnd();
         var codes = Regex.Matches(readme, @"CBC\d:[A-Za-z0-9_-]+").Select(match => match.Value)
+            .Concat(SetupCodeTest.OlderCodes)
             .Concat(Examples().Select(example => (string) example["code"]!))
             .Concat(new[]
             {

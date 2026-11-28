@@ -10,6 +10,10 @@ describe("Boss Health steps", () => {
     expect(healthAt(LAST_POSITION)).toBe(5000);
     expect(healthAt(-3)).toBe(5);
     expect(healthAt(9999)).toBe(5000);
+    // A slider position is never outside the slider, also for a value below 5 %
+    expect(healthPosition(-50)).toBe(0);
+    expect(healthPosition(0)).toBe(0);
+    expect(healthPosition(99999)).toBe(LAST_POSITION);
   });
 
   it("are 5 up to 500 % and 10 above", () => {

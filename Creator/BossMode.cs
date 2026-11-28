@@ -199,7 +199,7 @@ public static class BossMode
     private static DefaultNameTexts PlayerNameTexts => new(Raw(Texts.DefaultName), Raw(Texts.DefaultEliteName),
         Raw(Texts.MixedName));
 
-    private static string Raw(string key) => BTD_Mod_Helper.Extensions.StringExt.Localize(key);
+    private static string Raw(string key) => Menus.LanguageText.WrittenText(key);
 
     /// <summary>
     /// The default names in every language the mod has, so a name given in another language is still known as one

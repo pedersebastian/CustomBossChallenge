@@ -17,6 +17,19 @@ namespace CustomBossChallenge.Tests;
 /// </summary>
 public class SetupCodeTest : CustomBossTest
 {
+    /// <summary>
+    /// Codes players were given before, which must keep loading as they were: the README showed them until it only
+    /// said that codes start with CBC (496be7a). With the codes the README still shows they cover versions 1 to 4, and
+    /// WebDataTest puts them in the website's fixtures.
+    /// </summary>
+    public static readonly string[] OlderCodes =
+    [
+        // A new setup with Boss Event Rounds off
+        "CBC1:q1bKV7KqrtVRSgZSSsWpqSlKVoamZiZGFmbGlrW1AA",
+        // Elite Vortex with 7 tiers, +20 % speed and +50 % health per tier
+        "CBC2:q1bKV7KqVnLKLy5WslIKyy8qSa1Q0lFyzcksSVWyKikqTdVRCslMLQLKmusoBRekpqYEpBaBRJSsjAx0lDxSE3NKMuBCpga1OkrJQBNrawE",
+    ];
+
     protected override IEnumerator Run()
     {
         var defaultCode = SetupCode.Encode(new BossOptions(), DailyChallengeModel.CreateDefaultEditorModel());
@@ -123,22 +136,26 @@ public class SetupCodeTest : CustomBossTest
         Assert(!SetupCode.TryDecode("CBC9:" + payload, out _, out _, out var tooNew), "A newer code must not decode");
         AssertEquals(tooNew, CodeProblem.TooNew, "Problem of a code from a newer version");
 
-        // The example codes in the README load, and each is the version its options need
+        // The example codes in the README and the codes players were given before load, and each is the version its
+        // options need
         using var readme = new System.IO.StreamReader(AssertNotNull(
             typeof(SetupCodeTest).Assembly.GetManifestResourceStream("CustomBossChallenge.README.md"), "No README in the mod")!);
-        var examples = Regex.Matches(readme.ReadToEnd(), @"CBC\d:[A-Za-z0-9_-]{20,}")
+        var readmeCodes = Regex.Matches(readme.ReadToEnd(), @"CBC\d:[A-Za-z0-9_-]{20,}")
             .Select(match => match.Value).ToList();
-        Assert(examples.Any(example => example.StartsWith(SetupCode.Prefix)), "The README must show a version 1 code");
-        Assert(examples.Any(example => example.StartsWith(SetupCode.Version2Prefix)), "The README must show a version 2 code");
-        Assert(examples.Any(example => example.StartsWith(SetupCode.Version3Prefix)), "The README must show a version 3 code");
+        Assert(readmeCodes.Count > 0, "The README must show a code");
+        var examples = readmeCodes.Concat(OlderCodes).ToList();
+        foreach (var prefix in new[] {SetupCode.Prefix, SetupCode.Version2Prefix, SetupCode.Version3Prefix, SetupCode.Version4Prefix})
+        {
+            Assert(examples.Any(example => example.StartsWith(prefix)), $"No README or older code starts with {prefix}");
+        }
         foreach (var example in examples)
         {
             Assert(SetupCode.TryDecode(example, out var readmeOptions, out var readmeDcm, out var readmeProblem),
-                $"README code {Shorten(example)} doesn't load: {readmeProblem}");
+                $"Code {Shorten(example)} doesn't load: {readmeProblem}");
             AssertEquals(example[..SetupCode.PrefixLength], SetupCode.PrefixFor(readmeOptions, readmeDcm),
-                $"README code {Shorten(example)} must be the version its options need");
+                $"Code {Shorten(example)} must be the version its options need");
         }
-        Log($"{examples.Count} README codes load");
+        Log($"{readmeCodes.Count} README codes and {OlderCodes.Length} older codes load");
         yield break;
     }
 

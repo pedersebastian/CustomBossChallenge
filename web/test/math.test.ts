@@ -91,6 +91,13 @@ describe("tiers", () => {
     expect(formatHealth(9_960)).toBe("10k");
   });
 
+  it("switches to k, M and B at exactly a thousand, a million and a billion", () => {
+    expect(formatHealth(999)).toBe("999");
+    expect(formatHealth(1_000)).toBe("1k");
+    expect(formatHealth(1_000_000)).toBe("1M");
+    expect(formatHealth(1_000_000_000)).toBe("1B");
+  });
+
   it("converts the old Extra Tier Health", () => {
     expect(healthPerTierFromExtraTierHealth(150)).toBe(0);
     expect(healthPerTierFromExtraTierHealth(225)).toBe(10);

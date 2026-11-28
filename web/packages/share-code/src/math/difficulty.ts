@@ -7,7 +7,6 @@
 // about 1 point, and so does a rule that takes a big tool away. STAR_STEPS turns the points into stars.
 
 import { bossOf, CHIMPS_MODE, chimpsEventRoundSet, effectiveSpawnRounds, entryOf, tierSkullPercents } from "../options";
-import { DEFAULT_COUNT } from "./skulls";
 import { clampTiers, extraTierFactor, FIRST_SPAWN_ROUND, healthFactor, ROUNDS_BETWEEN_TIERS, speedFactor, VANILLA_TIERS } from "./tiers";
 import type { SetupFacts } from "./warnings";
 
@@ -28,6 +27,7 @@ export const BOSS_WEIGHTS: Record<string, number> = {
   Diamondback: 0.5,
   Lych: 0.75,
   Phayze: 1,
+  Gildebloon: 0.75,
 };
 
 /** A Random tier's boss isn't known before the game, so it counts as an average boss */
@@ -45,8 +45,45 @@ export const TIER_COUNT_WEIGHT = 0.25;
  */
 export const GAP_WEIGHT = 0.5;
 
-/** What each skull fewer than the default three adds: fewer skulls, fewer breathers */
-export const SKULL_WEIGHT = 0.2;
+/**
+ * What each skull more than the boss's own adds (#304, DifficultyRating.SkullWeight): every skull uses the boss's ability
+ * once more. Phayze counts the most, as it also gets stronger at every skull; Bloonarius's skulls only send bloons.
+ */
+export const SKULL_WEIGHTS: Record<string, number> = {
+  Bloonarius: 0.05,
+  Diamondback: 0.1,
+  Vortex: 0.15,
+  Blastapopoulos: 0.15,
+  Dreadbloon: 0.2,
+  Lych: 0.2,
+  Phayze: 0.3,
+  Gildebloon: 0.2,
+};
+
+/** A Random tier's boss isn't known before the game, so its skulls count as an average boss's */
+export const RANDOM_SKULL_WEIGHT = 0.15;
+
+/** What each skull fewer than the boss's own adds: fewer skulls, fewer breathers, but not much */
+export const FEWER_SKULL_WEIGHT = 0.1;
+
+/** How many skulls each boss has in the game, normal and Elite (DifficultyRating.OwnSkulls) */
+export const OWN_SKULLS: Record<string, { normal: number; elite: number }> = {
+  Bloonarius: { normal: 3, elite: 7 },
+  Lych: { normal: 5, elite: 5 },
+  Vortex: { normal: 3, elite: 7 },
+  Dreadbloon: { normal: 3, elite: 7 },
+  Phayze: { normal: 3, elite: 5 },
+  Blastapopoulos: { normal: 4, elite: 7 },
+  Diamondback: { normal: 5, elite: 7 },
+  Gildebloon: { normal: 4, elite: 7 },
+};
+
+/** The skulls a Random tier counts as having, about the bosses' average */
+export const randomOwnSkulls = (elite: boolean): number => (elite ? 6 : 4);
+
+/** What a tier's skulls add: each one more than the boss's own adds `weight`, each one fewer FEWER_SKULL_WEIGHT */
+export const skullPoints = (skulls: number, own: number, weight: number): number =>
+  skulls >= own ? weight * (skulls - own) : FEWER_SKULL_WEIGHT * (own - skulls);
 
 /** The stars for `facts`, 1 to MAX_STARS */
 export const difficultyStars = (facts: SetupFacts): number => starsOf(difficultyPoints(facts));
@@ -87,8 +124,8 @@ export function bossPoints(facts: SetupFacts): number {
 }
 
 /**
- * The rounds: tiers arriving earlier than in the normal game (40, 60, 80, ...) leave less time to build up; fewer skulls
- * give fewer breathers; and the boss events' rounds are harder than the normal ones, the CHIMPS events' much harder
+ * The rounds: tiers arriving earlier than in the normal game (40, 60, 80, ...) leave less time to build up; skulls other
+ * than the boss's own (skullPoints); and the boss events' rounds are harder than the normal ones, the CHIMPS events' much harder
  */
 export function roundPoints(facts: SetupFacts): number {
   const options = facts.options;
@@ -101,7 +138,15 @@ export function roundPoints(facts: SetupFacts): number {
     early += tier * Math.min(Math.max(Math.log2(normal / Math.max(rounds[tier - 1], 1)), -1), 2);
     weights += tier;
     const percents = tierSkullPercents(options, tier);
-    if (percents !== null) skulls += SKULL_WEIGHT * (DEFAULT_COUNT - percents.length);
+    if (percents !== null) {
+      const entry = entryOf(options, tier);
+      const { boss, elite } = bossOf(options, tier);
+      const own = OWN_SKULLS[boss];
+      skulls +=
+        entry.boss === "Random" || own === undefined
+          ? skullPoints(percents.length, randomOwnSkulls(entry.boss === "Random" ? entry.elite : elite), RANDOM_SKULL_WEIGHT)
+          : skullPoints(percents.length, elite ? own.elite : own.normal, SKULL_WEIGHTS[boss] ?? RANDOM_SKULL_WEIGHT);
+    }
   }
 
   let points = early / weights + skulls / rounds.length + gapPoints(rounds);

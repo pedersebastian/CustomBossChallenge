@@ -1,0 +1,273 @@
+// Reading boss-events.json and mapping an event's rules onto a setup: details the mutation tests found unchecked (#296).
+// Same rules as PastEventsFormat.Read and PastEventRules.Map in the mod.
+
+import { describe, expect, it } from "vitest";
+import { hasRules, mapPastEvent, matchesPastEvent, newestFirst, pastEventModes, readPastEvents, searchText, setupName, type PastEvent } from "@cbc/share-code";
+
+const GENERATED = "2026-01-01T00:00:00Z";
+const file = (events: unknown[], extra: object = {}) => JSON.stringify({ formatVersion: 1, generated: GENERATED, events, ...extra });
+
+describe("a boss-events.json that can't be read", () => {
+  it.each([
+    ["[]", "Invalid", "no formatVersion"],
+    ['{"formatVersion":1.5}', "Invalid", "no formatVersion"],
+    ['{"formatVersion":2,"events":[]}', "TooNew", "Version 2 is from a newer version"],
+    ['{"formatVersion":1}', "Invalid", "no events"],
+    ['{"formatVersion":1,"events":[]}', "Invalid", "no generated time"],
+    ['{"formatVersion":1,"events":[],"generated":"nope"}', "Invalid", "no generated time"],
+  ])("%s is %s: %s", (json, problem, error) => expect(readPastEvents(json)).toEqual({ problem, error }));
+
+  it("says why JSON that isn't JSON is broken", () => {
+    const read = readPastEvents("{");
+    expect(read.problem).toBe("Invalid");
+    expect(read.problem === "Invalid" && read.error).not.toBe("");
+  });
+});
+
+describe("the events in boss-events.json", () => {
+  const event = { id: "c", name: "C", bossType: "Lych", start: 1, end: 2 };
+
+  it("reads a file without a license as one with an empty license", () => {
+    expect(readPastEvents(file([]))).toEqual({ problem: "None", file: { generated: GENERATED, license: "", events: [] }, changes: [] });
+  });
+
+  it("skips events it can't use and says which", () => {
+    const read = readPastEvents(file([5, { id: "a", formatVersion: 2 }, { formatVersion: 2 }, { id: "b", name: "B" }, { name: "x" }, event]));
+    expect(read.problem === "None" && read.changes).toEqual([
+      "skipped an event that isn't an object",
+      "skipped a: format version 2 is newer",
+      "skipped an event: format version 2 is newer",
+      "skipped b: no id, name, boss or dates",
+      "skipped an event: no id, name, boss or dates",
+    ]);
+    expect(read.problem === "None" && read.file.events.map((e) => e.id)).toEqual(["c"]);
+  });
+
+  it("reads an event's optional fields", () => {
+    const read = readPastEvents(
+      file([{ ...event, displayName: "Cc", lossy: ["dates"], replaces: ["x", 3], normalScoringType: "LeastCash", eliteScoringType: "Nope" }], {
+        license: "L",
+      }),
+    );
+    expect(read.problem === "None" && read.file.license).toBe("L");
+    expect(read.problem === "None" && read.file.events[0]).toMatchObject({
+      displayName: "Cc",
+      bossKey: "lych",
+      datesGuessed: true,
+      replaces: ["x"],
+      normalScoring: "LeastCash",
+      eliteScoring: null,
+      standard: null,
+      elite: null,
+    });
+  });
+});
+
+describe("an event's rules as a setup", () => {
+  const base: PastEvent = {
+    id: "e",
+    name: "E",
+    displayName: "E",
+    bossKey: "lych",
+    start: 1,
+    end: 2,
+    normalScoring: null,
+    eliteScoring: null,
+    datesGuessed: false,
+    standard: null,
+    elite: null,
+    replaces: [],
+    replacedBy: [],
+    license: null,
+    sourceUrls: [],
+  };
+  const map = (rules: object) => mapPastEvent({ ...base, standard: rules as never }, false);
+  const allowed = (towers: unknown) => (towers as { tower: string; max: number }[]).filter((tower) => tower.max !== 0);
+
+  it("has rules when the normal or the Elite event has them", () => {
+    expect(hasRules(base)).toBe(false);
+    expect(hasRules({ ...base, standard: {} })).toBe(true);
+    expect(hasRules({ ...base, elite: {} })).toBe(true);
+  });
+
+  it("lists the newest first, and the later id first on the same day", () => {
+    const events = [{ ...base, id: "a", start: 1 }, { ...base, id: "b", start: 1 }, { ...base, id: "c", start: 2 }];
+    expect(newestFirst(events).map((event) => event.id)).toEqual(["c", "b", "a"]);
+  });
+
+  it("copies the rules that are set, leaves null ones out, and lists the ones it can't play", () => {
+    const setup = map({
+      map: "Tutorial", mode: "Clicks", maxTowers: null, seed: 5, startingCash: 650, lives: null, plays: 9, somethingNew: 3,
+      _towers: [{ tower: "Gwendolin", max: 2, path1NumBlockedTiers: 1.5 }, { tower: "NoSuchTower", max: 1 }, 7],
+    });
+    expect(setup.problem).toBe("None");
+    expect(setup.challenge).toMatchObject({ map: "Tutorial", mode: "Clicks", seed: 5, startRules: { cash: 650 } });
+    expect(setup.challenge).not.toHaveProperty("maxTowers");
+    expect(allowed(setup.challenge.towers)).toEqual([{ tower: "Gwendolin", max: 2 }]);
+    expect(setup.unsupported).toEqual(["tower NoSuchTower", "somethingNew"]);
+  });
+
+  it("plays a mode the Boss Creator can't as Standard, and says so", () => {
+    const setup = map({ map: "Tutorial", mode: "Deflation", maxTowers: 3 });
+    expect(setup.challenge).toMatchObject({ mode: "Standard", maxTowers: 3 });
+    expect(setup.challenge).not.toHaveProperty("startRules");
+    expect(allowed(setup.challenge.towers)).toEqual([]);
+    expect(setup.unsupported).toEqual(["mode Deflation"]);
+  });
+
+  it("lists a rule it doesn't know only when it changes something", () => {
+    const setup = map({
+      map: "Tutorial", a: false, b: 0, c: -1, d: 1, e: "", f: [], g: {}, h: null,
+      i: true, j: 2, k: "x", l: [1], m: { a: 1 },
+    });
+    expect(setup.unsupported).toEqual(["i", "j", "k", "l", "m"]);
+  });
+
+  it("plays the event's round sets as Boss Event Rounds", () => {
+    // The boss's own set, also under its old name; in CHIMPS that is "Own"
+    expect(map({ map: "Tutorial", mode: "Clicks", roundSets: ["default", "lych"] }).options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Own" });
+    expect(map({ map: "Tutorial", roundSets: ["bossRounds"] }).options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Newest" });
+    expect(map({ map: "Tutorial", mode: "Clicks", roundSets: ["chimpsboss"] }).options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Newest" });
+    expect(map({ map: "Tutorial", mode: "Clicks", roundSets: ["chimpsbloonarius"] }).options).toMatchObject({ BossEventRounds: true, ChimpsRounds: "Earlier" });
+    // The CHIMPS events' sets only in CHIMPS
+    const outside = map({ map: "Tutorial", roundSets: ["chimpsbloonarius", "phayze"] });
+    expect(outside.options.BossEventRounds).toBe(false);
+    expect(outside.unsupported).toEqual(["round set chimpsbloonarius", "round set phayze"]);
+  });
+
+  it("names the setup like the Challenge Editor's 40-character name field", () => {
+    const event = { ...base, start: Date.UTC(2025, 0, 17) };
+    expect(setupName({ ...event, displayName: "Lych 47" }, true)).toBe("Lych 47 Elite, 17 Jan 2025");
+    // Cut at 40, and the space the cut ends on goes too
+    expect(setupName({ ...event, displayName: "A".repeat(35) }, false)).toBe(`${"A".repeat(35)}, 17`);
+  });
+});
+
+describe("the past events list's filters", () => {
+  const event = (mode: string, eliteMode?: string): PastEvent => ({
+    id: mode, name: "Lych 47", displayName: "Lych 47", bossKey: "lych", start: Date.UTC(2026, 0, 1), end: 0,
+    normalScoring: null, eliteScoring: null, datesGuessed: false, standard: { mode }, elite: eliteMode ? { mode: eliteMode } : null,
+    replaces: [], replacedBy: [], license: null, sourceUrls: [],
+  });
+
+  it("offers the modes most played first, then by name; an event counts each of its modes once", () => {
+    const events = [event("Standard"), event("Clicks", "Clicks"), event("Clicks"), event("Apopalypse"), event("Deflation", "Apopalypse")];
+    expect(pastEventModes(events)).toEqual(["Apopalypse", "Clicks", "Deflation", "Standard"]);
+  });
+
+  it("finds every word of the search, in any order, and shows everything for an empty search", () => {
+    const query = (text: string) => ({ text, boss: null, year: null, mode: null });
+    const search = () => "lych 47 lych 2026";
+    expect(matchesPastEvent(event("Clicks"), query("  2026   LYCH "), search)).toBe(true);
+    expect(matchesPastEvent(event("Clicks"), query("lych 2025"), search)).toBe(false);
+    expect(matchesPastEvent(event("Clicks"), query("   "), () => {
+      throw new Error("an empty search looks at nothing");
+    })).toBe(true);
+  });
+});
+
+// More details the mutation tests found unchecked (#302)
+describe("the events in boss-events.json, more closely", () => {
+  const event = { id: "c", name: "C", bossType: "Lych", start: 1, end: 2 };
+  const changes = (events: unknown[]) => {
+    const read = readPastEvents(file(events));
+    return read.problem === "None" ? read.changes : read.error;
+  };
+
+  it.each([
+    ["null", null, "skipped an event that isn't an object"],
+    ["no id", { ...event, id: undefined }, "skipped an event: no id, name, boss or dates"],
+    ["an empty id", { ...event, id: "" }, "skipped an event: no id, name, boss or dates"],
+    ["no name", { ...event, name: undefined }, "skipped c: no id, name, boss or dates"],
+    ["an empty name", { ...event, name: "" }, "skipped c: no id, name, boss or dates"],
+    ["an id that isn't text", { ...event, id: ["c"] }, "skipped an event: no id, name, boss or dates"],
+  ])("skips an event with %s", (_, item, change) => expect(changes([item, event])).toEqual([change]));
+
+  it("needs the generated time as text", () => {
+    expect(readPastEvents(JSON.stringify({ formatVersion: 1, generated: 5, events: [] }))).toEqual({ problem: "Invalid", error: "no generated time" });
+  });
+
+  it.each(["GameTime", "LeastCash", "LeastTiers"])("reads the scoring %s", (scoring) => {
+    const read = readPastEvents(file([{ ...event, normalScoringType: scoring, eliteScoringType: scoring }]));
+    expect(read.problem === "None" && read.file.events[0]).toMatchObject({ normalScoring: scoring, eliteScoring: scoring });
+  });
+
+  it("reads lists it doesn't find as empty", () => {
+    const read = readPastEvents(file([event]));
+    expect(read.problem === "None" && read.file.events[0]).toMatchObject({ replaces: [], replacedBy: [], sourceUrls: [] });
+  });
+});
+
+describe("an event's rules as a setup, more closely", () => {
+  const base: PastEvent = {
+    id: "e", name: "E", displayName: "E", bossKey: "lych", start: 1, end: 2, normalScoring: null, eliteScoring: null,
+    datesGuessed: false, standard: null, elite: null, replaces: [], replacedBy: [], license: null, sourceUrls: [],
+  };
+  const map = (rules: object) => mapPastEvent({ ...base, standard: rules as never }, false);
+
+  it("orders events of the same day by id, whatever order they come in", () => {
+    const a = { ...base, id: "a" };
+    const b = { ...base, id: "b" };
+    expect(newestFirst([a, b]).map((event) => event.id)).toEqual(["b", "a"]);
+    expect(newestFirst([b, a]).map((event) => event.id)).toEqual(["b", "a"]);
+    // The same id and day keep their order
+    const first = { ...base, name: "first" };
+    const second = { ...base, name: "second" };
+    expect(newestFirst([first, second]).map((event) => event.name)).toEqual(["first", "second"]);
+    expect(newestFirst([second, first]).map((event) => event.name)).toEqual(["second", "first"]);
+  });
+
+  it("reads an event without start rules", () => {
+    const setup = map({ map: "Tutorial" });
+    expect(setup.problem).toBe("None");
+    expect(setup.challenge).not.toHaveProperty("startRules");
+  });
+
+  it("leaves out a tower whose name isn't text, without listing it", () => {
+    const setup = map({ map: "Tutorial", _towers: [{ tower: 5, max: 1 }] });
+    expect(setup.unsupported).toEqual([]);
+  });
+});
+
+describe("the past events list's filters, more closely", () => {
+  const event = (modes: [string, string | null], map = "Tutorial", difficulty = "Hard"): PastEvent => ({
+    id: "x", name: "Lych47", displayName: "Lych 47", bossKey: "lych", start: Date.UTC(2026, 0, 1), end: 0,
+    normalScoring: null, eliteScoring: null, datesGuessed: false, standard: { mode: modes[0], map, difficulty },
+    elite: modes[1] ? { mode: modes[1], map: 5 } : null, replaces: [], replacedBy: [], license: null, sourceUrls: [],
+  });
+
+  it("orders modes played as often by name, whatever order they come in", () => {
+    const events = ["Standard", "Clicks", "Apopalypse", "Deflation"].map((mode) => event([mode, null]));
+    expect(pastEventModes(events)).toEqual(["Apopalypse", "Clicks", "Deflation", "Standard"]);
+    expect(pastEventModes([...events].reverse())).toEqual(["Apopalypse", "Clicks", "Deflation", "Standard"]);
+  });
+
+  it("searches the names, boss, year, and the map, mode and difficulty as ids and shown names", () => {
+    expect(searchText(event(["Clicks", "Apopalypse"]), (id) => `<${id}>`)).toBe(
+      "lych47 lych 47 lych 2026 tutorial <tutorial> clicks <clicks> hard <hard> apopalypse <apopalypse>",
+    );
+  });
+});
+
+describe("an event's rules as a setup, the last details (#302)", () => {
+  const base: PastEvent = {
+    id: "e", name: "E", displayName: "E", bossKey: "lych", start: 1, end: 2, normalScoring: null, eliteScoring: null,
+    datesGuessed: false, standard: null, elite: null, replaces: [], replacedBy: [], license: null, sourceUrls: [],
+  };
+  const map = (rules: object) => mapPastEvent({ ...base, standard: rules as never }, false);
+
+  it("leaves a start rule that is null out", () => {
+    expect(map({ map: "Tutorial", startingCash: 650, lives: null }).challenge.startRules).toEqual({ cash: 650 });
+  });
+
+  it("lists another round set in CHIMPS, and skips round sets that aren't text", () => {
+    const setup = map({ map: "Tutorial", mode: "Clicks", roundSets: ["phayze", 5] });
+    expect(setup.options.BossEventRounds).toBe(false);
+    expect(setup.unsupported).toEqual(["round set phayze"]);
+  });
+
+  it("says what is wrong with JSON that isn't JSON", () => {
+    const read = readPastEvents("{");
+    expect(read.problem === "Invalid" && read.error).not.toBe("no formatVersion");
+  });
+});

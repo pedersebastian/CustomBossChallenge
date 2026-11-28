@@ -423,7 +423,7 @@ public class BossEventRoundsCreatorTest : CustomBossTest
             "Opening the CHIMPS info popup");
         Assert(infoPopup!.body.Shows(Menus.Texts.ChimpsRoundsInfo.T()), $"CHIMPS info popup text: {infoPopup.body.Shown()}");
         // Counted in the text as written: shaping Arabic changes its line breaks
-        AssertEquals(BTD_Mod_Helper.Extensions.StringExt.Localize(Menus.Texts.ChimpsRoundsInfo).Split("\n\n").Length, 5, "Both CHIMPS sets, the boss rounds and the boss's own rounds");
+        AssertEquals(Menus.LanguageText.WrittenText(Menus.Texts.ChimpsRoundsInfo).Split("\n\n").Length, 5, "Both CHIMPS sets, the boss rounds and the boss's own rounds");
         infoPopup.TryHidePop();
         yield return new WaitForSecondsRealtime(1);
         AssertEquals(chimpsRounds.Dropdown.options.Count, 4, "Off, newest, earlier and the boss's own");

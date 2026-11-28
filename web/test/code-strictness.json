@@ -50,6 +50,8 @@
     {"name": "no-break space around a whole number", "json": "{\"o\":{\"Tiers\":\"\\u00a04\"},\"c\":{}}", "ok": false},
     {"name": "boss name as text with spaces", "json": "{\"o\":{\"Boss\":\" lych \"},\"c\":{}}", "ok": true},
     {"name": "no-break space around a boss name", "json": "{\"o\":{\"Boss\":\"\\u00a0Lych\"},\"c\":{}}", "ok": false},
-    {"name": "long s in a boss name", "json": "{\"o\":{\"Boss\":\"Bla\\u017ftapopoulos\"},\"c\":{}}", "ok": false}
+    {"name": "long s in a boss name", "json": "{\"o\":{\"Boss\":\"Bla\\u017ftapopoulos\"},\"c\":{}}", "ok": false},
+    {"name": "brackets after an escaped quote in a string", "json": "{\"o\":{\"Tiers\":3},\"c\":{\"name\":\"a\\\"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[\"}}", "ok": true, "tiers": 3},
+    {"name": "many lists side by side are not deep", "json": "{\"o\":{\"Tiers\":3},\"c\":{\"x\":[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]}}", "ok": true, "tiers": 3}
   ]
 }

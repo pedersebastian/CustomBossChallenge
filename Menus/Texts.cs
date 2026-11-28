@@ -410,7 +410,7 @@ public static class Texts
     public static string Date(System.DateTime date)
     {
         // In Arabic each month is shaped on its own, as shaping the list would turn its order around too
-        var months = string.Join(",", BTD_Mod_Helper.Extensions.StringExt.Localize(DateMonths).Split(',')
+        var months = string.Join(",", LanguageText.WrittenText(DateMonths).Split(',')
             .Select(month => LanguageText.Shape(month.Trim())));
         return Config.PastEventDates.Format(date, DateFormat.T(), months);
     }
@@ -421,8 +421,9 @@ public static class Texts
     /// </summary>
     public static string T(this string key)
     {
-        var text = BTD_Mod_Helper.Extensions.StringExt.Localize(key);
-        return key.StartsWith(KeyPrefix, System.StringComparison.Ordinal) ? LanguageText.Shape(text) : text;
+        return key.StartsWith(KeyPrefix, System.StringComparison.Ordinal)
+            ? LanguageText.Shape(LanguageText.WrittenText(key))
+            : BTD_Mod_Helper.Extensions.StringExt.Localize(key);
     }
 
     public static string T(this string key, object arg) => string.Format(key.T(), arg);
@@ -432,7 +433,7 @@ public static class Texts
     /// together with others, like the What's new popup's
     /// </summary>
     public static string Raw(this string key, object arg) =>
-        string.Format(BTD_Mod_Helper.Extensions.StringExt.Localize(key), arg);
+        string.Format(LanguageText.WrittenText(key), arg);
 
     public static string T(this string key, object arg0, object arg1) => string.Format(key.T(), arg0, arg1);
 

@@ -108,18 +108,18 @@ public class RankedTimerTest : ContinueTestBase
         if (ScreenshotTour.Folder is { Length: > 0 } settingsFolder) yield return ScreenshotTour.Capture(settingsFolder, "ranked-settings");
         var menuTexts = Object.FindObjectsOfType<TMP_Text>().Where(text => text.isActiveAndEnabled).Select(text => text.Shown()).ToList();
         Log($"mod settings: {string.Join(" | ", menuTexts.Where(text => text.Length < 80))}");
-        // Mod Helper looks the setting names and their info up itself
+        // Mod Helper looks the setting names and their info up itself: shaped like the mod's own texts in Arabic (#292)
         foreach (var key in new[] {RankedPracticeKey, ShowRankedStatsKey})
         {
-            Assert(menuTexts.Contains(ScreenText.ByGame(key)), $"Mod Settings must show '{ScreenText.ByGame(key)}'");
+            Assert(menuTexts.Contains(ScreenText.Plain(key.T())), $"Mod Settings must show '{ScreenText.Plain(key.T())}'");
         }
         Assert(!menuTexts.Any(text => text.Contains(Texts.KeyPrefix)), "Mod Settings shows a text key");
         var option = AssertNotNull(Object.FindObjectsOfType<ModHelperOption>().FirstOrDefault(found =>
-            found.GetComponentsInChildren<TMP_Text>().Any(text => text.ShowsExactly(ScreenText.ByGame(ShowRankedStatsKey)))), "No Show Ranked Stats option")!;
+            found.GetComponentsInChildren<TMP_Text>().Any(text => text.ShowsExactly(ScreenText.Plain(ShowRankedStatsKey.T())))), "No Show Ranked Stats option")!;
         option.InfoButton.Button.onClick.Invoke();
         Popup? info = null;
         yield return WaitForPopup(found => info = found);
-        var infoText = ScreenText.ByGame(Texts.KeyPrefix + "ShowRankedStats Setting Description");
+        var infoText = ScreenText.Plain((Texts.KeyPrefix + "ShowRankedStats Setting Description").T());
         Assert(info!.body.ShowsExactly(infoText), $"Show Ranked Stats's info: '{info.body.Shown()}', expected '{infoText}'");
         yield return ClosePopup(info, true);
         yield return ToMainMenu();

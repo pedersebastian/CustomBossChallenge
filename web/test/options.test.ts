@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { apply } from "@cbc/share-code";
-import { defaultOptions, optionsJson, readOptions, sanitize, typedOptions } from "@cbc/share-code";
+import { chimpsEventRoundSet, defaultOptions, optionsJson, readOptions, sanitize, tierSkullMode, typedOptions } from "@cbc/share-code";
 import type { Json, JsonObject } from "../src/data/types";
 import cases from "./option-cases.json";
 
@@ -30,4 +30,20 @@ describe("options of every JSON type, like the mod", () => {
   it.each(cases.cases.map((c) => [JSON.stringify(c.o), c.o, c.options]))("%s", (_, o, expected) =>
     expect(read(o as unknown as JsonObject)).toEqual(expected),
   );
+});
+
+describe("a tier's skulls and the CHIMPS rounds", () => {
+  it("uses a tier's own skulls in Advanced Mode, else the setup's", () => {
+    const options = { ...defaultOptions(), Tiers: 2, SkullMode: "Custom" as const, TierBosses: "Lych#3,Vortex" };
+    expect(tierSkullMode(options, 1)).toBe("EvenlySpaced");
+    expect(tierSkullMode(options, 2)).toBe("Custom");
+    expect(tierSkullMode({ ...defaultOptions(), SkullMode: "EvenlySpaced" }, 1)).toBe("EvenlySpaced");
+  });
+
+  it("plays the CHIMPS events' round set that ChimpsRounds picks (BossOptions.EventRoundSet)", () => {
+    expect(chimpsEventRoundSet({ ...defaultOptions(), ChimpsRounds: "Earlier" }, "Clicks")).toBe("chimpsbloonarius");
+    expect(chimpsEventRoundSet(defaultOptions(), "Clicks")).toBe("chimpsboss");
+    expect(chimpsEventRoundSet({ ...defaultOptions(), ChimpsRounds: "Own" }, "Clicks")).toBeNull();
+    expect(chimpsEventRoundSet(defaultOptions(), "Standard")).toBeNull();
+  });
 });

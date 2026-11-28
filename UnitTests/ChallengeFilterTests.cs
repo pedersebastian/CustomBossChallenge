@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using CustomBossChallenge.Persistence;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -75,6 +78,7 @@ public class ChallengeFilterTests
     [InlineData("""{"towers": null}""", "towers")]
     [InlineData("""{"towers": {"$items": {"01": {"max": 2}}}}""", "towers[01]")]
     [InlineData("""{"towers": {"$items": {"9": {"max": 2}}}}""", "towers[9]")]
+    [InlineData("""{"towers": {"$items": {"3": {"max": 2}}}}""", "towers[3]")]
     [InlineData("""{"towers": {"$items": {"-1": {"max": 2}}}}""", "towers[-1]")]
     [InlineData("""{"towers": {"$items": {"1": {"tower": "SuperMonkey"}}}}""", "towers[1].tower")]
     [InlineData("""{"towers": {"$items": {"0": {"isHero": false}}}}""", "towers[0].isHero")]
@@ -142,5 +146,35 @@ public class ChallengeFilterTests
         }
 
         Check(CodeFormat.ChallengeFields);
+    }
+
+    /// <summary>
+    /// The cases in web/test/challenge-filter-cases.json, which web/test/decode-details.test.ts reads too (#302): what a
+    /// code may keep of its challenge changes, against the game's default challenge or the case's own defaults
+    /// </summary>
+    public static IEnumerable<object[]> SharedCases()
+    {
+        var folder = new DirectoryInfo(AppContext.BaseDirectory);
+        while (folder != null && !File.Exists(Path.Combine(folder.FullName, "web", "test", "challenge-filter-cases.json"))) folder = folder.Parent;
+        if (folder == null) throw new FileNotFoundException("web/test/challenge-filter-cases.json not found above " + AppContext.BaseDirectory);
+
+        var defaults = JObject.Parse(File.ReadAllText(Path.Combine(folder.FullName, "web", "src", "data", "game.json")))["defaultChallenge"]!;
+        var file = JObject.Parse(File.ReadAllText(Path.Combine(folder.FullName, "web", "test", "challenge-filter-cases.json")));
+        foreach (var entry in (JArray) file["cases"]!)
+        {
+            if (entry["defaults"] == null) entry["defaults"] = defaults.DeepClone();
+            yield return [(string) entry["name"]!, entry.ToString(Newtonsoft.Json.Formatting.None)];
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(SharedCases))]
+    public void A_code_keeps_the_same_challenge_changes_as_on_the_website(string name, string vector)
+    {
+        var entry = JObject.Parse(vector);
+        var dropped = new List<string>();
+        var kept = CodeFormat.FilterChallenge((JObject) entry["c"]!, (JObject) entry["defaults"]!, dropped);
+        Assert.True(JToken.DeepEquals(entry["kept"], kept), $"{name}: expected {entry["kept"]}, got {kept}");
+        Assert.Equal(((JArray) entry["dropped"]!).Select(path => (string) path!), dropped);
     }
 }

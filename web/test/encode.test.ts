@@ -97,6 +97,10 @@ describe("prefixFor", () => {
     [{ TierBosses: "Lych@100/15" }, "CBC6:"],
     [{ TierBosses: "Lych@100/2500", BossEventRounds: true }, "CBC6:"],
     [{ TierBosses: "Lych@100/250" }, "CBC3:"],
+    // The ends of version 5's range, 10 % and 2000 %, still fit it
+    [{ TierBosses: "Lych@100/10" }, "CBC3:"],
+    [{ TierBosses: "Lych@100/2000" }, "CBC3:"],
+    [{ TierBosses: "Lych@100/2010" }, "CBC6:"],
     // The bosses a game picked for its Random tiers (#270)
     [{ TierBosses: "Lych,Vortex", Tiers: 2, RandomTiers: "2" }, "CBC7:"],
     [{ TierBosses: "Lych@100/15", RandomTiers: "1" }, "CBC7:"],

@@ -1,0 +1,24 @@
+{
+  "stryker-config": {
+    "project": "CustomBossChallenge.Shared.csproj",
+    "test-projects": [
+      "../UnitTests/CustomBossChallenge.UnitTests.csproj",
+      "../PropertyTests/CustomBossChallenge.PropertyTests.fsproj"
+    ],
+    "test-runner": "mtp",
+    "mutate": [
+      "../Config/TierMath.cs",
+      "../Config/TierBossMath.cs",
+      "../Config/SkullMath.cs",
+      "../Config/RankedTime.cs",
+      "../Config/ParagonMath.Slider.cs",
+      "../Config/HealthSteps.cs",
+      "../Config/BossRoundsMath.cs",
+      "../Config/BossRowMath.cs",
+      "../Config/DifficultyRating.cs",
+      "../Config/ShownNumber.cs"
+    ],
+    "reporters": ["html", "progress", "json", "markdown"],
+    "thresholds": { "high": 80, "low": 60, "break": 0 }
+  }
+}
