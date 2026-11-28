@@ -1,6 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Menus;
@@ -8,7 +7,7 @@ using CustomBossChallenge.Visuals;
 using Il2CppAssets.Scripts.Data.Boss;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame.Races;
-using Newtonsoft.Json;
+using Il2CppNinjaKiwi.Localization;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using static CustomBossChallenge.Tests.TestUtils;
@@ -17,7 +16,7 @@ namespace CustomBossChallenge.Tests;
 
 /// <summary>
 /// Between bosses the boss panel's countdown says which tier comes next and how many there are, e.g. "Tier 3/10
-/// Appears In: 5 Rounds" (#307), and the longest translation still fits its box. A normal Boss Challenge keeps the
+/// Appears In: 5 Rounds" (#307), inside the panel's background in every language: on one line, or broken after the colon. A normal Boss Challenge keeps the
 /// game's own "Boss Appears In".
 /// </summary>
 public class TierCountdownTest : CustomBossTest
@@ -45,14 +44,40 @@ public class TierCountdownTest : CustomBossTest
         ui.SetArriveInTxt(12);
         AssertEquals(text.Shown(), ScreenText.Plain(Texts.TierAppearsIn.T(10, 10, 12)), "Countdown to the last tier");
 
-        // The longest translation, with two-digit numbers, fits the box: the text shrinks rather than runs out of it
-        var longest = LocalizationTest.Languages.Select(Translation)
-            .Where(value => value != null && value.All(c => c < 0x2E80))
-            .OrderByDescending(value => value!.Length).First()!;
-        text.SetText(string.Format(longest, 10, 10, 10));
-        text.ForceMeshUpdate();
-        Log($"Longest countdown '{text.text}' at size {text.fontSize:0.#} of {text.fontSizeMax:0.#}");
-        Assert(!text.isTextOverflowing, $"'{text.text}' runs out of the countdown's box");
+        // English stays on one line, also with three-digit rounds, and inside the background
+        foreach (var (tier, rounds) in new[] {(1, 20), (10, 20), (10, 499)})
+        {
+            CustomBossState.ResumeWith(tier - 1);
+            ui.SetArriveInTxt(rounds);
+            CheckFits(ui, $"English, tier {tier}, {rounds} rounds");
+            AssertEquals(text.textInfo.lineCount, 1, $"'{text.text}' is on one line");
+            AssertEquals(text.Shown(), ScreenText.Plain(Texts.TierAppearsIn.T(tier, 10, rounds)), $"Countdown to tier {tier}");
+        }
+
+        // Every language, in its own font: inside the background, on one line or broken after the colon (#307)
+        var original = LocalizationManager.Instance.ActiveLanguage;
+        try
+        {
+            foreach (var name in LocalizationTest.Languages)
+            {
+                var task = LocalizationManager.Instance.UpdateLanguageAsync(Enum.Parse<Language>(name));
+                yield return WaitFor(() => task.IsCompleted, $"Switching to {name}", 30);
+                yield return null;
+                ui.SetArriveInTxt(20);
+                CheckFits(ui, name);
+                Assert(text.textInfo.lineCount <= 2, $"{name}: '{text.text}' takes {text.textInfo.lineCount} lines");
+                if (text.textInfo.lineCount == 2)
+                {
+                    var first = text.text.Split('\n')[0].TrimEnd();
+                    Assert(first.EndsWith(':') || first.EndsWith('：'), $"{name}: '{text.text}' breaks somewhere else than after the colon");
+                }
+            }
+        }
+        finally
+        {
+            LocalizationManager.Instance.UpdateLanguageAsync(original);
+        }
+        yield return WaitFor(() => LocalizationManager.Instance.ActiveLanguage == original, "Going back to the player's language", 30);
 
         yield return ToMainMenu();
 
@@ -67,12 +92,20 @@ public class TierCountdownTest : CustomBossTest
         yield return ToMainMenu();
     }
 
-    /// <summary>The countdown as a language of the mod writes it</summary>
-    private static string? Translation(string language)
+    /// <summary>
+    /// The countdown runs neither out of its box nor out of the background behind it, and keeps most of the game's size
+    /// </summary>
+    private void CheckFits(BossUI ui, string what)
     {
-        using var stream = typeof(TierCountdownTest).Assembly.GetManifestResourceStream(LocalizationTest.ResourcePrefix + language + ".json");
-        if (stream == null) return null;
-        using var reader = new StreamReader(stream);
-        return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd())?.GetValueOrDefault(Texts.TierAppearsIn);
+        var text = ui.bossArrivalTxt;
+        text.ForceMeshUpdate();
+        var bg = AssertNotNull(text.transform.parent.Find("Bg"), "No background behind the countdown")!.GetComponent<RectTransform>();
+        var right = text.rectTransform.localPosition.x + text.textBounds.max.x;
+        var edge = bg.localPosition.x + bg.rect.xMax;
+        Log($"{what}: '{text.text.Replace("\n", " | ")}' in {text.font?.name} at size {text.fontSize:0.#} of {text.fontSizeMax:0.#}, " +
+            $"{text.textInfo.lineCount} line(s), right edge {right:0} of the background's {edge:0}");
+        Assert(!text.isTextOverflowing, $"{what}: '{text.text}' runs out of the countdown's box");
+        Assert(right <= edge - BossHud.ArrivalPadding / 2, $"{what}: '{text.text}' reaches {right:0}, the background ends at {edge:0}");
+        Assert(text.fontSize >= text.fontSizeMax * 0.6f, $"{what}: '{text.text}' shrinks to {text.fontSize:0.#} of {text.fontSizeMax:0.#}");
     }
 }

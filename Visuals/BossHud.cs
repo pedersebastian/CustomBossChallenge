@@ -135,20 +135,47 @@ public static class BossHud
     public static void ShowArrival(BossUI ui, int rounds)
     {
         if (ArrivalText(rounds) is not { } text || ui.bossArrivalTxt == null) return;
-        FitArrival(ui.bossArrivalTxt);
-        ui.bossArrivalTxt.SetText(text);
+        FitArrival(ui.bossArrivalTxt, text);
     }
 
     /// <summary>
-    /// The tier makes the countdown longer than the game's "Boss Appears In", so it may shrink to fit its box, at
-    /// most to half its size; a text that fits keeps the game's size
+    /// The space the countdown keeps free at its right, inside the panel's background: the game's box ends right at the
+    /// background's edge, which the longer text reaches
     /// </summary>
-    internal static void FitArrival(TMP_Text text)
+    public const float ArrivalPadding = 40;
+
+    /// <summary>
+    /// Puts the countdown in its box, inside the background, as large as it gets: on one line, or on two after the
+    /// colon, "Уровень 1/6 появится через:" over "20 раундов", when that is larger. Either way it shrinks rather than
+    /// runs out. Arabic, which the game keeps reversed, stays on one line.
+    /// </summary>
+    internal static void FitArrival(TMP_Text box, string text)
     {
-        if (text.enableAutoSizing) return;
-        text.fontSizeMax = text.fontSize;
-        text.fontSizeMin = text.fontSize * 0.5f;
-        text.enableAutoSizing = true;
+        box.margin = new Vector4(0, 0, ArrivalPadding, 0);
+        box.textWrappingMode = TextWrappingModes.NoWrap;
+        box.enableAutoSizing = true;
+        box.fontSizeMin = Math.Min(box.fontSizeMin, box.fontSizeMax * 0.5f);
+
+        var colon = text.IndexOfAny(new[] {':', '：'});
+        if (colon > 0 && colon < text.Length - 1 && !LanguageText.RightToLeft)
+        {
+            var broken = text[..(colon + 1)] + "\n" + text[(colon + 1)..].TrimStart();
+            if (FittedScale(box, broken) > FittedScale(box, text)) text = broken;
+        }
+        box.SetText(text);
+    }
+
+    /// <summary>How far the text has to shrink from the box's largest size to fit it, at most 1</summary>
+    private static float FittedScale(TMP_Text box, string text)
+    {
+        var (auto, size) = (box.enableAutoSizing, box.fontSize);
+        box.enableAutoSizing = false;
+        box.fontSize = box.fontSizeMax;
+        var preferred = box.GetPreferredValues(text, float.PositiveInfinity, float.PositiveInfinity);
+        box.enableAutoSizing = auto;
+        box.fontSize = size;
+        var rect = box.rectTransform.rect;
+        return Math.Min(1, Math.Min((rect.width - ArrivalPadding) / preferred.x, rect.height / preferred.y));
     }
 
     /// <summary>
