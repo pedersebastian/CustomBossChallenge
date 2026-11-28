@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CustomBossChallenge.Config;
 using CustomBossChallenge.Creator;
+using BTD_Mod_Helper.Api.Enums;
 using CustomBossChallenge.Menus;
 using Il2CppAssets.Scripts;
 using Il2CppAssets.Scripts.Data.Boss;
@@ -260,6 +261,20 @@ public abstract class RulesPanelTestBase : CustomBossTest
                 $"Modifier row {i + 1} ({when})");
             Assert(ourRows[i].gameObject.activeInHierarchy, $"Modifier row {i + 1} shown ({when})");
         }
+
+        // Speed and health rows have icons of their own, the Boss Creator's, so they are told apart (#306)
+        var icons = expected.Select((row, i) => (row.Icon, Sprite: ourRows[i].Find("Icon")?.GetComponent<UnityEngine.UI.Image>()?.sprite?.name)).ToList();
+        Log($"Modifier icons ({when}): {string.Join(", ", icons.Select(icon => $"{icon.Icon}={icon.Sprite}"))}");
+        foreach (var (icon, sprite) in icons)
+        {
+            Assert(sprite != null, $"A modifier row has no icon ({when})");
+            Assert(icon is not (VanillaSprites.FasterBossIcon or VanillaSprites.BossBoostIcon),
+                $"A modifier row keeps the game's speed or health icon ({when})");
+        }
+        var speed = icons.Where(icon => icon.Icon == EditorRows.SpeedIcon).Select(icon => icon.Sprite).Distinct().ToList();
+        var health = icons.Where(icon => icon.Icon == EditorRows.HealthIcon).Select(icon => icon.Sprite).Distinct().ToList();
+        if (speed.Count > 0 && health.Count > 0)
+            Assert(!speed.Intersect(health).Any(), $"Speed and health rows show the same icon ({when})");
         var gameRows = rows.Where(row => row.name != RulesPanel.ModifierName && row.gameObject.activeSelf).ToList();
         if (ourRows.Count > 0 && gameRows.Count > 0)
             Assert(ourRows[0].GetSiblingIndex() > gameRows[^1].GetSiblingIndex(), $"Boss Creator rows after the game's ({when})");

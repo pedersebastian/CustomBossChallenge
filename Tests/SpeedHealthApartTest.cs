@@ -65,8 +65,8 @@ public class SpeedHealthApartTest : CustomBossTest
         section.BossSpeed.Step(1);
         AssertEquals(strip.LastFlash, (TierStrip.Line.Speed, (int?) null), "Boss Speed lifts the speed line");
         Assert(strip.Flashing, "The speed line is lifted");
-        yield return new WaitForSecondsRealtime(TierStrip.FlashTime / 2);
-        Assert(strip.Cards[0].Speed.transform.localScale.x > 1.05f, "The speed line is bigger halfway");
+        // Looked at every frame of the lift, not at a set time: a slow frame may skip most of it
+        yield return WaitForLift(() => strip.Cards[0].Speed.transform.localScale.x, "The speed line");
         AssertEquals(strip.Cards[0].Health.transform.localScale.x, 1f, "The health line keeps its size while speed moves");
 
         // Moving Boss Health right after ends the speed line's lift
@@ -89,10 +89,11 @@ public class SpeedHealthApartTest : CustomBossTest
         var picker = AssertNotNull(section.OpenPicker(3), "Advanced Mode opens tier 3's picker")!;
         AssertEquals(picker.Speed.Icon, EditorRows.SpeedIcon, "The picker's speed row has the speed icon");
         AssertEquals(picker.Health.Icon, EditorRows.HealthIcon, "The picker's health row has the heart");
+        // Opening the picker makes a long frame, which would take most of a lift started in it
+        yield return null;
         picker.Health.Step(1);
         AssertEquals(strip.LastFlash, (TierStrip.Line.Health, (int?) 3), "The picker lifts only its tier's health line");
-        yield return new WaitForSecondsRealtime(TierStrip.FlashTime / 2);
-        Assert(strip.Cards[2].Health.transform.localScale.x > 1.05f, "Tier 3's health line is bigger halfway");
+        yield return WaitForLift(() => strip.Cards[2].Health.transform.localScale.x, "Tier 3's health line");
         AssertEquals(strip.Cards[1].Health.transform.localScale.x, 1f, "Tier 2's health line keeps its size");
         picker.Speed.Step(1);
         AssertEquals(strip.LastFlash, (TierStrip.Line.Speed, (int?) 3), "The picker lifts only its tier's speed line");
@@ -106,5 +107,18 @@ public class SpeedHealthApartTest : CustomBossTest
 
         section.ResetAll();
         yield return null;
+    }
+
+    /// <summary>
+    /// Waits for a line to get bigger, looking every frame: the lift lasts only <see cref="TierStrip.FlashTime"/>
+    /// </summary>
+    private IEnumerator WaitForLift(System.Func<float> scale, string what)
+    {
+        var start = Time.realtimeSinceStartup;
+        while (scale() <= 1.05f)
+        {
+            if (Time.realtimeSinceStartup - start > TierStrip.FlashTime + 2) Fail($"{what} never got bigger");
+            yield return null;
+        }
     }
 }
