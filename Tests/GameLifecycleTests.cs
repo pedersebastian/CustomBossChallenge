@@ -40,6 +40,8 @@ public class RestartTest : CustomBossTest
 
         Assert(CustomBossState.IsActive, "A restarted custom game must stay custom");
         AssertEquals(CustomBossState.HighestDefeatedTier, 0, "Defeated tiers after a restart");
+        var countdown = TierCountdownTest.CountdownProblem(1, options.Tiers);
+        Assert(countdown == null, $"After a restart: {countdown}");
         Assert(ExtraTiers.HasAllTiers(InGame.instance.GetGameModel(), options), "Tier models after a restart");
         AssertScaledTiers(InGame.instance.GetGameModel(), options);
         AssertEquals(TierMath.FormatRounds(InGame.instance.bridge.Simulation.map.spawner.bossBloonManager.spawnRounds),

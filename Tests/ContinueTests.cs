@@ -396,6 +396,8 @@ public class ContinueTest : ContinueTestBase
         AssertEquals(after, before, "The continued game");
         AssertCustomGame(options);
         AssertEquals(CustomBossState.HighestDefeatedTier, 1, "Defeated tiers of the continued game");
+        var countdown = TierCountdownTest.CountdownProblem(2, options.Tiers);
+        Assert(countdown == null, $"The continued game counts down to tier 2: {countdown}");
         Assert(CustomBossRetries.HasLastRound(latest), "Retry Last Round must survive closing the game");
         AssertNotNull(CustomBossRetries.SaveFor(40), "Tier 1's checkpoint must survive closing the game");
 

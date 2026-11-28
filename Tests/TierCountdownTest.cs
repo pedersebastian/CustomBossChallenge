@@ -93,6 +93,22 @@ public class TierCountdownTest : CustomBossTest
     }
 
     /// <summary>
+    /// Whether the boss panel's countdown is the one for <paramref name="tier"/> of <paramref name="tiers"/>, with any
+    /// number of rounds (#307): null when it is, else what it shows. Line breaks and spaces don't count.
+    /// </summary>
+    public static string? CountdownProblem(int tier, int tiers)
+    {
+        var ui = Object.FindObjectOfType<BossUI>();
+        if (ui == null || ui.bossArrivalTxt == null) return "No countdown in the boss panel";
+        static string Bare(string text) => System.Text.RegularExpressions.Regex.Replace(text, @"\s", "");
+        var shown = ui.bossArrivalTxt.Shown();
+        var matches = Enumerable.Range(0, 1001).Any(rounds => Bare(shown) == Bare(ScreenText.Plain(rounds == 1
+            ? Texts.TierAppearsInOneRound.T(tier, tiers)
+            : Texts.TierAppearsIn.T(tier, tiers, rounds))));
+        return matches ? null : $"The countdown shows '{shown}', not tier {tier}/{tiers}";
+    }
+
+    /// <summary>
     /// The countdown runs neither out of its box nor out of the background behind it, and keeps most of the game's size
     /// </summary>
     private void CheckFits(BossUI ui, string what)

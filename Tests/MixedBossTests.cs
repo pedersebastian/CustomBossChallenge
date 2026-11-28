@@ -167,6 +167,7 @@ public class MixedBossGameTest : CustomBossTest
         float? nextRoundAt = null;
         var early = 0;
         var secretKept = 0;
+        var countdowns = 0;
         var skulls = Array.Empty<float>();
         var passed = 0;
         var start = Time.realtimeSinceStartup;
@@ -242,6 +243,12 @@ public class MixedBossGameTest : CustomBossTest
                     else
                         Assert(Visuals.BossPresentation.MapEffects.All(effect => effect.StartsWith(next)),
                             $"The round after tier {beatenTier} was beaten shows {next}'s effects: {effects}");
+                    if (manager.CurrentBoss == null)
+                    {
+                        var countdown = TierCountdownTest.CountdownProblem(beatenTier + 1, options.Tiers);
+                        Assert(countdown == null, $"After tier {beatenTier}: {countdown}");
+                        countdowns++;
+                    }
                     if (manager.CurrentBoss == null && !secret) early++;
                     if (secret) secretKept++;
                 }
@@ -270,6 +277,7 @@ public class MixedBossGameTest : CustomBossTest
         Assert(presented >= options.Tiers - 1, $"The map effects were checked for {presented} tiers");
         Assert(early > 0, "The next boss's effects never came before the boss itself");
         AssertEquals(secretKept, 1, "The map hid the boss effects before the Random tier's boss");
+        Assert(countdowns > 0, "The countdown to the next tier was never checked between bosses");
 
         Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen? victory = null;
         yield return WaitFor(() => (victory = Object.FindObjectOfType<Il2CppAssets.Scripts.Unity.UI_New.GameOver.BossVictoryScreen>()) != null,
