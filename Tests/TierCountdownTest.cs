@@ -6,6 +6,7 @@ using CustomBossChallenge.Config;
 using CustomBossChallenge.Menus;
 using CustomBossChallenge.Visuals;
 using Il2CppAssets.Scripts.Data.Boss;
+using Il2CppAssets.Scripts.Unity.UI_New.InGame;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame.Races;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -27,6 +28,11 @@ public class TierCountdownTest : CustomBossTest
         yield return TierLookScene.Start(new BossOptions {Boss = BossType.Bloonarius}, data => LoadIntoGame(data));
         var ui = AssertNotNull(Object.FindObjectOfType<BossUI>(), "No boss panel")!;
         var text = AssertNotNull(ui.bossArrivalTxt, "No countdown in the boss panel")!;
+
+        // As the game sets it: tier 1 comes on round 500, and the game starts on round 1
+        var round = InGame.instance.bridge.GetCurrentRound() + 1;
+        Log($"On round {round} the game's countdown says '{text.Shown()}'");
+        AssertEquals(text.Shown(), ScreenText.Plain(Texts.TierAppearsIn.T(1, 10, 500 - round)), "The game's own countdown before the first tier");
 
         ui.SetArriveInTxt(5);
         AssertEquals(text.Shown(), ScreenText.Plain(Texts.TierAppearsIn.T(1, 10, 5)), "Countdown before the first tier");
