@@ -19,8 +19,9 @@ import {
   type Json,
 } from "@cbc/share-code";
 import { normalizeRounds } from "@cbc/share-code/tiers";
-import { FOLLOWS, parseTierList, withTier } from "@cbc/share-code/tier-bosses";
-import { equalsIgnoreCase, netTrimEnd, toFixedNet } from "@cbc/share-code/dotnet";
+import { MAX_SKULLS, parseCustom } from "@cbc/share-code/skulls";
+import { FOLLOWS, formatTierBosses, parseTierBosses, parseTierList, tierEntry, withTier } from "@cbc/share-code/tier-bosses";
+import { equalsIgnoreCase, isNullOrWhiteSpace, netTrim, netTrimEnd, toFixedNet } from "@cbc/share-code/dotnet";
 
 /** decode of a code holding these options */
 const read = async (o: object) => decode(await pack(JSON.stringify({ o })));
@@ -179,4 +180,97 @@ describe("the options' names and Random marks", () => {
     const options = defaultOptions();
     expect(withoutRandomMark(options, 1)).toBe(options);
   });
+});
+// Code that also runs as a module loads, so every test covers it; the mutation run on GitHub found these unchecked
+describe("reading option values, one by one", () => {
+  it("reads a whole number written as text, and only that", () => {
+    expect(readOptions({ Tiers: " 5 " }).Tiers).toBe(5);
+    expect(() => readOptions({ Tiers: "0x2" })).toThrow("Tiers is not a whole number");
+    expect(() => readOptions({ Tiers: 2147483648 })).toThrow("Tiers is not a whole number");
+    expect(() => readOptions({ Tiers: -2147483649 })).toThrow("Tiers is not a whole number");
+    expect(readOptions({ Tiers: -2147483648 }).Tiers).toBe(-2147483648);
+  });
+
+  it("reads a number as text where text is wanted", () => expect(readOptions({ CustomSkulls: 5 }).CustomSkulls).toBe("5"));
+
+  it.each([
+    [{ Elite: 1 }, "Elite is not true or false"],
+    [{ SkullMode: "Nope" }, "SkullMode 'Nope' is unknown"],
+    [{ SkullCount: "x" }, "SkullCount is not a whole number"],
+    [{ Tiers: "x" }, "Tiers is not a whole number"],
+    [{ SpeedPerTier: "x" }, "SpeedPerTier is not a whole number"],
+    [{ HealthPerTier: "x" }, "HealthPerTier is not a whole number"],
+    [{ SpawnRounds: [] }, "SpawnRounds is not text"],
+    [{ TierBosses: {} }, "TierBosses is not text"],
+    [{ BossEventRounds: "yes" }, "BossEventRounds is not true or false"],
+  ])("%j: %s", (json, message) => expect(() => readOptions(json as never)).toThrow(message));
+});
+
+describe("writing options as JSON", () => {
+  it("writes the extra tier's health when there is one", () => {
+    expect(optionsJson({ ...defaultOptions(), ExtraTierHealth: 150 }).ExtraTierHealth).toBe(150);
+  });
+
+  it("leaves out a CHIMPS rounds choice that isn't there", () => {
+    expect(Object.keys(optionsJson({ ...defaultOptions(), ChimpsRounds: undefined }))).not.toContain("ChimpsRounds");
+  });
+
+  it("keeps the other Random marks as a list", () => {
+    const options = { ...defaultOptions(), Tiers: 3, TierBosses: "Random,Random,Random", RandomTiers: "1,2,3" };
+    expect(withoutRandomMark(options, 1).RandomTiers).toBe("2,3");
+  });
+});
+
+describe(".NET white space", () => {
+  it.each([
+    [null, true],
+    ["", true],
+    [" \t\r\n", true],
+    ["x", false],
+  ])("IsNullOrWhiteSpace(%j) is %j", (text, blank) => expect(isNullOrWhiteSpace(text)).toBe(blank));
+
+  it("trims a carriage return and the rarer spaces", () => {
+    expect(netTrim("\rx\r")).toBe("x");
+    expect(netTrim("    x    ")).toBe("x");
+  });
+
+  it("rounds a number that JavaScript writes with an exponent", () => expect(toFixedNet(1e-7, 2)).toBe("0.00"));
+});
+
+describe("Custom % skulls, more closely", () => {
+  it.each(["5e1", "5e+1", "5e01", "500e-1", ".5e2"])("reads %s as 50 %%", (text) => expect(parseCustom(text)).toEqual([0.5]));
+
+  it("reads a fraction with more digits before its exponent", () => expect(parseCustom(".25e2")).toEqual([0.25]));
+
+  it("keeps at most the most skulls a boss can have", () => {
+    const text = Array.from({ length: MAX_SKULLS + 2 }, (_, i) => i + 1).join(",");
+    expect(parseCustom(text)).toHaveLength(MAX_SKULLS);
+  });
+});
+
+describe("the tiers' bosses, more closely", () => {
+  it("has no tiers in a blank list", () => {
+    expect(parseTierBosses("   ")).toEqual([]);
+    expect(parseTierList(null)).toEqual([]);
+    expect(parseTierList("   ")).toEqual([]);
+  });
+
+  it("has no Elite for a boss it doesn't know", () => expect(parseTierBosses("NobodyElite")).toEqual([FOLLOWS]));
+
+  it("reads a speed without a health", () => {
+    expect(parseTierBosses("Lych@150")[0]).toMatchObject({ boss: "Lych", speed: 150, health: 100 });
+  });
+
+  it("reads and writes at most ten tiers", () => {
+    const lych = parseTierBosses("Lych")[0];
+    expect(parseTierBosses(Array(11).fill("Lych").join(","))).toHaveLength(10);
+    expect(formatTierBosses(Array(11).fill(lych))).toBe(Array(10).fill("Lych").join(","));
+  });
+
+  it("reads tier numbers like int.TryParse", () => {
+    expect(parseTierList("+2")).toEqual([2]);
+    expect(parseTierList("x2, 2x, 1.5, 0x2, 2e0")).toEqual([]);
+  });
+
+  it("has no tier 0", () => expect(tierEntry("Lych", 0)).toEqual(FOLLOWS));
 });
