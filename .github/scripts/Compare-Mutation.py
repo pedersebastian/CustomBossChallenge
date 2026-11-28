@@ -2,11 +2,12 @@
 
 Reads the JSON reports of both runs, one folder per run with the artifacts in it (mutation-report-website/mutation.json
 and mutation-report-config-math/mutation-report.json), and writes a Markdown table of every file's score and how it
-moved. When a file's score fell by more than its part's limit, or a file has survivors it didn't have, it also writes
-a report of that for an issue.
+moved. When a file has survivors it didn't have, it also writes a report of that for an issue.
 
 A survivor is known by its file, mutator, replacement and the code it replaces, not by its line: lines move when code
-above them changes, and a survivor that only moved isn't new.
+above them changes, and a survivor that only moved isn't new. Nor is one that the run before didn't measure: Stryker
+gives a mutant a RuntimeError now and then, and the next run may find it surviving although nothing changed. A score
+that fell without new survivors (killed mutants of code that was removed) only shows in the table.
 
 python Compare-Mutation.py --current DIR [--previous DIR] [--workspace DIR] --summary FILE --drop FILE
 """
@@ -18,12 +19,10 @@ import os
 import posixpath
 import sys
 
-# (name, report in the artifact folder, how far a file's score may fall before it counts)
+# (name, report in the artifact folder)
 PARTS = [
-    ("Share code and preview", "mutation-report-website/mutation.json", 1.0),
-    # Stryker.NET moves by a few percent from run to run on its own: static readonly fields are set once per test
-    # process, so whether their mutants survive depends on the order the tests run in (CONTRIBUTING.md)
-    ("Config math", "mutation-report-config-math/mutation-report.json", 2.0),
+    ("Share code and preview", "mutation-report-website/mutation.json"),
+    ("Config math", "mutation-report-config-math/mutation-report.json"),
 ]
 
 KILLED = {"Killed", "Timeout"}
@@ -54,7 +53,8 @@ def snippet(source, location):
 
 
 def read_report(path, workspace):
-    """{file: (killed, not killed, Counter of survivor keys, {survivor key: first line})}, or None without a report"""
+    """{file: (killed, not killed, Counter of survivor keys, {survivor key: first line}, Counter of unmeasured keys)},
+    or None without a report; unmeasured mutants are those with any other status (RuntimeError, CompileError, Ignored)"""
     if not os.path.isfile(path):
         return None
     with open(path, encoding="utf-8") as stream:
@@ -63,17 +63,20 @@ def read_report(path, workspace):
     for path_in_report, entry in report["files"].items():
         killed = not_killed = 0
         survivors = collections.Counter()
+        unmeasured = collections.Counter()
         lines = {}
         for mutant in entry["mutants"]:
             status = mutant["status"]
+            key = (mutant["mutatorName"], mutant.get("replacement", ""), snippet(entry.get("source", ""), mutant["location"]))
             if status in KILLED:
                 killed += 1
             elif status in NOT_KILLED:
                 not_killed += 1
-                key = (mutant["mutatorName"], mutant.get("replacement", ""), snippet(entry.get("source", ""), mutant["location"]))
                 survivors[key] += 1
                 lines.setdefault(key, mutant["location"]["start"]["line"])
-        files[file_name(path_in_report, workspace)] = (killed, not_killed, survivors, lines)
+            else:
+                unmeasured[key] += 1
+        files[file_name(path_in_report, workspace)] = (killed, not_killed, survivors, lines, unmeasured)
     return files
 
 
@@ -100,7 +103,7 @@ def compare(current_dir, previous_dir, workspace):
     drop = []
     if previous_dir is None:
         summary += ["No earlier run to compare with: this is the first, or its reports have expired.", ""]
-    for name, report, limit in PARTS:
+    for name, report in PARTS:
         current = read_report(os.path.join(current_dir, report), workspace)
         previous = read_report(os.path.join(previous_dir, report), workspace) if previous_dir else None
         if current is None:
@@ -111,34 +114,34 @@ def compare(current_dir, previous_dir, workspace):
         summary += [f"## {name}: {shown(total_now)}" + (f" (was {shown(total_before)})" if previous else ""), ""]
         summary += ["| File | Score | Before | Change | Survivors | New |", "|---|---:|---:|---:|---:|---:|"]
         for path in sorted(current):
-            killed, not_killed, survivors, lines = current[path]
+            killed, not_killed, survivors, lines, _ = current[path]
             now = score(killed, not_killed)
             before_entry = previous.get(path) if previous else None
             before = score(before_entry[0], before_entry[1]) if before_entry else None
             change = now - before if now is not None and before is not None else None
-            # A file that wasn't in the earlier run is new code: all its survivors are new
-            new = survivors - (before_entry[2] if before_entry else collections.Counter()) if previous else collections.Counter()
+            # A file that wasn't in the earlier run is new code: all its survivors are new. A mutant the earlier run
+            # didn't measure isn't, whatever it is now.
+            known = before_entry[2] + before_entry[4] if before_entry else collections.Counter()
+            new = survivors - known if previous else collections.Counter()
             if now is None:
                 continue
             summary.append(
                 f"| {path} | {shown(now)} | {shown(before)} | {'' if change is None else f'{change:+.2f}'} | "
                 f"{not_killed} | {sum(new.values()) if previous else ''} |"
             )
-            fell = change is not None and change < -limit
-            if fell or new:
+            if new:
+                count_new = sum(new.values())
                 drop += [f"### {path}", ""]
-                if fell:
-                    drop += [f"Score {shown(before)} → {shown(now)} ({change:+.2f}, the limit is {limit:.0f})", ""]
-                if new:
-                    count_new = sum(new.values())
-                    drop += [f"{count_new} new survivor{'' if count_new == 1 else 's'}:", ""]
-                    listed = sorted(new.items(), key=lambda item: lines[item[0]])
-                    for (mutator, replacement, original), count in listed[:MAX_LISTED]:
-                        times = f" ({count}×)" if count > 1 else ""
-                        drop.append(f"- line {lines[(mutator, replacement, original)]}, {mutator}: {code(original)} → {code(replacement)}{times}")
-                    if len(listed) > MAX_LISTED:
-                        drop.append(f"- … and {len(listed) - MAX_LISTED} more, see the report")
-                    drop.append("")
+                if change is not None:
+                    drop += [f"Score {shown(before)} → {shown(now)} ({change:+.2f})", ""]
+                drop += [f"{count_new} new survivor{'' if count_new == 1 else 's'}:", ""]
+                listed = sorted(new.items(), key=lambda item: lines[item[0]])
+                for (mutator, replacement, original), count in listed[:MAX_LISTED]:
+                    times = f" ({count}×)" if count > 1 else ""
+                    drop.append(f"- line {lines[(mutator, replacement, original)]}, {mutator}: {code(original)} → {code(replacement)}{times}")
+                if len(listed) > MAX_LISTED:
+                    drop.append(f"- … and {len(listed) - MAX_LISTED} more, see the report")
+                drop.append("")
         summary.append("")
     return summary, drop
 

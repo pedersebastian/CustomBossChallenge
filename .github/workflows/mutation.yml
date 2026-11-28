@@ -1,7 +1,8 @@
 # Mutation testing (#268): finds code the tests run but don't really check. Stryker changes the code a little at a time
 # (a "mutant", e.g. < to <=) and runs the tests; a mutant no test fails on has "survived". Slow, so not on every PR: run
 # it by hand, or let the weekly run show how the score moves. Each job uploads its HTML report as an artifact; it never
-# fails on a low score. The last job compares the scores with the run before and says on an issue when one fell.
+# fails on a low score. The last job compares the scores with the run before and says on an issue when a file has new
+# survivors.
 # How to run it locally: CONTRIBUTING.md.
 name: Mutation tests
 
@@ -111,7 +112,7 @@ jobs:
         run: |
           run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           {
-            echo "The [mutation run]($run_url) on ${GITHUB_SHA::7} has scores that fell or new survivors, compared with [the run before]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$PREVIOUS)."
+            echo "The [mutation run]($run_url) on ${GITHUB_SHA::7} has survivors that are new, compared with [the run before]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$PREVIOUS)."
             echo "The full table is in the run's summary, the reports are its artifacts. For each survivor: add a test that fails on it, or leave it when it changes nothing (CONTRIBUTING.md, Mutation tests)."
             echo
             cat drop.md

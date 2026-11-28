@@ -172,10 +172,10 @@ on a local machine that often takes longer than this, so it times out whether a 
 `.github/workflows/mutation.yml` runs both every Sunday and by hand (Actions → Mutation tests → Run workflow), and
 uploads each HTML report as an artifact. It never fails on a low score. Its last job,
 `.github/scripts/Compare-Mutation.py`, compares every file with the last finished run on master and puts the table in
-the run's summary. When a file's score fell by more than 1 point (2 for the Config math, which moves by itself), or a
-file has survivors it didn't have, a run on master comments on the open issue *Mutation score dropped*, or opens it,
-listing the new survivors. A survivor is known by its file, mutator and code, so one that only moved to another line
-isn't new. Work through the list, then close the issue: the next drop opens a new one. When a survivor matters, add a
+the run's summary. When a file has survivors it didn't have, a run on master comments on the open issue *Mutation
+score dropped*, or opens it, listing them. A survivor is known by its file, mutator and code, so one that only moved
+to another line isn't new, and nor is one the run before didn't measure (a RuntimeError, which Stryker gives now and
+then). A score that fell without new survivors only shows in the table. Work through the list, then close the issue: the next drop opens a new one. When a survivor matters, add a
 test that fails on it; when it doesn't (an equivalent mutant, a log text, a guard that can't be reached), leave it, or
 file an issue if it needs a closer look.
 

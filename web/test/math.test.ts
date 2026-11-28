@@ -80,6 +80,8 @@ describe("tiers", () => {
   it("gives the last tier 20 rounds", () => {
     expect(endRound([40, 60, 80, 100, 120])).toBe(140);
     expect(endRound([40, 51])).toBe(71);
+    // Without spawn rounds the game would still end 20 rounds after the first one
+    expect(endRound([])).toBe(60);
   });
 
   it("shortens health like the game", () => {
