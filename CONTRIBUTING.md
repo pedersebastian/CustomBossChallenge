@@ -163,7 +163,11 @@ made a loop that never ends. On a busy machine (two Stryker runs at once, a buil
 don't catch can time out too, so a local Timeout isn't proof that a test catches it (#302). Stryker itself starts a test
 runner on every core but one, which can be enough: run it with nothing else heavy going on, try fewer runners
 (`npm run mutation -- --concurrency 4`), and trust the weekly run on GitHub when the two disagree. `timeoutMS` in
-`web/stryker.config.mjs` gives every mutant 15 s more than its tests took without it.
+`web/stryker.config.mjs` gives every mutant 15 s more than its tests took without it. A mutant in code that runs both
+when a module loads and in the tests (a helper like `netTrim`, which a table calls as it is built) runs every test, and
+on a local machine that often takes longer than this, so it times out whether a test catches it or not: a local run of
+`dotnet.ts` alone once showed 100 % where GitHub found 14 survivors. To check such code locally, add
+`--timeoutMS 120000`.
 
 `.github/workflows/mutation.yml` runs both every Sunday and by hand (Actions → Mutation tests → Run workflow), and
 uploads each HTML report as an artifact. It never fails on a low score. When a survivor matters, add a test that fails
