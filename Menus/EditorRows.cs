@@ -27,6 +27,9 @@ public sealed class SliderRow
     public Slider Slider { get; }
     public float Default { get; }
 
+    /// <summary>The row's icon, a <see cref="VanillaSprites"/> GUID</summary>
+    public string Icon { get; }
+
     private readonly TMP_Text valueText;
     private readonly float step;
     private readonly Steps? steps;
@@ -39,10 +42,11 @@ public sealed class SliderRow
     /// </summary>
     private float shown;
 
-    private SliderRow(GameObject row, Slider slider, TMP_Text valueText, float step, Steps? steps, float defaultValue,
-        Func<float, string> format, Action<float> changed)
+    private SliderRow(GameObject row, string icon, Slider slider, TMP_Text valueText, float step, Steps? steps,
+        float defaultValue, Func<float, string> format, Action<float> changed)
     {
         Row = row;
+        Icon = icon;
         Slider = slider;
         this.valueText = valueText;
         this.step = step;
@@ -147,7 +151,7 @@ public sealed class SliderRow
         slider.minValue = min;
         slider.maxValue = max;
 
-        var result = new SliderRow(row, slider, valueText, step, steps, defaultValue, format, changed);
+        var result = new SliderRow(row, icon, slider, valueText, step, steps, defaultValue, format, changed);
         slider.onValueChanged.AddListener(Listeners.Wrap<float>(value =>
         {
             if (steps != null)
@@ -193,6 +197,13 @@ public static class EditorRows
     /// Where the slider sits in a row, used to place other controls in the same column
     /// </summary>
     public const float ControlX = -1328;
+
+    /// <summary>
+    /// The icon of every speed row (Boss Speed, Speed per Tier, a tier's own speed) and of every health row: arrows and
+    /// a heart, like the website's Studio, so the two kinds can't be mixed up at a glance (#306)
+    /// </summary>
+    public const string SpeedIcon = VanillaSprites.GoFastForwardIcon;
+    public const string HealthIcon = VanillaSprites.LivesIcon;
     public const float ControlWidth = 1990;
     public const float RowHeight = 200;
 

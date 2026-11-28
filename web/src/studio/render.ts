@@ -266,6 +266,22 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
   form.replaceChildren(toolbar, modeRow, ...rows, rulesSection.root);
   form.addEventListener("submit", (event) => event.preventDefault());
 
+  // The speed and the health a change last left, to lift the line on the Tier Preview's cards that one slider changed
+  // (#306): only when one of the two changed, not when a code, Random or Undo changes both or neither
+  let shownSpeed: string | null = null;
+  let shownHealth: string | null = null;
+  function liftedLine(now: StudioSetup): "speed" | "health" | null {
+    const speed = `${edit.bossSpeed(now)} ${now.options.SpeedPerTier}`;
+    const health = `${edit.bossHealth(now)} ${now.options.HealthPerTier}`;
+    const first = shownSpeed === null;
+    const speedMoved = speed !== shownSpeed;
+    const healthMoved = health !== shownHealth;
+    shownSpeed = speed;
+    shownHealth = health;
+    if (first || speedMoved === healthMoved) return null;
+    return speedMoved ? "speed" : "health";
+  }
+
   /** Shows the setup in every control, and only the rows that apply (BossEditorSection.Relayout) */
   function sync(): void {
     for (const control of controls) control.sync(setup);
@@ -295,9 +311,11 @@ export function setUpStudio(form: HTMLFormElement, codeBox: HTMLTextAreaElement,
     releaseSetup(skullPreview);
     tierPreview.hidden = mixed;
     skullPreview.hidden = mixed;
+    const lift = liftedLine(setup);
     if (!mixed) {
       const summary = { bossSpeed: edit.bossSpeed(setup) / 100, bossHealth: edit.bossHealth(setup) / 100 } as Challenge;
       tierPreview.replaceChildren(renderTiers(setup.options, summary));
+      if (lift) tierPreview.querySelector(".tiers")?.classList.add(`lift-${lift}`);
       skullPreview.replaceChildren(renderSkulls(setup.options));
     }
   }

@@ -616,6 +616,19 @@ input:focus-visible {
   font-size: 0.85rem;
 }
 
+/* The Studio briefly lifts the speed or the health line when its slider moves, like the Boss Creator (#306) */
+.tiers.lift-speed .tier-speed,
+.tiers.lift-health .tier-health {
+  display: inline-block;
+  animation: tier-lift 0.6s ease-in-out;
+}
+
+@keyframes tier-lift {
+  50% {
+    transform: scale(1.25);
+  }
+}
+
 /* In Advanced Mode: how many skulls the tier's boss has */
 .tier-skulls {
   color: var(--muted);
@@ -1224,6 +1237,11 @@ input:focus-visible {
 
   .button {
     transition: none;
+  }
+
+  .tiers.lift-speed .tier-speed,
+  .tiers.lift-health .tier-health {
+    animation: none;
   }
 
   /* The tier look stays, without the pulse */
